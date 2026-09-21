@@ -2,52 +2,54 @@
 <html lang="uz">
 <head>
 <meta charset="UTF-8">
-<!-- ZOOM BUG FIX: maximum-scale=1, user-scalable=no -->
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-<title>EVEREST No.1 — Liquid Glass Platform</title>
+<title>EVEREST SaaS — Advanced Homework Platform</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
 <style>
-/* ================= LIQUID GLASS & PREVENT BUGS ================= */
+/* ================= LIQUID NAVY GLASSMORPHISM ================= */
 :root {
   --bg-deep: #030712;
-  --glass-card: rgba(15, 23, 42, 0.55);
-  --glass-card-hover: rgba(30, 41, 59, 0.7);
+  --glass-card: rgba(15, 23, 42, 0.65);
+  --glass-card-hover: rgba(30, 41, 59, 0.8);
   --glass-border: rgba(255, 255, 255, 0.12);
-  --glass-border-glow: rgba(96, 165, 250, 0.3);
+  --glass-border-glow: rgba(96, 165, 250, 0.4);
   --accent-blue: #3B82F6;
+  --accent-blue-hover: #2563EB;
   --accent-cyan: #06B6D4;
   --accent-amber: #F59E0B;
   --accent-emerald: #10B981;
+  --accent-rose: #EF4444;
   --text-main: #F8FAFC;
   --text-muted: #94A3B8;
   --font-heading: 'Outfit', sans-serif;
   --font-body: 'Plus Jakarta Sans', sans-serif;
-  --radius-xl: 28px;
-  --radius-lg: 20px;
-  --radius-md: 14px;
-  --radius-sm: 10px;
+  --sidebar-width: 270px;
+  --sidebar-collapsed-width: 80px;
+  --radius-xl: 24px;
+  --radius-lg: 18px;
+  --radius-md: 12px;
+  --radius-sm: 8px;
 }
 
-/* 1. DOUBLE-TAP ZOOM FIX & COPY/SELECTION FIX */
+/* ANTI-ZOOM & SELECTION BUG FIX */
 * { 
   box-sizing: border-box; 
   margin: 0; 
   padding: 0; 
-  touch-action: manipulation; /* Double tap zoomni bloklaydi */
-  -webkit-tap-highlight-color: transparent; /* Mobil brauzerlarda ko'k shadow-ni oladi */
+  touch-action: manipulation; 
+  -webkit-tap-highlight-color: transparent;
 }
 
-/* Matn belgilanishini cheklash (Faqat input va textarea ruxsat etiladi) */
-body, button, .nav-btn, .hw-card, .stat-card, .sidebar, .mobile-nav, .brand-title {
+body, button, .nav-btn, .stat-card, .sidebar, .mobile-nav, .brand-title, .t-card, .hw-card {
   -webkit-user-select: none;
   -moz-user-select: none;
   -ms-user-select: none;
   user-select: none;
 }
 
-input, textarea {
+input, textarea, select {
   -webkit-user-select: text;
   -moz-user-select: text;
   -ms-user-select: text;
@@ -66,120 +68,166 @@ html, body {
 button { font-family: var(--font-body); cursor: pointer; border: none; outline: none; }
 input, select, textarea { font-family: var(--font-body); }
 
-/* LIQUID ATMOSPHERE BACKGROUND */
+/* BACKGROUND ATMOSPHERE */
 .app-bg {
   position: fixed; inset: 0; z-index: -1;
   background-image: 
-    radial-gradient(circle at 20% 0%, rgba(59, 130, 246, 0.3) 0%, transparent 50%),
-    radial-gradient(circle at 80% 100%, rgba(6, 182, 212, 0.25) 0%, transparent 50%),
-    linear-gradient(180deg, rgba(3, 7, 18, 0.7) 0%, rgba(3, 7, 18, 0.95) 100%),
-    url('https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=3840&auto=format&fit=crop');
-  background-size: cover; background-position: center; filter: saturate(1.2);
+    radial-gradient(circle at 10% 0%, rgba(59, 130, 246, 0.25) 0%, transparent 45%),
+    radial-gradient(circle at 90% 100%, rgba(6, 182, 212, 0.2) 0%, transparent 45%),
+    linear-gradient(180deg, rgba(3, 7, 18, 0.85) 0%, rgba(3, 7, 18, 0.98) 100%),
+    url('https://images.unsplash.com/photo-1518770660439-4636190af475?q=80&w=3840&auto=format&fit=crop');
+  background-size: cover; background-position: center; filter: saturate(1.1);
 }
 
 .screen { display: none; min-height: 100vh; }
 .screen.active { display: flex; }
 
-/* PREMIUM LIQUID GLASSMORPHISM PANEL */
+/* GLASS PANELS */
 .glass-panel {
   background: var(--glass-card);
   border: 1px solid var(--glass-border);
   backdrop-filter: blur(28px) saturate(160%);
   -webkit-backdrop-filter: blur(28px) saturate(160%);
   border-radius: var(--radius-lg);
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.1);
-  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), background 0.25s, border-color 0.25s, box-shadow 0.25s;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 /* ================= LOGIN SCREEN ================= */
 #login-screen { display: none; align-items: center; justify-content: center; min-height: 100vh; padding: 20px; }
 #login-screen.active { display: flex; }
-.login-box { width: 100%; max-width: 900px; display: grid; grid-template-columns: 1fr 1fr; border-radius: var(--radius-xl); overflow: hidden; }
+.login-box { width: 100%; max-width: 920px; display: grid; grid-template-columns: 1fr 1fr; border-radius: var(--radius-xl); overflow: hidden; }
 @media (max-width: 768px) { .login-box { grid-template-columns: 1fr; } .login-hero { display: none; } }
 
 .login-hero { padding: 48px; background: linear-gradient(135deg, rgba(37, 99, 235, 0.35), rgba(6, 182, 212, 0.15)); display: flex; flex-direction: column; justify-content: space-between; border-right: 1px solid var(--glass-border); }
-.brand-title { font-family: var(--font-heading); font-size: 26px; font-weight: 800; display: flex; align-items: center; gap: 10px; letter-spacing: -0.02em; }
-.brand-tagline { font-size: 12px; letter-spacing: 0.15em; color: var(--accent-cyan); text-transform: uppercase; font-weight: 800; margin-top: 4px; }
-.login-hero-body h2 { font-size: 36px; font-family: var(--font-heading); line-height: 1.15; margin-top: 20px; font-weight: 800; }
-.login-hero-body p { color: var(--text-muted); font-size: 15px; margin-top: 12px; line-height: 1.6; }
+.brand-title { font-family: var(--font-heading); font-size: 24px; font-weight: 800; display: flex; align-items: center; gap: 10px; letter-spacing: -0.02em; }
+.brand-tagline { font-size: 11px; letter-spacing: 0.15em; color: var(--accent-cyan); text-transform: uppercase; font-weight: 800; margin-top: 4px; }
 
 .login-form-pane { padding: 48px; }
-.role-tabs { display: flex; background: rgba(255,255,255,0.05); padding: 4px; border-radius: 100px; margin: 24px 0; border: 1px solid var(--glass-border); }
+.role-tabs { display: flex; background: rgba(255,255,255,0.05); padding: 4px; border-radius: 100px; margin: 20px 0; border: 1px solid var(--glass-border); }
 .role-tabs button { flex: 1; padding: 10px; border-radius: 100px; background: transparent; color: var(--text-muted); font-weight: 700; font-size: 13px; transition: 0.2s; }
 .role-tabs button.active { background: var(--accent-blue); color: #fff; box-shadow: 0 4px 14px rgba(59, 130, 246, 0.5); }
 
 .field { margin-bottom: 18px; }
 .field label { display: block; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted); margin-bottom: 8px; }
-.field input, .field select, .field textarea { width: 100%; padding: 14px 16px; background: rgba(3, 7, 18, 0.6); border: 1px solid var(--glass-border); border-radius: var(--radius-md); color: #fff; font-size: 15px; transition: all 0.2s; }
+.field input, .field select, .field textarea { width: 100%; padding: 12px 16px; background: rgba(3, 7, 18, 0.6); border: 1px solid var(--glass-border); border-radius: var(--radius-md); color: #fff; font-size: 14px; transition: all 0.2s; }
 .field input:focus, .field select:focus, .field textarea:focus { border-color: var(--accent-blue); outline: none; box-shadow: 0 0 16px rgba(59, 130, 246, 0.35); background: rgba(3, 7, 18, 0.8); }
 
-.btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 14px 24px; border-radius: 100px; font-weight: 700; font-size: 15px; transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1); }
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 12px 20px; border-radius: 100px; font-weight: 700; font-size: 14px; transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1); }
 .btn:active { transform: scale(0.96); }
-.btn-primary { background: linear-gradient(135deg, var(--accent-blue), #1D4ED8); color: #fff; width: 100%; box-shadow: 0 8px 24px rgba(37, 99, 235, 0.4); }
-.btn-primary:hover { opacity: 0.95; box-shadow: 0 12px 28px rgba(37, 99, 235, 0.55); }
+.btn-primary { background: linear-gradient(135deg, var(--accent-blue), #1D4ED8); color: #fff; box-shadow: 0 6px 20px rgba(37, 99, 235, 0.4); }
+.btn-primary:hover { opacity: 0.95; box-shadow: 0 8px 25px rgba(37, 99, 235, 0.55); }
 .btn-secondary { background: rgba(255,255,255,0.08); color: #fff; border: 1px solid var(--glass-border); }
 .btn-secondary:hover { background: rgba(255,255,255,0.15); }
+.btn-danger { background: rgba(239, 68, 68, 0.2); color: var(--accent-rose); border: 1px solid rgba(239, 68, 68, 0.4); }
+.btn-danger:hover { background: rgba(239, 68, 68, 0.35); }
 
 /* ================= MAIN LAYOUT ================= */
-#app-screen { width: 100%; min-height: 100vh; }
-.sidebar { width: 280px; flex-shrink: 0; padding: 32px 20px; display: flex; flex-direction: column; gap: 8px; height: 100vh; position: sticky; top: 0; z-index: 20; border-radius: 0 var(--radius-xl) var(--radius-xl) 0; }
-.nav-btn { display: flex; align-items: center; gap: 14px; padding: 14px 18px; border-radius: var(--radius-md); color: var(--text-muted); font-weight: 600; font-size: 14.5px; background: transparent; width: 100%; text-align: left; transition: all 0.2s; }
-.nav-btn svg { width: 20px; height: 20px; }
+#app-screen { width: 100%; min-height: 100vh; display: flex; }
+.sidebar { 
+  width: var(--sidebar-width); 
+  flex-shrink: 0; 
+  padding: 24px 16px; 
+  display: flex; 
+  flex-direction: column; 
+  gap: 6px; 
+  height: 100vh; 
+  position: sticky; 
+  top: 0; 
+  z-index: 20; 
+  border-radius: 0 var(--radius-xl) var(--radius-xl) 0; 
+  transition: width 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.sidebar.collapsed { width: var(--sidebar-collapsed-width); }
+.sidebar.collapsed .brand-text, 
+.sidebar.collapsed .nav-btn span, 
+.sidebar.collapsed .sidebar-user-info, 
+.sidebar.collapsed .brand-tagline { display: none; }
+.sidebar.collapsed .sidebar-user { justify-content: center; padding: 8px; }
+
+.sidebar-header { display: flex; align-items: center; justify-content: space-between; padding: 0 8px 20px 8px; border-bottom: 1px solid var(--glass-border); margin-bottom: 12px; }
+.collapse-btn { background: rgba(255,255,255,0.06); color: var(--text-muted); border-radius: var(--radius-sm); padding: 6px; border: 1px solid var(--glass-border); }
+.collapse-btn:hover { color: #fff; background: rgba(255,255,255,0.12); }
+
+.nav-btn { display: flex; align-items: center; gap: 14px; padding: 12px 16px; border-radius: var(--radius-md); color: var(--text-muted); font-weight: 600; font-size: 14px; background: transparent; width: 100%; text-align: left; transition: all 0.2s; }
+.nav-btn svg { width: 20px; height: 20px; flex-shrink: 0; }
 .nav-btn:hover { color: #fff; background: rgba(255,255,255,0.06); }
 .nav-btn.active { background: linear-gradient(135deg, rgba(59, 130, 246, 0.35), rgba(6, 182, 212, 0.15)); border: 1px solid rgba(96, 165, 250, 0.4); color: #fff; box-shadow: 0 8px 20px rgba(0,0,0,0.3); }
 
-.sidebar-user { margin-top: auto; padding: 12px; display: flex; align-items: center; gap: 12px; cursor: pointer; border-radius: var(--radius-md); background: rgba(255,255,255,0.04); border: 1px solid var(--glass-border); transition: 0.2s; }
-.sidebar-user:hover { background: rgba(255,255,255,0.08); }
-.avatar-img { width: 44px; height: 44px; border-radius: 50%; object-fit: cover; border: 2px solid var(--accent-blue); box-shadow: 0 0 12px rgba(59, 130, 246, 0.5); display: flex; align-items: center; justify-content: center; background: var(--accent-blue); color: #fff; font-weight: 800; font-size: 15px; }
+/* USER BAR & SIGN OUT */
+.sidebar-user { margin-top: auto; padding: 10px 12px; display: flex; align-items: center; gap: 12px; border-radius: var(--radius-md); background: rgba(255,255,255,0.04); border: 1px solid var(--glass-border); }
+.avatar-img { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 2px solid var(--accent-blue); box-shadow: 0 0 12px rgba(59, 130, 246, 0.4); display: flex; align-items: center; justify-content: center; background: var(--accent-blue); color: #fff; font-weight: 800; font-size: 14px; flex-shrink: 0; }
+.logout-icon-btn { background: transparent; color: var(--accent-rose); padding: 8px; border-radius: 8px; transition: 0.2s; opacity: 0.8; }
+.logout-icon-btn:hover { background: rgba(239, 68, 68, 0.2); opacity: 1; }
 
-.main-viewport { flex: 1; padding: 36px 40px; overflow-y: auto; max-width: 1400px; margin: 0 auto; width: 100%; }
+.main-viewport { flex: 1; padding: 28px 36px; overflow-y: auto; max-width: 1440px; margin: 0 auto; width: 100%; }
 
-/* MOBILE BOTTOM NAV WITH GLASS EFFECT */
-.mobile-nav { display: none; position: fixed; bottom: 0; left: 0; right: 0; background: rgba(3, 7, 18, 0.75); backdrop-filter: blur(20px) saturate(160%); border-top: 1px solid var(--glass-border); padding: 10px 16px calc(10px + env(safe-area-inset-bottom)); z-index: 100; justify-content: space-around; }
-.mobile-nav button { background: transparent; border: none; color: var(--text-muted); display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 11px; font-weight: 700; transition: 0.2s; }
+/* TOP BAR (SEARCH & NOTIFS) */
+.top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 28px; gap: 16px; flex-wrap: wrap; }
+.search-box { position: relative; width: 100%; max-width: 380px; }
+.search-box input { width: 100%; padding: 12px 16px 12px 42px; background: rgba(15, 23, 42, 0.6); border: 1px solid var(--glass-border); border-radius: 100px; color: #fff; font-size: 13.5px; }
+.search-box svg { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); width: 18px; height: 18px; color: var(--text-muted); }
+
+/* MOBILE BOTTOM NAV */
+.mobile-nav { display: none; position: fixed; bottom: 0; left: 0; right: 0; background: rgba(3, 7, 18, 0.85); backdrop-filter: blur(24px) saturate(160%); border-top: 1px solid var(--glass-border); padding: 8px 12px calc(8px + env(safe-area-inset-bottom)); z-index: 100; justify-content: space-around; }
+.mobile-nav button { background: transparent; border: none; color: var(--text-muted); display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 10px; font-weight: 700; transition: 0.2s; }
 .mobile-nav button.active { color: var(--accent-blue); }
-@media (max-width: 860px) {
+
+@media (max-width: 880px) {
   .sidebar { display: none; }
   .mobile-nav { display: flex; }
   .main-viewport { padding: 20px 16px 100px 16px; }
+  .top-bar { flex-direction: column; align-items: stretch; }
+  .search-box { max-width: 100%; }
 }
 
 /* ================= DASHBOARD & CARDS ================= */
-.dashboard-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 28px; flex-wrap: wrap; gap: 16px; }
-.greeting-title { font-size: 32px; font-family: var(--font-heading); font-weight: 800; letter-spacing: -0.02em; }
-.stats-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 32px; }
-.stat-card { padding: 20px; display: flex; align-items: center; gap: 16px; }
-.stat-icon { width: 48px; height: 48px; border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; font-size: 22px; background: rgba(255,255,255,0.06); border: 1px solid var(--glass-border); }
-.stat-val { font-size: 24px; font-weight: 800; font-family: var(--font-heading); }
-.stat-lbl { font-size: 12px; color: var(--text-muted); font-weight: 700; text-transform: uppercase; }
+.stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; margin-bottom: 28px; }
+.stat-card { padding: 20px; display: flex; flex-direction: column; gap: 10px; position: relative; overflow: hidden; }
+.stat-card-top { display: flex; justify-content: space-between; align-items: center; }
+.stat-icon { width: 42px; height: 42px; border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; font-size: 20px; background: rgba(255,255,255,0.06); border: 1px solid var(--glass-border); }
+.stat-val { font-size: 28px; font-weight: 800; font-family: var(--font-heading); line-height: 1; }
+.stat-lbl { font-size: 11px; color: var(--text-muted); font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; }
+
+.quick-actions { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; margin-bottom: 32px; }
+.action-card { padding: 18px; border-radius: var(--radius-md); background: linear-gradient(135deg, rgba(255,255,255,0.05), rgba(255,255,255,0.01)); border: 1px solid var(--glass-border); display: flex; align-items: center; gap: 14px; cursor: pointer; transition: 0.2s; }
+.action-card:hover { transform: translateY(-3px); background: rgba(59, 130, 246, 0.15); border-color: var(--accent-blue); }
 
 .section-title { font-size: 20px; font-family: var(--font-heading); font-weight: 800; margin-bottom: 18px; display: flex; align-items: center; justify-content: space-between; }
 
-/* CATEGORY & HOMEWORK CARDS */
-.hw-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px; }
-.hw-card { padding: 24px; cursor: pointer; position: relative; overflow: hidden; }
-.hw-card:hover { transform: translateY(-4px); background: var(--glass-card-hover); border-color: var(--glass-border-glow); box-shadow: 0 20px 40px rgba(0,0,0,0.5), 0 0 20px rgba(59, 130, 246, 0.2); }
-.hw-badge { position: absolute; top: 20px; right: 20px; font-size: 11px; font-weight: 800; padding: 4px 12px; border-radius: 100px; text-transform: uppercase; }
-.badge-pending { background: rgba(245, 158, 11, 0.2); color: var(--accent-amber); border: 1px solid rgba(245, 158, 11, 0.4); }
-.badge-completed { background: rgba(16, 185, 129, 0.2); color: var(--accent-emerald); border: 1px solid rgba(16, 185, 129, 0.4); }
+/* TABLES & LISTS */
+.data-table-container { overflow-x: auto; border-radius: var(--radius-lg); border: 1px solid var(--glass-border); }
+.data-table { width: 100%; border-collapse: collapse; text-align: left; font-size: 14px; }
+.data-table th { background: rgba(255,255,255,0.04); padding: 14px 18px; color: var(--text-muted); font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 1px solid var(--glass-border); }
+.data-table td { padding: 16px 18px; border-bottom: 1px solid var(--glass-border); vertical-align: middle; }
+.data-table tr:last-child td { border-bottom: none; }
+.data-table tr:hover td { background: rgba(255,255,255,0.02); }
 
-.progress-bar-bg { width: 100%; height: 8px; background: rgba(255,255,255,0.08); border-radius: 100px; overflow: hidden; margin: 12px 0; }
-.progress-bar-fill { height: 100%; background: linear-gradient(90deg, var(--accent-blue), var(--accent-cyan)); border-radius: 100px; transition: width 0.5s ease; }
+/* BADGES & PROGRESS */
+.badge { display: inline-flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 800; padding: 4px 10px; border-radius: 100px; text-transform: uppercase; }
+.badge-done { background: rgba(16, 185, 129, 0.2); color: var(--accent-emerald); border: 1px solid rgba(16, 185, 129, 0.4); }
+.badge-progress { background: rgba(245, 158, 11, 0.2); color: var(--accent-amber); border: 1px solid rgba(245, 158, 11, 0.4); }
+.badge-none { background: rgba(239, 68, 68, 0.2); color: var(--accent-rose); border: 1px solid rgba(239, 68, 68, 0.4); }
+
+.progress-bar-bg { width: 100%; height: 6px; background: rgba(255,255,255,0.08); border-radius: 100px; overflow: hidden; }
+.progress-bar-fill { height: 100%; background: linear-gradient(90deg, var(--accent-blue), var(--accent-cyan)); border-radius: 100px; }
 
 /* MODALS & TOAST */
 .modal-overlay { position: fixed; inset: 0; background: rgba(3, 7, 18, 0.85); backdrop-filter: blur(16px); z-index: 1000; display: none; align-items: center; justify-content: center; padding: 20px; }
 .modal-overlay.active { display: flex; }
-.modal-box { width: 100%; max-width: 540px; max-height: 90vh; overflow-y: auto; padding: 32px; border-color: var(--glass-border-glow); }
+.modal-box { width: 100%; max-width: 620px; max-height: 90vh; overflow-y: auto; padding: 32px; border-color: var(--glass-border-glow); }
 
 .toast { position: fixed; bottom: 30px; right: 30px; background: linear-gradient(135deg, var(--accent-blue), #1D4ED8); color: #fff; padding: 14px 24px; border-radius: 100px; font-weight: 700; font-size: 14px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); z-index: 2000; transform: translateY(100px); opacity: 0; transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1); pointer-events: none; }
 .toast.show { transform: translateY(0); opacity: 1; }
 
-.book-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 16px; margin-top: 14px; }
-.book-page { position: relative; background: #0F172A; border-radius: 12px; overflow: hidden; border: 1px solid var(--glass-border); aspect-ratio: 3/4; cursor: pointer; transition: 0.2s; }
-.book-page:hover { border-color: var(--accent-blue); transform: scale(1.02); }
-.book-page img { width: 100%; height: 100%; object-fit: cover; }
+.hw-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
+.hw-card { padding: 22px; cursor: pointer; position: relative; }
+.hw-card:hover { transform: translateY(-4px); background: var(--glass-card-hover); border-color: var(--glass-border-glow); }
 
-.t-row { display: grid; grid-template-columns: 2fr 1fr auto; gap: 12px; align-items: center; padding: 14px 18px; border-bottom: 1px solid var(--glass-border); }
+.type-card-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; margin-bottom: 18px; }
+.type-card { padding: 14px; text-align: center; border-radius: var(--radius-md); background: rgba(255,255,255,0.03); border: 1px solid var(--glass-border); cursor: pointer; transition: 0.2s; font-size: 12px; font-weight: 700; }
+.type-card.active { background: rgba(59, 130, 246, 0.25); border-color: var(--accent-blue); color: #fff; }
 </style>
 </head>
 <body>
@@ -192,30 +240,29 @@ input, select, textarea { font-family: var(--font-body); }
     <div class="login-hero">
       <div class="brand-title">
         <svg width="32" height="28" viewBox="0 0 48 38" fill="none"><path d="M2 34 16 11l7 11 6-9 17 21H2Z" stroke="#60A5FA" stroke-width="3.5" stroke-linejoin="round"/></svg>
-        EVEREST No.1
+        EVEREST SaaS
       </div>
-      <div class="brand-tagline">Higher • Smarter • Stronger</div>
-      <div class="login-hero-body">
-        <h2>Reach Your Academic Peak.</h2>
-        <p>Premium English homework, instant feedback, and real-time learning progress tracking.</p>
+      <div class="brand-tagline">Commercial Education Platform</div>
+      <div style="margin-top: auto;">
+        <h2 style="font-family: var(--font-heading); font-size:32px; line-height:1.2; font-weight:800;">Next-Gen Learning Management.</h2>
+        <p style="color:var(--text-muted); font-size:14px; margin-top:12px;">Seamless homework creation, instant grading, and real-time student analytics.</p>
       </div>
-      <div style="font-size: 12px; color: var(--text-muted);">EVEREST Learning Center System v4.0</div>
     </div>
     <div class="login-form-pane">
       <h2 style="font-family: var(--font-heading); font-weight:800;">Sign In</h2>
       <div class="role-tabs">
-        <button type="button" class="active" id="btn-role-student" onclick="setLoginRole('student')">Student</button>
-        <button type="button" id="btn-role-teacher" onclick="setLoginRole('teacher')">Teacher</button>
+        <button type="button" class="active" id="btn-role-teacher" onclick="setLoginRole('teacher')">O'qituvchi</button>
+        <button type="button" id="btn-role-student" onclick="setLoginRole('student')">O'quvchi</button>
       </div>
       <div class="field">
-        <label>Select User</label>
+        <label>Foydalanuvchi</label>
         <select id="login-username"></select>
       </div>
       <div class="field">
-        <label>Password</label>
+        <label>Parol</label>
         <input id="login-password" type="password" value="123" placeholder="••••••••">
       </div>
-      <button class="btn btn-primary" onclick="handleLogin()">Sign In to EVEREST</button>
+      <button class="btn btn-primary" style="width:100%;" onclick="handleLogin()">Platformaga kirish</button>
       <div id="login-error" style="color:#EF4444; font-size: 13px; margin-top: 12px; font-weight:600;"></div>
     </div>
   </div>
@@ -227,7 +274,19 @@ input, select, textarea { font-family: var(--font-body); }
   <aside class="sidebar glass-panel" id="sidebar"></aside>
 
   <!-- VIEWPORT -->
-  <main class="main-viewport" id="main-content"></main>
+  <main class="main-viewport">
+    <div class="top-bar">
+      <div class="search-box">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+        <input type="text" placeholder="Search students, homework, groups..." oninput="handleGlobalSearch(this.value)">
+      </div>
+      <div style="display:flex; align-items:center; gap:12px;">
+        <button class="btn btn-secondary" style="padding:10px 16px; font-size:13px;" onclick="showNotifications()">🔔 Notifications</button>
+        <div style="font-size:13px; font-weight:700; color:var(--text-muted);" id="top-date-display"></div>
+      </div>
+    </div>
+    <div id="main-content"></div>
+  </main>
 
   <!-- MOBILE NAVIGATION -->
   <nav class="mobile-nav" id="mobile-nav"></nav>
@@ -241,84 +300,88 @@ input, select, textarea { font-family: var(--font-body); }
 <div class="toast" id="toast"></div>
 
 <script>
-const STORE_KEY = 'everest_hw_db_v4';
+const STORE_KEY = 'everest_saas_db_v5';
 
 const ICONS = {
   home: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>`,
   book: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>`,
-  chart: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>`,
-  award: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="7"/><path d="M8.21 13.89L7 23l5-3 5 3-1.21-9.12"/></svg>`,
-  user: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>`,
-  settings: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>`,
-  bell: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>`,
-  edit: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>`,
-  trash: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>`
+  students: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 14l9-5-9-5-9 5 9 5z"/><path d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0112 20.055a11.952 11.952 0 01-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"/></svg>`,
+  groups: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>`,
+  chart: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>`,
+  vocab: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg>`,
+  materials: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg>`,
+  settings: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"/></svg>`,
+  logout: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>`,
+  collapse: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 19l-7-7 7-7m8 14l-7-7 7-7"/></svg>`,
+  plus: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>`
 };
 
-function generateUsers() {
+function generateInitialData() {
   const users = [
-    {id:'t1', role:'teacher', username:'teacher-1', name:'Mr. Aziz', password:'123'},
-    {id:'t2', role:'teacher', username:'teacher-2', name:'Ms. Malika', password:'123'}
+    {id:'t1', role:'teacher', username:'mr.aziz', name:'Mr. Aziz', password:'123', avatar:''},
+    {id:'t2', role:'teacher', username:'ms.malika', name:'Ms. Malika', password:'123', avatar:''}
   ];
-  for(let i = 1; i <= 25; i++) {
+
+  const groups = ['Group A', 'Group B', 'Even-Day Group', 'Odd-Day Group'];
+  
+  for(let i = 1; i <= 24; i++) {
     users.push({
       id: 's' + i,
       role: 'student',
       username: 'student-' + i,
-      name: i === 1 ? 'Aziza Yusupova' : 'Student ' + i,
-      studentId: 'EV-000' + (100 + i),
-      group: '9A',
+      name: i === 1 ? 'Ali Valiyev' : (i === 2 ? 'Vali Karimov' : (i === 3 ? 'Aziz Rahimov' : 'Student ' + i)),
+      studentId: 'EV-00' + (100 + i),
+      group: groups[(i - 1) % 4],
       level: 'B1',
       teacher: 'Mr. Aziz',
       password: '123',
-      streak: 12,
-      points: 1240,
+      streak: 8 + (i % 5),
+      points: 800 + (i * 20),
       avatar: ''
     });
   }
-  return users;
-}
 
-function defaultData(){
   return {
-    users: generateUsers(),
+    users,
+    groups: [
+      {id:'g1', name:'Group A', studentCount: 6, activeHw: 4},
+      {id:'g2', name:'Group B', studentCount: 6, activeHw: 3},
+      {id:'g3', name:'Even-Day Group', studentCount: 6, activeHw: 2},
+      {id:'g4', name:'Odd-Day Group', studentCount: 6, activeHw: 3}
+    ],
     homeworks: [
-      {
-        id:'hw1', category:'📘 Essential 2', title:'Units 27–28', figure:'2 units per lesson',
-        sub:'Essential English Grammar', due:'2026-09-28', status:'In Progress',
-        whatToDo:'Essential 2 kitobidagi 27 va 28-unitlarni bajarib kelish.',
-        images:[
-          'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?q=80&w=600&auto=format&fit=crop',
-          'https://images.unsplash.com/photo-1497633762265-9d179a990aa6?q=80&w=600&auto=format&fit=crop'
-        ],
-        audioUrl:''
-      },
-      {
-        id:'hw2', category:'📖 Reading Vocabulary', title:'Vocabulary Test', figure:'30 Words',
-        sub:'Reading Module', due:'2026-09-30', status:'Pending',
-        whatToDo:'Yangi so`zlarni yodlash va mashqlarni bajarish.',
-        images:[], audioUrl:''
-      }
+      {id:'hw1', type:'Book / Units', title:'Essential 2', figure:'27–28 Units', group:'Group A', due:'2026-09-25', status:'Active', desc:'Complete 2 units per lesson.'},
+      {id:'hw2', type:'Book / Units', title:'Tactics Expanding', figure:'5–6 Units', group:'Group A', due:'2026-09-27', status:'Active', desc:'Complete listening exercises.'},
+      {id:'hw3', type:'Vocabulary', title:'Reading Vocabulary', figure:'10 words', group:'Group B', due:'2026-09-30', status:'Active', desc:'Learn vocabulary from assigned Reading text.'},
+      {id:'hw4', type:'Making Sentences', title:'Making Sentences', figure:'30 sentences', group:'Group A', due:'2026-09-28', status:'Active', desc:'Make 30 sentences using Present Perfect.'},
+      {id:'hw5', type:'Copy the Board', title:'Copy the Board', figure:'Board Photo', group:'Group A', due:'2026-09-28', status:'Active', desc:'Copy everything written on classroom board.'},
+      {id:'hw6', type:'Translate the Text', title:'Translate the Text', figure:'1 Passage', group:'Group B', due:'2026-09-29', status:'Active', desc:'Translate assigned English text to Uzbek.'}
     ],
-    progress: {},
+    submissions: [
+      {id:'sub1', studentId:'s1', hwId:'hw4', content:'1. I have done my homework.\n2. She has visited London.\n3. They have finished the game.', date:'2026-09-20', status:'Approved', comment:'Great job Ali!'},
+      {id:'sub2', studentId:'s2', hwId:'hw6', content:'Ushbu matn ingliz tilidan o`zbekchaga tarjima qilindi.', date:'2026-09-21', status:'Pending', comment:''}
+    ],
+    vocabulary: [
+      {id:'v1', word:'important', translation:'muhim', example:'This lesson is important.', pronunciation:'/ɪmˈpɔː.tənt/'},
+      {id:'v2', word:'achieve', translation:'erishmoq', example:'She achieved her goal.', pronunciation:'/əˈtʃiːv/'},
+      {id:'v3', word:'confirm', translation:'tasdiqlamoq', example:'Please confirm your choice.', pronunciation:'/kənˈfɜːm/'}
+    ],
+    materials: [
+      {id:'m1', name:'Essential 2 Unit 27 Page', type:'Image', folder:'Essential 2', date:'2026-09-15', url:'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?q=80&w=600&auto=format&fit=crop'},
+      {id:'m2', name:'Tactics Audio Script', type:'PDF', folder:'Tactics Expanding', date:'2026-09-18', url:'#'}
+    ],
     notifications: [
-      {id: 1, title: 'New Homework Assigned', desc: 'Essential 2 (Units 27-28) has been added.', time: '2 hours ago'},
-      {id: 2, title: 'Streak Active!', desc: 'You are on a 12-day learning streak. Keep it up! 🔥', time: '1 day ago'}
-    ],
-    achievements: [
-      {id: 'ach1', icon: '🏔️', title: 'Everest Starter', desc: 'Completed first homework', unlocked: true},
-      {id: 'ach2', icon: '🔥', title: '7 Day Streak', desc: 'Studied for 7 consecutive days', unlocked: true},
-      {id: 'ach3', icon: '📚', title: 'Homework Master', desc: 'Completed 25 homework tasks', unlocked: false},
-      {id: 'ach4', icon: '⭐', title: '1000 Points', desc: 'Earned 1000 learning points', unlocked: true}
+      {id: 1, title: 'Ali Valiyev submitted HW', desc: 'Making Sentences submitted for review.', time: '10 mins ago'},
+      {id: 2, title: 'Deadline Alert', desc: 'Essential 2 HW deadline is approaching.', time: '1 hour ago'}
     ]
   };
 }
 
-/* ================= INDEXEDDB STORAGE ================= */
+/* INDEXEDDB STORAGE */
 let dbInstance = null;
 function initDB() {
   return new Promise((resolve) => {
-    const req = indexedDB.open("EverestHomeworkDB", 2);
+    const req = indexedDB.open("EverestSaaSDB_v5", 1);
     req.onupgradeneeded = (e) => {
       const db = e.target.result;
       if (!db.objectStoreNames.contains("store")) db.createObjectStore("store");
@@ -336,29 +399,18 @@ function saveDB() {
 
 function loadDB() {
   return new Promise((resolve) => {
-    if (!dbInstance) { DB = defaultData(); return resolve(); }
+    if (!dbInstance) { DB = generateInitialData(); return resolve(); }
     const tx = dbInstance.transaction("store", "readonly");
     const req = tx.objectStore("store").get(STORE_KEY);
-    req.onsuccess = () => { DB = req.result || defaultData(); resolve(); };
-    req.onerror = () => { DB = defaultData(); resolve(); };
+    req.onsuccess = () => { DB = req.result || generateInitialData(); resolve(); };
+    req.onerror = () => { DB = generateInitialData(); resolve(); };
   });
 }
 
 let DB = null;
 let SESSION = null;
-let currentView = 'dashboard';
-let currentHwId = null;
-
-function populateLoginDropdown(role){
-  const sel = document.getElementById('login-username');
-  sel.innerHTML = '';
-  DB.users.filter(u => u.role === role).forEach(u => {
-    const opt = document.createElement('option');
-    opt.value = u.username;
-    opt.textContent = u.name + ' (' + u.username + ')';
-    sel.appendChild(opt);
-  });
-}
+let currentView = 'teacher-dash';
+let sidebarCollapsed = false;
 
 function setLoginRole(role){
   document.getElementById('btn-role-student').classList.toggle('active', role === 'student');
@@ -367,22 +419,34 @@ function setLoginRole(role){
   populateLoginDropdown(role);
 }
 
+function populateLoginDropdown(role){
+  const sel = document.getElementById('login-username');
+  sel.innerHTML = '';
+  DB.users.filter(u => u.role === role).forEach(u => {
+    const opt = document.createElement('option');
+    opt.value = u.username;
+    opt.textContent = `${u.name} (${u.username})`;
+    sel.appendChild(opt);
+  });
+}
+
 function handleLogin(){
-  const role = document.getElementById('login-username').dataset.role || 'student';
+  const role = document.getElementById('login-username').dataset.role || 'teacher';
   const uname = document.getElementById('login-username').value;
   const pass = document.getElementById('login-password').value;
   const user = DB.users.find(u => u.username===uname && u.password===pass && u.role===role);
-  if(!user){ document.getElementById('login-error').textContent = 'Invalid credentials!'; return; }
+  if(!user){ document.getElementById('login-error').textContent = 'Xato login yoki parol!'; return; }
   SESSION = {userId:user.id, role:user.role};
-  try{ localStorage.setItem('everest_session', JSON.stringify(SESSION)); }catch(e){}
+  try{ localStorage.setItem('everest_saas_session', JSON.stringify(SESSION)); }catch(e){}
   enterApp();
 }
 
 function handleLogout(){
   SESSION = null;
-  try{ localStorage.removeItem('everest_session'); }catch(e){}
+  try{ localStorage.removeItem('everest_saas_session'); }catch(e){}
   document.getElementById('app-screen').classList.remove('active');
   document.getElementById('login-screen').classList.add('active');
+  showToast('Tizimdan chiqildi');
 }
 
 function currentUser(){ return DB.users.find(u=>u.id===SESSION.userId); }
@@ -390,31 +454,51 @@ function currentUser(){ return DB.users.find(u=>u.id===SESSION.userId); }
 function enterApp(){
   document.getElementById('login-screen').classList.remove('active');
   document.getElementById('app-screen').classList.add('active');
-  currentView = SESSION.role==='teacher' ? 'teacher-home' : 'dashboard';
+  currentView = SESSION.role==='teacher' ? 'teacher-dash' : 'student-dash';
+  document.getElementById('top-date-display').textContent = new Date().toLocaleDateString('uz-UZ', { month:'short', day:'numeric', year:'numeric' });
   renderSidebar();
   renderMobileNav();
   renderMain();
 }
 
+function toggleSidebar(){
+  sidebarCollapsed = !sidebarCollapsed;
+  const sb = document.getElementById('sidebar');
+  sb.classList.toggle('collapsed', sidebarCollapsed);
+}
+
 function renderSidebar(){
   const user = currentUser();
   const sb = document.getElementById('sidebar');
-  let navItems = user.role==='student' ? 
-    [['dashboard','home','Home'],['homeworks','book','Homework'],['progress','chart','Progress'],['achievements','award','Achievements'],['notifications','bell','Notifications'],['profile','user','Profile'],['settings','settings','Settings']] :
-    [['teacher-home','home','Teacher Panel'],['teacher-progress','chart','Class Progress']];
+  
+  let navItems = user.role==='teacher' ? [
+    ['teacher-dash','home','Dashboard'],
+    ['teacher-hw','book','Homework'],
+    ['teacher-students','students','Students'],
+    ['teacher-groups','groups','Groups'],
+    ['teacher-progress','chart','Progress'],
+    ['teacher-vocab','vocab','Vocabulary'],
+    ['teacher-materials','materials','Materials'],
+    ['teacher-settings','settings','Settings']
+  ] : [
+    ['student-dash','home','Dashboard'],
+    ['student-hw','book','Homework'],
+    ['student-progress','chart','Progress'],
+    ['student-profile','students','Profile']
+  ];
 
   const initials = user.name ? user.name.split(' ').map(n=>n[0]).join('').substring(0,2).toUpperCase() : 'EV';
 
   sb.innerHTML = `
-    <div style="padding: 0 8px 24px 8px;">
-      <div class="brand-title">
+    <div class="sidebar-header">
+      <div style="display:flex; align-items:center; gap:10px;">
         <svg width="28" height="24" viewBox="0 0 48 38" fill="none"><path d="M2 34 16 11l7 11 6-9 17 21H2Z" stroke="#60A5FA" stroke-width="3.5" stroke-linejoin="round"/></svg>
-        EVEREST
+        <span class="brand-text" style="font-family:var(--font-heading); font-weight:800; font-size:18px;">EVEREST</span>
       </div>
-      <div class="brand-tagline">Higher • Smarter • Stronger</div>
+      <button class="collapse-btn" onclick="toggleSidebar()">${ICONS.collapse}</button>
     </div>
-    
-    <div style="display:flex; flex-direction:column; gap:6px; flex:1;">
+
+    <div style="display:flex; flex-direction:column; gap:4px; flex:1;">
       ${navItems.map(([id,icon,label])=>`
         <button class="nav-btn ${currentView===id?'active':''}" onclick="navigate('${id}')">
           ${ICONS[icon]}<span>${label}</span>
@@ -422,12 +506,13 @@ function renderSidebar(){
       `).join('')}
     </div>
 
-    <div class="sidebar-user" onclick="navigate('profile')">
-      ${user.avatar ? `<img src="${user.avatar}" class="avatar-img">` : `<div class="avatar-img">${initials}</div>`}
-      <div style="overflow:hidden;">
-        <div style="font-weight:700; font-size:14px; white-space:nowrap; text-overflow:ellipsis; overflow:hidden;">${user.name}</div>
-        <div style="font-size:11px; color:var(--text-muted);">${user.studentId || user.role}</div>
+    <div class="sidebar-user">
+      <div class="avatar-img">${initials}</div>
+      <div class="sidebar-user-info" style="overflow:hidden; flex:1;">
+        <div style="font-weight:800; font-size:13px; white-space:nowrap; text-overflow:ellipsis; overflow:hidden;">${user.name}</div>
+        <div style="font-size:10px; color:var(--text-muted); font-weight:700; text-transform:uppercase;">${user.role}</div>
       </div>
+      <button class="logout-icon-btn" title="Sign Out" onclick="handleLogout()">${ICONS.logout}</button>
     </div>
   `;
 }
@@ -435,20 +520,21 @@ function renderSidebar(){
 function renderMobileNav(){
   const user = currentUser();
   const nav = document.getElementById('mobile-nav');
-  if(user.role !== 'student') { nav.style.display = 'none'; return; }
+  let items = user.role==='teacher' ? 
+    [['teacher-dash','home','Dash'],['teacher-hw','book','HW'],['teacher-students','students','Students'],['teacher-progress','chart','Progress']] :
+    [['student-dash','home','Home'],['student-hw','book','HW'],['student-progress','chart','Progress']];
+
   nav.style.display = 'flex';
-  const items = [['dashboard','home','Home'],['homeworks','book','Homework'],['progress','chart','Progress'],['profile','user','Profile']];
   nav.innerHTML = items.map(([id,icon,label])=>`
     <button class="${currentView===id?'active':''}" onclick="navigate('${id}')">
-      <div style="width:20px;height:20px;">${ICONS[icon]}</div>
+      <div style="width:18px;height:18px;">${ICONS[icon]}</div>
       <span>${label}</span>
     </button>
   `).join('');
 }
 
-function navigate(view, hwId){
+function navigate(view){
   currentView = view;
-  currentHwId = hwId || null;
   renderSidebar();
   renderMobileNav();
   renderMain();
@@ -457,397 +543,200 @@ function navigate(view, hwId){
 
 function renderMain(){
   const el = document.getElementById('main-content');
-  if(currentView==='dashboard') el.innerHTML = renderStudentDashboard();
-  else if(currentView==='homeworks') el.innerHTML = renderHomeworksList();
-  else if(currentView==='detail') el.innerHTML = renderDetailPage(currentHwId);
-  else if(currentView==='progress') el.innerHTML = renderStudentProgress();
-  else if(currentView==='achievements') el.innerHTML = renderAchievements();
-  else if(currentView==='notifications') el.innerHTML = renderNotifications();
-  else if(currentView==='profile') el.innerHTML = renderProfilePage();
-  else if(currentView==='settings') el.innerHTML = renderSettingsPage();
-  else if(currentView==='teacher-home') el.innerHTML = renderTeacherHome();
+  if(currentView==='teacher-dash') el.innerHTML = renderTeacherDash();
+  else if(currentView==='teacher-hw') el.innerHTML = renderTeacherHW();
+  else if(currentView==='teacher-students') el.innerHTML = renderTeacherStudents();
+  else if(currentView==='teacher-groups') el.innerHTML = renderTeacherGroups();
   else if(currentView==='teacher-progress') el.innerHTML = renderTeacherProgress();
+  else if(currentView==='teacher-vocab') el.innerHTML = renderTeacherVocab();
+  else if(currentView==='teacher-materials') el.innerHTML = renderTeacherMaterials();
+  else if(currentView==='teacher-settings') el.innerHTML = renderTeacherSettings();
+  else if(currentView==='student-dash') el.innerHTML = renderStudentDash();
+  else if(currentView==='student-hw') el.innerHTML = renderStudentHW();
+  else if(currentView==='student-progress') el.innerHTML = renderStudentProgress();
+  else if(currentView==='student-profile') el.innerHTML = renderStudentProfile();
 }
 
-/* ================= VIEWS ================= */
-function getProgress(userId, hwId){
-  DB.progress[userId] = DB.progress[userId] || {};
-  return DB.progress[userId][hwId] || {status:'not-started', submitted: false};
-}
-
-function setProgress(userId, hwId, patch){
-  DB.progress[userId] = DB.progress[userId] || {};
-  DB.progress[userId][hwId] = Object.assign({}, DB.progress[userId][hwId]||{}, patch);
-  saveDB();
-}
-
-function renderStudentDashboard(){
-  const user = currentUser();
-  const hws = DB.homeworks;
-  const completed = hws.filter(hw => (getProgress(user.id, hw.id).status==='done')).length;
-
-  return `
-    <div class="dashboard-header">
-      <div>
-        <div class="greeting-title">Good Morning, ${user.name.split(' ')[0]} 👋</div>
-        <p style="color:var(--text-muted); font-size:14px; margin-top:4px;">Keep going! Your goals are closer than you think.</p>
-      </div>
-    </div>
-
-    <div class="stats-row">
-      <div class="stat-card glass-panel">
-        <div class="stat-icon" style="color:var(--accent-amber);">🔥</div>
-        <div>
-          <div class="stat-val">${user.streak || 12} Days</div>
-          <div class="stat-lbl">Learning Streak</div>
-        </div>
-      </div>
-      <div class="stat-card glass-panel">
-        <div class="stat-icon" style="color:var(--accent-blue);">📚</div>
-        <div>
-          <div class="stat-val">${hws.length}</div>
-          <div class="stat-lbl">Total Homework</div>
-        </div>
-      </div>
-      <div class="stat-card glass-panel">
-        <div class="stat-icon" style="color:var(--accent-emerald);">✓</div>
-        <div>
-          <div class="stat-val">${completed}</div>
-          <div class="stat-lbl">Completed</div>
-        </div>
-      </div>
-      <div class="stat-card glass-panel">
-        <div class="stat-icon" style="color:var(--accent-cyan);">⭐</div>
-        <div>
-          <div class="stat-val">${user.points || 1240}</div>
-          <div class="stat-lbl">Total Points</div>
-        </div>
-      </div>
-    </div>
-
-    <div class="section-title">
-      <span>Today's Homework</span>
-      <button class="btn btn-secondary" style="padding:6px 16px; font-size:12px;" onclick="navigate('homeworks')">View All</button>
-    </div>
-
-    <div class="hw-grid">
-      ${hws.map(hw => renderHwCard(hw, user.id)).join('')}
-    </div>
-  `;
-}
-
-function renderHwCard(hw, userId){
-  const prog = getProgress(userId, hw.id);
-  const isDone = prog.status === 'done';
-  const pct = isDone ? 100 : (prog.submitted ? 80 : 20);
-
-  return `
-    <div class="hw-card glass-panel" onclick="navigate('detail', '${hw.id}')">
-      <div class="hw-badge ${isDone ? 'badge-completed' : 'badge-pending'}">
-        ${isDone ? 'Completed' : 'In Progress'}
-      </div>
-      <div style="font-size:12px; color:var(--accent-blue); font-weight:800;">${hw.category || '📘 Essential 2'}</div>
-      <h3 style="font-family:var(--font-heading); font-size:18px; margin:6px 0; font-weight:800;">${hw.title}</h3>
-      <div style="font-size:13px; color:var(--text-muted);">${hw.figure}</div>
-      
-      <div style="margin-top:16px;">
-        <div style="display:flex; justify-content:space-between; font-size:12px; font-weight:700;">
-          <span>Progress</span>
-          <span>${pct}%</span>
-        </div>
-        <div class="progress-bar-bg">
-          <div class="progress-bar-fill" style="width:${pct}%;"></div>
-        </div>
-      </div>
-
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-top:14px; font-size:12px; color:var(--text-muted);">
-        <span>Due: ${hw.due}</span>
-        <span style="color:var(--accent-blue); font-weight:700;">Open →</span>
-      </div>
-    </div>
-  `;
-}
-
-function renderHomeworksList(){
+/* ================= TEACHER PANELS ================= */
+function renderTeacherDash(){
   const user = currentUser();
   return `
-    <div class="section-title">All Homework Categories</div>
-    <div class="hw-grid">
-      ${DB.homeworks.map(hw => renderHwCard(hw, user.id)).join('')}
+    <div style="margin-bottom:24px;">
+      <h1 style="font-family:var(--font-heading); font-size:28px; font-weight:800;">Good evening, ${user.name} 👋</h1>
+      <p style="color:var(--text-muted); font-size:14px; margin-top:2px;">Manage your students and homework from one place.</p>
     </div>
-  `;
-}
 
-function renderDetailPage(hwId){
-  const user = currentUser();
-  const hw = DB.homeworks.find(h=>h.id===hwId);
-  const prog = getProgress(user.id, hwId);
-  const imgs = hw.images || [];
+    <div class="stats-grid">
+      <div class="stat-card glass-panel">
+        <div class="stat-card-top"><span class="stat-lbl">Total Students</span><div class="stat-icon" style="color:var(--accent-blue);">👨‍🎓</div></div>
+        <div class="stat-val">${DB.users.filter(u=>u.role==='student').length}</div>
+      </div>
+      <div class="stat-card glass-panel">
+        <div class="stat-card-top"><span class="stat-lbl">Groups</span><div class="stat-icon" style="color:var(--accent-cyan);">👥</div></div>
+        <div class="stat-val">${DB.groups.length}</div>
+      </div>
+      <div class="stat-card glass-panel">
+        <div class="stat-card-top"><span class="stat-lbl">Active Homework</span><div class="stat-icon" style="color:var(--accent-amber);">📚</div></div>
+        <div class="stat-val">${DB.homeworks.length}</div>
+      </div>
+      <div class="stat-card glass-panel">
+        <div class="stat-card-top"><span class="stat-lbl">Completed</span><div class="stat-icon" style="color:var(--accent-emerald);">🟢</div></div>
+        <div class="stat-val">18</div>
+      </div>
+      <div class="stat-card glass-panel">
+        <div class="stat-card-top"><span class="stat-lbl">In Progress</span><div class="stat-icon" style="color:var(--accent-amber);">🟡</div></div>
+        <div class="stat-val">12</div>
+      </div>
+      <div class="stat-card glass-panel">
+        <div class="stat-card-top"><span class="stat-lbl">Not Started</span><div class="stat-icon" style="color:var(--accent-rose);">🔴</div></div>
+        <div class="stat-val">7</div>
+      </div>
+    </div>
 
-  return `
-    <div style="max-width:800px; margin:0 auto;">
-      <button class="btn btn-secondary" style="margin-bottom:20px;" onclick="navigate('dashboard')">← Back to Dashboard</button>
-      
-      <div class="glass-panel" style="padding:32px;">
-        <div style="display:flex; justify-content:space-between; align-items:flex-start;">
-          <div>
-            <div style="font-size:13px; color:var(--accent-blue); font-weight:800;">${hw.category || 'Homework'}</div>
-            <h1 style="font-family:var(--font-heading); font-size:28px; margin-top:4px; font-weight:800;">${hw.title}</h1>
-          </div>
-          <div class="hw-badge ${prog.status==='done' ? 'badge-completed' : 'badge-pending'}">
-            ${prog.status==='done' ? 'Completed' : 'In Progress'}
-          </div>
-        </div>
+    <div class="section-title">Quick Actions</div>
+    <div class="quick-actions">
+      <div class="action-card" onclick="openCreateHwModal()">
+        <div class="stat-icon" style="color:var(--accent-blue);">${ICONS.plus}</div>
+        <div><div style="font-weight:800; font-size:14px;">Create Homework</div><div style="font-size:11px; color:var(--text-muted);">Assign new tasks</div></div>
+      </div>
+      <div class="action-card" onclick="openAddStudentModal()">
+        <div class="stat-icon" style="color:var(--accent-emerald);">${ICONS.plus}</div>
+        <div><div style="font-weight:800; font-size:14px;">Add Student</div><div style="font-size:11px; color:var(--text-muted);">Register new user</div></div>
+      </div>
+      <div class="action-card" onclick="openCreateGroupModal()">
+        <div class="stat-icon" style="color:var(--accent-cyan);">${ICONS.plus}</div>
+        <div><div style="font-weight:800; font-size:14px;">Create Group</div><div style="font-size:11px; color:var(--text-muted);">Manage classes</div></div>
+      </div>
+      <div class="action-card" onclick="openUploadMaterialModal()">
+        <div class="stat-icon" style="color:var(--accent-amber);">${ICONS.plus}</div>
+        <div><div style="font-weight:800; font-size:14px;">Upload Material</div><div style="font-size:11px; color:var(--text-muted);">PDFs & Images</div></div>
+      </div>
+    </div>
 
-        <div style="margin:24px 0; padding:20px; background:rgba(255,255,255,0.03); border-radius:var(--radius-md); border:1px solid var(--glass-border);">
-          <h4 style="font-size:11px; text-transform:uppercase; color:var(--text-muted); margin-bottom:8px; font-weight:800;">Task Instructions</h4>
-          <p style="font-size:15px; line-height:1.6;">${hw.whatToDo}</p>
-        </div>
-
-        ${imgs.length > 0 ? `
-          <div style="margin-bottom:24px;">
-            <h4 style="font-size:11px; text-transform:uppercase; color:var(--text-muted); margin-bottom:12px; font-weight:800;">Attached Book Pages (${imgs.length})</h4>
-            <div class="book-container">
-              ${imgs.map((src, i) => `
-                <div class="book-page" onclick="window.open('${src}', '_blank')">
-                  <img src="${src}" alt="Page ${i+1}">
+    <div class="section-title">Recent Homework</div>
+    <div class="data-table-container glass-panel">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Homework</th>
+            <th>Group</th>
+            <th>Deadline</th>
+            <th>Progress</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${DB.homeworks.map(hw => `
+            <tr>
+              <td><strong>${hw.title}</strong><br><small style="color:var(--text-muted);">${hw.figure}</small></td>
+              <td><span class="badge badge-progress">${hw.group}</span></td>
+              <td>${hw.due}</td>
+              <td>
+                <div style="display:flex; align-items:center; gap:8px;">
+                  <div class="progress-bar-bg" style="width:100px;"><div class="progress-bar-fill" style="width:65%;"></div></div>
+                  <span style="font-size:12px; font-weight:700;">65%</span>
                 </div>
-              `).join('')}
-            </div>
-          </div>
-        ` : ''}
-
-        <div style="margin-bottom:28px;">
-          <h4 style="font-size:11px; text-transform:uppercase; color:var(--text-muted); margin-bottom:12px; font-weight:800;">Submit Homework</h4>
-          <div class="field">
-            <textarea id="submission-text" rows="4" placeholder="Write your text response or notes here..."></textarea>
-          </div>
-          <button class="btn btn-primary" onclick="submitHomework('${hw.id}')">
-            ${prog.submitted ? '✓ Submitted Successfully' : 'Submit Homework'}
-          </button>
-        </div>
-
-        ${prog.submitted ? `
-          <button class="btn btn-secondary" style="width:100%;" onclick="toggleTaskDone('${hw.id}')">
-            ${prog.status === 'done' ? 'Mark as Incomplete' : 'Mark Task as Fully Completed (+50 Points)'}
-          </button>
-        ` : ''}
-      </div>
+              </td>
+              <td>
+                <button class="btn btn-secondary" style="padding:6px 12px; font-size:12px;" onclick="viewSubmissions('${hw.id}')">Review Submissions</button>
+              </td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>
     </div>
   `;
 }
 
-function submitHomework(hwId){
-  const user = currentUser();
-  setProgress(user.id, hwId, {submitted: true});
-  user.points = (user.points || 0) + 10;
-  saveDB();
-  showToast('✓ Submitted successfully! (+10 pts)');
-  renderMain();
-}
-
-function toggleTaskDone(hwId){
-  const user = currentUser();
-  const p = getProgress(user.id, hwId);
-  const nextState = p.status === 'done' ? 'in-progress' : 'done';
-  if(nextState === 'done') user.points = (user.points || 0) + 50;
-  setProgress(user.id, hwId, {status: nextState});
-  saveDB();
-  showToast(nextState === 'done' ? 'Task Completed! (+50 pts)' : 'Task Status Updated');
-  renderMain();
-}
-
-function renderStudentProgress(){
-  return `
-    <div class="section-title">Overall Learning Progress</div>
-    <div class="glass-panel" style="padding:28px; margin-bottom:28px;">
-      <div style="font-size:36px; font-weight:800; font-family:var(--font-heading); color:var(--accent-blue);">78%</div>
-      <div style="color:var(--text-muted); font-size:14px; margin-bottom:20px;">Average completion rate across all modules</div>
-      
-      <div style="display:flex; flex-direction:column; gap:16px;">
-        ${[
-          ['Homework', 80],
-          ['Vocabulary', 70],
-          ['Reading', 82],
-          ['Grammar', 65],
-          ['Speaking', 73]
-        ].map(([label, val]) => `
-          <div>
-            <div style="display:flex; justify-content:space-between; font-size:13px; font-weight:700; margin-bottom:6px;">
-              <span>${label}</span>
-              <span>${val}%</span>
-            </div>
-            <div class="progress-bar-bg"><div class="progress-bar-fill" style="width:${val}%;"></div></div>
-          </div>
-        `).join('')}
-      </div>
-    </div>
-  `;
-}
-
-function renderAchievements(){
-  return `
-    <div class="section-title">Your Achievements</div>
-    <div class="hw-grid">
-      ${DB.achievements.map(a => `
-        <div class="glass-panel" style="padding:24px; text-align:center; opacity:${a.unlocked?1:0.4}; filter:${a.unlocked?'none':'grayscale(1)'};">
-          <div style="font-size:40px; margin-bottom:12px;">${a.icon}</div>
-          <div style="font-weight:800; font-size:16px;">${a.title}</div>
-          <div style="font-size:12px; color:var(--text-muted); margin-top:4px;">${a.desc}</div>
-        </div>
-      `).join('')}
-    </div>
-  `;
-}
-
-function renderNotifications(){
-  return `
-    <div class="section-title">Notification Center</div>
-    <div style="display:flex; flex-direction:column; gap:12px;">
-      ${DB.notifications.map(n => `
-        <div class="glass-panel" style="padding:18px; display:flex; justify-content:space-between; align-items:center;">
-          <div>
-            <div style="font-weight:700; font-size:15px;">${n.title}</div>
-            <div style="font-size:13px; color:var(--text-muted); margin-top:2px;">${n.desc}</div>
-          </div>
-          <div style="font-size:11px; color:var(--text-muted); font-weight:600;">${n.time}</div>
-        </div>
-      `).join('')}
-    </div>
-  `;
-}
-
-function renderProfilePage(){
-  const user = currentUser();
-  const initials = user.name ? user.name.split(' ').map(n=>n[0]).join('').substring(0,2).toUpperCase() : 'EV';
-
-  return `
-    <div style="max-width:700px; margin:0 auto;">
-      <div class="glass-panel" style="padding:36px; text-align:center; position:relative;">
-        <div style="position:relative; width:90px; height:90px; margin:0 auto 16px auto;">
-          ${user.avatar ? `<img src="${user.avatar}" class="avatar-img" style="width:90px; height:90px; font-size:28px;">` : `<div class="avatar-img" style="width:90px; height:90px; font-size:28px;">${initials}</div>`}
-        </div>
-        
-        <h2 style="font-family:var(--font-heading); font-size:24px; font-weight:800;">${user.name}</h2>
-        <div style="color:var(--text-muted); font-size:14px; margin-top:4px;">${user.studentId} • Group ${user.group}</div>
-
-        <div style="display:flex; justify-content:center; gap:12px; margin-top:24px;">
-          <button class="btn btn-primary" style="width:auto;" onclick="openEditProfileModal()">${ICONS.edit} Edit Profile</button>
-        </div>
-      </div>
-
-      <div class="glass-panel" style="padding:28px; margin-top:20px;">
-        <h3 style="font-family:var(--font-heading); font-size:18px; margin-bottom:16px; font-weight:800;">Student Information</h3>
-        <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; font-size:14px;">
-          <div><strong style="color:var(--text-muted);">English Level:</strong> ${user.level}</div>
-          <div><strong style="color:var(--text-muted);">Teacher:</strong> ${user.teacher}</div>
-          <div><strong style="color:var(--text-muted);">Active Streak:</strong> 🔥 ${user.streak} Days</div>
-          <div><strong style="color:var(--text-muted);">Learning Points:</strong> ⭐ ${user.points} pts</div>
-        </div>
-      </div>
-    </div>
-  `;
-}
-
-function openEditProfileModal(){
-  const user = currentUser();
+function openCreateHwModal(){
   const m = document.getElementById('modal-body');
   m.innerHTML = `
-    <h3 style="font-family:var(--font-heading); font-size:20px; margin-bottom:20px; font-weight:800;">Edit Profile</h3>
+    <h2 style="font-family:var(--font-heading); font-weight:800; margin-bottom:20px;">Create Homework</h2>
     
+    <label style="font-size:11px; font-weight:800; text-transform:uppercase; color:var(--text-muted); display:block; margin-bottom:8px;">Homework Type</label>
+    <div class="type-card-grid">
+      <div class="type-card active" onclick="selectHwType(this, 'Book / Units')">📚 Book / Units</div>
+      <div class="type-card" onclick="selectHwType(this, 'Vocabulary')">🧠 Vocabulary</div>
+      <div class="type-card" onclick="selectHwType(this, 'Making Sentences')">✍️ Sentences</div>
+      <div class="type-card" onclick="selectHwType(this, 'Copy the Board')">📸 Board Photo</div>
+      <div class="type-card" onclick="selectHwType(this, 'Translate the Text')">🌍 Translation</div>
+    </div>
+
+    <input type="hidden" id="hw-type-val" value="Book / Units">
+
     <div class="field">
-      <label>Profile Picture</label>
-      <input type="file" accept="image/*" onchange="handleAvatarUpload(this)">
-      ${user.avatar ? `<button class="btn btn-secondary" style="margin-top:8px; width:100%;" onclick="removeAvatar()">Remove Picture</button>` : ''}
+      <label>Title</label>
+      <input id="hw-title" placeholder="e.g. Essential 2 - Units 27-28">
+    </div>
+
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+      <div class="field">
+        <label>Group</label>
+        <select id="hw-group">
+          ${DB.groups.map(g => `<option value="${g.name}">${g.name}</option>`).join('')}
+        </select>
+      </div>
+      <div class="field">
+        <label>Deadline</label>
+        <input id="hw-due" type="date" value="2026-09-30">
+      </div>
     </div>
 
     <div class="field">
-      <label>Full Name</label>
-      <input id="edit-name" type="text" value="${user.name}" maxlength="40">
+      <label>Instructions & Description</label>
+      <textarea id="hw-desc" rows="3" placeholder="What should students do?"></textarea>
     </div>
 
     <div style="display:flex; gap:12px; margin-top:24px;">
       <button class="btn btn-secondary" style="flex:1;" onclick="closeModal()">Cancel</button>
-      <button class="btn btn-primary" style="flex:1;" onclick="saveStudentProfile()">Save Changes</button>
+      <button class="btn btn-primary" style="flex:1;" onclick="saveHomework()">Create Homework</button>
     </div>
   `;
   document.getElementById('modal-bg').classList.add('active');
 }
 
-function handleAvatarUpload(inputEl){
-  const file = inputEl.files[0];
-  if(file){
-    const reader = new FileReader();
-    reader.onload = function(e){
-      const user = currentUser();
-      user.avatar = e.target.result;
-      saveDB();
-      showToast('Profile photo updated!');
-      closeModal();
-      renderSidebar();
-      renderMain();
-    };
-    reader.readAsDataURL(file);
-  }
+function selectHwType(el, type){
+  document.querySelectorAll('.type-card').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('hw-type-val').value = type;
 }
 
-function removeAvatar(){
-  const user = currentUser();
-  user.avatar = '';
+function saveHomework(){
+  const title = document.getElementById('hw-title').value.trim();
+  const type = document.getElementById('hw-type-val').value;
+  const group = document.getElementById('hw-group').value;
+  const due = document.getElementById('hw-due').value;
+  const desc = document.getElementById('hw-desc').value;
+
+  if(!title) { showToast('Please enter a title!'); return; }
+
+  DB.homeworks.unshift({
+    id: 'hw' + Date.now(),
+    type, title, figure: type, group, due, status: 'Active', desc
+  });
+
   saveDB();
-  showToast('Profile photo removed!');
   closeModal();
-  renderSidebar();
+  showToast('✓ Homework created successfully');
   renderMain();
 }
 
-function saveStudentProfile(){
-  const nameVal = document.getElementById('edit-name').value.trim();
-  if(!nameVal) { showToast('Name cannot be empty!'); return; }
-  
-  const user = currentUser();
-  user.name = nameVal;
-  saveDB();
-  closeModal();
-  showToast('✓ Profile updated successfully');
-  renderSidebar();
-  renderMain();
-}
-
-function renderSettingsPage(){
+function renderTeacherHW(){
   return `
-    <div class="section-title">Account Settings</div>
-    <div class="glass-panel" style="padding:28px; max-width:600px;">
-      <div class="field">
-        <label>App Theme</label>
-        <select><option>Liquid Dark Navy (Default)</option></select>
-      </div>
-      <button class="btn btn-secondary" style="margin-top:16px; width:100%; color:#EF4444;" onclick="handleLogout()">Sign Out</button>
+    <div class="section-title">
+      <span>All Homework Assignments</span>
+      <button class="btn btn-primary" style="padding:8px 18px; font-size:13px;" onclick="openCreateHwModal()">${ICONS.plus} Create Homework</button>
     </div>
-  `;
-}
-
-function renderTeacherHome(){
-  return `
-    <div class="dashboard-header">
-      <div>
-        <div class="greeting-title">Teacher Control Center</div>
-        <div style="color:var(--text-muted); font-size:14px;">Manage class homework assignments</div>
-      </div>
-    </div>
-
-    <div class="glass-panel" style="overflow:hidden;">
-      <div class="t-row" style="font-weight:800; font-size:12px; color:var(--text-muted); border-bottom:1px solid var(--glass-border);">
-        <div>Title & Info</div>
-        <div>Media</div>
-        <div>Actions</div>
-      </div>
+    <div class="hw-grid">
       ${DB.homeworks.map(hw => `
-        <div class="t-row">
-          <div><strong>${hw.title}</strong><br><small style="color:var(--text-muted);">${hw.figure}</small></div>
-          <div>${hw.images ? hw.images.length : 0} page(s)</div>
-          <div>
-            <button style="background:none; border:none; color:#EF4444;" onclick="deleteHw('${hw.id}')">${ICONS.trash}</button>
+        <div class="glass-panel hw-card">
+          <span class="badge badge-progress" style="position:absolute; top:20px; right:20px;">${hw.group}</span>
+          <div style="font-size:12px; color:var(--accent-blue); font-weight:800;">${hw.type}</div>
+          <h3 style="font-family:var(--font-heading); font-size:18px; margin:8px 0; font-weight:800;">${hw.title}</h3>
+          <p style="font-size:13px; color:var(--text-muted); line-height:1.5;">${hw.desc}</p>
+          <div style="margin-top:20px; display:flex; justify-content:space-between; align-items:center; font-size:12px;">
+            <span style="color:var(--text-muted);">Due: ${hw.due}</span>
+            <button class="btn btn-secondary" style="padding:6px 12px; font-size:11px;" onclick="viewSubmissions('${hw.id}')">Submissions (${DB.submissions.filter(s=>s.hwId===hw.id).length})</button>
           </div>
         </div>
       `).join('')}
@@ -855,28 +744,414 @@ function renderTeacherHome(){
   `;
 }
 
-function deleteHw(hwId){
-  if(confirm('Delete assignment?')){
-    DB.homeworks = DB.homeworks.filter(h=>h.id!==hwId);
-    saveDB(); renderMain();
-  }
+function viewSubmissions(hwId){
+  const subs = DB.submissions.filter(s => s.hwId === hwId);
+  const m = document.getElementById('modal-body');
+  m.innerHTML = `
+    <h2 style="font-family:var(--font-heading); font-weight:800; margin-bottom:20px;">Student Submissions</h2>
+    ${subs.length === 0 ? `<p style="color:var(--text-muted);">No submissions yet for this homework.</p>` : ''}
+    ${subs.map(s => {
+      const st = DB.users.find(u => u.id === s.studentId);
+      return `
+        <div style="padding:16px; background:rgba(255,255,255,0.03); border-radius:var(--radius-md); border:1px solid var(--glass-border); margin-bottom:12px;">
+          <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+            <strong>${st ? st.name : 'Student'}</strong>
+            <span class="badge badge-done">${s.status}</span>
+          </div>
+          <div style="font-size:13px; font-family:monospace; white-space:pre-wrap; background:rgba(0,0,0,0.3); padding:10px; border-radius:8px;">${s.content}</div>
+          <div style="margin-top:10px; display:flex; gap:8px;">
+            <button class="btn btn-primary" style="padding:6px 12px; font-size:12px;" onclick="approveSub('${s.id}')">Approve</button>
+          </div>
+        </div>
+      `;
+    }).join('')}
+    <button class="btn btn-secondary" style="width:100%; margin-top:16px;" onclick="closeModal()">Close</button>
+  `;
+  document.getElementById('modal-bg').classList.add('active');
 }
 
-function renderTeacherProgress(){
+function approveSub(subId){
+  const sub = DB.submissions.find(s => s.id === subId);
+  if(sub) { sub.status = 'Approved'; saveDB(); showToast('Approved!'); closeModal(); }
+}
+
+function renderTeacherStudents(){
+  const students = DB.users.filter(u=>u.role==='student');
   return `
-    <div class="section-title">Class Progress Tracking</div>
-    <div class="glass-panel">
-      ${DB.users.filter(u=>u.role==='student').map(s => `
-        <div style="display:flex; justify-content:space-between; padding:16px; border-bottom:1px solid var(--glass-border);">
-          <div><strong>${s.name}</strong> (${s.studentId})</div>
-          <div>${DB.homeworks.filter(hw => getProgress(s.id, hw.id).status==='done').length} /${DB.homeworks.length} Completed</div>
+    <div class="section-title">
+      <span>Student Directory (${students.length})</span>
+      <button class="btn btn-primary" style="padding:8px 18px; font-size:13px;" onclick="openAddStudentModal()">${ICONS.plus} Add Student</button>
+    </div>
+
+    <div class="data-table-container glass-panel">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Student</th>
+            <th>ID</th>
+            <th>Group</th>
+            <th>Streak</th>
+            <th>Points</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${students.map(s => `
+            <tr>
+              <td><strong>${s.name}</strong></td>
+              <td>${s.studentId}</td>
+              <td><span class="badge badge-progress">${s.group}</span></td>
+              <td>🔥 ${s.streak} Days</td>
+              <td>⭐ ${s.points}</td>
+              <td>
+                <button class="btn btn-secondary" style="padding:6px 12px; font-size:12px;" onclick="viewStudentProfile('${s.id}')">Profile</button>
+              </td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>
+    </div>
+  `;
+}
+
+function openAddStudentModal(){
+  const m = document.getElementById('modal-body');
+  m.innerHTML = `
+    <h2 style="font-family:var(--font-heading); font-weight:800; margin-bottom:20px;">Add New Student</h2>
+    <div class="field">
+      <label>Full Name</label>
+      <input id="st-name" placeholder="e.g. Jasur Aliyev">
+    </div>
+    <div class="field">
+      <label>Group</label>
+      <select id="st-group">
+        ${DB.groups.map(g => `<option value="${g.name}">${g.name}</option>`).join('')}
+      </select>
+    </div>
+    <div style="display:flex; gap:12px; margin-top:24px;">
+      <button class="btn btn-secondary" style="flex:1;" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-primary" style="flex:1;" onclick="saveStudent()">Add Student</button>
+    </div>
+  `;
+  document.getElementById('modal-bg').classList.add('active');
+}
+
+function saveStudent(){
+  const name = document.getElementById('st-name').value.trim();
+  const group = document.getElementById('st-group').value;
+
+  if(!name) { showToast('Name required!'); return; }
+
+  const id = 's' + Date.now();
+  DB.users.push({
+    id, role:'student', username:'student-' + Math.floor(Math.random()*1000),
+    name, studentId:'EV-00' + Math.floor(Math.random()*900+100), group, level:'B1', teacher:'Mr. Aziz', password:'123', streak:0, points:0, avatar:''
+  });
+
+  saveDB();
+  closeModal();
+  showToast('✓ Student added');
+  renderMain();
+}
+
+function viewStudentProfile(stId){
+  const st = DB.users.find(u=>u.id===stId);
+  const m = document.getElementById('modal-body');
+  m.innerHTML = `
+    <h2 style="font-family:var(--font-heading); font-weight:800;">${st.name}</h2>
+    <p style="color:var(--text-muted); font-size:13px; margin-bottom:20px;">${st.studentId} • ${st.group}</p>
+    
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:20px; font-size:14px;">
+      <div><strong>Streak:</strong> 🔥 ${st.streak} Days</div>
+      <div><strong>Points:</strong> ⭐ ${st.points}</div>
+      <div><strong>Teacher:</strong> ${st.teacher}</div>
+      <div><strong>Level:</strong> ${st.level}</div>
+    </div>
+
+    <button class="btn btn-secondary" style="width:100%;" onclick="closeModal()">Close</button>
+  `;
+  document.getElementById('modal-bg').classList.add('active');
+}
+
+function renderTeacherGroups(){
+  return `
+    <div class="section-title">
+      <span>Class Groups</span>
+      <button class="btn btn-primary" style="padding:8px 18px; font-size:13px;" onclick="openCreateGroupModal()">${ICONS.plus} Create Group</button>
+    </div>
+    <div class="quick-actions">
+      ${DB.groups.map(g => `
+        <div class="glass-panel" style="padding:24px;">
+          <h3 style="font-family:var(--font-heading); font-size:20px; font-weight:800; margin-bottom:6px;">${g.name}</h3>
+          <p style="font-size:13px; color:var(--text-muted); margin-bottom:16px;">${g.studentCount} active students</p>
+          <button class="btn btn-secondary" style="width:100%; font-size:12px;">View Class Progress</button>
         </div>
       `).join('')}
     </div>
   `;
 }
 
-/* ================= UTILS ================= */
+function openCreateGroupModal(){
+  const m = document.getElementById('modal-body');
+  m.innerHTML = `
+    <h2 style="font-family:var(--font-heading); font-weight:800; margin-bottom:20px;">Create New Group</h2>
+    <div class="field"><label>Group Name</label><input id="g-name" placeholder="e.g. Group C"></div>
+    <div style="display:flex; gap:12px; margin-top:24px;">
+      <button class="btn btn-secondary" style="flex:1;" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-primary" style="flex:1;" onclick="saveGroup()">Create</button>
+    </div>
+  `;
+  document.getElementById('modal-bg').classList.add('active');
+}
+
+function saveGroup(){
+  const name = document.getElementById('g-name').value.trim();
+  if(!name) return;
+  DB.groups.push({id:'g'+Date.now(), name, studentCount:0, activeHw:0});
+  saveDB(); closeModal(); showToast('✓ Group created'); renderMain();
+}
+
+function renderTeacherProgress(){
+  const students = DB.users.filter(u=>u.role==='student').slice(0, 8);
+  return `
+    <div class="section-title">Student × Homework Matrix</div>
+    <div class="data-table-container glass-panel">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Student</th>
+            <th>Essential 2</th>
+            <th>Tactics</th>
+            <th>Vocabulary</th>
+            <th>Sentences</th>
+            <th>Board</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${students.map(s => `
+            <tr>
+              <td><strong>${s.name}</strong></td>
+              <td><span class="badge badge-done">🟢 Done</span></td>
+              <td><span class="badge badge-progress">🟡 60%</span></td>
+              <td><span class="badge badge-done">🟢 Done</span></td>
+              <td><span class="badge badge-progress">25/30</span></td>
+              <td><span class="badge badge-none">🔴 No</span></td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>
+    </div>
+  `;
+}
+
+function renderTeacherVocab(){
+  return `
+    <div class="section-title">
+      <span>Vocabulary Library</span>
+      <button class="btn btn-primary" style="padding:8px 18px; font-size:13px;" onclick="openAddWordModal()">${ICONS.plus} Add Word</button>
+    </div>
+    <div class="data-table-container glass-panel">
+      <table class="data-table">
+        <thead>
+          <tr><th>Word</th><th>Translation</th><th>Pronunciation</th><th>Example</th></tr>
+        </thead>
+        <tbody>
+          ${DB.vocabulary.map(v => `
+            <tr>
+              <td><strong>${v.word}</strong></td>
+              <td>${v.translation}</td>
+              <td style="color:var(--accent-cyan);">${v.pronunciation}</td>
+              <td style="color:var(--text-muted);">${v.example}</td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>
+    </div>
+  `;
+}
+
+function openAddWordModal(){
+  const m = document.getElementById('modal-body');
+  m.innerHTML = `
+    <h2 style="font-family:var(--font-heading); font-weight:800; margin-bottom:20px;">Add Word</h2>
+    <div class="field"><label>Word</label><input id="v-word"></div>
+    <div class="field"><label>Translation</label><input id="v-trans"></div>
+    <div class="field"><label>Example Sentence</label><input id="v-ex"></div>
+    <div style="display:flex; gap:12px; margin-top:24px;">
+      <button class="btn btn-secondary" style="flex:1;" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-primary" style="flex:1;" onclick="saveWord()">Save Word</button>
+    </div>
+  `;
+  document.getElementById('modal-bg').classList.add('active');
+}
+
+function saveWord(){
+  const word = document.getElementById('v-word').value.trim();
+  const translation = document.getElementById('v-trans').value.trim();
+  const example = document.getElementById('v-ex').value.trim();
+  if(!word) return;
+  DB.vocabulary.push({id:'v'+Date.now(), word, translation, example, pronunciation:'/.../'});
+  saveDB(); closeModal(); showToast('✓ Word added'); renderMain();
+}
+
+function renderTeacherMaterials(){
+  return `
+    <div class="section-title">
+      <span>Materials Library</span>
+      <button class="btn btn-primary" style="padding:8px 18px; font-size:13px;" onclick="openUploadMaterialModal()">${ICONS.plus} Upload Material</button>
+    </div>
+    <div class="quick-actions">
+      ${DB.materials.map(m => `
+        <div class="glass-panel" style="padding:20px;">
+          <div style="font-size:12px; color:var(--accent-blue); font-weight:800;">${m.type} •${m.folder}</div>
+          <h4 style="font-family:var(--font-heading); font-size:16px; margin:6px 0; font-weight:800;">${m.name}</h4>
+          <div style="font-size:11px; color:var(--text-muted);">${m.date}</div>
+        </div>
+      `).join('')}
+    </div>
+  `;
+}
+
+function openUploadMaterialModal(){
+  const m = document.getElementById('modal-body');
+  m.innerHTML = `
+    <h2 style="font-family:var(--font-heading); font-weight:800; margin-bottom:20px;">Upload Material</h2>
+    <div class="field"><label>Material Name</label><input id="m-name" placeholder="e.g. Board Photo Unit 27"></div>
+    <div class="field"><label>Folder</label><input id="m-folder" placeholder="e.g. Essential 2"></div>
+    <div style="display:flex; gap:12px; margin-top:24px;">
+      <button class="btn btn-secondary" style="flex:1;" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-primary" style="flex:1;" onclick="saveMaterial()">Upload</button>
+    </div>
+  `;
+  document.getElementById('modal-bg').classList.add('active');
+}
+
+function saveMaterial(){
+  const name = document.getElementById('m-name').value.trim();
+  const folder = document.getElementById('m-folder').value.trim();
+  if(!name) return;
+  DB.materials.push({id:'m'+Date.now(), name, type:'Image', folder:folder||'General', date:'2026-09-21', url:'#'});
+  saveDB(); closeModal(); showToast('✓ Uploaded'); renderMain();
+}
+
+function renderTeacherSettings(){
+  return `
+    <div class="section-title">Teacher Settings</div>
+    <div class="glass-panel" style="padding:28px; max-width:600px;">
+      <h3 style="font-family:var(--font-heading); font-size:18px; margin-bottom:16px;">Account Settings</h3>
+      <button class="btn btn-danger" style="width:100%; margin-top:20px;" onclick="handleLogout()">Sign Out of EVEREST</button>
+    </div>
+  `;
+}
+
+/* ================= STUDENT PANELS ================= */
+function renderStudentDash(){
+  const user = currentUser();
+  return `
+    <div style="margin-bottom:24px;">
+      <h1 style="font-family:var(--font-heading); font-size:28px; font-weight:800;">Welcome back, ${user.name.split(' ')[0]} 👋</h1>
+      <p style="color:var(--text-muted); font-size:14px; margin-top:2px;">Group: ${user.group} • Level: ${user.level}</p>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat-card glass-panel">
+        <div class="stat-card-top"><span class="stat-lbl">Streak</span><div class="stat-icon" style="color:var(--accent-amber);">🔥</div></div>
+        <div class="stat-val">${user.streak} Days</div>
+      </div>
+      <div class="stat-card glass-panel">
+        <div class="stat-card-top"><span class="stat-lbl">Points</span><div class="stat-icon" style="color:var(--accent-cyan);">⭐</div></div>
+        <div class="stat-val">${user.points}</div>
+      </div>
+      <div class="stat-card glass-panel">
+        <div class="stat-card-top"><span class="stat-lbl">Assigned HW</span><div class="stat-icon" style="color:var(--accent-blue);">📚</div></div>
+        <div class="stat-val">${DB.homeworks.length}</div>
+      </div>
+    </div>
+
+    <div class="section-title">My Assigned Homework</div>
+    <div class="hw-grid">
+      ${DB.homeworks.map(hw => `
+        <div class="glass-panel hw-card">
+          <div style="font-size:12px; color:var(--accent-blue); font-weight:800;">${hw.type}</div>
+          <h3 style="font-family:var(--font-heading); font-size:18px; margin:8px 0; font-weight:800;">${hw.title}</h3>
+          <p style="font-size:13px; color:var(--text-muted);">${hw.desc}</p>
+          <button class="btn btn-primary" style="width:100%; margin-top:16px; font-size:13px;" onclick="openSubmitHwModal('${hw.id}')">Submit Work</button>
+        </div>
+      `).join('')}
+    </div>
+  `;
+}
+
+function openSubmitHwModal(hwId){
+  const hw = DB.homeworks.find(h=>h.id===hwId);
+  const m = document.getElementById('modal-body');
+  m.innerHTML = `
+    <h2 style="font-family:var(--font-heading); font-weight:800; margin-bottom:8px;">${hw.title}</h2>
+    <p style="color:var(--text-muted); font-size:13px; margin-bottom:20px;">${hw.desc}</p>
+    
+    <div class="field">
+      <label>Your Response / Translation / Text</label>
+      <textarea id="sub-content" rows="5" placeholder="Type your answer here..."></textarea>
+    </div>
+
+    <div style="display:flex; gap:12px; margin-top:24px;">
+      <button class="btn btn-secondary" style="flex:1;" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-primary" style="flex:1;" onclick="submitStudentWork('${hw.id}')">Submit Homework</button>
+    </div>
+  `;
+  document.getElementById('modal-bg').classList.add('active');
+}
+
+function submitStudentWork(hwId){
+  const user = currentUser();
+  const content = document.getElementById('sub-content').value.trim();
+  if(!content) return;
+
+  DB.submissions.push({
+    id: 'sub' + Date.now(),
+    studentId: user.id,
+    hwId,
+    content,
+    date: '2026-09-21',
+    status: 'Pending',
+    comment: ''
+  });
+
+  user.points += 20;
+  saveDB();
+  closeModal();
+  showToast('✓ Submitted! (+20 pts)');
+  renderMain();
+}
+
+function renderStudentHW(){ return renderStudentDash(); }
+
+function renderStudentProgress(){
+  const user = currentUser();
+  return `
+    <div class="section-title">My Progress Analytics</div>
+    <div class="glass-panel" style="padding:28px;">
+      <h2 style="font-family:var(--font-heading); font-size:32px; font-weight:800; color:var(--accent-blue);">⭐ ${user.points} Total Points</h2>
+      <p style="color:var(--text-muted); font-size:14px; margin-bottom:20px;">🔥 ${user.streak} Days active streak</p>
+      <div class="progress-bar-bg" style="height:10px;"><div class="progress-bar-fill" style="width:75%;"></div></div>
+    </div>
+  `;
+}
+
+function renderStudentProfile(){
+  const user = currentUser();
+  return `
+    <div style="max-width:600px; margin:0 auto;">
+      <div class="glass-panel" style="padding:32px; text-align:center;">
+        <h2 style="font-family:var(--font-heading); font-size:24px; font-weight:800;">${user.name}</h2>
+        <p style="color:var(--text-muted); font-size:14px; margin-top:4px;">${user.studentId} • ${user.group}</p>
+        <button class="btn btn-danger" style="margin-top:24px; width:100%;" onclick="handleLogout()">Sign Out</button>
+      </div>
+    </div>
+  `;
+}
+
+/* UTILS */
 function closeModal(){ document.getElementById('modal-bg').classList.remove('active'); }
 function showToast(msg){
   const t = document.getElementById('toast');
@@ -884,19 +1159,39 @@ function showToast(msg){
   setTimeout(()=>t.classList.remove('show'), 2500);
 }
 
+function showNotifications(){
+  const m = document.getElementById('modal-body');
+  m.innerHTML = `
+    <h2 style="font-family:var(--font-heading); font-weight:800; margin-bottom:20px;">Notifications</h2>
+    ${DB.notifications.map(n => `
+      <div style="padding:14px; background:rgba(255,255,255,0.03); border-radius:12px; margin-bottom:10px;">
+        <strong>${n.title}</strong>
+        <p style="font-size:12px; color:var(--text-muted); margin-top:2px;">${n.desc}</p>
+      </div>
+    `).join('')}
+    <button class="btn btn-secondary" style="width:100%; margin-top:12px;" onclick="closeModal()">Close</button>
+  `;
+  document.getElementById('modal-bg').classList.add('active');
+}
+
+function handleGlobalSearch(query){
+  if(!query) return;
+  console.log('Searching:', query);
+}
+
 function tryRestoreSession(){
   try{
-    const raw = localStorage.getItem('everest_session');
+    const raw = localStorage.getItem('everest_saas_session');
     if(raw){ SESSION = JSON.parse(raw); return true; }
   }catch(e){}
   return false;
 }
 
-// INITIALIZATION
+// INIT
 initDB().then(async () => {
   await loadDB();
   if(tryRestoreSession()) enterApp();
-  else populateLoginDropdown('student');
+  else populateLoginDropdown('teacher');
 });
 </script>
 </body>
