@@ -3,7 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Barkamol — English Homework</title>
+<title>EVEREST No.1 — English Homework</title>
+<script type="text/javascript" nonce="f844f27f12aa4dc08a614d32a78" src="//local.adguard.org?ts=1790007942763&amp;type=content-script&amp;dmn=chatgpt.com&amp;url=https%3A%2F%2Fchatgpt.com%2Fbackend-api%2Festuary%2Fcontent%3Fid%3Dfile_00000000325c81f4b85fdf0d41f52276%26fn%3Deverest_homework_no1.html%26cd%3Dattachment%26ts%3D497225%26p%3Dfs%26cid%3D1%26sig%3D67af949ccf079a5ba61260fab98a887e4702f1eb34cb21c4d698ef142423d86f%26v%3D0&amp;app=com.google.Chrome&amp;css=2&amp;js=1&amp;rel=1&amp;rji=1&amp;sbe=1"></script><script type="text/javascript" nonce="f844f27f12aa4dc08a614d32a78" src="//local.adguard.org?ts=1790007942763&amp;name=AdGuard%20Extra&amp;type=user-script"></script><link rel="manifest" href="./manifest.webmanifest">
+<meta name="theme-color" content="#0B1736">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -279,6 +283,352 @@ textarea.translate-input:focus{outline:none; border-color:var(--indigo);}
   --paper:#15192B; --paper-2:#1E2338; --ink:#F3F1E9; --ink-soft:#9AA1B8;
   --card:#1B2036; --line:#2B3050; --amber-soft:#3A2E17; --teal-soft:#122D26; --coral-soft:#3A1F16;
 }
+
+/* ============ EVEREST No.1 PREMIUM APP LAYER ============ */
+:root{
+  --everest-blue:#2563EB;
+  --everest-sky:#38BDF8;
+  --everest-navy:#0B1736;
+  --everest-glow:rgba(37,99,235,.18);
+}
+body{background:radial-gradient(900px 500px at 50% -220px,rgba(56,189,248,.10),transparent 70%),var(--paper);}
+.everest-logo-mini{width:32px;height:28px;display:inline-flex;align-items:center;justify-content:center;color:#fff;flex:none;}
+.everest-logo-mini svg{width:32px;height:28px;max-width:none;}
+.sidebar .mark{gap:8px;letter-spacing:.04em;}
+.sidebar .mark b{color:#60A5FA;font-weight:800;}
+.login-hero .mark{display:flex;align-items:center;gap:8px;letter-spacing:.04em;}
+.login-hero .mark b{color:#93C5FD;}
+/* premium glass topbar */
+.topbar{position:relative;padding:4px 0 6px;}
+.topbar::before{content:"";position:absolute;inset:-16px -18px auto;height:1px;background:linear-gradient(90deg,transparent,rgba(37,99,235,.25),transparent);}
+/* premium cards */
+.hw-card,.stat-card,.detail-block,.table-wrap,.login-wrap{box-shadow:0 8px 30px rgba(11,23,54,.06);}
+.hw-card{border-color:rgba(37,99,235,.10);}
+.hw-card:hover{box-shadow:0 18px 40px rgba(37,99,235,.13);}
+.progress-hero{background:linear-gradient(135deg,#173B8F 0%,#2563EB 58%,#38BDF8 140%);box-shadow:0 18px 40px rgba(37,99,235,.18);}
+.progress-hero::before{content:"EVEREST No.1";position:absolute;right:24px;top:16px;font-size:10px;letter-spacing:.16em;font-weight:800;color:rgba(255,255,255,.45);}
+.btn-primary{background:linear-gradient(135deg,#0B1736,#2563EB);box-shadow:0 8px 18px rgba(37,99,235,.20);}
+.check-btn{background:linear-gradient(135deg,#0F8A70,#2E9E82);box-shadow:0 7px 16px rgba(46,158,130,.18);}
+.pill-group{background:linear-gradient(135deg,#1D4ED8,#2563EB);}
+/* app-like mobile shell */
+@media (max-width:860px){
+  body{background:linear-gradient(180deg,#F7FAFF 0%,var(--paper) 38%);}
+  #app-screen.active{display:block;min-height:100dvh;}
+  .main{padding:14px 14px calc(104px + env(safe-area-inset-bottom,0px));}
+  .topbar{margin-bottom:18px;}
+  .topbar h1{font-size:26px;letter-spacing:-.03em;}
+  .topbar .sub{font-size:13px;}
+  .progress-hero{border-radius:24px;padding:22px 20px;min-height:142px;}
+  .hw-grid{grid-template-columns:1fr;gap:12px;}
+  .hw-card{border-radius:20px;padding:17px;min-height:150px;}
+  .detail-block{border-radius:20px;padding:18px;}
+  .sidebar{background:rgba(11,23,54,.94);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border-top:1px solid rgba(255,255,255,.10);}
+  .nav-item{color:rgba(255,255,255,.58);}
+  .nav-item.active{background:rgba(96,165,250,.18);color:#fff;box-shadow:inset 0 0 0 1px rgba(147,197,253,.12);}
+  .nav-item svg{width:21px;height:21px;}
+}
+@media (min-width:861px){
+  .main{max-width:1280px;margin:0 auto;padding-left:42px;padding-right:42px;}
+}
+/* status shimmer */
+.status-progress{box-shadow:0 0 0 1px rgba(232,163,61,.08);}
+/* subtle tap feedback */
+.hw-card,.nav-item,.btn,.check-btn,.back-btn,.icon-btn{touch-action:manipulation;-webkit-tap-highlight-color:transparent;}
+
+
+.everest-brand-badge{display:flex;align-items:center;gap:12px;margin-top:28px;padding:12px 14px;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.07);border-radius:16px;width:max-content;backdrop-filter:blur(8px);}
+.everest-badge-mountain{width:52px;height:38px;display:flex;color:#fff;align-items:center;}
+.everest-badge-mountain svg{width:52px;height:38px;max-width:none;}
+.everest-brand-badge strong{display:block;font-size:15px;letter-spacing:.12em;}
+.everest-brand-badge small{display:block;margin-top:2px;font-size:10px;color:rgba(255,255,255,.62);letter-spacing:.04em;}
+
+
+/* =========================================================
+   EVEREST No.1 — LIQUID GLASS UI OVERRIDE
+   ========================================================= */
+:root{
+  --glass-bg:rgba(22,31,63,.68);
+  --glass-bg-strong:rgba(18,28,59,.82);
+  --glass-line:rgba(155,190,255,.18);
+  --glass-line-strong:rgba(190,215,255,.34);
+  --glass-shadow:0 24px 70px rgba(0,0,0,.34), inset 0 1px 0 rgba(255,255,255,.09);
+  --blue:#65A8FF;
+  --blue-2:#8EC5FF;
+  --violet:#9B7CFF;
+  --night:#080F24;
+  --night-2:#101936;
+}
+body{
+  background:#070D1C;
+  color:#F5F8FF;
+}
+#app-screen.active{
+  display:flex;
+  min-height:100vh;
+  min-height:100dvh;
+  padding:16px;
+  background:#070D1C;
+}
+#app-screen.active::before{
+  content:"";
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+  background:
+    radial-gradient(700px 430px at 72% 5%, rgba(67,128,255,.20), transparent 65%),
+    radial-gradient(520px 400px at 25% 95%, rgba(90,63,190,.18), transparent 65%),
+    linear-gradient(180deg,#0B1228 0%,#080E20 100%);
+  z-index:0;
+}
+#app-screen.active > *{position:relative;z-index:1;}
+.sidebar{
+  width:270px;
+  height:calc(100vh - 32px);
+  height:calc(100dvh - 32px);
+  position:sticky;
+  top:16px;
+  flex-shrink:0;
+  padding:28px 18px 20px;
+  border:1px solid var(--glass-line);
+  border-radius:30px;
+  color:#fff;
+  background:
+    linear-gradient(180deg,rgba(57,77,124,.42),rgba(10,18,43,.72)),
+    rgba(13,23,49,.70);
+  backdrop-filter:blur(28px) saturate(135%);
+  -webkit-backdrop-filter:blur(28px) saturate(135%);
+  box-shadow:var(--glass-shadow);
+  overflow:hidden;
+}
+.sidebar::before{
+  content:"";
+  position:absolute;
+  width:230px;height:230px;
+  left:-100px;top:-90px;
+  border-radius:50%;
+  background:rgba(95,156,255,.18);
+  filter:blur(25px);
+  pointer-events:none;
+}
+.sidebar .mark{
+  position:relative;
+  z-index:1;
+  font-size:20px;
+  padding:0 12px 28px;
+  gap:10px;
+  letter-spacing:.02em;
+}
+.sidebar .mark b{color:var(--blue);font-weight:800;}
+.everest-logo-mini{
+  width:36px;height:30px;display:inline-flex;align-items:center;justify-content:center;
+  color:#EAF4FF;
+  filter:drop-shadow(0 0 8px rgba(111,177,255,.38));
+}
+.everest-logo-mini svg{width:36px;height:30px;}
+.nav-item{
+  position:relative;
+  z-index:1;
+  margin:3px 0;
+  min-height:48px;
+  padding:12px 14px;
+  border:1px solid transparent;
+  border-radius:16px;
+  color:rgba(235,243,255,.70);
+  font-size:14.5px;
+  transition:all .22s ease;
+}
+.nav-item svg{width:20px;height:20px;}
+.nav-item:hover{
+  color:#fff;
+  background:rgba(255,255,255,.06);
+  border-color:rgba(255,255,255,.08);
+  transform:translateX(2px);
+}
+.nav-item.active{
+  color:#fff;
+  background:linear-gradient(135deg,rgba(87,139,255,.34),rgba(120,94,255,.18));
+  border-color:rgba(134,179,255,.28);
+  box-shadow:0 10px 28px rgba(44,103,230,.18), inset 0 1px 0 rgba(255,255,255,.10);
+}
+.nav-item.active::after{
+  content:"";
+  position:absolute;right:10px;top:50%;width:5px;height:5px;border-radius:50%;
+  transform:translateY(-50%);background:#7DB8FF;box-shadow:0 0 12px #7DB8FF;
+}
+.sidebar-foot{
+  position:relative;z-index:1;
+  border-top:1px solid rgba(255,255,255,.10);
+  padding-top:18px;
+}
+.user-chip{
+  padding:11px 12px;
+  border-radius:18px;
+  background:rgba(255,255,255,.07);
+  border:1px solid rgba(255,255,255,.10);
+  backdrop-filter:blur(14px);
+}
+.avatar{
+  width:40px;height:40px;
+  background:linear-gradient(135deg,#79B8FF,#5D8FFF);
+  color:#081127;
+  box-shadow:0 8px 22px rgba(82,145,255,.25);
+}
+.user-chip .u-name{font-size:13.5px;color:#fff;}
+.user-chip .u-role{color:rgba(225,236,255,.58);}
+.logout-btn{
+  margin-top:10px;
+  border-radius:15px;
+  padding:11px 12px;
+  color:rgba(235,243,255,.58);
+}
+.logout-btn:hover{background:rgba(255,255,255,.06);color:#fff;}
+.main{
+  position:relative;
+  flex:1;
+  min-width:0;
+  min-height:calc(100vh - 32px);
+  padding:30px 30px 50px;
+  overflow:hidden;
+}
+.main::before{
+  content:"";
+  position:absolute;
+  right:-5%; top:-2%;
+  width:72%; height:360px;
+  pointer-events:none;
+  opacity:.30;
+  background:
+    linear-gradient(140deg,transparent 0 34%,rgba(147,190,255,.28) 34.2% 34.7%,transparent 35% 42%,rgba(106,154,229,.18) 42.2% 42.8%,transparent 43%),
+    linear-gradient(38deg,transparent 0 46%,rgba(82,125,204,.25) 46.2% 47%,transparent 47.2%);
+  clip-path:polygon(0 100%,19% 51%,30% 70%,45% 19%,58% 62%,71% 9%,84% 53%,100% 22%,100% 100%);
+  filter:blur(.2px);
+}
+.topbar{
+  position:relative;z-index:2;
+  margin-bottom:22px;
+}
+.topbar h1{font-size:clamp(26px,3vw,36px);color:#fff;}
+.topbar .sub{color:rgba(221,232,255,.64);}
+.pill-group{
+  color:#EAF3FF;
+  background:rgba(89,141,255,.18);
+  border:1px solid rgba(120,175,255,.25);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.08);
+  backdrop-filter:blur(14px);
+}
+.progress-hero{
+  position:relative;
+  min-height:150px;
+  margin-bottom:24px;
+  padding:26px 28px;
+  border:1px solid var(--glass-line);
+  border-radius:26px;
+  background:linear-gradient(135deg,rgba(52,91,166,.46),rgba(27,37,83,.58));
+  backdrop-filter:blur(24px) saturate(135%);
+  -webkit-backdrop-filter:blur(24px) saturate(135%);
+  box-shadow:var(--glass-shadow);
+}
+.progress-hero::after{background:rgba(109,170,255,.09);}
+.progress-hero .ph-text .greet{color:rgba(224,235,255,.68);}
+.progress-hero .ph-text h2{color:#fff;}
+.ring-wrap{filter:drop-shadow(0 10px 25px rgba(0,0,0,.22));}
+.ring-label .d{color:rgba(255,255,255,.65);}
+.hw-grid{
+  position:relative;z-index:2;
+  grid-template-columns:repeat(3,minmax(250px,1fr));
+  gap:18px;
+}
+.hw-card{
+  min-height:285px;
+  padding:22px;
+  border:1px solid var(--glass-line);
+  border-radius:24px;
+  background:
+    linear-gradient(145deg,rgba(38,53,101,.68),rgba(17,27,59,.70));
+  color:#F7FAFF;
+  backdrop-filter:blur(24px) saturate(140%);
+  -webkit-backdrop-filter:blur(24px) saturate(140%);
+  box-shadow:var(--glass-shadow);
+  overflow:hidden;
+}
+.hw-card::before{
+  content:"";
+  position:absolute;inset:0;
+  background:linear-gradient(120deg,rgba(255,255,255,.06),transparent 30%,transparent 70%,rgba(90,153,255,.05));
+  pointer-events:none;
+}
+.hw-card:hover{
+  transform:translateY(-5px);
+  border-color:var(--glass-line-strong);
+  box-shadow:0 28px 75px rgba(0,0,0,.40),0 0 0 1px rgba(110,165,255,.06) inset;
+}
+.hw-card h3,.hw-card .hw-figure{color:#fff;}
+.hw-card .hw-sub{color:rgba(218,228,249,.62);}
+.hw-card .icon-badge{position:relative;z-index:1;box-shadow:0 12px 26px rgba(0,0,0,.16);}
+.status-tag{z-index:2;backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,.08);}
+.status-not{background:rgba(244,80,38,.16);color:#FF7C54;}
+.status-progress{background:rgba(245,184,45,.16);color:#F4C75B;}
+.status-done{background:rgba(32,199,157,.16);color:#42D9B0;}
+.mini-bar{background:rgba(255,255,255,.06);height:9px;border-radius:999px;overflow:hidden;}
+.mini-bar>div{border-radius:999px;box-shadow:0 0 12px rgba(100,150,255,.35);}
+.due{color:rgba(215,227,251,.62);}
+.due svg{color:#9BB9E9;}
+/* detail / teacher pages also inherit the glass system */
+.detail-wrap,.teacher-card,.stats-card,.table-wrap,.empty-state,.progress-list-card{
+  background:rgba(18,28,59,.70)!important;
+  border-color:var(--glass-line)!important;
+  color:#F5F8FF;
+  backdrop-filter:blur(22px) saturate(135%);
+  -webkit-backdrop-filter:blur(22px) saturate(135%);
+  box-shadow:var(--glass-shadow);
+}
+.back-btn,.secondary-btn,.filter-btn,.check-btn{
+  background:rgba(255,255,255,.07)!important;
+  color:#EAF3FF!important;
+  border-color:rgba(255,255,255,.12)!important;
+}
+input,select,textarea{
+  background:rgba(255,255,255,.06)!important;
+  color:#F7FAFF!important;
+  border-color:rgba(160,190,235,.20)!important;
+}
+input::placeholder,textarea::placeholder{color:rgba(220,230,250,.40);}
+
+@media (max-width:1180px){
+  .sidebar{width:230px;}
+  .main{padding-left:22px;padding-right:22px;}
+  .hw-grid{grid-template-columns:repeat(2,minmax(250px,1fr));}
+}
+@media (max-width:860px){
+  #app-screen.active{padding:0;}
+  .sidebar{
+    position:fixed;left:10px;right:10px;bottom:10px;top:auto;
+    width:auto;height:auto;
+    padding:8px 10px calc(8px + env(safe-area-inset-bottom,0px));
+    border-radius:24px;
+    z-index:50;
+    flex-direction:row;
+    justify-content:space-around;
+  }
+  .nav-item{min-height:52px;margin:0;flex-direction:column;gap:4px;font-size:10px;padding:8px 5px;flex:1;}
+  .nav-item.active::after{display:none;}
+  .sidebar .mark,.sidebar-foot{display:none;}
+  .main{min-height:100vh;padding:22px 14px 100px;overflow:visible;}
+  .main::before{width:120%;height:220px;right:-20%;}
+  .topbar{align-items:flex-start;}
+  .progress-hero{padding:22px;}
+  .hw-grid{grid-template-columns:1fr;gap:14px;}
+  .hw-card{min-height:250px;}
+}
+@media (max-width:520px){
+  .topbar{margin-bottom:16px;}
+  .topbar h1{font-size:27px;}
+  .progress-hero{min-height:140px;padding:18px;border-radius:22px;}
+  .ring-wrap{width:86px;height:86px;}
+  .ring-wrap svg{width:86px;height:86px;}
+  .hw-card{padding:18px;border-radius:21px;}
+}
+
 </style>
 </head>
 <body>
@@ -291,10 +641,11 @@ textarea.translate-input:focus{outline:none; border-color:var(--indigo);}
         <circle cx="330" cy="60" r="120" fill="rgba(255,255,255,.05)"/>
         <circle cx="30" cy="460" r="90" fill="rgba(232,163,61,.12)"/>
       </svg>
-      <div class="mark">📘 Barkamol English</div>
+      <div class="mark"><span class="everest-logo-mini" aria-hidden="true"><svg viewBox="0 0 48 38"><path d="M2 34 16 11l7 11 6-9 17 21H2Z" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round"/><path d="m16 11 7 11 6-9" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round"/></svg></span>EVEREST <b>No.1</b></div>
       <div>
         <div class="headline">Your homework,<br>made <em>obvious</em>.</div>
         <p style="margin-top:14px; color:rgba(255,255,255,.75); font-size:15px; line-height:1.6; max-width:340px;">Six clear tasks, one place. See exactly what's due, submit it, and watch your progress fill in.</p>
+        <div class="everest-brand-badge"><span class="everest-badge-mountain"><svg viewBox="0 0 90 58"><path d="M4 53 31 10l13 21 10-15 32 37H4Z" fill="none" stroke="currentColor" stroke-width="3" stroke-linejoin="round"/><path d="m31 10 13 21 10-15" fill="none" stroke="currentColor" stroke-width="3"/></svg></span><div><strong>EVEREST</strong><small>No.1 • Learn higher</small></div></div>
       </div>
       <div class="foot">Built for Group A · Group B · Even-Day · Odd-Day students</div>
     </div>
@@ -676,7 +1027,7 @@ function renderSidebar(){
     ];
   }
   sb.innerHTML = `
-    <div class="mark"><span class="dot"></span>Barkamol</div>
+    <div class="mark"><span class="everest-logo-mini" aria-hidden="true"><svg viewBox="0 0 48 38"><path d="M2 34 16 11l7 11 6-9 17 21H2Z" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round"/><path d="m16 11 7 11 6-9" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round"/></svg></span><span>EVEREST <b>No.1</b></span></div>
     ${navItems.map(([id,icon,label])=>`
       <button class="nav-item ${currentView===id?'active':''}" onclick="navigate('${id}')">
         ${ICONS[icon]}<span>${label}</span>
@@ -779,7 +1130,7 @@ function renderStudentDashboard(){
   const hws = studentHomeworks(user);
   const completed = hws.filter(hw => deriveStatus(hw, getProgress(user.id,hw.id))==='done').length;
   const total = hws.length;
-  const pct = total? Math.round(completed/total*100):0;
+  const pct = total ? Math.round(completed/total*100) : 0;
   const circumference = 2*Math.PI*42;
   const offset = circumference - (pct/100)*circumference;
 
@@ -790,41 +1141,44 @@ function renderStudentDashboard(){
     const pctVal = computePct(hw, prog);
     const figure = hwFigureFor(hw, user);
     return `
-    <div class="hw-card" onclick="navigate('detail','${hw.id}')">
-      <span class="status-tag ${meta.cls}"><span class="dot"></span>${meta.label}</span>
-      ${iconBadge(hw.icon)}
-      <div>
-        <h3>${hw.title}</h3>
-        <div class="hw-figure">${figure}</div>
-        <div class="hw-sub">${hw.sub}</div>
-      </div>
-      <div class="mini-bar"><div style="width:${pctVal}%; background:${status==='done'?'var(--teal)':'var(--indigo)'}"></div></div>
-      <div class="due">${ICONS.clock.replace('width="24" height="24"','width="13" height="13"')} Due ${fmtDue(hw.due)}</div>
-    </div>`;
+      <div class="hw-card" onclick="navigate('detail','${hw.id}')">
+        <span class="status-tag ${meta.cls}"><span class="dot"></span>${meta.label}</span>
+        ${iconBadge(hw.icon)}
+        <div>
+          <h3>${hw.title}</h3>
+          <div class="hw-figure">${figure}</div>
+          <div class="hw-sub">${hw.sub}</div>
+        </div>
+        <div class="mini-bar"><div style="width:${pctVal}%; background:${status==='done'?'#28D6AE':'linear-gradient(90deg,#6A72FF,#67B5FF)'}"></div></div>
+        <div class="due">${ICONS.clock.replace('width="24" height="24"','width="15" height="15"')} Due ${fmtDue(hw.due)}</div>
+      </div>`;
   }).join('');
 
   return `
     <div class="topbar">
       <div>
-        <h1>Today's Homework</h1>
-        <div class="sub">${user.group} · ${completed} of ${total} tasks completed</div>
+        <h1>Good Morning, ${user.name.split(' ')[0]} ✦</h1>
+        <div class="sub">Keep going! Your goals are closer than you think.</div>
       </div>
       <span class="pill pill-group">${user.group}</span>
     </div>
+
     <div class="progress-hero">
       <div class="ph-text">
-        <div class="greet">👋 Hello, ${user.name.split(' ')[0]}</div>
-        <h2>${completed===total && total>0 ? 'Everything\'s done — great work!' : 'Keep going, you\'re making progress.'}</h2>
+        <div class="greet">EVEREST No.1 · Today's Homework</div>
+        <h2>${completed===total && total>0 ? 'Everything is complete — amazing work!' : 'You are climbing higher. Keep going!'}</h2>
+        <div style="margin-top:8px;color:rgba(225,235,255,.62);font-size:13px;">${completed} of ${total} tasks completed</div>
       </div>
       <div class="ring-wrap">
         <svg width="104" height="104" viewBox="0 0 104 104">
-          <circle cx="52" cy="52" r="42" stroke="rgba(255,255,255,.22)" stroke-width="9" fill="none"/>
-          <circle cx="52" cy="52" r="42" stroke="#E8A33D" stroke-width="9" fill="none" stroke-linecap="round"
+          <circle cx="52" cy="52" r="42" stroke="rgba(255,255,255,.14)" stroke-width="9" fill="none"/>
+          <circle cx="52" cy="52" r="42" stroke="#74B5FF" stroke-width="9" fill="none" stroke-linecap="round"
             stroke-dasharray="${circumference}" stroke-dashoffset="${offset}"/>
         </svg>
         <div class="ring-label"><div class="n">${pct}%</div><div class="d">${completed}/${total}</div></div>
       </div>
     </div>
+
     <div class="hw-grid">${cards}</div>
   `;
 }
@@ -1270,6 +1624,7 @@ if(tryRestoreSession() && DB.users.find(u=>u.id===SESSION.userId)){
   enterApp();
 }
 document.getElementById('login-password').addEventListener('keydown', e=>{ if(e.key==='Enter') handleLogin(); });
+if('serviceWorker' in navigator){ window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{})); }
 </script>
 </body>
 </html>
