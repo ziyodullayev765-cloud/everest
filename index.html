@@ -178,8 +178,6 @@ a{color:inherit;}
   backdrop-filter:blur(26px); -webkit-backdrop-filter:blur(26px); color:#fff;
 }
 .hw-card:hover{transform:translateY(-3px); border-color:rgba(210,230,255,.4);}
-.hw-card .icon-badge{width:52px; height:52px; border-radius:16px; display:flex; align-items:center; justify-content:center;}
-.hw-card .icon-badge svg{width:28px;height:28px;}
 .hw-card h3{font-size:17.5px; line-height:1.25; color:#fff;}
 .hw-card .hw-sub{font-size:13.5px; color:rgba(222,233,253,.68);}
 .status-tag{position:absolute; top:18px; right:18px; font-size:11px; font-weight:800; padding:4px 10px; border-radius:100px; display:flex; align-items:center; gap:5px;}
@@ -192,7 +190,6 @@ a{color:inherit;}
 .detail-block{background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.08); border-radius:var(--radius-md); padding:22px 24px; margin-bottom:16px;}
 .detail-block h4{font-size:13px; text-transform:uppercase; letter-spacing:.05em; color:#60A5FA; font-weight:800; margin-bottom:12px;}
 
-/* KITOB KO'RINISHIDAGI RASMLAR GRIDI */
 .book-container{
   display:grid; grid-template-columns:repeat(auto-fit, minmax(180px, 1fr)); gap:16px; margin-top:14px;
 }
@@ -215,7 +212,7 @@ a{color:inherit;}
 .t-row.head{background:rgba(255,255,255,.05); font-weight:800; font-size:11.5px; text-transform:uppercase; color:rgba(220,230,250,.6);}
 .icon-btn{background:rgba(255,255,255,.08); border:none; width:34px; height:34px; border-radius:100px; display:inline-flex; align-items:center; justify-content:center; color:#fff;}
 
-/* ============ MODAL BUG FIX ============ */
+/* ============ MODAL ============ */
 .modal-bg{
   position:fixed; inset:0; 
   background:rgba(5,11,24,.82); 
@@ -301,11 +298,10 @@ a{color:inherit;}
 <div class="toast" id="toast"></div>
 
 <script>
-const STORE_KEY = 'everest_hw_v3';
+const STORE_KEY = 'everest_hw_db_v4';
 
 const ICONS = {
   book: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 4.5C4 3.67 4.67 3 5.5 3H12v16H5.5C4.67 19 4 19.67 4 20.5V4.5Z"/><path d="M20 4.5c0-.83-.67-1.5-1.5-1.5H12v16h6.5c.83 0 1.5.67 1.5 1.5V4.5Z"/></svg>`,
-  brain: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 4.5a2.5 2.5 0 0 0-2.5 2.5v.2A2.8 2.8 0 0 0 4.5 10c0 .6.17 1.15.46 1.63A2.7 2.7 0 0 0 4 14c0 1.1.68 2.05 1.65 2.45A2.5 2.5 0 0 0 8 20a2.5 2.5 0 0 0 10.5-2.5V7A2.5 2.5 0 0 0 9 4.5Z"/></svg>`,
   home: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M4 11.5 12 4l8 7.5"/><path d="M6 10v9.5h12V10"/></svg>`,
   chart: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 19V10M12 19V5M19 19v-6"/></svg>`,
   edit: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="m14.5 4.5 5 5L8 21H3v-5L14.5 4.5Z"/></svg>`,
@@ -344,19 +340,51 @@ function defaultData(){
   };
 }
 
+/* ================= INDEXEDDB STORAGE (MA'LUMOT O'CHMAYDI) ================= */
+let dbInstance = null;
+function initDB() {
+  return new Promise((resolve) => {
+    const req = indexedDB.open("EverestHomeworkDB", 1);
+    req.onupgradeneeded = (e) => {
+      const db = e.target.result;
+      if (!db.objectStoreNames.contains("store")) {
+        db.createObjectStore("store");
+      }
+    };
+    req.onsuccess = (e) => {
+      dbInstance = e.target.result;
+      resolve();
+    };
+    req.onerror = () => resolve();
+  });
+}
+
+function saveDB() {
+  if (!dbInstance) return;
+  const tx = dbInstance.transaction("store", "readwrite");
+  const store = tx.objectStore("store");
+  store.put(DB, STORE_KEY);
+}
+
+function loadDB() {
+  return new Promise((resolve) => {
+    if (!dbInstance) { DB = defaultData(); return resolve(); }
+    const tx = dbInstance.transaction("store", "readonly");
+    const store = tx.objectStore("store");
+    const req = store.get(STORE_KEY);
+    req.onsuccess = () => {
+      DB = req.result || defaultData();
+      resolve();
+    };
+    req.onerror = () => {
+      DB = defaultData();
+      resolve();
+    };
+  });
+}
+
 let DB = null;
 let tempImages = [];
-
-function loadDB(){
-  try{
-    const raw = localStorage.getItem(STORE_KEY);
-    DB = raw ? JSON.parse(raw) : defaultData();
-  }catch(e){ DB = defaultData(); }
-}
-function saveDB(){
-  try{ localStorage.setItem(STORE_KEY, JSON.stringify(DB)); }catch(e){}
-}
-
 let SESSION = null;
 let currentView = 'dashboard';
 let currentHwId = null;
@@ -385,13 +413,13 @@ function handleLogin(){
   const user = DB.users.find(u => u.username===uname && u.password===pass && u.role===role);
   if(!user){ document.getElementById('login-error').textContent = 'Parol noto\'g\'ri!'; return; }
   SESSION = {userId:user.id, role:user.role};
-  try{ sessionStorage.setItem('everest_session', JSON.stringify(SESSION)); }catch(e){}
+  try{ localStorage.setItem('everest_session', JSON.stringify(SESSION)); }catch(e){}
   enterApp();
 }
 
 function handleLogout(){
   SESSION = null;
-  try{ sessionStorage.removeItem('everest_session'); }catch(e){}
+  try{ localStorage.removeItem('everest_session'); }catch(e){}
   document.getElementById('app-screen').classList.remove('active');
   document.getElementById('login-screen').classList.add('active');
 }
@@ -657,26 +685,41 @@ function renderPreviewThumbs(){
   return tempImages.map((src, i) => `<img src="${src}" class="preview-thumb" title="Page ${i+1}">`).join('');
 }
 
-function handleMultipleFiles(inputEl){
+function compressImage(file, maxWidth = 1000) {
+  return new Promise((resolve) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = (e) => {
+      const img = new Image();
+      img.src = e.target.result;
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        let w = img.width, h = img.height;
+        if (w > maxWidth) {
+          h = Math.round((h * maxWidth) / w);
+          w = maxWidth;
+        }
+        canvas.width = w; canvas.height = h;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, w, h);
+        resolve(canvas.toDataURL('image/jpeg', 0.7));
+      };
+    };
+  });
+}
+
+async function handleMultipleFiles(inputEl){
   const files = Array.from(inputEl.files);
   if(files.length + tempImages.length > 4){
     showToast('Maksimum 4 ta rasm yuklash mumkin!');
   }
   const allowedFiles = files.slice(0, 4 - tempImages.length);
-  
-  let loaded = 0;
-  allowedFiles.forEach(file => {
-    const reader = new FileReader();
-    reader.onload = function(e){
-      tempImages.push(e.target.result);
-      loaded++;
-      if(loaded === allowedFiles.length){
-        document.getElementById('preview-grid').innerHTML = renderPreviewThumbs();
-        showToast('Rasmlar yuklandi!');
-      }
-    };
-    reader.readAsDataURL(file);
-  });
+  for(let file of allowedFiles) {
+    const compressedBase64 = await compressImage(file);
+    tempImages.push(compressedBase64);
+  }
+  document.getElementById('preview-grid').innerHTML = renderPreviewThumbs();
+  showToast('Rasmlar saqlandi!');
 }
 
 function handleAudioUpload(inputEl){
@@ -744,17 +787,20 @@ function showToast(msg){
   setTimeout(()=>t.classList.remove('show'), 2000);
 }
 
-loadDB();
-if(tryRestoreSession()) enterApp();
-else populateLoginDropdown('student');
-
 function tryRestoreSession(){
   try{
-    const raw = sessionStorage.getItem('everest_session');
+    const raw = localStorage.getItem('everest_session');
     if(raw){ SESSION = JSON.parse(raw); return true; }
   }catch(e){}
   return false;
 }
+
+// APP INITIALIZATION
+initDB().then(async () => {
+  await loadDB();
+  if(tryRestoreSession()) enterApp();
+  else populateLoginDropdown('student');
+});
 </script>
 </body>
 </html>
