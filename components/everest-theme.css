@@ -1,0 +1,154 @@
+/* ==================================================
+   EVEREST No.1 - LIQUID GLASS DESIGN SYSTEM
+   ================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+:root {
+  --bg-deep-navy: #050b18;
+  --bg-navy: #08142b;
+  --primary-blue: #2563eb;
+  --primary-sky: #38bdf8;
+  --primary-light-blue: #60a5fa;
+  
+  --text-white: #f8fafc;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
+  
+  --status-success: #22c55e;
+  --status-warning: #f59e0b;
+  --status-danger: #ef4444;
+
+  --glass-level-1: rgba(255, 255, 255, 0.03);
+  --glass-level-2: rgba(255, 255, 255, 0.06);
+  --glass-level-3: rgba(255, 255, 255, 0.10);
+  
+  --glass-border-subtle: rgba(255, 255, 255, 0.08);
+  --glass-border: rgba(255, 255, 255, 0.12);
+  --glass-border-bright: rgba(255, 255, 255, 0.25);
+
+  --radius-sm: 12px;
+  --radius-md: 16px;
+  --radius-lg: 24px;
+  --radius-xl: 32px;
+  --radius-full: 9999px;
+
+  --blur-glass: blur(24px) saturate(150%);
+  --shadow-glass: 0 20px 60px rgba(0, 0, 0, 0.35);
+  --glow-accent: 0 0 25px rgba(37, 99, 235, 0.4);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  background-color: var(--bg-deep-navy);
+  color: var(--text-white);
+  min-height: 100vh;
+  overflow-x: hidden;
+  background-image: 
+    radial-gradient(circle at 50% 0%, rgba(37, 99, 235, 0.15) 0%, transparent 70%),
+    linear-gradient(to bottom, rgba(5, 11, 24, 0.75), rgba(5, 11, 24, 0.95));
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+}
+
+.app-container {
+  display: flex;
+  min-height: 100vh;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 24px;
+  gap: 24px;
+}
+
+.glass-panel {
+  background: var(--glass-level-2);
+  border: 1px solid var(--glass-border);
+  backdrop-filter: var(--blur-glass);
+  -webkit-backdrop-filter: var(--blur-glass);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-glass);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.glass-panel-hover:hover {
+  transform: translateY(-3px);
+  border-color: var(--glass-border-bright);
+  box-shadow: 0 25px 70px rgba(0, 0, 0, 0.45), var(--glow-accent);
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--primary-blue), #1d4ed8);
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 12px 24px;
+  border-radius: var(--radius-md);
+  font-weight: 600;
+  font-size: 15px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
+}
+
+.btn-primary:hover {
+  filter: brightness(1.1);
+  transform: scale(1.02);
+  box-shadow: var(--glow-accent);
+}
+
+.input-field {
+  width: 100%;
+  height: 48px;
+  background: var(--glass-level-1);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-sm);
+  padding: 0 16px;
+  color: var(--text-white);
+  font-size: 15px;
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+.input-field:focus {
+  border-color: var(--primary-sky);
+  box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.2);
+  background: var(--glass-level-2);
+}
+
+.badge {
+  padding: 4px 12px;
+  border-radius: var(--radius-full);
+  font-size: 12px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.badge-in-progress {
+  background: rgba(56, 189, 248, 0.15);
+  color: var(--primary-sky);
+  border: 1px solid rgba(56, 189, 248, 0.3);
+}
+
+@media (max-width: 768px) {
+  .app-container {
+    padding: 16px;
+    padding-bottom: 90px;
+  }
+
+  .desktop-sidebar {
+    display: none;
+  }
+}
