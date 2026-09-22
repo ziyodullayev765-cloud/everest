@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="uz">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-<title>Barkamol — English Mobile App</title>
+<title>Barkamol — Ingliz Tili Mobil Ilovasi</title>
 <!-- Tailwind CSS CDN -->
 <script src="https://cdn.tailwindcss.com"></script>
 <!-- FontAwesome Icons -->
@@ -42,14 +42,14 @@
     user-select: none;
   }
   
-  body, input, textarea, button {
+  body, input, textarea, button, select {
     user-select: text;
   }
 
   /* Mount Everest Background with Dark Glass Gradient Overlay */
   body {
     background: 
-      linear-gradient(180deg, rgba(11, 19, 43, 0.72) 0%, rgba(15, 23, 42, 0.88) 60%, rgba(2, 6, 23, 0.96) 100%),
+      linear-gradient(180deg, rgba(11, 19, 43, 0.76) 0%, rgba(15, 23, 42, 0.88) 60%, rgba(2, 6, 23, 0.96) 100%),
       url('https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=2000&q=80') center/cover no-repeat fixed;
     font-family: 'Plus Jakarta Sans', sans-serif;
     color: #F8FAFC;
@@ -75,9 +75,13 @@
     transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
+  .glass-card-interactive:hover {
+    border-color: rgba(58, 134, 255, 0.4);
+    background: rgba(30, 41, 59, 0.8);
+  }
+
   .glass-card-interactive:active {
     transform: scale(0.98);
-    background: rgba(30, 41, 59, 0.8);
   }
 
   .glass-pill {
@@ -98,7 +102,6 @@
     box-shadow: 0 0 0 3px rgba(58, 134, 255, 0.25);
   }
 
-  /* Mobile App Notch/Island */
   .dynamic-island {
     box-shadow: 0 8px 20px rgba(0,0,0,0.4);
     backdrop-filter: blur(20px);
@@ -131,16 +134,15 @@
 
 <body class="flex flex-col items-center justify-start min-h-screen pb-24 md:pb-8 pt-2 px-2 sm:px-4">
 
-<!-- Main App Container mimicking sleek smartphone frame on large screens -->
 <div id="app" class="w-full max-w-md md:max-w-4xl mx-auto flex flex-col min-h-[92vh] relative">
 
-  <!-- Mobile Top Status Bar / Notch Header -->
+  <!-- Mobile Top Status Bar / Header -->
   <header class="sticky top-2 z-40 mb-3 px-2">
     <div class="dynamic-island bg-slate-900/80 border border-white/10 rounded-3xl p-3 flex items-center justify-between shadow-2xl">
       <!-- App Brand -->
       <div class="flex items-center gap-2.5">
         <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-blue-600 to-teal-400 flex items-center justify-center text-white shadow-lg shadow-blue-500/30">
-          <i class="fa-solid me-0 fa-mountain text-lg"></i>
+          <i class="fa-solid fa-mountain text-lg"></i>
         </div>
         <div>
           <h1 class="text-base font-extrabold tracking-tight bg-gradient-to-r from-white via-slate-200 to-blue-200 bg-clip-text text-transparent leading-none">
@@ -150,21 +152,24 @@
         </div>
       </div>
 
-      <!-- Role Selector & User Profile -->
+      <!-- Controls: Reset Data & Role Selector -->
       <div class="flex items-center gap-2">
+        <button onclick="confirmResetData()" title="Ma'lumotlarni qayta tiklash" class="w-8 h-8 rounded-xl bg-slate-800/80 hover:bg-slate-700 border border-white/10 flex items-center justify-center text-slate-300 hover:text-red-400 transition">
+          <i class="fa-solid fa-rotate-right text-xs"></i>
+        </button>
+
         <div class="flex bg-slate-950/60 p-1 rounded-2xl border border-white/10 text-xs">
           <button id="roleStudentBtn" onclick="switchRole('student')" class="px-2.5 py-1 rounded-xl font-semibold transition-all duration-200 text-white bg-blue-600 shadow">
-            Student
+            O'quvchi
           </button>
           <button id="roleTeacherBtn" onclick="switchRole('teacher')" class="px-2.5 py-1 rounded-xl font-semibold transition-all duration-200 text-slate-400 hover:text-white">
-            Teacher
+            O'qituvchi
           </button>
         </div>
       </div>
     </div>
   </header>
 
-  <!-- MAIN VIEW CONTAINER -->
   <main class="flex-1 px-1">
 
     <!-- STUDENT VIEW -->
@@ -178,20 +183,20 @@
         <div class="flex items-center justify-between mb-2">
           <div class="flex items-center gap-2">
             <span class="px-2.5 py-1 bg-teal-500/20 text-teal-300 border border-teal-500/30 text-xs font-bold rounded-full">
-              Level B1 Intermediate
+              B1 Intermediate Darajasi
             </span>
             <span class="px-2.5 py-1 bg-amber-500/20 text-amber-300 border border-amber-500/30 text-xs font-bold rounded-full flex items-center gap-1">
-              <i class="fa-solid fa-fire"></i> 5 Day Streak
+              <i class="fa-solid fa-fire"></i> 5 Kunlik Ketma-ketlik
             </span>
           </div>
         </div>
-        <h2 class="text-xl font-bold text-white">Welcome back, Nodira 👋</h2>
-        <p class="text-xs text-slate-300 mt-0.5">Reach your peak performance today. Complete 2 tasks to finish your daily homework.</p>
+        <h2 class="text-xl font-bold text-white">Xush kelibsiz, Nodira 👋</h2>
+        <p class="text-xs text-slate-300 mt-0.5">Bugungi vazifalaringizni bajaring va bilamingizni oshiring.</p>
         
-        <!-- Quick Progress Bar -->
+        <!-- Progress Bar -->
         <div class="mt-4">
           <div class="flex justify-between text-xs font-semibold mb-1">
-            <span class="text-slate-300">Weekly Goal Progress</span>
+            <span class="text-slate-300">Haftalik Bajarilish Ko'rsatkichi</span>
             <span class="text-blue-400" id="completionRateText">75%</span>
           </div>
           <div class="w-full bg-slate-950/50 rounded-full h-2.5 overflow-hidden border border-white/5">
@@ -200,25 +205,25 @@
         </div>
       </div>
 
-      <!-- Category Filter Pills -->
+      <!-- Filter Pills -->
       <div class="flex items-center gap-2 overflow-x-auto pb-1 no-scrollbar text-xs font-medium">
         <button onclick="filterHomeworks('all')" id="filter-all" class="hw-filter-pill px-4 py-2 rounded-2xl glass-pill bg-blue-600/80 text-white border-blue-400/30 shadow">
-          All Tasks
+          Barchasi
         </button>
         <button onclick="filterHomeworks('pending')" id="filter-pending" class="hw-filter-pill px-4 py-2 rounded-2xl glass-pill text-slate-300 hover:text-white">
-          Active <span id="badgePending" class="ml-1 px-1.5 py-0.5 rounded-full bg-amber-500/30 text-amber-300 text-[10px]">2</span>
+          Bajarilmagan <span id="badgePending" class="ml-1 px-1.5 py-0.5 rounded-full bg-amber-500/30 text-amber-300 text-[10px]">0</span>
         </button>
         <button onclick="filterHomeworks('submitted')" id="filter-submitted" class="hw-filter-pill px-4 py-2 rounded-2xl glass-pill text-slate-300 hover:text-white">
-          Submitted
+          Topshirilgan
         </button>
         <button onclick="filterHomeworks('graded')" id="filter-graded" class="hw-filter-pill px-4 py-2 rounded-2xl glass-pill text-slate-300 hover:text-white">
-          Graded
+          Tekshirilgan
         </button>
       </div>
 
       <!-- Homework Tasks List -->
       <div id="studentHwList" class="space-y-3">
-        <!-- Dynamically rendered homework items will go here -->
+        <!-- Rendered by JavaScript -->
       </div>
     </div>
 
@@ -227,75 +232,75 @@
       <!-- Teacher Header Stat Cards -->
       <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
         <div class="glass-card rounded-2xl p-3.5 border border-white/10">
-          <div class="text-xs text-slate-400 font-medium">Active Homeworks</div>
-          <div class="text-2xl font-extrabold text-white mt-1" id="statActiveHws">3</div>
+          <div class="text-xs text-slate-400 font-medium">Faol Topshiriqlar</div>
+          <div class="text-2xl font-extrabold text-white mt-1" id="statActiveHws">0</div>
           <div class="text-[10px] text-teal-400 mt-1 flex items-center gap-1">
-            <i class="fa-solid fa-circle-check"></i> Updated today
+            <i class="fa-solid fa-circle-check"></i> Saqlangan
           </div>
         </div>
 
         <div class="glass-card rounded-2xl p-3.5 border border-white/10">
-          <div class="text-xs text-slate-400 font-medium">Submissions to Grade</div>
-          <div class="text-2xl font-extrabold text-amber-400 mt-1" id="statPendingGrades">4</div>
+          <div class="text-xs text-slate-400 font-medium">Tekshirilishi Kerak</div>
+          <div class="text-2xl font-extrabold text-amber-400 mt-1" id="statPendingGrades">0</div>
           <div class="text-[10px] text-amber-300/80 mt-1 flex items-center gap-1">
-            <i class="fa-solid fa-clock"></i> Requires review
+            <i class="fa-solid fa-clock"></i> Ko'rib chiqiladi
           </div>
         </div>
 
         <div class="glass-card rounded-2xl p-3.5 border border-white/10 col-span-2 sm:col-span-1">
-          <div class="text-xs text-slate-400 font-medium">Group Avg Score</div>
-          <div class="text-2xl font-extrabold text-blue-400 mt-1">91.5%</div>
+          <div class="text-xs text-slate-400 font-medium">Guruh O'rtacha Boli</div>
+          <div class="text-2xl font-extrabold text-blue-400 mt-1" id="statAvgScore">91.5%</div>
           <div class="text-[10px] text-blue-300 mt-1 flex items-center gap-1">
-            <i class="fa-solid fa-arrow-trend-up"></i> Group 4A Intermediate
+            <i class="fa-solid fa-arrow-trend-up"></i> Guruh 4A Intermediate
           </div>
         </div>
       </div>
 
-      <!-- Teacher Navigation Action Bar -->
+      <!-- Teacher Navigation Bar -->
       <div class="flex items-center justify-between bg-slate-900/60 p-1.5 rounded-2xl border border-white/10">
         <div class="flex gap-1 text-xs font-semibold">
           <button id="teacherTabBtnAssignments" onclick="switchTeacherSubTab('assignments')" class="px-3 py-1.5 rounded-xl text-white bg-blue-600 shadow">
-            Assignments
+            Topshiriqlar
           </button>
           <button id="teacherTabBtnGrading" onclick="switchTeacherSubTab('grading')" class="px-3 py-1.5 rounded-xl text-slate-400 hover:text-white">
-            Submissions & Grades
+            Javoblar va Baholash
           </button>
           <button id="teacherTabBtnMatrix" onclick="switchTeacherSubTab('matrix')" class="px-3 py-1.5 rounded-xl text-slate-400 hover:text-white">
-            Progress Matrix
+            Natijalar Jadvali
           </button>
         </div>
         <button onclick="openCreateHomeworkModal()" class="px-3 py-1.5 bg-gradient-to-r from-teal-500 to-blue-600 hover:from-teal-400 hover:to-blue-500 text-white rounded-xl text-xs font-bold shadow-lg flex items-center gap-1.5">
-          <i class="fa-solid fa-plus text-xs"></i> New Task
+          <i class="fa-solid fa-plus text-xs"></i> Yangi Vazifa
         </button>
       </div>
 
-      <!-- Teacher Sub Tab: Assignments List -->
+      <!-- Assignments Tab -->
       <div id="teacherTabAssignments" class="space-y-3">
         <!-- Rendered by JS -->
       </div>
 
-      <!-- Teacher Sub Tab: Submissions & Grading -->
+      <!-- Submissions Tab -->
       <div id="teacherTabGrading" class="hidden space-y-3">
         <!-- Rendered by JS -->
       </div>
 
-      <!-- Teacher Sub Tab: Group Progress Matrix -->
+      <!-- Matrix Tab -->
       <div id="teacherTabMatrix" class="hidden glass-card rounded-3xl p-4 border border-white/10 overflow-x-auto">
         <h3 class="text-sm font-bold text-white mb-3 flex items-center gap-2">
-          <i class="fa-solid fa-chart-grid text-blue-400"></i> Student Submission Matrix (Group 4A)
+          <i class="fa-solid fa-chart-grid text-blue-400"></i> Guruh O'quvchilarining Natijalari Matrix (4A Guruh)
         </h3>
         <table class="w-full text-left text-xs text-slate-300 min-w-[500px]">
           <thead>
             <tr class="border-b border-white/10 text-slate-400">
-              <th class="py-2 px-2">Student Name</th>
-              <th class="py-2 px-2">Unit 7 Vocab</th>
-              <th class="py-2 px-2">Everest Essay</th>
-              <th class="py-2 px-2">Speaking Challenge</th>
-              <th class="py-2 px-2">Avg Score</th>
+              <th class="py-2 px-2">O'quvchi Ismi</th>
+              <th class="py-2 px-2">Lug'at Testi</th>
+              <th class="py-2 px-2">Insho (Essay)</th>
+              <th class="py-2 px-2">Speaking Vazifa</th>
+              <th class="py-2 px-2">O'rtacha Ball</th>
             </tr>
           </thead>
           <tbody id="progressMatrixBody" class="divide-y divide-white/5">
-            <!-- Dynamic Matrix populated by JS -->
+            <!-- Dynamic Matrix -->
           </tbody>
         </table>
       </div>
@@ -304,27 +309,27 @@
 
   </main>
 
-  <!-- MOBILE BOTTOM NATIVE APP NAVBAR -->
+  <!-- Mobile Navigation Bar -->
   <nav class="fixed bottom-3 left-1/2 -translate-x-1/2 w-[92%] max-w-md bg-slate-950/85 backdrop-blur-2xl border border-white/15 rounded-3xl py-2 px-4 shadow-2xl z-40 flex items-center justify-around text-slate-400">
     <button onclick="setMobileNav('tasks')" id="navBtnTasks" class="flex flex-col items-center gap-1 text-blue-400 transition-all duration-200">
       <i class="fa-solid fa-book-bookmark text-lg"></i>
-      <span class="text-[10px] font-semibold">Tasks</span>
+      <span class="text-[10px] font-semibold">Vazifalar</span>
     </button>
     <button onclick="setMobileNav('practice')" id="navBtnPractice" class="flex flex-col items-center gap-1 hover:text-white transition-all duration-200">
       <i class="fa-solid fa-wand-magic-sparkles text-lg"></i>
-      <span class="text-[10px] font-semibold">Practice</span>
+      <span class="text-[10px] font-semibold">Mashqlar</span>
     </button>
     <button onclick="setMobileNav('analytics')" id="navBtnAnalytics" class="flex flex-col items-center gap-1 hover:text-white transition-all duration-200">
       <i class="fa-solid fa-chart-line text-lg"></i>
-      <span class="text-[10px] font-semibold">Stats</span>
+      <span class="text-[10px] font-semibold">Statistika</span>
     </button>
   </nav>
 
 </div>
 
-<!-- MODAL: STUDENT HOMEWORK SUBMISSION & INTERACTIVE TASK EXECUTION -->
+<!-- MODAL: STUDENT HOMEWORK SUBMISSION -->
 <div id="studentHwModal" class="fixed inset-0 z-50 hidden bg-slate-950/80 backdrop-blur-md flex items-end sm:items-center justify-center p-0 sm:p-4 overflow-y-auto">
-  <div class="glass-card w-full max-w-lg bg-slate-900/90 rounded-t-3xl sm:rounded-3xl border border-white/20 p-5 max-h-[90vh] overflow-y-auto shadow-2xl flex flex-col space-y-4">
+  <div class="glass-card w-full max-w-lg bg-slate-900/95 rounded-t-3xl sm:rounded-3xl border border-white/20 p-5 max-h-[90vh] overflow-y-auto shadow-2xl flex flex-col space-y-4">
     
     <!-- Modal Header -->
     <div class="flex items-center justify-between pb-3 border-b border-white/10">
@@ -337,100 +342,85 @@
       </button>
     </div>
 
-    <!-- Task Description & Teacher Media Attachments -->
+    <!-- Instructions & Attachments -->
     <div class="space-y-3 text-xs text-slate-300">
       <div class="bg-slate-950/50 p-3.5 rounded-2xl border border-white/10">
-        <h4 class="font-bold text-white mb-1 text-xs">Instructions from Teacher:</h4>
-        <p id="modalTaskDesc" class="leading-relaxed">Complete vocabulary translations, practice audio reading, and upload notebook photos.</p>
+        <h4 class="font-bold text-white mb-1 text-xs">O'qituvchidan Topshiriq Yo'riqnomasi:</h4>
+        <p id="modalTaskDesc" class="leading-relaxed">Barcha lug'atlarni yodlang, audio yozib qoldiring hamda daftaringizdagi mashq rasmini yuklang.</p>
         
-        <!-- Teacher Attachments Container -->
+        <!-- Teacher Reference Media -->
         <div id="modalTeacherAttachments" class="mt-3 space-y-2 hidden">
-          <div class="text-[11px] font-semibold text-slate-400">Teacher Attached Reference Media:</div>
-          <!-- Teacher Images -->
+          <div class="text-[11px] font-semibold text-slate-400">O'qituvchi tomonidan biriktirilgan rasm/audio:</div>
           <div id="modalTeacherImages" class="grid grid-cols-4 gap-2"></div>
-          <!-- Teacher Audio -->
-          <div id="modalTeacherAudio" class="hidden"></div>
+          <div id="modalTeacherAudio" class="hidden mt-2">
+            <audio id="modalTeacherAudioPlayer" controls class="w-full h-8 text-xs"></audio>
+          </div>
         </div>
       </div>
 
-      <!-- SECTION 1: VOCABULARY MATCH / PRACTICE -->
+      <!-- SECTION 1: VOCABULARY -->
       <div id="sectionVocab" class="hidden space-y-2 bg-slate-950/40 p-3 rounded-2xl border border-white/10">
         <div class="flex items-center justify-between">
           <span class="font-bold text-white text-xs flex items-center gap-1.5">
-            <i class="fa-solid fa-spell-check text-teal-400"></i> Vocabulary Pronunciation & Check
+            <i class="fa-solid fa-spell-check text-teal-400"></i> Yangi Lug'at va Talaffuz
           </span>
-          <span class="text-[10px] text-slate-400">Click speaker to listen</span>
+          <span class="text-[10px] text-slate-400">Karnayni bosing</span>
         </div>
         <div id="vocabListContainer" class="space-y-2">
           <!-- Populated dynamically -->
         </div>
       </div>
 
-      <!-- SECTION 2: SENTENCE BUILDER / TRANSLATION -->
+      <!-- SECTION 2: SENTENCES / ANSWERS -->
       <div id="sectionSentences" class="hidden space-y-2 bg-slate-950/40 p-3 rounded-2xl border border-white/10">
         <div class="flex items-center justify-between">
           <span class="font-bold text-white text-xs flex items-center gap-1.5">
-            <i class="fa-solid fa-pen-nib text-blue-400"></i> Translation & Sentence Construction
+            <i class="fa-solid fa-pen-nib text-blue-400"></i> Tarjima yoki Yozma Javoblar
           </span>
           <button type="button" onclick="addSentenceInput()" class="text-[11px] text-blue-400 hover:underline flex items-center gap-1 font-semibold">
-            <i class="fa-solid fa-plus"></i> Add Sentence
+            <i class="fa-solid fa-plus"></i> Javob Qo'shish
           </button>
         </div>
         <div id="sentenceInputsContainer" class="space-y-2">
-          <!-- Dynamically added sentence fields -->
+          <!-- Sentences inputs -->
         </div>
       </div>
 
-      <!-- SECTION 3: MULTI-IMAGE UPLOAD (UP TO 4 PHOTOS) -->
+      <!-- SECTION 3: MULTI-IMAGE UPLOAD (UP TO 4) -->
       <div class="space-y-2 bg-slate-950/40 p-3 rounded-2xl border border-white/10">
         <div class="flex items-center justify-between">
           <span class="font-bold text-white text-xs flex items-center gap-1.5">
-            <i class="fa-solid fa-images text-amber-400"></i> Notebook / Worksheet Proof (Up to 4 Images)
+            <i class="fa-solid fa-images text-amber-400"></i> Daftar yoki Kitob Rasmlari (4 tagacha)
           </span>
           <span id="imgSlotCounter" class="text-[10px] font-bold text-amber-400">0 / 4 Uploaded</span>
         </div>
-        <p class="text-[11px] text-slate-400">Attach clear photos of your written notebooks or workbooks.</p>
+        <p class="text-[11px] text-slate-400">Daftaringizga yozilgan mashqlarni rasmga olib yuklang.</p>
         
-        <!-- 4 Image Slots Grid -->
-        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 pt-1">
-          <!-- Image Slots 0 to 3 -->
-          <template id="imgSlotTemplate">
-            <div class="image-upload-slot relative h-24 rounded-2xl border-2 border-dashed border-white/20 bg-slate-900/60 flex flex-col items-center justify-center text-center cursor-pointer hover:border-blue-500 transition-all overflow-hidden group">
-              <input type="file" accept="image/*" class="slot-file-input absolute inset-0 opacity-0 cursor-pointer z-10">
-              <div class="slot-empty-state flex flex-col items-center gap-1 text-slate-400 group-hover:text-blue-300">
-                <i class="fa-solid fa-camera text-lg"></i>
-                <span class="text-[10px] font-semibold">Add Photo</span>
-              </div>
-              <img class="slot-preview hidden w-full h-full object-cover rounded-xl" src="" alt="Preview">
-              <button type="button" class="slot-remove-btn hidden absolute top-1.5 right-1.5 z-20 w-6 h-6 rounded-full bg-red-600/90 text-white text-xs flex items-center justify-center shadow-lg hover:bg-red-500">
-                <i class="fa-solid fa-xmark"></i>
-              </button>
-            </div>
-          </template>
-          <div id="studentImageSlotsGrid" class="contents"></div>
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 pt-1" id="studentImageSlotsGrid">
+          <!-- Slots injected via JS -->
         </div>
       </div>
 
-      <!-- SECTION 4: AUDIO RECORDING OR FILE UPLOAD -->
+      <!-- SECTION 4: VOICE AUDIO SUBMISSION -->
       <div class="space-y-2 bg-slate-950/40 p-3 rounded-2xl border border-white/10">
         <span class="font-bold text-white text-xs flex items-center gap-1.5">
-          <i class="fa-solid fa-microphone text-rose-400"></i> Speaking / Voice Submission
+          <i class="fa-solid fa-microphone text-rose-400"></i> Ovozli Javob (Speaking Submission)
         </span>
-        <p class="text-[11px] text-slate-400">Record voice note directly or upload an audio file.</p>
+        <p class="text-[11px] text-slate-400">Ovozingizni to'g'ridan-to'g mekronda yozib oling yoki fayl yuklang.</p>
 
         <div class="flex flex-col sm:flex-row items-center gap-2 pt-1">
           <!-- Voice Recorder Toggle Button -->
           <button type="button" id="recordAudioBtn" onclick="toggleAudioRecording()" class="w-full sm:w-auto flex-1 py-2.5 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-semibold text-xs flex items-center justify-center gap-2 border border-white/10 transition">
             <i id="recordIcon" class="fa-solid fa-microphone text-rose-400"></i>
-            <span id="recordStatusText">Start Voice Recording</span>
+            <span id="recordStatusText">Ovoz Yozishni Boshlash</span>
           </button>
 
-          <span class="text-[10px] text-slate-500 font-bold uppercase">or</span>
+          <span class="text-[10px] text-slate-500 font-bold uppercase">yoki</span>
 
           <!-- Audio File Upload Input -->
           <label class="w-full sm:w-auto flex-1 py-2.5 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold text-xs flex items-center justify-center gap-2 border border-white/10 cursor-pointer text-center">
             <i class="fa-solid fa-file-audio text-blue-400"></i>
-            <span>Upload MP3/M4A</span>
+            <span>Audio Fayl (MP3)</span>
             <input type="file" id="audioFileInput" accept="audio/*" onchange="handleAudioFileUpload(event)" class="hidden">
           </label>
         </div>
@@ -446,19 +436,19 @@
 
       <!-- Additional Notes Field -->
       <div>
-        <label class="block text-[11px] font-semibold text-slate-400 mb-1">Student Notes / Message to Teacher:</label>
-        <textarea id="studentComments" rows="2" class="glass-input w-full p-2.5 rounded-xl text-xs" placeholder="Add any comments about your homework..."></textarea>
+        <label class="block text-[11px] font-semibold text-slate-400 mb-1">O'qituvchiga Xabar / Izoh:</label>
+        <textarea id="studentComments" rows="2" class="glass-input w-full p-2.5 rounded-xl text-xs" placeholder="Vazifa bo'yicha izohingiz..."></textarea>
       </div>
 
     </div>
 
-    <!-- Modal Footer Actions -->
+    <!-- Modal Actions -->
     <div class="flex items-center justify-end gap-2 pt-3 border-t border-white/10">
       <button onclick="closeStudentHwModal()" class="px-4 py-2 rounded-xl text-xs font-semibold text-slate-300 hover:bg-white/5">
-        Cancel
+        Bekor Qilish
       </button>
       <button onclick="submitStudentHomework()" class="px-5 py-2.5 rounded-xl text-xs font-bold text-white bg-gradient-to-r from-blue-600 to-teal-500 hover:from-blue-500 hover:to-teal-400 shadow-lg shadow-blue-500/20 flex items-center gap-1.5">
-        <i class="fa-solid fa-paper-plane"></i> Submit Homework
+        <i class="fa-solid fa-paper-plane"></i> Vazifani Topshirish
       </button>
     </div>
 
@@ -467,10 +457,10 @@
 
 <!-- MODAL: TEACHER CREATE / EDIT HOMEWORK -->
 <div id="teacherHwModal" class="fixed inset-0 z-50 hidden bg-slate-950/80 backdrop-blur-md flex items-end sm:items-center justify-center p-0 sm:p-4 overflow-y-auto">
-  <div class="glass-card w-full max-w-lg bg-slate-900/90 rounded-t-3xl sm:rounded-3xl border border-white/20 p-5 max-h-[90vh] overflow-y-auto shadow-2xl space-y-4">
+  <div class="glass-card w-full max-w-lg bg-slate-900/95 rounded-t-3xl sm:rounded-3xl border border-white/20 p-5 max-h-[90vh] overflow-y-auto shadow-2xl space-y-4">
     
     <div class="flex items-center justify-between pb-3 border-b border-white/10">
-      <h3 id="teacherModalTitle" class="text-lg font-extrabold text-white">Create Homework Assignment</h3>
+      <h3 id="teacherModalTitle" class="text-lg font-extrabold text-white">Yangi Uy Vazifasi Yaratish</h3>
       <button onclick="closeTeacherHwModal()" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-slate-300">
         <i class="fa-solid fa-xmark"></i>
       </button>
@@ -478,13 +468,13 @@
 
     <form id="teacherHwForm" onsubmit="saveTeacherHomework(event)" class="space-y-3 text-xs">
       <div>
-        <label class="block text-slate-300 font-semibold mb-1">Homework Title</label>
-        <input type="text" id="tHwTitle" required class="glass-input w-full p-2.5 rounded-xl" placeholder="e.g., Unit 8: Everest Adventure Reading">
+        <label class="block text-slate-300 font-semibold mb-1">Vazifa Sarlavhasi</label>
+        <input type="text" id="tHwTitle" required class="glass-input w-full p-2.5 rounded-xl" placeholder="Masalan: Unit 8: Everest Adventure Reading">
       </div>
 
       <div class="grid grid-cols-2 gap-2">
         <div>
-          <label class="block text-slate-300 font-semibold mb-1">Category</label>
+          <label class="block text-slate-300 font-semibold mb-1">Kategoriya</label>
           <select id="tHwCategory" class="glass-input w-full p-2.5 rounded-xl bg-slate-900 text-white">
             <option value="Vocabulary & Grammar">Vocabulary & Grammar</option>
             <option value="Reading & Writing">Reading & Writing</option>
@@ -493,26 +483,26 @@
           </select>
         </div>
         <div>
-          <label class="block text-slate-300 font-semibold mb-1">Due Date</label>
+          <label class="block text-slate-300 font-semibold mb-1">Topshirish Muddati</label>
           <input type="date" id="tHwDueDate" required class="glass-input w-full p-2.5 rounded-xl">
         </div>
       </div>
 
       <div>
-        <label class="block text-slate-300 font-semibold mb-1">Detailed Instructions</label>
-        <textarea id="tHwInstructions" rows="3" required class="glass-input w-full p-2.5 rounded-xl" placeholder="Provide step by step instructions for students..."></textarea>
+        <label class="block text-slate-300 font-semibold mb-1">Topshiriq Yo'riqnomasi</label>
+        <textarea id="tHwInstructions" rows="3" required class="glass-input w-full p-2.5 rounded-xl" placeholder="O'quvchilar uchun batafsil tushuntirish..."></textarea>
       </div>
 
-      <!-- Teacher Reference Vocabulary Inputs -->
+      <!-- Teacher Vocab List -->
       <div class="p-3 bg-slate-950/40 rounded-2xl border border-white/10 space-y-2">
-        <label class="block font-bold text-white text-xs">Vocabulary Words for Practice (Comma separated)</label>
+        <label class="block font-bold text-white text-xs">O'rganilishi Kerak Bo'lgan So'zlar (Vergul bilan)</label>
         <input type="text" id="tHwVocab" class="glass-input w-full p-2.5 rounded-xl" placeholder="summit, expedition, glacier, oxygen">
       </div>
 
-      <!-- Teacher Multi-Image Reference Attachments (Up to 4) -->
+      <!-- Teacher Multi-Image Attachments -->
       <div class="p-3 bg-slate-950/40 rounded-2xl border border-white/10 space-y-2">
         <div class="flex items-center justify-between">
-          <label class="font-bold text-white text-xs">Attach Reference Materials (Up to 4 Photos)</label>
+          <label class="font-bold text-white text-xs">Biriktiriluvchi Rasmlar (4 tagacha)</label>
           <span id="tImgSlotCounter" class="text-[10px] text-amber-400 font-bold">0 / 4</span>
         </div>
         <div class="grid grid-cols-4 gap-2 pt-1" id="teacherImageSlotsGrid">
@@ -520,89 +510,89 @@
         </div>
       </div>
 
-      <!-- Teacher Reference Audio Attachment -->
+      <!-- Teacher Audio Attachment -->
       <div class="p-3 bg-slate-950/40 rounded-2xl border border-white/10 space-y-2">
-        <label class="block font-bold text-white text-xs">Attach Listening Sample Audio (Optional)</label>
+        <label class="block font-bold text-white text-xs">Audio Namuna Biriktirish (Ixtiyoriy)</label>
         <label class="w-full py-2 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold text-xs flex items-center justify-center gap-2 border border-white/10 cursor-pointer">
           <i class="fa-solid fa-cloud-arrow-up text-blue-400"></i>
-          <span id="tAudioFileName">Select Audio Sample File</span>
+          <span id="tAudioFileName">Audio fayl tanlang</span>
           <input type="file" id="tAudioFileInput" accept="audio/*" onchange="handleTeacherAudioUpload(event)" class="hidden">
         </label>
       </div>
 
       <div class="flex justify-end gap-2 pt-2">
-        <button type="button" onclick="closeTeacherHwModal()" class="px-4 py-2 rounded-xl text-slate-300 hover:bg-white/5">Cancel</button>
-        <button type="submit" class="px-5 py-2 rounded-xl font-bold text-white bg-blue-600 hover:bg-blue-500 shadow-lg">Save Assignment</button>
+        <button type="button" onclick="closeTeacherHwModal()" class="px-4 py-2 rounded-xl text-slate-300 hover:bg-white/5">Bekor Qilish</button>
+        <button type="submit" class="px-5 py-2 rounded-xl font-bold text-white bg-blue-600 hover:bg-blue-500 shadow-lg">Saqlash</button>
       </div>
     </form>
   </div>
 </div>
 
-<!-- MODAL: TEACHER GRADE SUBMISSION & LIGHTBOX -->
+<!-- MODAL: TEACHER GRADE SUBMISSION -->
 <div id="gradeSubmissionModal" class="fixed inset-0 z-50 hidden bg-slate-950/80 backdrop-blur-md flex items-end sm:items-center justify-center p-0 sm:p-4 overflow-y-auto">
   <div class="glass-card w-full max-w-lg bg-slate-900/95 rounded-t-3xl sm:rounded-3xl border border-white/20 p-5 max-h-[90vh] overflow-y-auto shadow-2xl space-y-4">
     
     <div class="flex items-center justify-between pb-3 border-b border-white/10">
       <div>
-        <h3 class="text-base font-extrabold text-white" id="gradeStudentName">Review Submission</h3>
-        <span class="text-[10px] text-slate-400" id="gradeHwTitle">Task: Everest Reading</span>
+        <h3 class="text-base font-extrabold text-white" id="gradeStudentName">O'quvchi Javobini Tekshirish</h3>
+        <span class="text-[10px] text-slate-400" id="gradeHwTitle">Mavzu: Everest Reading</span>
       </div>
       <button onclick="closeGradeModal()" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-slate-300">
         <i class="fa-solid fa-xmark"></i>
       </button>
     </div>
 
-    <!-- Student Submission Content Display -->
+    <!-- Student Submission Details -->
     <div class="space-y-3 text-xs">
       
-      <!-- Submitted Images Lightbox -->
+      <!-- Submitted Images -->
       <div id="gradeImagesSection" class="p-3 bg-slate-950/50 rounded-2xl border border-white/10 space-y-2">
-        <span class="font-bold text-white text-xs block">Submitted Notebook Photos:</span>
+        <span class="font-bold text-white text-xs block">O'quvchi Yuklagan Rasmlar:</span>
         <div id="gradeImagesGrid" class="grid grid-cols-4 gap-2"></div>
       </div>
 
-      <!-- Submitted Audio Player -->
+      <!-- Submitted Audio -->
       <div id="gradeAudioSection" class="p-3 bg-slate-950/50 rounded-2xl border border-white/10 space-y-2 hidden">
-        <span class="font-bold text-white text-xs block">Submitted Audio Recording:</span>
+        <span class="font-bold text-white text-xs block">O'quvchi Audio Javobi:</span>
         <audio id="gradeAudioPlayer" controls class="w-full h-8 text-xs"></audio>
       </div>
 
       <!-- Submitted Written Sentences -->
       <div id="gradeSentencesSection" class="p-3 bg-slate-950/50 rounded-2xl border border-white/10 space-y-2 hidden">
-        <span class="font-bold text-white text-xs block">Submitted Sentences / Answers:</span>
+        <span class="font-bold text-white text-xs block">Yozma Javoblar:</span>
         <div id="gradeSentencesList" class="space-y-1.5 text-slate-300"></div>
       </div>
 
       <!-- Student Notes -->
       <div class="p-3 bg-slate-950/50 rounded-2xl border border-white/10">
-        <span class="font-bold text-white text-xs block mb-1">Student Note:</span>
-        <p id="gradeStudentNote" class="text-slate-300 italic text-[11px]">No extra comment provided.</p>
+        <span class="font-bold text-white text-xs block mb-1">O'quvchi Izohi:</span>
+        <p id="gradeStudentNote" class="text-slate-300 italic text-[11px]">Izoh qoldirilmagan.</p>
       </div>
 
       <!-- Grading Form -->
       <form id="gradingForm" onsubmit="saveGradeSubmission(event)" class="space-y-3 pt-2">
         <div class="grid grid-cols-2 gap-2">
           <div>
-            <label class="block text-slate-300 font-semibold mb-1">Score Grade (%)</label>
+            <label class="block text-slate-300 font-semibold mb-1">Baho (%)</label>
             <input type="number" id="gradeScoreInput" min="0" max="100" required class="glass-input w-full p-2.5 rounded-xl font-bold text-teal-400" placeholder="95">
           </div>
           <div>
-            <label class="block text-slate-300 font-semibold mb-1">Status</label>
+            <label class="block text-slate-300 font-semibold mb-1">Holat</label>
             <select id="gradeStatusInput" class="glass-input w-full p-2.5 rounded-xl bg-slate-900 text-white">
-              <option value="graded">Graded & Completed</option>
-              <option value="revision">Needs Revision</option>
+              <option value="graded">Baho Berildi</option>
+              <option value="revision">Qayta Bajarish Tavsiya Etiladi</option>
             </select>
           </div>
         </div>
 
         <div>
-          <label class="block text-slate-300 font-semibold mb-1">Teacher Feedback & Advice</label>
-          <textarea id="gradeFeedbackInput" rows="3" required class="glass-input w-full p-2.5 rounded-xl" placeholder="Great job on handwriting and pronunciation! Work on past perfect tense..."></textarea>
+          <label class="block text-slate-300 font-semibold mb-1">O'qituvchi Fikri va Maslahati</label>
+          <textarea id="gradeFeedbackInput" rows="3" required class="glass-input w-full p-2.5 rounded-xl" placeholder="Ajoyib ish! Talaffuz ustida biroz ishlash kerak..."></textarea>
         </div>
 
         <div class="flex justify-end gap-2 pt-2">
-          <button type="button" onclick="closeGradeModal()" class="px-4 py-2 rounded-xl text-slate-300 hover:bg-white/5">Cancel</button>
-          <button type="submit" class="px-5 py-2 rounded-xl font-bold text-white bg-gradient-to-r from-teal-500 to-blue-600 shadow-lg">Save Grade & Review</button>
+          <button type="button" onclick="closeGradeModal()" class="px-4 py-2 rounded-xl text-slate-300 hover:bg-white/5">Bekor Qilish</button>
+          <button type="submit" class="px-5 py-2 rounded-xl font-bold text-white bg-gradient-to-r from-teal-500 to-blue-600 shadow-lg">Bahoni Saqlash</button>
         </div>
       </form>
 
@@ -611,40 +601,54 @@
   </div>
 </div>
 
-<!-- LIGHTBOX ZOOM MODAL FOR FULL SCREEN IMAGE VIEW -->
+<!-- LIGHTBOX ZOOM MODAL -->
 <div id="lightboxModal" class="fixed inset-0 z-50 hidden bg-black/90 backdrop-blur-lg flex items-center justify-center p-4" onclick="closeLightbox()">
   <div class="relative max-w-3xl max-h-[90vh] flex items-center justify-center" onclick="event.stopPropagation()">
     <img id="lightboxImg" class="max-w-full max-h-[85vh] rounded-2xl object-contain shadow-2xl border border-white/20" src="" alt="Zoomed view">
     <button onclick="closeLightbox()" class="absolute -top-10 right-0 text-white text-xl p-2 hover:text-slate-300">
-      <i class="fa-solid fa-xmark"></i> Close
+      <i class="fa-solid fa-xmark"></i> Yopish
     </button>
   </div>
 </div>
 
+<!-- TEMPLATE FOR IMAGE UPLOAD SLOT -->
+<template id="imgSlotTemplate">
+  <div class="image-upload-slot relative h-24 rounded-2xl border-2 border-dashed border-white/20 bg-slate-900/60 flex flex-col items-center justify-center text-center cursor-pointer hover:border-blue-500 transition-all overflow-hidden group">
+    <input type="file" accept="image/*" class="slot-file-input absolute inset-0 opacity-0 cursor-pointer z-10">
+    <div class="slot-empty-state flex flex-col items-center gap-1 text-slate-400 group-hover:text-blue-300">
+      <i class="fa-solid fa-camera text-lg"></i>
+      <span class="text-[10px] font-semibold">Rasm Qo'shish</span>
+    </div>
+    <img class="slot-preview hidden w-full h-full object-cover rounded-xl" src="" alt="Preview">
+    <button type="button" class="slot-remove-btn hidden absolute top-1.5 right-1.5 z-20 w-6 h-6 rounded-full bg-red-600/90 text-white text-xs flex items-center justify-center shadow-lg hover:bg-red-500">
+      <i class="fa-solid fa-xmark"></i>
+    </button>
+  </div>
+</template>
+
 <script>
 /**
- * BARKAMOL ENGLISH HOMEWORK APP - CORE LOGIC
+ * BARKAMOL ENGLISH HOMEWORK APP - PERSISTENT ENGINE
  */
 
-// Initial Seed Data with 4-image array support & audio attachments
 const DEFAULT_HOMEWORKS = [
   {
     id: 'hw-101',
     title: 'Unit 7: Conquer Mount Everest',
     category: 'Vocabulary & Grammar',
     dueDate: '2026-10-05',
-    instructions: '1. Learn the 4 target vocabulary terms below. Test speech pronunciation.\n2. Write 3 original sentences using past continuous tense.\n3. Take photos of your workbook (up to 4 photos).\n4. Record reading the paragraph out loud.',
+    instructions: '1. Quyidagi 4 ta lug\'at so\'zni yod oling va talaffuzini eshiting.\n2. Past continuous zamonida 3 ta gap tuzing.\n3. Daftaringizdagi bajarilgan mashq rasmini yuklang.\n4. Matnni ovozli tarzda o\'qib yozib qoldiring.',
     vocabList: ['Summit', 'Expedition', 'Glacier', 'Acclimate'],
     teacherImages: ['https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=400&q=80'],
     teacherAudio: null,
-    status: 'pending', // pending, submitted, graded
+    status: 'pending'
   },
   {
     id: 'hw-102',
     title: 'Speaking Challenge: My Favorite Hobby',
     category: 'Speaking Challenge',
     dueDate: '2026-10-02',
-    instructions: 'Record a 60-second voice note speaking in English about your favorite weekend hobby. Include photos of your outline if possible.',
+    instructions: 'Sevimli mashg\'ulotingiz haqida 60 soniyalik ovozli xabar qoldiring.',
     vocabList: ['Passionate', 'Enthusiastic', 'Leisure', 'Dedication'],
     teacherImages: [],
     teacherAudio: null,
@@ -653,12 +657,11 @@ const DEFAULT_HOMEWORKS = [
       studentName: 'Nodira Alimova',
       submittedAt: '2026-09-21',
       images: [
-        'https://images.unsplash.com/photo-1455390582262-044cdead277a?auto=format&fit=crop&w=400&q=80',
-        'https://images.unsplash.com/photo-1517842645767-c639042777db?auto=format&fit=crop&w=400&q=80'
+        'https://images.unsplash.com/photo-1455390582262-044cdead277a?auto=format&fit=crop&w=400&q=80'
       ],
-      audio: 'demo-audio-placeholder',
+      audio: null,
       sentences: ['I am passionate about mountaineering.', 'In my leisure time, I study English grammar.'],
-      studentNotes: 'I recorded two takes, hope my pronunciation is good!',
+      studentNotes: 'Talaffuzimni tekshirib bering iltimos!',
       grade: null,
       feedback: null
     }
@@ -668,7 +671,7 @@ const DEFAULT_HOMEWORKS = [
     title: 'Grammar Focus: Present Perfect vs Past Simple',
     category: 'Vocabulary & Grammar',
     dueDate: '2026-09-18',
-    instructions: 'Complete exercises 1 to 5 on page 42. Attach clear photos of your handwriting.',
+    instructions: '42-betdagi 1-5 mashqlarni bajaring.',
     vocabList: ['Already', 'Yet', 'Ever', 'Never'],
     teacherImages: [],
     teacherAudio: null,
@@ -679,9 +682,9 @@ const DEFAULT_HOMEWORKS = [
       images: ['https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&w=400&q=80'],
       audio: null,
       sentences: ['I have already finished my homework.', 'She visited Tashkent last year.'],
-      studentNotes: 'Done on Thursday evening.',
+      studentNotes: 'Barcha mashqlar bajarildi.',
       grade: 95,
-      feedback: 'Excellent work Nodira! Handwriting is clear and grammar is accurate.'
+      feedback: 'Ajoyib natija Nodira! Grammatika va yozuv judayam toza.'
     }
   }
 ];
@@ -689,58 +692,77 @@ const DEFAULT_HOMEWORKS = [
 // Application Global State
 let appState = {
   role: 'student', // 'student' or 'teacher'
-  teacherSubTab: 'assignments', // 'assignments', 'grading', 'matrix'
+  teacherSubTab: 'assignments',
   homeworks: [],
   currentFilter: 'all',
   activeHwId: null,
   
-  // Student active submission state (temporary holding area for modal)
   studentMedia: {
-    images: [null, null, null, null], // Max 4 slots
-    audioBlob: null,
-    audioUrl: null
+    images: [null, null, null, null],
+    audioBase64: null
   },
   
-  // Teacher modal temporary holding state
   teacherMedia: {
     images: [null, null, null, null],
-    audioBlob: null,
-    audioUrl: null
+    audioBase64: null
   },
 
-  // Audio recording state
   mediaRecorder: null,
   audioChunks: [],
   isRecording: false
 };
 
-// Initialize App
 document.addEventListener('DOMContentLoaded', () => {
   loadStoredData();
   renderApp();
 });
 
 function loadStoredData() {
-  const saved = localStorage.getItem('barkamol_hw_data_v2');
-  if (saved) {
+  const savedData = localStorage.getItem('barkamol_hw_app_v3');
+  const savedRole = localStorage.getItem('barkamol_app_role');
+
+  if (savedRole) {
+    appState.role = savedRole;
+  }
+
+  if (savedData) {
     try {
-      appState.homeworks = JSON.parse(saved);
+      appState.homeworks = JSON.parse(savedData);
     } catch (e) {
-      appState.homeworks = DEFAULT_HOMEWORKS;
+      appState.homeworks = JSON.parse(JSON.stringify(DEFAULT_HOMEWORKS));
     }
   } else {
-    appState.homeworks = DEFAULT_HOMEWORKS;
+    appState.homeworks = JSON.parse(JSON.stringify(DEFAULT_HOMEWORKS));
     saveToStorage();
   }
 }
 
 function saveToStorage() {
-  localStorage.setItem('barkamol_hw_data_v2', JSON.stringify(appState.homeworks));
+  try {
+    localStorage.setItem('barkamol_hw_app_v3', JSON.stringify(appState.homeworks));
+    localStorage.setItem('barkamol_app_role', appState.role);
+  } catch (e) {
+    console.warn("Storage warning (Quota exceeded or local restriction):", e);
+  }
+}
+
+function confirmResetData() {
+  if (confirm("Barcha saqlangan ma'lumotlarni o'chirib, dastlabki holatga qaytarishni xohlaysizmi?")) {
+    localStorage.removeItem('barkamol_hw_app_v3');
+    localStorage.removeItem('barkamol_app_role');
+    appState.homeworks = JSON.parse(JSON.stringify(DEFAULT_HOMEWORKS));
+    appState.role = 'student';
+    saveToStorage();
+    switchRole('student');
+    renderApp();
+  }
 }
 
 // Role Switcher
 function switchRole(role) {
   appState.role = role;
+  saveToStorage();
+
   const sBtn = document.getElementById('roleStudentBtn');
   const tBtn = document.getElementById('roleTeacherBtn');
   const studentView = document.getElementById('studentView');
@@ -777,7 +799,6 @@ function switchTeacherSubTab(tab) {
   renderTeacherView();
 }
 
-// RENDER FUNCTIONS
 function renderApp() {
   renderStudentView();
   renderTeacherView();
@@ -808,16 +829,23 @@ function renderStudentView() {
     list = list.filter(h => h.status === 'graded');
   }
 
-  // Update Pending badge count
   const pendingCount = appState.homeworks.filter(h => h.status === 'pending').length;
   document.getElementById('badgePending').innerText = pendingCount;
+
+  // Calculate percentage
+  const total = appState.homeworks.length;
+  const completed = appState.homeworks.filter(h => h.status === 'graded' || h.status === 'submitted').length;
+  const percent = total > 0 ? Math.round((completed / total) * 100) : 100;
+  
+  document.getElementById('completionRateText').innerText = percent + '%';
+  document.getElementById('completionProgressBar').style.width = percent + '%';
 
   if (list.length === 0) {
     container.innerHTML = `
       <div class="glass-card rounded-3xl p-8 text-center text-slate-400 space-y-2 border border-white/10">
         <i class="fa-solid fa-square-check text-4xl text-teal-400 mb-1"></i>
-        <h4 class="font-bold text-white text-base">All Caught Up!</h4>
-        <p class="text-xs">No tasks found in this section.</p>
+        <h4 class="font-bold text-white text-base">Vazifalar Yo'q</h4>
+        <p class="text-xs">Ushbu bo'limda hech qanday topshiriq topilmadi.</p>
       </div>
     `;
     return;
@@ -826,11 +854,11 @@ function renderStudentView() {
   list.forEach(hw => {
     let statusBadge = '';
     if (hw.status === 'pending') {
-      statusBadge = `<span class="px-2.5 py-1 bg-amber-500/20 text-amber-300 border border-amber-500/30 text-[10px] font-bold rounded-full flex items-center gap-1"><i class="fa-solid fa-clock"></i> Pending</span>`;
+      statusBadge = `<span class="px-2.5 py-1 bg-amber-500/20 text-amber-300 border border-amber-500/30 text-[10px] font-bold rounded-full flex items-center gap-1"><i class="fa-solid fa-clock"></i> Bajarilmagan</span>`;
     } else if (hw.status === 'submitted') {
-      statusBadge = `<span class="px-2.5 py-1 bg-blue-500/20 text-blue-300 border border-blue-500/30 text-[10px] font-bold rounded-full flex items-center gap-1"><i class="fa-solid fa-spinner fa-spin"></i> Submitted</span>`;
+      statusBadge = `<span class="px-2.5 py-1 bg-blue-500/20 text-blue-300 border border-blue-500/30 text-[10px] font-bold rounded-full flex items-center gap-1"><i class="fa-solid fa-spinner fa-spin"></i> Topshirilgan</span>`;
     } else if (hw.status === 'graded') {
-      statusBadge = `<span class="px-2.5 py-1 bg-teal-500/20 text-teal-300 border border-teal-500/30 text-[10px] font-bold rounded-full flex items-center gap-1"><i class="fa-solid fa-star"></i> Grade: ${hw.submission?.grade || 100}%</span>`;
+      statusBadge = `<span class="px-2.5 py-1 bg-teal-500/20 text-teal-300 border border-teal-500/30 text-[10px] font-bold rounded-full flex items-center gap-1"><i class="fa-solid fa-star"></i> Baholandi: ${hw.submission?.grade || 100}%</span>`;
     }
 
     const card = document.createElement('div');
@@ -850,11 +878,11 @@ function renderStudentView() {
 
       <div class="flex items-center justify-between pt-2 border-t border-white/10 text-xs text-slate-400">
         <div class="flex items-center gap-3">
-          <span class="flex items-center gap-1"><i class="fa-regular fa-calendar text-slate-400"></i> Due ${hw.dueDate}</span>
-          ${hw.vocabList?.length ? `<span class="flex items-center gap-1 text-teal-300"><i class="fa-solid fa-book"></i> ${hw.vocabList.length} Vocab</span>` : ''}
+          <span class="flex items-center gap-1"><i class="fa-regular fa-calendar text-slate-400"></i> ${hw.dueDate} gacha</span>
+          ${hw.vocabList?.length ? `<span class="flex items-center gap-1 text-teal-300"><i class="fa-solid fa-book"></i> ${hw.vocabList.length} So'z</span>` : ''}
         </div>
         <button class="px-3 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-white font-semibold text-xs flex items-center gap-1 transition">
-          ${hw.status === 'pending' ? 'Start Task' : 'View Details'} <i class="fa-solid fa-chevron-right text-[10px]"></i>
+          ${hw.status === 'pending' ? 'Boshlash' : 'Batafsil'} <i class="fa-solid fa-chevron-right text-[10px]"></i>
         </button>
       </div>
     `;
@@ -864,16 +892,19 @@ function renderStudentView() {
 }
 
 function renderTeacherView() {
-  // Stats update
   const activeCount = appState.homeworks.length;
   const pendingGradesCount = appState.homeworks.filter(h => h.status === 'submitted').length;
   document.getElementById('statActiveHws').innerText = activeCount;
   document.getElementById('statPendingGrades').innerText = pendingGradesCount;
 
-  // Render Sub Tabs
   if (appState.teacherSubTab === 'assignments') {
     const container = document.getElementById('teacherTabAssignments');
     container.innerHTML = '';
+
+    if (appState.homeworks.length === 0) {
+      container.innerHTML = `<div class="glass-card rounded-2xl p-6 text-center text-slate-400 text-xs">Hozircha hech qanday topshiriq yo'q.</div>`;
+      return;
+    }
 
     appState.homeworks.forEach(hw => {
       const card = document.createElement('div');
@@ -883,13 +914,10 @@ function renderTeacherView() {
           <div>
             <span class="text-[10px] font-semibold text-teal-400 uppercase tracking-wider">${hw.category}</span>
             <h4 class="text-base font-bold text-white">${hw.title}</h4>
-            <p class="text-xs text-slate-400 mt-1">Due: ${hw.dueDate}</p>
+            <p class="text-xs text-slate-400 mt-1">Muddati: ${hw.dueDate}</p>
           </div>
           <div class="flex items-center gap-1">
-            <button onclick="editTeacherHomework('${hw.id}')" class="p-2 rounded-xl bg-slate-800 text-blue-400 hover:bg-slate-700">
-              <i class="fa-solid fa-pen-to-square"></i>
-            </button>
-            <button onclick="deleteTeacherHomework('${hw.id}')" class="p-2 rounded-xl bg-slate-800 text-red-400 hover:bg-slate-700">
+            <button onclick="deleteTeacherHomework('${hw.id}')" class="p-2 rounded-xl bg-slate-800 text-red-400 hover:bg-slate-700 transition" title="O'chirish">
               <i class="fa-solid fa-trash"></i>
             </button>
           </div>
@@ -905,7 +933,7 @@ function renderTeacherView() {
     const submissions = appState.homeworks.filter(h => h.status === 'submitted' || h.status === 'graded');
 
     if (submissions.length === 0) {
-      container.innerHTML = `<div class="glass-card rounded-2xl p-6 text-center text-slate-400 text-xs">No student submissions yet.</div>`;
+      container.innerHTML = `<div class="glass-card rounded-2xl p-6 text-center text-slate-400 text-xs">Topshirilgan javoblar mavjud emas.</div>`;
       return;
     }
 
@@ -918,14 +946,14 @@ function renderTeacherView() {
           <div class="flex items-center gap-2">
             <h4 class="text-sm font-bold text-white">${sub.studentName}</h4>
             ${hw.status === 'graded' 
-              ? `<span class="px-2 py-0.5 rounded-full bg-teal-500/20 text-teal-300 text-[10px] font-bold">Graded (${sub.grade}%)</span>`
-              : `<span class="px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 text-[10px] font-bold">Needs Grading</span>`}
+              ? `<span class="px-2 py-0.5 rounded-full bg-teal-500/20 text-teal-300 text-[10px] font-bold">Baholandi (${sub.grade}%)</span>`
+              : `<span class="px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 text-[10px] font-bold">Kutilmoqda</span>`}
           </div>
           <p class="text-xs text-slate-300">${hw.title}</p>
-          <span class="text-[10px] text-slate-400">Submitted on: ${sub.submittedAt}</span>
+          <span class="text-[10px] text-slate-400">Topshirilgan sana: ${sub.submittedAt}</span>
         </div>
-        <button onclick="openGradeModal('${hw.id}')" class="px-3.5 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs shadow-lg">
-          ${hw.status === 'graded' ? 'Edit Grade' : 'Review & Grade'}
+        <button onclick="openGradeModal('${hw.id}')" class="px-3.5 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs shadow-lg transition">
+          ${hw.status === 'graded' ? 'Qayta Baholash' : 'Tekshirish & Baholash'}
         </button>
       `;
       container.appendChild(card);
@@ -937,33 +965,32 @@ function renderTeacherView() {
         <td class="py-2.5 px-2 font-bold text-white">Nodira Alimova</td>
         <td class="py-2.5 px-2 text-teal-400 font-bold"><i class="fa-solid fa-check"></i> 95%</td>
         <td class="py-2.5 px-2 text-teal-400 font-bold"><i class="fa-solid fa-check"></i> 90%</td>
-        <td class="py-2.5 px-2 text-amber-400 font-bold"><i class="fa-solid fa-clock"></i> Submitted</td>
+        <td class="py-2.5 px-2 text-amber-400 font-bold"><i class="fa-solid fa-clock"></i> Topshirildi</td>
         <td class="py-2.5 px-2 font-extrabold text-blue-400">92.5%</td>
       </tr>
       <tr>
         <td class="py-2.5 px-2 font-bold text-white">Jasur Bekov</td>
         <td class="py-2.5 px-2 text-teal-400 font-bold"><i class="fa-solid fa-check"></i> 88%</td>
-        <td class="py-2.5 px-2 text-slate-500">Pending</td>
-        <td class="py-2.5 px-2 text-slate-500">Pending</td>
+        <td class="py-2.5 px-2 text-slate-500">Bajarilmadi</td>
+        <td class="py-2.5 px-2 text-slate-500">Bajarilmadi</td>
         <td class="py-2.5 px-2 font-extrabold text-blue-400">88.0%</td>
       </tr>
     `;
   }
 }
 
-// SPEECH SYNTHESIS FOR VOCAB PRONUNCIATION
 function speakWord(word) {
   if ('speechSynthesis' in window) {
+    window.speechSynthesis.cancel();
     const utterance = new SpeechSynthesisUtterance(word);
     utterance.lang = 'en-US';
     utterance.rate = 0.85;
     window.speechSynthesis.speak(utterance);
   } else {
-    alert('Speech synthesis is not supported on your browser.');
+    alert('Brauzeringiz nutq funksiyasini qo\'llab-quvvatlamaydi.');
   }
 }
 
-// STUDENT MODAL FUNCTIONS & MULTI IMAGE SETUP
 function openStudentHwModal(hwId) {
   const hw = appState.homeworks.find(h => h.id === hwId);
   if (!hw) return;
@@ -973,13 +1000,17 @@ function openStudentHwModal(hwId) {
   document.getElementById('modalTaskBadge').innerText = hw.category;
   document.getElementById('modalTaskDesc').innerText = hw.instructions;
 
-  // Teacher media preview in student view
+  // Teacher media preview
   const teacherMediaDiv = document.getElementById('modalTeacherAttachments');
   const teacherImgGrid = document.getElementById('modalTeacherImages');
+  const teacherAudioDiv = document.getElementById('modalTeacherAudio');
+  const teacherAudioPlayer = document.getElementById('modalTeacherAudioPlayer');
+
   teacherImgGrid.innerHTML = '';
+  let hasAttachments = false;
 
   if (hw.teacherImages && hw.teacherImages.length > 0) {
-    teacherMediaDiv.classList.remove('hidden');
+    hasAttachments = true;
     hw.teacherImages.forEach(src => {
       if (src) {
         const img = document.createElement('img');
@@ -989,6 +1020,18 @@ function openStudentHwModal(hwId) {
         teacherImgGrid.appendChild(img);
       }
     });
+  }
+
+  if (hw.teacherAudio) {
+    hasAttachments = true;
+    teacherAudioDiv.classList.remove('hidden');
+    teacherAudioPlayer.src = hw.teacherAudio;
+  } else {
+    teacherAudioDiv.classList.add('hidden');
+  }
+
+  if (hasAttachments) {
+    teacherMediaDiv.classList.remove('hidden');
   } else {
     teacherMediaDiv.classList.add('hidden');
   }
@@ -1005,7 +1048,7 @@ function openStudentHwModal(hwId) {
       row.innerHTML = `
         <span class="font-bold text-white text-xs">${word}</span>
         <button type="button" onclick="speakWord('${word}')" class="px-2.5 py-1 rounded-lg bg-teal-500/20 text-teal-300 hover:bg-teal-500/30 text-xs flex items-center gap-1 font-semibold">
-          <i class="fa-solid fa-volume-high"></i> Listen
+          <i class="fa-solid fa-volume-high"></i> Eshiting
         </button>
       `;
       vocabCont.appendChild(row);
@@ -1019,23 +1062,36 @@ function openStudentHwModal(hwId) {
   const sentCont = document.getElementById('sentenceInputsContainer');
   sentCont.innerHTML = '';
   sentSec.classList.remove('hidden');
-  addSentenceInput(); // Start with 1 default sentence field
 
-  // Initialize Image Upload Slots (4 Slots)
+  if (hw.submission && hw.submission.sentences && hw.submission.sentences.length > 0) {
+    hw.submission.sentences.forEach(s => addSentenceInput(s));
+  } else {
+    addSentenceInput();
+  }
+
+  // Multi-image slots (Restore if submitted)
   appState.studentMedia.images = [null, null, null, null];
+  if (hw.submission && hw.submission.images) {
+    hw.submission.images.forEach((img, idx) => {
+      if (idx < 4) appState.studentMedia.images[idx] = img;
+    });
+  }
   renderImageSlots('studentImageSlotsGrid', appState.studentMedia.images, handleStudentImageUpload);
 
-  // Audio Reset
-  appState.studentMedia.audioBlob = null;
-  appState.studentMedia.audioUrl = null;
-  document.getElementById('audioPreviewContainer').classList.add('hidden');
+  // Audio restore
+  appState.studentMedia.audioBase64 = hw.submission?.audio || null;
+  const audioPreview = document.getElementById('audioPreviewContainer');
+  const audioPlayer = document.getElementById('audioPlayer');
 
-  // Load existing submission if any
-  if (hw.submission) {
-    document.getElementById('studentComments').value = hw.submission.studentNotes || '';
+  if (appState.studentMedia.audioBase64) {
+    audioPlayer.src = appState.studentMedia.audioBase64;
+    audioPreview.classList.remove('hidden');
   } else {
-    document.getElementById('studentComments').value = '';
+    audioPreview.classList.add('hidden');
   }
+
+  // Notes
+  document.getElementById('studentComments').value = hw.submission?.studentNotes || '';
 
   document.getElementById('studentHwModal').classList.remove('hidden');
 }
@@ -1044,7 +1100,6 @@ function closeStudentHwModal() {
   document.getElementById('studentHwModal').classList.add('hidden');
 }
 
-// RENDER MULTI-IMAGE SLOTS (UP TO 4)
 function renderImageSlots(gridId, imageArray, uploadCallback) {
   const grid = document.getElementById(gridId);
   grid.innerHTML = '';
@@ -1055,7 +1110,6 @@ function renderImageSlots(gridId, imageArray, uploadCallback) {
     const template = document.getElementById('imgSlotTemplate');
     const clone = template.content.cloneNode(true);
 
-    const slotDiv = clone.querySelector('.image-upload-slot');
     const fileInput = clone.querySelector('.slot-file-input');
     const emptyState = clone.querySelector('.slot-empty-state');
     const previewImg = clone.querySelector('.slot-preview');
@@ -1083,11 +1137,10 @@ function renderImageSlots(gridId, imageArray, uploadCallback) {
     grid.appendChild(clone);
   }
 
-  // Update Counters
   if (gridId === 'studentImageSlotsGrid') {
-    document.getElementById('imgSlotCounter').innerText = `${filledCount} / 4 Uploaded`;
+    document.getElementById('imgSlotCounter').innerText = `${filledCount} / 4 Yuklandi`;
   } else if (gridId === 'teacherImageSlotsGrid') {
-    document.getElementById('tImgSlotCounter').innerText = `${filledCount} / 4 Attached`;
+    document.getElementById('tImgSlotCounter').innerText = `${filledCount} / 4 Biriktirildi`;
   }
 }
 
@@ -1103,20 +1156,18 @@ function handleStudentImageUpload(e, index, gridId, imageArray) {
   reader.readAsDataURL(file);
 }
 
-// SENTENCES INPUT DYNAMIC GENERATION
-function addSentenceInput() {
+function addSentenceInput(value = '') {
   const container = document.getElementById('sentenceInputsContainer');
   const count = container.children.length + 1;
   const inputGroup = document.createElement('div');
   inputGroup.className = "flex items-center gap-2";
   inputGroup.innerHTML = `
     <span class="text-xs font-bold text-slate-400 w-4">${count}.</span>
-    <input type="text" class="student-sentence-input glass-input w-full p-2 rounded-xl text-xs" placeholder="Type sentence in English...">
+    <input type="text" class="student-sentence-input glass-input w-full p-2 rounded-xl text-xs" value="${value.replace(/"/g, '&quot;')}" placeholder="Inglizcha javobingizni yozing...">
   `;
   container.appendChild(inputGroup);
 }
 
-// AUDIO RECORDING & UPLOAD IMPLEMENTATION
 async function toggleAudioRecording() {
   const statusText = document.getElementById('recordStatusText');
   const icon = document.getElementById('recordIcon');
@@ -1134,28 +1185,34 @@ async function toggleAudioRecording() {
 
       appState.mediaRecorder.onstop = () => {
         const audioBlob = new Blob(appState.audioChunks, { type: 'audio/mp3' });
-        appState.studentMedia.audioBlob = audioBlob;
-        appState.studentMedia.audioUrl = URL.createObjectURL(audioBlob);
         
-        const audioPlayer = document.getElementById('audioPlayer');
-        audioPlayer.src = appState.studentMedia.audioUrl;
-        document.getElementById('audioPreviewContainer').classList.remove('hidden');
+        // Convert Blob to Base64 String for full persistence
+        const reader = new FileReader();
+        reader.readAsDataURL(audioBlob);
+        reader.onloadend = function() {
+          const base64Audio = reader.result;
+          appState.studentMedia.audioBase64 = base64Audio;
+
+          const audioPlayer = document.getElementById('audioPlayer');
+          audioPlayer.src = base64Audio;
+          document.getElementById('audioPreviewContainer').classList.remove('hidden');
+        };
       };
 
       appState.mediaRecorder.start();
       appState.isRecording = true;
 
-      statusText.innerText = "Stop Recording...";
+      statusText.innerText = "Yozib olinmoqda...";
       icon.className = "fa-solid fa-stop text-red-500";
       btn.classList.add('recording-pulse');
     } catch (err) {
-      alert('Microphone access denied or not available.');
+      alert('Mikrofonga ruxsat berilmadi yoki qurilma topilmadi.');
     }
   } else {
     appState.mediaRecorder.stop();
     appState.isRecording = false;
 
-    statusText.innerText = "Start Voice Recording";
+    statusText.innerText = "Ovoz Yozishni Boshlash";
     icon.className = "fa-solid fa-microphone text-rose-400";
     btn.classList.remove('recording-pulse');
   }
@@ -1165,27 +1222,27 @@ function handleAudioFileUpload(e) {
   const file = e.target.files[0];
   if (!file) return;
 
-  const url = URL.createObjectURL(file);
-  appState.studentMedia.audioBlob = file;
-  appState.studentMedia.audioUrl = url;
+  const reader = new FileReader();
+  reader.readAsDataURL(file);
+  reader.onloadend = function() {
+    const base64Audio = reader.result;
+    appState.studentMedia.audioBase64 = base64Audio;
 
-  const audioPlayer = document.getElementById('audioPlayer');
-  audioPlayer.src = url;
-  document.getElementById('audioPreviewContainer').classList.remove('hidden');
+    const audioPlayer = document.getElementById('audioPlayer');
+    audioPlayer.src = base64Audio;
+    document.getElementById('audioPreviewContainer').classList.remove('hidden');
+  };
 }
 
 function removeSubmittedAudio() {
-  appState.studentMedia.audioBlob = null;
-  appState.studentMedia.audioUrl = null;
+  appState.studentMedia.audioBase64 = null;
   document.getElementById('audioPreviewContainer').classList.add('hidden');
 }
 
-// SUBMIT HOMEWORK FORM
 function submitStudentHomework() {
   const hw = appState.homeworks.find(h => h.id === appState.activeHwId);
   if (!hw) return;
 
-  // Gather Sentences
   const sentenceInputs = document.querySelectorAll('.student-sentence-input');
   const sentences = [];
   sentenceInputs.forEach(inp => {
@@ -1199,11 +1256,11 @@ function submitStudentHomework() {
     studentName: 'Nodira Alimova',
     submittedAt: new Date().toISOString().split('T')[0],
     images: validImages,
-    audio: appState.studentMedia.audioUrl || null,
+    audio: appState.studentMedia.audioBase64 || null,
     sentences: sentences,
     studentNotes: document.getElementById('studentComments').value,
-    grade: null,
-    feedback: null
+    grade: hw.submission?.grade || null,
+    feedback: hw.submission?.feedback || null
   };
 
   saveToStorage();
@@ -1211,11 +1268,12 @@ function submitStudentHomework() {
   renderApp();
 }
 
-// TEACHER CREATE/EDIT HOMEWORK
 function openCreateHomeworkModal() {
-  document.getElementById('teacherModalTitle').innerText = 'Create Homework Assignment';
+  document.getElementById('teacherModalTitle').innerText = 'Yangi Uy Vazifasi Yaratish';
   document.getElementById('teacherHwForm').reset();
   appState.teacherMedia.images = [null, null, null, null];
+  appState.teacherMedia.audioBase64 = null;
+  document.getElementById('tAudioFileName').innerText = "Audio fayl tanlang";
   renderImageSlots('teacherImageSlotsGrid', appState.teacherMedia.images, handleTeacherImageUpload);
   document.getElementById('teacherHwModal').classList.remove('hidden');
 }
@@ -1238,10 +1296,14 @@ function handleTeacherImageUpload(e, index, gridId, imageArray) {
 
 function handleTeacherAudioUpload(e) {
   const file = e.target.files[0];
-  if (file) {
-    document.getElementById('tAudioFileName').innerText = file.name;
-    appState.teacherMedia.audioUrl = URL.createObjectURL(file);
-  }
+  if (!file) return;
+
+  document.getElementById('tAudioFileName').innerText = file.name;
+  const reader = new FileReader();
+  reader.readAsDataURL(file);
+  reader.onloadend = function() {
+    appState.teacherMedia.audioBase64 = reader.result;
+  };
 }
 
 function saveTeacherHomework(e) {
@@ -1263,7 +1325,7 @@ function saveTeacherHomework(e) {
     instructions,
     vocabList,
     teacherImages: validImages,
-    teacherAudio: appState.teacherMedia.audioUrl || null,
+    teacherAudio: appState.teacherMedia.audioBase64 || null,
     status: 'pending'
   };
 
@@ -1274,14 +1336,13 @@ function saveTeacherHomework(e) {
 }
 
 function deleteTeacherHomework(hwId) {
-  if (confirm('Are you sure you want to delete this homework?')) {
+  if (confirm("Ushbu topshiriqni o'chirishni xohlaysizmi?")) {
     appState.homeworks = appState.homeworks.filter(h => h.id !== hwId);
     saveToStorage();
     renderApp();
   }
 }
 
-// TEACHER GRADING MODAL
 function openGradeModal(hwId) {
   const hw = appState.homeworks.find(h => h.id === hwId);
   if (!hw || !hw.submission) return;
@@ -1289,8 +1350,8 @@ function openGradeModal(hwId) {
   appState.activeHwId = hwId;
   const sub = hw.submission;
 
-  document.getElementById('gradeStudentName').innerText = `Submission by ${sub.studentName}`;
-  document.getElementById('gradeHwTitle').innerText = `Task: ${hw.title}`;
+  document.getElementById('gradeStudentName').innerText = `${sub.studentName} Javobi`;
+  document.getElementById('gradeHwTitle').innerText = `Vazifa: ${hw.title}`;
 
   // Images Grid
   const imgGrid = document.getElementById('gradeImagesGrid');
@@ -1304,7 +1365,7 @@ function openGradeModal(hwId) {
       imgGrid.appendChild(img);
     });
   } else {
-    imgGrid.innerHTML = `<span class="text-[10px] text-slate-500 italic">No notebook photos uploaded.</span>`;
+    imgGrid.innerHTML = `<span class="text-[10px] text-slate-500 italic">Rasmlar yuklanmagan.</span>`;
   }
 
   // Audio
@@ -1332,9 +1393,9 @@ function openGradeModal(hwId) {
     sentSec.classList.add('hidden');
   }
 
-  document.getElementById('gradeStudentNote').innerText = sub.studentNotes || 'No comment provided.';
+  document.getElementById('gradeStudentNote').innerText = sub.studentNotes || 'Izoh qoldirilmagan.';
   document.getElementById('gradeScoreInput').value = sub.grade || 95;
-  document.getElementById('gradeFeedbackInput').value = sub.feedback || 'Well done! Clear handwriting and accurate responses.';
+  document.getElementById('gradeFeedbackInput').value = sub.feedback || 'Ajoyib ish! Javoblar to\'g\'ri yozilgan.';
 
   document.getElementById('gradeSubmissionModal').classList.remove('hidden');
 }
@@ -1361,7 +1422,7 @@ function saveGradeSubmission(e) {
   renderApp();
 }
 
-// LIGHTBOX FUNCTIONALITY
+// LIGHTBOX & MOBILE NAV
 function openLightbox(src) {
   document.getElementById('lightboxImg').src = src;
   document.getElementById('lightboxModal').classList.remove('hidden');
@@ -1371,7 +1432,6 @@ function closeLightbox() {
   document.getElementById('lightboxModal').classList.add('hidden');
 }
 
-// MOBILE NAV SWITCHER
 function setMobileNav(tab) {
   ['tasks', 'practice', 'analytics'].forEach(t => {
     const btn = document.getElementById(`navBtn${t.charAt(0).toUpperCase() + t.slice(1)}`);
