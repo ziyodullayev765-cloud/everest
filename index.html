@@ -1,1367 +1,1683 @@
 <!DOCTYPE html>
-<html lang="uz">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-<title>EVEREST SaaS — Advanced Homework Platform</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Barkamol — English Homework</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
-/* ================= LIQUID NAVY GLASSMORPHISM ================= */
-:root {
-  --bg-deep: #030712;
-  --glass-card: rgba(15, 23, 42, 0.65);
-  --glass-card-hover: rgba(30, 41, 59, 0.8);
-  --glass-border: rgba(255, 255, 255, 0.12);
-  --glass-border-glow: rgba(96, 165, 250, 0.4);
-  --accent-blue: #3B82F6;
-  --accent-blue-hover: #2563EB;
-  --accent-cyan: #06B6D4;
-  --accent-amber: #F59E0B;
-  --accent-emerald: #10B981;
-  --accent-rose: #EF4444;
-  --text-main: #F8FAFC;
-  --text-muted: #94A3B8;
-  --font-heading: 'Outfit', sans-serif;
-  --font-body: 'Plus Jakarta Sans', sans-serif;
-  --sidebar-width: 270px;
-  --sidebar-collapsed-width: 80px;
-  --radius-xl: 24px;
-  --radius-lg: 18px;
-  --radius-md: 12px;
-  --radius-sm: 8px;
+/* ============ TOKENS ============ */
+:root{
+  --paper:#FBF8F2;
+  --paper-2:#F3EEE3;
+  --ink:#1C2541;
+  --ink-soft:#5B6478;
+  --indigo:#4B4AC4;
+  --indigo-deep:#38369A;
+  --amber:#E8A33D;
+  --amber-soft:#FBEBD2;
+  --teal:#2E9E82;
+  --teal-soft:#DCF2EA;
+  --coral:#E4572E;
+  --coral-soft:#FBE2D9;
+  --line:#E7E1D3;
+  --card:#FFFFFF;
+  --radius-lg:26px;
+  --radius-md:18px;
+  --radius-sm:12px;
+  --shadow: 0 1px 2px rgba(28,37,65,.04), 0 12px 28px -12px rgba(28,37,65,.16);
+  --font-display:'Fraunces', serif;
+  --font-body:'Manrope', sans-serif;
+  box-sizing:border-box;
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+*{box-sizing:border-box;}
+html{scroll-padding-top: env(safe-area-inset-top, 0px);}
+html,body{height:100%;}
+body{
+  margin:0;
+  font-family:var(--font-body);
+  background:var(--paper);
+  color:var(--ink);
+  -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+}
+h1,h2,h3,.display{font-family:var(--font-display); font-weight:600; letter-spacing:-0.01em; margin:0;}
+p{margin:0;}
+button{font-family:var(--font-body); cursor:pointer;}
+img,svg{display:block; max-width:100%;}
+::selection{background:var(--amber-soft);}
+a{color:inherit;}
+
+.screen{display:none; min-height:100%;}
+.screen.active{display:block;}
+
+/* ============ LOGIN ============ */
+#login-screen.active{
+  display:flex; align-items:center; justify-content:center;
+  min-height:100vh; min-height:100dvh;
+  padding:32px 20px;
+  background:
+    radial-gradient(600px 420px at 85% -10%, rgba(75,74,196,.10), transparent 60%),
+    radial-gradient(500px 380px at -10% 110%, rgba(232,163,61,.16), transparent 60%),
+    var(--paper);
+}
+.login-wrap{width:100%; max-width:920px; display:grid; grid-template-columns:1.1fr 1fr; gap:0; background:var(--card); border-radius:32px; overflow:hidden; box-shadow:var(--shadow); border:1px solid var(--line);}
+@media (max-width:760px){ .login-wrap{grid-template-columns:1fr;} .login-hero{display:none !important;} }
+
+.login-hero{
+  background:linear-gradient(160deg, var(--indigo) 0%, var(--indigo-deep) 100%);
+  color:#fff; padding:48px 40px; position:relative; overflow:hidden;
+  display:flex; flex-direction:column; justify-content:space-between;
+}
+.login-hero .mark{font-family:var(--font-display); font-size:22px; font-weight:600;}
+.login-hero .headline{font-size:clamp(28px,3.4vw,38px); line-height:1.12; margin-top:28px;}
+.login-hero .headline em{font-style:italic; color:var(--amber);}
+.hero-decor{position:absolute; inset:0; opacity:.5; pointer-events:none;}
+.login-hero .foot{font-size:13.5px; color:rgba(255,255,255,.72); line-height:1.5; margin-top:32px;}
+
+.login-form-pane{padding:44px 40px;}
+.login-form-pane .eyebrow{color:var(--ink-soft); font-size:14px;}
+.login-form-pane h1{font-size:28px; margin-top:6px;}
+.role-toggle{display:flex; background:var(--paper-2); border-radius:100px; padding:4px; margin:26px 0 22px;}
+.role-toggle button{flex:1; border:none; background:transparent; padding:10px 0; border-radius:100px; font-weight:700; font-size:14px; color:var(--ink-soft); transition:all .2s ease;}
+.role-toggle button.active{background:var(--ink); color:#fff;}
+.field{margin-bottom:14px;}
+.field label{display:block; font-size:12.5px; font-weight:700; color:var(--ink-soft); margin-bottom:6px; text-transform:uppercase; letter-spacing:.04em;}
+.field input, .field select{width:100%; padding:13px 14px; border-radius:12px; border:1.5px solid var(--line); font-size:15.5px; font-family:var(--font-body); background:var(--paper); color:var(--ink);}
+.field input:focus, .field select:focus{outline:none; border-color:var(--indigo);}
+.btn{display:inline-flex; align-items:center; justify-content:center; gap:8px; border:none; border-radius:100px; padding:14px 22px; font-weight:700; font-size:15px; transition:transform .12s ease, opacity .15s ease;}
+.btn:active{transform:scale(.97);}
+.btn-primary{background:var(--ink); color:#fff; width:100%; margin-top:6px;}
+.btn-primary:hover{opacity:.9;}
+.login-error{color:var(--coral); font-size:13.5px; margin-top:10px; min-height:16px;}
+.demo-hint{margin-top:22px; padding:14px 16px; background:var(--paper-2); border-radius:14px; font-size:13px; color:var(--ink-soft); line-height:1.6;}
+.demo-hint b{color:var(--ink);}
+
+/* ============ APP SHELL ============ */
+#app-screen.active{display:flex; min-height:100vh; min-height:100dvh;}
+.sidebar{
+  width:240px; flex-shrink:0; background:var(--ink); color:#fff;
+  padding:26px 20px; display:flex; flex-direction:column; gap:6px;
+  position:sticky; top:0; height:100vh; height:100dvh;
+}
+.sidebar .mark{font-family:var(--font-display); font-size:19px; font-weight:600; padding:0 10px 22px; display:flex; align-items:center; gap:9px;}
+.sidebar .mark .dot{width:9px;height:9px;border-radius:50%;background:var(--amber);}
+.nav-item{display:flex; align-items:center; gap:11px; padding:11px 12px; border-radius:12px; color:rgba(255,255,255,.68); font-weight:600; font-size:14.5px; border:none; background:transparent; text-align:left; width:100%;}
+.nav-item svg{width:18px;height:18px; flex-shrink:0; opacity:.85;}
+.nav-item.active{background:rgba(255,255,255,.1); color:#fff;}
+.nav-item:hover{color:#fff;}
+.sidebar-foot{margin-top:auto; padding-top:16px; border-top:1px solid rgba(255,255,255,.12);}
+.user-chip{display:flex; align-items:center; gap:10px; padding:8px 10px; border-radius:12px;}
+.avatar{width:34px;height:34px;border-radius:50%; background:var(--amber); color:var(--ink); display:flex; align-items:center; justify-content:center; font-weight:800; font-size:14px; flex-shrink:0;}
+.user-chip .u-name{font-size:13.5px; font-weight:700; color:#fff;}
+.user-chip .u-role{font-size:11.5px; color:rgba(255,255,255,.55); text-transform:capitalize;}
+.logout-btn{margin-top:10px; width:100%; text-align:left; background:transparent; border:none; color:rgba(255,255,255,.55); font-size:13px; font-weight:600; padding:8px 10px;}
+.logout-btn:hover{color:#fff;}
+
+.main{flex:1; min-width:0; padding:30px 36px 80px;}
+@media (max-width:860px){
+  .sidebar{position:fixed; left:0; bottom:0; top:auto; width:100%; height:auto; flex-direction:row; align-items:center; padding:10px 10px calc(10px + env(safe-area-inset-bottom,0px)); z-index:50; box-shadow:0 -8px 24px rgba(0,0,0,.15); gap:0; justify-content:space-around;}
+  .sidebar .mark, .sidebar-foot{display:none;}
+  .nav-item{flex-direction:column; gap:4px; font-size:10.5px; padding:8px 6px; flex:1;}
+  .nav-item svg{width:20px;height:20px;}
+  .main{padding:20px 16px 100px;}
+  body{padding-bottom:64px;}
 }
 
-/* ANTI-ZOOM & SELECTION BUG FIX */
-* { 
-  box-sizing: border-box; 
-  margin: 0; 
-  padding: 0; 
-  touch-action: manipulation; 
-  -webkit-tap-highlight-color: transparent;
+.topbar{display:flex; align-items:center; justify-content:space-between; margin-bottom:26px; gap:16px; flex-wrap:wrap;}
+.topbar h1{font-size:clamp(22px,3vw,30px);}
+.topbar .sub{color:var(--ink-soft); font-size:14.5px; margin-top:4px;}
+.pill{display:inline-flex; align-items:center; gap:6px; padding:6px 13px; border-radius:100px; font-size:12.5px; font-weight:700;}
+.pill-group{background:var(--indigo); color:#fff;}
+
+/* ============ DASHBOARD PROGRESS ============ */
+.progress-hero{
+  background:linear-gradient(135deg, var(--indigo) 0%, var(--indigo-deep) 100%);
+  border-radius:var(--radius-lg); padding:28px 30px; color:#fff; margin-bottom:28px;
+  display:flex; align-items:center; justify-content:space-between; gap:24px; flex-wrap:wrap;
+  position:relative; overflow:hidden;
 }
+.progress-hero::after{content:'';position:absolute; right:-40px; top:-60px; width:220px; height:220px; border-radius:50%; background:rgba(255,255,255,.06);}
+.progress-hero .ph-text{position:relative; z-index:1;}
+.progress-hero .ph-text .greet{font-size:14.5px; color:rgba(255,255,255,.7); font-weight:600;}
+.progress-hero .ph-text h2{font-size:clamp(20px,2.6vw,26px); margin-top:4px;}
+.ring-wrap{position:relative; width:104px; height:104px; flex-shrink:0; z-index:1;}
+.ring-wrap svg{transform:rotate(-90deg);}
+.ring-label{position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center;}
+.ring-label .n{font-size:22px; font-weight:800; font-family:var(--font-display);}
+.ring-label .d{font-size:10px; color:rgba(255,255,255,.7); font-weight:700;}
 
-body, button, .nav-btn, .stat-card, .sidebar, .mobile-nav, .brand-title, .t-card, .hw-card {
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
+/* ============ CARDS GRID ============ */
+.hw-grid{display:grid; grid-template-columns:repeat(auto-fill, minmax(270px,1fr)); gap:18px;}
+.hw-card{
+  background:var(--card); border:1px solid var(--line); border-radius:var(--radius-md);
+  padding:20px; cursor:pointer; transition:transform .15s ease, box-shadow .15s ease;
+  display:flex; flex-direction:column; gap:14px; position:relative;
 }
+.hw-card:hover{transform:translateY(-3px); box-shadow:var(--shadow);}
+.hw-card .icon-badge{width:52px; height:52px; border-radius:16px; display:flex; align-items:center; justify-content:center;}
+.hw-card .icon-badge svg{width:28px;height:28px;}
+.hw-card h3{font-size:17.5px; line-height:1.25;}
+.hw-card .hw-sub{font-size:13.5px; color:var(--ink-soft); margin-top:4px;}
+.hw-card .hw-figure{font-family:var(--font-display); font-size:20px; font-weight:600; margin-top:2px;}
+.status-tag{position:absolute; top:18px; right:18px; font-size:11px; font-weight:800; padding:4px 10px; border-radius:100px; display:flex; align-items:center; gap:5px;}
+.status-tag .dot{width:6px;height:6px;border-radius:50%;}
+.status-not{background:var(--coral-soft); color:#B23E1C;}
+.status-not .dot{background:var(--coral);}
+.status-progress{background:var(--amber-soft); color:#8A5A0F;}
+.status-progress .dot{background:var(--amber);}
+.status-done{background:var(--teal-soft); color:#1E6E58;}
+.status-done .dot{background:var(--teal);}
+.mini-bar{height:7px; background:var(--paper-2); border-radius:100px; overflow:hidden; margin-top:4px;}
+.mini-bar > div{height:100%; background:var(--indigo); border-radius:100px; transition:width .3s ease;}
+.hw-card .due{font-size:12px; color:var(--ink-soft); margin-top:auto; display:flex; align-items:center; gap:5px;}
 
-input, textarea, select {
-  -webkit-user-select: text;
-  -moz-user-select: text;
-  -ms-user-select: text;
-  user-select: text;
+/* ============ DETAIL PAGE ============ */
+.detail-wrap{max-width:760px;}
+.back-btn{display:inline-flex; align-items:center; gap:7px; background:transparent; border:none; color:var(--ink-soft); font-weight:700; font-size:14px; padding:8px 0; margin-bottom:14px;}
+.back-btn:hover{color:var(--ink);}
+.detail-head{display:flex; align-items:center; gap:16px; margin-bottom:20px;}
+.detail-head .icon-badge{width:64px;height:64px;border-radius:20px;}
+.detail-head .icon-badge svg{width:34px;height:34px;}
+.detail-head h1{font-size:clamp(24px,3.4vw,32px);}
+.detail-head .hw-figure{font-size:16px; color:var(--ink-soft); font-weight:700; font-family:var(--font-body); margin-top:3px;}
+.detail-block{background:var(--card); border:1px solid var(--line); border-radius:var(--radius-md); padding:22px 24px; margin-bottom:16px;}
+.detail-block h4{font-size:13px; text-transform:uppercase; letter-spacing:.05em; color:var(--ink-soft); font-weight:800; margin-bottom:12px;}
+.detail-block p, .detail-block li{font-size:15.5px; line-height:1.65; color:var(--ink);}
+.detail-block ol, .detail-block ul{margin:0; padding-left:20px; display:flex; flex-direction:column; gap:8px;}
+.ref-image{width:100%; border-radius:14px; overflow:hidden; border:1px solid var(--line);}
+.ref-image svg{width:100%; height:auto; display:block;}
+.complete-bar{display:flex; align-items:center; justify-content:space-between; gap:14px; flex-wrap:wrap;}
+.progress-pct{font-family:var(--font-display); font-size:22px; font-weight:700;}
+.check-btn{background:var(--teal); color:#fff; border:none; padding:13px 22px; border-radius:100px; font-weight:800; font-size:14.5px; display:inline-flex; align-items:center; gap:8px;}
+.check-btn.done{background:var(--paper-2); color:var(--ink-soft);}
+.check-btn:hover{opacity:.92;}
+
+/* word list */
+.word-row{display:flex; align-items:center; gap:14px; padding:14px 0; border-bottom:1px solid var(--line);}
+.word-row:last-child{border-bottom:none;}
+.word-row .wtext{flex:1; min-width:0;}
+.word-row .w-en{font-weight:800; font-size:16px;}
+.word-row .w-uz{font-size:13.5px; color:var(--indigo); font-weight:700;}
+.word-row .w-ex{font-size:13px; color:var(--ink-soft); font-style:italic; margin-top:2px;}
+.word-check{width:26px;height:26px; border-radius:8px; border:2px solid var(--line); flex-shrink:0; display:flex; align-items:center; justify-content:center; background:#fff;}
+.word-check.checked{background:var(--teal); border-color:var(--teal);}
+.word-check svg{width:15px;height:15px; opacity:0;}
+.word-check.checked svg{opacity:1;}
+
+/* sentences */
+.sent-progress-row{display:flex; align-items:center; gap:16px; margin-bottom:18px;}
+.sent-count{font-family:var(--font-display); font-size:28px; font-weight:700; white-space:nowrap;}
+.sent-item{display:flex; align-items:flex-start; gap:10px; padding:11px 0; border-bottom:1px solid var(--line);}
+.sent-item .num{color:var(--ink-soft); font-weight:800; font-size:13px; min-width:22px; padding-top:2px;}
+.sent-item .txt{flex:1; font-size:15px; line-height:1.5;}
+.sent-item .rm{background:none; border:none; color:var(--ink-soft); font-size:18px; padding:0 4px;}
+.add-sent-row{display:flex; gap:10px; margin-top:14px;}
+.add-sent-row input{flex:1; padding:12px 14px; border-radius:12px; border:1.5px solid var(--line); font-size:15px; font-family:var(--font-body);}
+.add-sent-row input:focus{outline:none; border-color:var(--indigo);}
+.add-sent-row button{background:var(--ink); color:#fff; border:none; border-radius:12px; padding:0 20px; font-weight:700; font-size:14px;}
+
+textarea.translate-input{width:100%; min-height:160px; border-radius:14px; border:1.5px solid var(--line); padding:16px; font-family:var(--font-body); font-size:15.5px; line-height:1.6; resize:vertical;}
+textarea.translate-input:focus{outline:none; border-color:var(--indigo);}
+
+/* ============ PROGRESS PAGE ============ */
+.stat-grid{display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-bottom:26px;}
+@media (max-width:700px){.stat-grid{grid-template-columns:repeat(2,1fr);}}
+.stat-card{background:var(--card); border:1px solid var(--line); border-radius:var(--radius-md); padding:20px;}
+.stat-card .n{font-family:var(--font-display); font-size:30px; font-weight:700;}
+.stat-card .l{font-size:12.5px; color:var(--ink-soft); font-weight:700; margin-top:4px;}
+.progress-list-row{display:flex; align-items:center; justify-content:space-between; padding:16px 20px; background:var(--card); border:1px solid var(--line); border-radius:14px; margin-bottom:10px; gap:12px; flex-wrap:wrap;}
+.progress-list-row .name{font-weight:700; font-size:15px;}
+
+/* ============ TEACHER PANEL ============ */
+.section-title{display:flex; align-items:center; justify-content:between; justify-content:space-between; margin:32px 0 14px; gap:12px;}
+.section-title h2{font-size:19px;}
+.btn-outline{background:transparent; border:1.5px solid var(--ink); color:var(--ink); padding:10px 18px; border-radius:100px; font-weight:700; font-size:13.5px;}
+.btn-outline:hover{background:var(--ink); color:#fff;}
+.table-wrap{background:var(--card); border:1px solid var(--line); border-radius:var(--radius-md); overflow:hidden;}
+.t-row{display:grid; grid-template-columns:2.2fr 1fr 1fr 1fr auto; gap:10px; align-items:center; padding:14px 18px; border-bottom:1px solid var(--line); font-size:14px;}
+.t-row.head{background:var(--paper-2); font-weight:800; font-size:11.5px; text-transform:uppercase; letter-spacing:.04em; color:var(--ink-soft);}
+.t-row:last-child{border-bottom:none;}
+@media (max-width:700px){ .t-row{grid-template-columns:1fr; gap:4px;} .t-row.head{display:none;} .t-row{padding:14px 16px;} }
+.icon-btn{background:var(--paper-2); border:none; width:32px; height:32px; border-radius:9px; display:inline-flex; align-items:center; justify-content:center; margin-left:6px;}
+.icon-btn:hover{background:var(--line);}
+.icon-btn svg{width:15px;height:15px;}
+
+.group-chip{display:inline-flex; padding:4px 10px; border-radius:100px; font-size:11.5px; font-weight:700; background:var(--indigo); color:#fff; margin:0 5px 5px 0;}
+
+/* modal */
+.modal-bg{position:fixed; inset:0; background:rgba(28,37,65,.5); display:none; align-items:center; justify-content:center; z-index:100; padding:20px; backdrop-filter:blur(2px);}
+.modal-bg.active{display:flex;}
+.modal{background:#fff; border-radius:24px; padding:28px; width:100%; max-width:520px; max-height:88vh; overflow-y:auto;}
+.modal h3{font-size:20px; margin-bottom:18px;}
+.modal .field textarea{width:100%; padding:12px 14px; border-radius:12px; border:1.5px solid var(--line); font-family:var(--font-body); font-size:14.5px; min-height:80px;}
+.modal-actions{display:flex; gap:10px; margin-top:20px;}
+.modal-actions .btn-primary{margin-top:0;}
+.btn-ghost{background:var(--paper-2); color:var(--ink); border:none; border-radius:100px; padding:14px 22px; font-weight:700; font-size:15px; flex:1;}
+.checkbox-grid{display:flex; flex-wrap:wrap; gap:8px;}
+.chip-check{padding:8px 14px; border-radius:100px; border:1.5px solid var(--line); font-size:13px; font-weight:700; background:#fff; color:var(--ink-soft);}
+.chip-check.on{background:var(--ink); color:#fff; border-color:var(--ink);}
+
+.empty-state{text-align:center; padding:60px 20px; color:var(--ink-soft);}
+.empty-state svg{width:64px;height:64px; margin:0 auto 16px; opacity:.3;}
+
+/* ============ PANELS (dashboard status panels, like a marketplace app) ============ */
+.panel-row{display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin-bottom:22px;}
+@media (max-width:700px){.panel-row{grid-template-columns:1fr 1fr;}}
+.mini-panel{background:var(--card); border:1px solid var(--line); border-radius:16px; padding:16px 18px; display:flex; align-items:center; gap:12px;}
+.mini-panel .mp-icon{width:40px; height:40px; border-radius:12px; display:flex; align-items:center; justify-content:center; flex-shrink:0;}
+.mini-panel .mp-icon svg{width:20px;height:20px;}
+.mini-panel .mp-n{font-family:var(--font-display); font-size:22px; font-weight:700; line-height:1;}
+.mini-panel .mp-l{font-size:11.5px; color:var(--ink-soft); font-weight:700; margin-top:3px;}
+
+.deadline-panel{background:var(--card); border:1px solid var(--line); border-radius:var(--radius-md); overflow:hidden; margin-bottom:26px;}
+.deadline-panel .dp-head{padding:16px 20px; border-bottom:1px solid var(--line); font-weight:800; font-size:14px; display:flex; align-items:center; gap:8px;}
+.deadline-row{display:flex; align-items:center; gap:14px; padding:13px 20px; border-bottom:1px solid var(--line);}
+.deadline-row:last-child{border-bottom:none;}
+.deadline-row .d-badge{width:38px; height:38px; border-radius:11px; display:flex; align-items:center; justify-content:center; flex-shrink:0;}
+.deadline-row .d-badge svg{width:18px;height:18px;}
+.deadline-row .d-title{font-weight:700; font-size:14.5px;}
+.deadline-row .d-sub{font-size:12px; color:var(--ink-soft);}
+.deadline-row .d-due{margin-left:auto; font-size:12px; font-weight:800; color:var(--coral); white-space:nowrap;}
+
+/* audio block on detail page */
+.audio-block{display:flex; align-items:center; gap:12px; background:var(--paper-2); border-radius:14px; padding:12px 16px;}
+.audio-block audio{flex:1; height:36px;}
+.speaker-btn{background:var(--indigo); color:#fff; border:none; width:32px; height:32px; border-radius:9px; display:inline-flex; align-items:center; justify-content:center; flex-shrink:0;}
+.speaker-btn svg{width:16px;height:16px;}
+.speaker-btn:hover{opacity:.88;}
+
+/* upload dropzone */
+.upload-zone{border:1.5px dashed var(--line); border-radius:14px; padding:22px; text-align:center; cursor:pointer; transition:border-color .15s ease, background .15s ease;}
+.upload-zone:hover{border-color:var(--indigo); background:var(--paper-2);}
+.upload-zone svg{width:26px;height:26px; margin:0 auto 8px; color:var(--ink-soft);}
+.upload-zone .uz-label{font-size:13.5px; font-weight:700; color:var(--ink-soft);}
+.upload-zone input[type=file]{display:none;}
+.submission-preview{position:relative; border-radius:14px; overflow:hidden; border:1px solid var(--line);}
+.submission-preview img{width:100%; display:block;}
+.submission-preview .rm-photo{position:absolute; top:10px; right:10px; background:rgba(28,37,65,.75); color:#fff; border:none; width:30px; height:30px; border-radius:9px; display:flex; align-items:center; justify-content:center; font-size:16px;}
+
+/* teacher modal upload rows */
+.modal-upload-row{display:flex; align-items:center; gap:10px; margin-bottom:14px;}
+.modal-upload-row .uf-btn{background:var(--paper-2); border:1.5px solid var(--line); border-radius:10px; padding:9px 14px; font-size:13px; font-weight:700; color:var(--ink-soft); display:inline-flex; align-items:center; gap:7px;}
+.modal-upload-row .uf-btn svg{width:14px;height:14px;}
+.modal-upload-row .uf-status{font-size:12px; color:var(--teal); font-weight:700;}
+
+/* submissions review list (teacher) */
+.submission-card{display:flex; gap:14px; background:var(--card); border:1px solid var(--line); border-radius:16px; padding:14px; margin-bottom:12px; align-items:center; flex-wrap:wrap;}
+.submission-card .sc-thumb{width:74px; height:74px; border-radius:12px; overflow:hidden; flex-shrink:0; border:1px solid var(--line); cursor:pointer;}
+.submission-card .sc-thumb img{width:100%; height:100%; object-fit:cover;}
+.submission-card .sc-info{flex:1; min-width:160px;}
+.submission-card .sc-name{font-weight:800; font-size:14.5px;}
+.submission-card .sc-task{font-size:12.5px; color:var(--ink-soft); margin-top:2px;}
+.review-badge{font-size:11px; font-weight:800; padding:5px 11px; border-radius:100px; background:var(--amber-soft); color:#8A5A0F;}
+.review-badge.done{background:var(--teal-soft); color:#1E6E58;}
+.lightbox-bg{position:fixed; inset:0; background:rgba(15,18,32,.9); z-index:150; display:none; align-items:center; justify-content:center; padding:24px;}
+.lightbox-bg.active{display:flex;}
+.lightbox-bg img{max-width:100%; max-height:90vh; border-radius:12px;}
+.lightbox-bg .lb-close{position:absolute; top:20px; right:24px; background:rgba(255,255,255,.15); color:#fff; border:none; width:40px; height:40px; border-radius:50%; font-size:20px;}
+
+.toast{position:fixed; bottom:24px; left:50%; transform:translateX(-50%) translateY(20px); background:var(--ink); color:#fff; padding:13px 22px; border-radius:100px; font-size:14px; font-weight:700; opacity:0; transition:all .25s ease; z-index:200; pointer-events:none; white-space:nowrap;}
+.toast.show{opacity:1; transform:translateX(-50%) translateY(0);}
+@media (max-width:860px){.toast{bottom:76px;}}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]){
+    --paper:#15192B; --paper-2:#1E2338; --ink:#F3F1E9; --ink-soft:#9AA1B8;
+    --card:#1B2036; --line:#2B3050; --amber-soft:#3A2E17; --teal-soft:#122D26; --coral-soft:#3A1F16;
+  }
 }
-
-html, body { 
-  height: 100%; 
-  font-family: var(--font-body); 
-  background: var(--bg-deep); 
-  color: var(--text-main); 
-  -webkit-font-smoothing: antialiased; 
-  overflow-x: hidden; 
+:root[data-theme="dark"]{
+  --paper:#15192B; --paper-2:#1E2338; --ink:#F3F1E9; --ink-soft:#9AA1B8;
+  --card:#1B2036; --line:#2B3050; --amber-soft:#3A2E17; --teal-soft:#122D26; --coral-soft:#3A1F16;
 }
-
-button { font-family: var(--font-body); cursor: pointer; border: none; outline: none; }
-input, select, textarea { font-family: var(--font-body); }
-
-/* BACKGROUND ATMOSPHERE */
-.app-bg {
-  position: fixed; inset: 0; z-index: -1;
-  background-image: 
-    radial-gradient(circle at 10% 0%, rgba(59, 130, 246, 0.25) 0%, transparent 45%),
-    radial-gradient(circle at 90% 100%, rgba(6, 182, 212, 0.2) 0%, transparent 45%),
-    linear-gradient(180deg, rgba(3, 7, 18, 0.85) 0%, rgba(3, 7, 18, 0.98) 100%),
-    url('https://images.unsplash.com/photo-1518770660439-4636190af475?q=80&w=3840&auto=format&fit=crop');
-  background-size: cover; background-position: center; filter: saturate(1.1);
-}
-
-.screen { display: none; min-height: 100vh; }
-.screen.active { display: flex; }
-
-/* GLASS PANELS */
-.glass-panel {
-  background: var(--glass-card);
-  border: 1px solid var(--glass-border);
-  backdrop-filter: blur(28px) saturate(160%);
-  -webkit-backdrop-filter: blur(28px) saturate(160%);
-  border-radius: var(--radius-lg);
-  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.1);
-  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-/* ================= LOGIN SCREEN ================= */
-#login-screen { display: none; align-items: center; justify-content: center; min-height: 100vh; padding: 20px; }
-#login-screen.active { display: flex; }
-.login-box { width: 100%; max-width: 920px; display: grid; grid-template-columns: 1fr 1fr; border-radius: var(--radius-xl); overflow: hidden; }
-@media (max-width: 768px) { .login-box { grid-template-columns: 1fr; } .login-hero { display: none; } }
-
-.login-hero { padding: 48px; background: linear-gradient(135deg, rgba(37, 99, 235, 0.35), rgba(6, 182, 212, 0.15)); display: flex; flex-direction: column; justify-content: space-between; border-right: 1px solid var(--glass-border); }
-.brand-title { font-family: var(--font-heading); font-size: 24px; font-weight: 800; display: flex; align-items: center; gap: 10px; letter-spacing: -0.02em; }
-.brand-tagline { font-size: 11px; letter-spacing: 0.15em; color: var(--accent-cyan); text-transform: uppercase; font-weight: 800; margin-top: 4px; }
-
-.login-form-pane { padding: 48px; }
-.role-tabs { display: flex; background: rgba(255,255,255,0.05); padding: 4px; border-radius: 100px; margin: 20px 0; border: 1px solid var(--glass-border); }
-.role-tabs button { flex: 1; padding: 10px; border-radius: 100px; background: transparent; color: var(--text-muted); font-weight: 700; font-size: 13px; transition: 0.2s; }
-.role-tabs button.active { background: var(--accent-blue); color: #fff; box-shadow: 0 4px 14px rgba(59, 130, 246, 0.5); }
-
-.field { margin-bottom: 18px; }
-.field label { display: block; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted); margin-bottom: 8px; }
-.field input, .field select, .field textarea { width: 100%; padding: 12px 16px; background: rgba(3, 7, 18, 0.6); border: 1px solid var(--glass-border); border-radius: var(--radius-md); color: #fff; font-size: 14px; transition: all 0.2s; }
-.field input:focus, .field select:focus, .field textarea:focus { border-color: var(--accent-blue); outline: none; box-shadow: 0 0 16px rgba(59, 130, 246, 0.35); background: rgba(3, 7, 18, 0.8); }
-
-.btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 12px 20px; border-radius: 100px; font-weight: 700; font-size: 14px; transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1); }
-.btn:active { transform: scale(0.96); }
-.btn-primary { background: linear-gradient(135deg, var(--accent-blue), #1D4ED8); color: #fff; box-shadow: 0 6px 20px rgba(37, 99, 235, 0.4); }
-.btn-primary:hover { opacity: 0.95; box-shadow: 0 8px 25px rgba(37, 99, 235, 0.55); }
-.btn-secondary { background: rgba(255,255,255,0.08); color: #fff; border: 1px solid var(--glass-border); }
-.btn-secondary:hover { background: rgba(255,255,255,0.15); }
-.btn-danger { background: rgba(239, 68, 68, 0.2); color: var(--accent-rose); border: 1px solid rgba(239, 68, 68, 0.4); }
-.btn-danger:hover { background: rgba(239, 68, 68, 0.35); }
-
-/* ================= MAIN LAYOUT ================= */
-#app-screen { width: 100%; min-height: 100vh; display: flex; }
-.sidebar { 
-  width: var(--sidebar-width); 
-  flex-shrink: 0; 
-  padding: 24px 16px; 
-  display: flex; 
-  flex-direction: column; 
-  gap: 6px; 
-  height: 100vh; 
-  position: sticky; 
-  top: 0; 
-  z-index: 20; 
-  border-radius: 0 var(--radius-xl) var(--radius-xl) 0; 
-  transition: width 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.sidebar.collapsed { width: var(--sidebar-collapsed-width); }
-.sidebar.collapsed .brand-text, 
-.sidebar.collapsed .nav-btn span, 
-.sidebar.collapsed .sidebar-user-info, 
-.sidebar.collapsed .brand-tagline { display: none; }
-.sidebar.collapsed .sidebar-user { justify-content: center; padding: 8px; }
-
-.sidebar-header { display: flex; align-items: center; justify-content: space-between; padding: 0 8px 20px 8px; border-bottom: 1px solid var(--glass-border); margin-bottom: 12px; }
-.collapse-btn { background: rgba(255,255,255,0.06); color: var(--text-muted); border-radius: var(--radius-sm); padding: 6px; border: 1px solid var(--glass-border); }
-.collapse-btn:hover { color: #fff; background: rgba(255,255,255,0.12); }
-
-.nav-btn { display: flex; align-items: center; gap: 14px; padding: 12px 16px; border-radius: var(--radius-md); color: var(--text-muted); font-weight: 600; font-size: 14px; background: transparent; width: 100%; text-align: left; transition: all 0.2s; }
-.nav-btn svg { width: 20px; height: 20px; flex-shrink: 0; }
-.nav-btn:hover { color: #fff; background: rgba(255,255,255,0.06); }
-.nav-btn.active { background: linear-gradient(135deg, rgba(59, 130, 246, 0.35), rgba(6, 182, 212, 0.15)); border: 1px solid rgba(96, 165, 250, 0.4); color: #fff; box-shadow: 0 8px 20px rgba(0,0,0,0.3); }
-
-/* USER BAR & SIGN OUT */
-.sidebar-user { margin-top: auto; padding: 10px 12px; display: flex; align-items: center; gap: 12px; border-radius: var(--radius-md); background: rgba(255,255,255,0.04); border: 1px solid var(--glass-border); }
-.avatar-img { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 2px solid var(--accent-blue); box-shadow: 0 0 12px rgba(59, 130, 246, 0.4); display: flex; align-items: center; justify-content: center; background: var(--accent-blue); color: #fff; font-weight: 800; font-size: 14px; flex-shrink: 0; }
-.logout-icon-btn { background: transparent; color: var(--accent-rose); padding: 8px; border-radius: 8px; transition: 0.2s; opacity: 0.8; }
-.logout-icon-btn:hover { background: rgba(239, 68, 68, 0.2); opacity: 1; }
-
-.main-viewport { flex: 1; padding: 28px 36px; overflow-y: auto; max-width: 1440px; margin: 0 auto; width: 100%; }
-
-/* TOP BAR (SEARCH & NOTIFS) */
-.top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 28px; gap: 16px; flex-wrap: wrap; }
-.search-box { position: relative; width: 100%; max-width: 380px; }
-.search-box input { width: 100%; padding: 12px 16px 12px 42px; background: rgba(15, 23, 42, 0.6); border: 1px solid var(--glass-border); border-radius: 100px; color: #fff; font-size: 13.5px; }
-.search-box svg { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); width: 18px; height: 18px; color: var(--text-muted); }
-
-/* MOBILE BOTTOM NAV */
-.mobile-nav { display: none; position: fixed; bottom: 0; left: 0; right: 0; background: rgba(3, 7, 18, 0.85); backdrop-filter: blur(24px) saturate(160%); border-top: 1px solid var(--glass-border); padding: 8px 12px calc(8px + env(safe-area-inset-bottom)); z-index: 100; justify-content: space-around; }
-.mobile-nav button { background: transparent; border: none; color: var(--text-muted); display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 10px; font-weight: 700; transition: 0.2s; }
-.mobile-nav button.active { color: var(--accent-blue); }
-
-@media (max-width: 880px) {
-  .sidebar { display: none; }
-  .mobile-nav { display: flex; }
-  .main-viewport { padding: 20px 16px 100px 16px; }
-  .top-bar { flex-direction: column; align-items: stretch; }
-  .search-box { max-width: 100%; }
-}
-
-/* ================= DASHBOARD & CARDS ================= */
-.stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; margin-bottom: 28px; }
-.stat-card { padding: 20px; display: flex; flex-direction: column; gap: 10px; position: relative; overflow: hidden; }
-.stat-card-top { display: flex; justify-content: space-between; align-items: center; }
-.stat-icon { width: 42px; height: 42px; border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; font-size: 20px; background: rgba(255,255,255,0.06); border: 1px solid var(--glass-border); }
-.stat-val { font-size: 28px; font-weight: 800; font-family: var(--font-heading); line-height: 1; }
-.stat-lbl { font-size: 11px; color: var(--text-muted); font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; }
-
-.quick-actions { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; margin-bottom: 32px; }
-.action-card { padding: 18px; border-radius: var(--radius-md); background: linear-gradient(135deg, rgba(255,255,255,0.05), rgba(255,255,255,0.01)); border: 1px solid var(--glass-border); display: flex; align-items: center; gap: 14px; cursor: pointer; transition: 0.2s; }
-.action-card:hover { transform: translateY(-3px); background: rgba(59, 130, 246, 0.15); border-color: var(--accent-blue); }
-
-.section-title { font-size: 20px; font-family: var(--font-heading); font-weight: 800; margin-bottom: 18px; display: flex; align-items: center; justify-content: space-between; }
-
-/* TABLES & LISTS */
-.data-table-container { overflow-x: auto; border-radius: var(--radius-lg); border: 1px solid var(--glass-border); }
-.data-table { width: 100%; border-collapse: collapse; text-align: left; font-size: 14px; }
-.data-table th { background: rgba(255,255,255,0.04); padding: 14px 18px; color: var(--text-muted); font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 1px solid var(--glass-border); }
-.data-table td { padding: 16px 18px; border-bottom: 1px solid var(--glass-border); vertical-align: middle; }
-.data-table tr:last-child td { border-bottom: none; }
-.data-table tr:hover td { background: rgba(255,255,255,0.02); }
-
-/* BADGES & PROGRESS */
-.badge { display: inline-flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 800; padding: 4px 10px; border-radius: 100px; text-transform: uppercase; }
-.badge-done { background: rgba(16, 185, 129, 0.2); color: var(--accent-emerald); border: 1px solid rgba(16, 185, 129, 0.4); }
-.badge-progress { background: rgba(245, 158, 11, 0.2); color: var(--accent-amber); border: 1px solid rgba(245, 158, 11, 0.4); }
-.badge-none { background: rgba(239, 68, 68, 0.2); color: var(--accent-rose); border: 1px solid rgba(239, 68, 68, 0.4); }
-
-.progress-bar-bg { width: 100%; height: 6px; background: rgba(255,255,255,0.08); border-radius: 100px; overflow: hidden; }
-.progress-bar-fill { height: 100%; background: linear-gradient(90deg, var(--accent-blue), var(--accent-cyan)); border-radius: 100px; }
-
-/* MODALS & TOAST */
-.modal-overlay { position: fixed; inset: 0; background: rgba(3, 7, 18, 0.85); backdrop-filter: blur(16px); z-index: 1000; display: none; align-items: center; justify-content: center; padding: 20px; }
-.modal-overlay.active { display: flex; }
-.modal-box { width: 100%; max-width: 620px; max-height: 90vh; overflow-y: auto; padding: 32px; border-color: var(--glass-border-glow); }
-
-.toast { position: fixed; bottom: 30px; right: 30px; background: linear-gradient(135deg, var(--accent-blue), #1D4ED8); color: #fff; padding: 14px 24px; border-radius: 100px; font-weight: 700; font-size: 14px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); z-index: 2000; transform: translateY(100px); opacity: 0; transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1); pointer-events: none; }
-.toast.show { transform: translateY(0); opacity: 1; }
-
-.hw-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
-.hw-card { padding: 22px; cursor: pointer; position: relative; }
-.hw-card:hover { transform: translateY(-4px); background: var(--glass-card-hover); border-color: var(--glass-border-glow); }
-
-.type-card-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; margin-bottom: 18px; }
-.type-card { padding: 14px; text-align: center; border-radius: var(--radius-md); background: rgba(255,255,255,0.03); border: 1px solid var(--glass-border); cursor: pointer; transition: 0.2s; font-size: 12px; font-weight: 700; }
-.type-card.active { background: rgba(59, 130, 246, 0.25); border-color: var(--accent-blue); color: #fff; }
 </style>
 </head>
 <body>
 
-<div class="app-bg"></div>
-
-<!-- LOGIN SCREEN -->
+<!-- ============ LOGIN SCREEN ============ -->
 <div id="login-screen" class="screen active">
-  <div class="login-box glass-panel">
+  <div class="login-wrap">
     <div class="login-hero">
-      <div class="brand-title">
-        <svg width="32" height="28" viewBox="0 0 48 38" fill="none"><path d="M2 34 16 11l7 11 6-9 17 21H2Z" stroke="#60A5FA" stroke-width="3.5" stroke-linejoin="round"/></svg>
-        EVEREST SaaS
+      <svg class="hero-decor" viewBox="0 0 400 500" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="330" cy="60" r="120" fill="rgba(255,255,255,.05)"/>
+        <circle cx="30" cy="460" r="90" fill="rgba(232,163,61,.12)"/>
+      </svg>
+      <div class="mark">📘 Barkamol English</div>
+      <div>
+        <div class="headline">Your homework,<br>made <em>obvious</em>.</div>
+        <p style="margin-top:14px; color:rgba(255,255,255,.75); font-size:15px; line-height:1.6; max-width:340px;">Six clear tasks, one place. See exactly what's due, submit it, and watch your progress fill in.</p>
       </div>
-      <div class="brand-tagline">Commercial Education Platform</div>
-      <div style="margin-top: auto;">
-        <h2 style="font-family: var(--font-heading); font-size:32px; line-height:1.2; font-weight:800;">Next-Gen Learning Management.</h2>
-        <p style="color:var(--text-muted); font-size:14px; margin-top:12px;">Seamless homework creation, instant grading, and real-time student analytics.</p>
-      </div>
+      <div class="foot">Built for Group A · Group B · Even-Day · Odd-Day students</div>
     </div>
     <div class="login-form-pane">
-      <h2 style="font-family: var(--font-heading); font-weight:800;">Sign In</h2>
-      <div class="role-tabs">
-        <button type="button" class="active" id="btn-role-teacher" onclick="setLoginRole('teacher')">O'qituvchi</button>
-        <button type="button" id="btn-role-student" onclick="setLoginRole('student')">O'quvchi</button>
+      <div class="eyebrow">Welcome back</div>
+      <h1>Sign in to continue</h1>
+      <div class="role-toggle">
+        <button type="button" class="active" data-role="student" onclick="setLoginRole('student')">Student</button>
+        <button type="button" data-role="teacher" onclick="setLoginRole('teacher')">Teacher</button>
       </div>
       <div class="field">
-        <label>Foydalanuvchi</label>
-        <select id="login-username"></select>
+        <label>Username</label>
+        <input id="login-username" type="text" placeholder="e.g. aziza">
       </div>
       <div class="field">
-        <label>Parol</label>
-        <input id="login-password" type="password" value="123" placeholder="••••••••">
+        <label>Password</label>
+        <input id="login-password" type="password" placeholder="••••••••">
       </div>
-      <button class="btn btn-primary" style="width:100%;" onclick="handleLogin()">Platformaga kirish</button>
-      <div id="login-error" style="color:#EF4444; font-size: 13px; margin-top: 12px; font-weight:600;"></div>
+      <button class="btn btn-primary" onclick="handleLogin()">Sign in</button>
+      <div class="login-error" id="login-error"></div>
+      <div class="demo-hint" id="demo-hint">
+        <b>Demo student:</b> aziza / student123<br>
+        <b>Demo teacher:</b> ms_karimova / teacher123
+      </div>
     </div>
   </div>
 </div>
 
-<!-- APP SCREEN -->
+<!-- ============ APP SCREEN ============ -->
 <div id="app-screen" class="screen">
-  <!-- DESKTOP SIDEBAR -->
-  <aside class="sidebar glass-panel" id="sidebar"></aside>
-
-  <!-- VIEWPORT -->
-  <main class="main-viewport">
-    <div class="top-bar">
-      <div class="search-box">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
-        <input type="text" placeholder="Search students, homework, groups..." oninput="handleGlobalSearch(this.value)">
-      </div>
-      <div style="display:flex; align-items:center; gap:12px;">
-        <button class="btn btn-secondary" style="padding:10px 16px; font-size:13px;" onclick="showNotifications()">🔔 Notifications</button>
-        <div style="font-size:13px; font-weight:700; color:var(--text-muted);" id="top-date-display"></div>
-      </div>
-    </div>
-    <div id="main-content"></div>
-  </main>
-
-  <!-- MOBILE NAVIGATION -->
-  <nav class="mobile-nav" id="mobile-nav"></nav>
+  <nav class="sidebar" id="sidebar"></nav>
+  <main class="main" id="main-content"></main>
 </div>
 
-<!-- MODAL CONTAINER -->
-<div class="modal-overlay" id="modal-bg">
-  <div class="modal-box glass-panel" id="modal-body"></div>
+<div class="modal-bg" id="modal-bg">
+  <div class="modal" id="modal-body"></div>
+</div>
+
+<div class="lightbox-bg" id="lightbox-bg" onclick="closeLightbox()">
+  <button class="lb-close" onclick="closeLightbox()">×</button>
+  <img id="lightbox-img" src="" alt="" onclick="event.stopPropagation()">
 </div>
 
 <div class="toast" id="toast"></div>
 
 <script>
-const STORE_KEY = 'everest_saas_db_v5';
+/* =========================================================
+   DATA LAYER
+   ========================================================= */
+const STORE_KEY = 'barkamol_hw_v2';
 
 const ICONS = {
-  home: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>`,
-  book: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>`,
-  students: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 14l9-5-9-5-9 5 9 5z"/><path d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0112 20.055a11.952 11.952 0 01-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"/></svg>`,
-  groups: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>`,
-  chart: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>`,
-  vocab: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg>`,
-  materials: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg>`,
-  settings: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"/></svg>`,
-  logout: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>`,
-  collapse: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 19l-7-7 7-7m8 14l-7-7 7-7"/></svg>`,
-  plus: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>`
+  book: `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M4 4.5C4 3.67 4.67 3 5.5 3H12v16H5.5C4.67 19 4 19.67 4 20.5V4.5Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M20 4.5c0-.83-.67-1.5-1.5-1.5H12v16h6.5c.83 0 1.5.67 1.5 1.5V4.5Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>`,
+  layers: `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 3 3 8l9 5 9-5-9-5Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="m3 12 9 5 9-5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="m3 16 9 5 9-5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+  brain: `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M9 4.5a2.5 2.5 0 0 0-2.5 2.5v.2A2.8 2.8 0 0 0 4.5 10c0 .6.17 1.15.46 1.63A2.7 2.7 0 0 0 4 14c0 1.1.68 2.05 1.65 2.45A2.5 2.5 0 0 0 8 20a2.5 2.5 0 0 0 2.5-2.5V7A2.5 2.5 0 0 0 9 4.5Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M15 4.5a2.5 2.5 0 0 1 2.5 2.5v.2A2.8 2.8 0 0 1 19.5 10a2.8 2.8 0 0 1-.46 1.63A2.7 2.7 0 0 1 20 14a2.5 2.5 0 0 1-1.65 2.45A2.5 2.5 0 0 1 16 20a2.5 2.5 0 0 1-2.5-2.5V7A2.5 2.5 0 0 1 15 4.5Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>`,
+  pencil: `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="m14.5 5.5 4 4L7 21l-4.7.7L3 17l11.5-11.5Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="m12.5 7.5 4 4" stroke="currentColor" stroke-width="1.6"/></svg>`,
+  camera: `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M4 8.5A1.5 1.5 0 0 1 5.5 7h2l1.2-2h6.6l1.2 2h2A1.5 1.5 0 0 1 20 8.5v9A1.5 1.5 0 0 1 18.5 19h-13A1.5 1.5 0 0 1 4 17.5v-9Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><circle cx="12" cy="13" r="3.4" stroke="currentColor" stroke-width="1.6"/></svg>`,
+  globe: `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="8.5" stroke="currentColor" stroke-width="1.6"/><path d="M3.5 12h17M12 3.5c2.5 2.4 3.8 5.4 3.8 8.5s-1.3 6.1-3.8 8.5c-2.5-2.4-3.8-5.4-3.8-8.5S9.5 5.9 12 3.5Z" stroke="currentColor" stroke-width="1.6"/></svg>`,
+  check: `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+  home: `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M4 11.5 12 4l8 7.5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/><path d="M6 10v9.5h12V10" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+  chart: `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 19V10M12 19V5M19 19v-6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>`,
+  people: `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="9" cy="8" r="3" stroke="currentColor" stroke-width="1.6"/><path d="M3.5 19c0-3 2.5-5 5.5-5s5.5 2 5.5 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><circle cx="17" cy="9" r="2.3" stroke="currentColor" stroke-width="1.6"/><path d="M15.5 19c.1-2.2 1.4-3.9 3.3-4.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>`,
+  edit: `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="m14.5 4.5 5 5L8 21H3v-5L14.5 4.5Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>`,
+  trash: `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M4 7h16M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2m-9 0 1 12.5A1.5 1.5 0 0 0 7.5 21h9a1.5 1.5 0 0 0 1.5-1.5L19 7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+  plus: `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>`,
+  logout: `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M9 4H5.5A1.5 1.5 0 0 0 4 5.5v13A1.5 1.5 0 0 0 5.5 20H9M16 15l4-3-4-3M20 12H9" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+  clock: `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="8.5" stroke="currentColor" stroke-width="1.6"/><path d="M12 7v5l3.5 2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+  empty: `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M4 7.5 12 3l8 4.5v9L12 21l-8-4.5v-9Z" stroke="currentColor" stroke-width="1.4"/><path d="M4 7.5 12 12m0 0 8-4.5M12 12v9" stroke="currentColor" stroke-width="1.4"/></svg>`,
+  speaker: `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M4 9.5v5h3.5L13 19V5L7.5 9.5H4Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M16.5 8.5a5 5 0 0 1 0 7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><path d="M19 6a8.5 8.5 0 0 1 0 12" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>`,
+  upload: `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 15V4M12 4 7.5 8.5M12 4l4.5 4.5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/><path d="M4.5 15v3A2.5 2.5 0 0 0 7 20.5h10a2.5 2.5 0 0 0 2.5-2.5v-3" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+  music: `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M9 18V5.8L19 4v11.2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><circle cx="6.5" cy="18" r="2.5" stroke="currentColor" stroke-width="1.6"/><circle cx="16.5" cy="15.2" r="2.5" stroke="currentColor" stroke-width="1.6"/></svg>`,
+  inbox: `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M4 12h4l1.8 3h4.4l1.8-3h4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M5.5 5h13L21 12v5.5A1.5 1.5 0 0 1 19.5 19h-15A1.5 1.5 0 0 1 3 17.5V12L5.5 5Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>`
 };
 
-function generateInitialData() {
-  const users = [
-    {id:'t1', role:'teacher', username:'mr.aziz', name:'Mr. Aziz', password:'123', avatar:''},
-    {id:'t2', role:'teacher', username:'ms.malika', name:'Ms. Malika', password:'123', avatar:''}
+const CATEGORY_STYLE = {
+  book:   {bg:'var(--indigo)',  soft:'rgba(75,74,196,.1)'},
+  layers: {bg:'var(--amber)',   soft:'rgba(232,163,61,.14)'},
+  brain:  {bg:'var(--teal)',    soft:'rgba(46,158,130,.12)'},
+  pencil: {bg:'var(--coral)',   soft:'rgba(228,87,46,.1)'},
+  camera: {bg:'#8B5CF6',        soft:'rgba(139,92,246,.1)'},
+  globe:  {bg:'#0EA5B7',        soft:'rgba(14,165,183,.1)'}
+};
+
+function iconBadge(iconKey, size){
+  const s = CATEGORY_STYLE[iconKey] || CATEGORY_STYLE.book;
+  return `<div class="icon-badge" style="background:${s.soft}; color:${s.bg};">${ICONS[iconKey]}</div>`;
+}
+
+// Reference illustrations (inline SVG, category-specific, not stock art)
+function refIllustration(kind){
+  if(kind==='essential2'){
+    return `<svg viewBox="0 0 600 260" xmlns="http://www.w3.org/2000/svg">
+      <rect width="600" height="260" fill="#EDEBFB"/>
+      <rect x="60" y="55" width="130" height="160" rx="6" fill="#4B4AC4"/>
+      <rect x="75" y="70" width="100" height="8" rx="4" fill="#fff" opacity=".85"/>
+      <rect x="75" y="88" width="70" height="8" rx="4" fill="#fff" opacity=".55"/>
+      <text x="125" y="150" font-family="Fraunces, serif" font-size="34" fill="#fff" text-anchor="middle" font-weight="700">27</text>
+      <rect x="210" y="55" width="130" height="160" rx="6" fill="#38369A"/>
+      <rect x="225" y="70" width="100" height="8" rx="4" fill="#fff" opacity=".85"/>
+      <rect x="225" y="88" width="70" height="8" rx="4" fill="#fff" opacity=".55"/>
+      <text x="275" y="150" font-family="Fraunces, serif" font-size="34" fill="#fff" text-anchor="middle" font-weight="700">28</text>
+      <path d="M355 130h150" stroke="#4B4AC4" stroke-width="3" stroke-dasharray="2 10" stroke-linecap="round"/>
+      <path d="M490 122 505 130 490 138" stroke="#4B4AC4" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      <circle cx="545" cy="130" r="34" fill="#E8A33D"/>
+      <text x="545" y="137" font-family="Manrope, sans-serif" font-size="14" fill="#1C2541" text-anchor="middle" font-weight="800">NEXT</text>
+    </svg>`;
+  }
+  if(kind==='tactics'){
+    return `<svg viewBox="0 0 600 260" xmlns="http://www.w3.org/2000/svg">
+      <rect width="600" height="260" fill="#FBEBD2"/>
+      <rect x="90" y="45" width="420" height="170" rx="10" fill="#fff" stroke="#E8A33D" stroke-width="2"/>
+      <rect x="115" y="70" width="150" height="10" rx="5" fill="#E8A33D"/>
+      <rect x="115" y="95" width="370" height="6" rx="3" fill="#E7E1D3"/>
+      <rect x="115" y="112" width="370" height="6" rx="3" fill="#E7E1D3"/>
+      <rect x="115" y="129" width="260" height="6" rx="3" fill="#E7E1D3"/>
+      <rect x="115" y="155" width="90" height="34" rx="8" fill="#E8A33D"/>
+      <text x="160" y="177" font-family="Fraunces, serif" font-size="18" fill="#fff" text-anchor="middle" font-weight="700">Unit 5</text>
+      <rect x="215" y="155" width="90" height="34" rx="8" fill="#1C2541"/>
+      <text x="260" y="177" font-family="Fraunces, serif" font-size="18" fill="#fff" text-anchor="middle" font-weight="700">Unit 6</text>
+    </svg>`;
+  }
+  if(kind==='reading'){
+    return `<svg viewBox="0 0 600 260" xmlns="http://www.w3.org/2000/svg">
+      <rect width="600" height="260" fill="#DCF2EA"/>
+      <rect x="80" y="60" width="180" height="130" rx="10" fill="#fff" stroke="#2E9E82" stroke-width="2"/>
+      <rect x="100" y="80" width="100" height="8" rx="4" fill="#2E9E82"/>
+      <rect x="100" y="98" width="140" height="6" rx="3" fill="#E7E1D3"/>
+      <rect x="100" y="112" width="140" height="6" rx="3" fill="#E7E1D3"/>
+      <rect x="100" y="126" width="90" height="6" rx="3" fill="#E7E1D3"/>
+      <g>
+        <rect x="330" y="55" width="190" height="42" rx="21" fill="#fff" stroke="#2E9E82" stroke-width="1.5"/>
+        <text x="425" y="81" font-family="Manrope" font-size="16" font-weight="800" fill="#1C2541" text-anchor="middle">discover</text>
+        <rect x="330" y="108" width="190" height="42" rx="21" fill="#fff" stroke="#2E9E82" stroke-width="1.5"/>
+        <text x="425" y="134" font-family="Manrope" font-size="16" font-weight="800" fill="#1C2541" text-anchor="middle">achieve</text>
+        <rect x="330" y="161" width="190" height="42" rx="21" fill="#2E9E82"/>
+        <text x="425" y="187" font-family="Manrope" font-size="16" font-weight="800" fill="#fff" text-anchor="middle">wonder</text>
+      </g>
+    </svg>`;
+  }
+  if(kind==='sentences'){
+    return `<svg viewBox="0 0 600 260" xmlns="http://www.w3.org/2000/svg">
+      <rect width="600" height="260" fill="#FBE2D9"/>
+      <rect x="90" y="40" width="300" height="180" rx="8" fill="#fff" stroke="#E4572E" stroke-width="2"/>
+      <line x1="90" y1="80" x2="390" y2="80" stroke="#E7E1D3" stroke-width="1.5"/>
+      <line x1="90" y1="112" x2="390" y2="112" stroke="#E7E1D3" stroke-width="1.5"/>
+      <line x1="90" y1="144" x2="390" y2="144" stroke="#E7E1D3" stroke-width="1.5"/>
+      <line x1="90" y1="176" x2="390" y2="176" stroke="#E7E1D3" stroke-width="1.5"/>
+      <rect x="106" y="62" width="230" height="10" rx="5" fill="#E4572E"/>
+      <rect x="106" y="94" width="180" height="10" rx="5" fill="#1C2541" opacity=".7"/>
+      <rect x="106" y="126" width="210" height="10" rx="5" fill="#1C2541" opacity=".4"/>
+      <path d="M420 60 480 200" stroke="#E4572E" stroke-width="4" stroke-linecap="round"/>
+      <circle cx="420" cy="60" r="7" fill="#E4572E"/>
+      <text x="500" y="150" font-family="Fraunces, serif" font-size="42" font-weight="700" fill="#E4572E">30</text>
+    </svg>`;
+  }
+  if(kind==='board'){
+    return `<svg viewBox="0 0 600 260" xmlns="http://www.w3.org/2000/svg">
+      <rect width="600" height="260" fill="#EDE7FB"/>
+      <rect x="70" y="45" width="460" height="170" rx="8" fill="#2B2A55"/>
+      <rect x="70" y="45" width="460" height="170" rx="8" fill="none" stroke="#8B5CF6" stroke-width="4"/>
+      <text x="100" y="90" font-family="'Fraunces', serif" font-size="20" fill="#fff" opacity=".9">Present Perfect</text>
+      <line x1="100" y1="105" x2="330" y2="105" stroke="#8B5CF6" stroke-width="2"/>
+      <text x="100" y="135" font-family="Manrope" font-size="15" fill="#fff" opacity=".75">have / has + past participle</text>
+      <text x="100" y="160" font-family="Manrope" font-size="15" fill="#fff" opacity=".6">She has finished her homework.</text>
+      <rect x="100" y="178" width="60" height="10" rx="5" fill="#8B5CF6"/>
+      <rect x="380" y="70" width="120" height="90" rx="10" fill="rgba(255,255,255,.08)" stroke="#fff" stroke-width="2" stroke-dasharray="5 6"/>
+      <path d="M425 105h30M440 90v30" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/>
+    </svg>`;
+  }
+  if(kind==='translate'){
+    return `<svg viewBox="0 0 600 260" xmlns="http://www.w3.org/2000/svg">
+      <rect width="600" height="260" fill="#DFF3F5"/>
+      <rect x="60" y="60" width="200" height="140" rx="10" fill="#fff" stroke="#0EA5B7" stroke-width="2"/>
+      <text x="80" y="90" font-family="Manrope" font-weight="800" font-size="13" fill="#0EA5B7">ENGLISH</text>
+      <rect x="80" y="102" width="150" height="7" rx="3.5" fill="#E7E1D3"/>
+      <rect x="80" y="118" width="120" height="7" rx="3.5" fill="#E7E1D3"/>
+      <rect x="80" y="134" width="140" height="7" rx="3.5" fill="#E7E1D3"/>
+      <g>
+        <path d="M275 130h60" stroke="#0EA5B7" stroke-width="3" stroke-linecap="round"/>
+        <path d="M320 118 337 130 320 142" stroke="#0EA5B7" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      </g>
+      <rect x="350" y="60" width="200" height="140" rx="10" fill="#0EA5B7"/>
+      <text x="370" y="90" font-family="Manrope" font-weight="800" font-size="13" fill="#fff">O'ZBEKCHA</text>
+      <rect x="370" y="102" width="150" height="7" rx="3.5" fill="rgba(255,255,255,.55)"/>
+      <rect x="370" y="118" width="110" height="7" rx="3.5" fill="rgba(255,255,255,.55)"/>
+      <rect x="370" y="134" width="130" height="7" rx="3.5" fill="rgba(255,255,255,.55)"/>
+    </svg>`;
+  }
+  return '';
+}
+
+function pseudoRand(seed){ const x = Math.sin(seed*99991+1)*10000; return x - Math.floor(x); }
+
+function buildStudentRoster(){
+  const base = [
+    {id:'s1', role:'student', name:'Aziza Yusupova', username:'aziza', password:'student123', group:'Odd-Day Group'},
+    {id:'s2', role:'student', name:'Jasur Tashkentov', username:'jasur', password:'student123', group:'Even-Day Group'},
+    {id:'s3', role:'student', name:'Dilnoza Rakhimova', username:'dilnoza', password:'student123', group:'Group A'},
+    {id:'s4', role:'student', name:'Sardor Aliyev', username:'sardor', password:'student123', group:'Group B'}
+  ];
+  const groups = ['Group A','Group B','Odd-Day Group','Even-Day Group'];
+  const male = ["Bekzod","Davron","Elyor","Farrux","Ibrohim","Kamron","Laziz","Muxtor","Nodir","Otabek","Temur","Ulugbek","Xurshid","Yusuf","Zafar","Rustam","Shoxrux","Anvar","Bexruz","Diyor","Aziz","Sherzod","Alisher","Javlon","Behruz","Sanjar"];
+  const female = ["Barno","Elnora","Feruza","Gulnora","Hilola","Iroda","Kamila","Laylo","Madina","Nargiza","Malika","Sabina","Umida","Yulduz","Zarina","Shahnoza","Mohira","Sevinch","Nilufar","Ozoda","Gulbahor","Diyora","Shirin","Latofat","Marjona","Nozima"];
+  const surnames = ["Yusupov","Aliyev","Rakhimov","Karimov","Tashkentov","Nazarov","Ergashev","Xolmatov","Saidov","Murodov","Islomov","Abdullayev","Toshpulatov","Qodirov","Mirzayev","Sattorov","Umarov","Gulomov","Rashidov","Yoldashev"];
+  const extra = [];
+  for(let i=0;i<26;i++){
+    const isMale = i % 2 === 0;
+    const first = isMale ? male[i % male.length] : female[i % female.length];
+    const last = surnames[i % surnames.length] + (isMale ? '' : 'a');
+    const group = groups[(i+2) % groups.length];
+    const uname = first.toLowerCase() + (i+5);
+    extra.push({id:'s'+(i+5), role:'student', name:first+' '+last, username:uname, password:'student123', group});
+  }
+  return base.concat(extra);
+}
+
+function buildProgressForStudent(idx, homeworks){
+  const prog = {};
+  homeworks.forEach((hw, hIdx)=>{
+    const r = pseudoRand(idx*13 + hIdx*7 + 3);
+    const status = r<0.32 ? 'done' : (r<0.72 ? 'in-progress' : 'not-started');
+    if(hw.type==='reading-vocab'){
+      const total = hw.words.length;
+      const count = status==='done' ? total : (status==='in-progress' ? Math.max(1, Math.round(total*pseudoRand(idx+hIdx+9))) : 0);
+      prog[hw.id] = {status, wordsLearned: hw.words.slice(0,count).map(w=>w.en)};
+    } else if(hw.type==='sentences'){
+      const count = status==='done' ? hw.target : (status==='in-progress' ? Math.max(1, Math.round(hw.target*pseudoRand(idx+hIdx+17))) : 0);
+      prog[hw.id] = {status, sentences: Array.from({length:count}, (_,i)=> "Sentence " + (i+1) + " written by this student.")};
+    } else if(hw.type==='translate'){
+      const text = status==='not-started' ? '' : (status==='done' ? "To'liq tarjima shu yerda joylashtirilgan." : "Tarjima hali tugallanmagan...");
+      prog[hw.id] = {status, translation:text};
+    } else {
+      const pct = status==='done' ? 100 : (status==='in-progress' ? (25+Math.round(pseudoRand(idx+hIdx+29)*50)) : 0);
+      prog[hw.id] = {status, pct};
+    }
+  });
+  return prog;
+}
+
+function defaultData(){
+  const homeworks = [
+      {
+        id:'hw1', type:'essential2', icon:'book', title:'Essential 2', figure:'27 → 28 Units',
+        figureEven:'21 → 24 Units — Revision', sub:'2 units per lesson', due:'2026-09-24',
+        groups:['Group A','Group B','Odd-Day Group','Even-Day Group'],
+        whatToDo:'Complete Units 27 and 28 in your Essential 2 workbook.',
+        instructions:['Study the new vocabulary for both units.','Read through each unit once for meaning.','Complete every exercise in writing.','Review any words you found difficult.'],
+        illustration:'essential2', refImage:null, refAudio:null
+      },
+      {
+        id:'hw2', type:'tactics', icon:'layers', title:'Tactics Expanding', figure:'5 – 6 Units',
+        sub:'2 units per lesson', due:'2026-09-24',
+        groups:['Group A','Group B','Odd-Day Group','Even-Day Group'],
+        whatToDo:'Complete Units 5 and 6 in your Tactics Expanding book.',
+        instructions:['Study Unit 5.','Study Unit 6.','Learn the new vocabulary from both units.','Complete the exercises.','Review any difficult words.'],
+        illustration:'tactics', refImage:null, refAudio:null
+      },
+      {
+        id:'hw3', type:'reading-vocab', icon:'brain', title:'Learn Reading Vocabulary', figure:'8 new words',
+        sub:"From this week's Reading text", due:'2026-09-25',
+        groups:['Group A','Group B','Odd-Day Group','Even-Day Group'],
+        whatToDo:'Learn all the vocabulary from the assigned Reading passage below. Tap the speaker to hear each word.',
+        instructions:[],
+        illustration:'reading', refImage:null, refAudio:null,
+        words:[
+          {en:'discover', uz:'kashf qilmoq', ex:'Scientists discover new species every year.'},
+          {en:'achieve', uz:'erishmoq', ex:'She worked hard to achieve her goal.'},
+          {en:'wonder', uz:'hayron qolmoq / hayrat', ex:'I wonder what the weather will be tomorrow.'},
+          {en:'explore', uz:"kashf etmoq / o'rganmoq", ex:'They explored the old castle together.'},
+          {en:'ancient', uz:'qadimiy', ex:'The museum has many ancient artifacts.'},
+          {en:'journey', uz:'sayohat', ex:'Our journey to the mountains took six hours.'},
+          {en:'brilliant', uz:'ajoyib / juda aqlli', ex:'That was a brilliant idea.'},
+          {en:'curious', uz:'qiziquvchan', ex:'Children are naturally curious about the world.'}
+        ]
+      },
+      {
+        id:'hw4', type:'sentences', icon:'pencil', title:'Making Sentences', figure:'30 sentences',
+        sub:"Using this week's vocabulary", due:'2026-09-26',
+        groups:['Group A','Group B','Odd-Day Group','Even-Day Group'],
+        whatToDo:"Write 30 original sentences using the vocabulary from this week's lessons.",
+        instructions:['Use a different vocabulary word in each sentence where possible.','Write full, grammatically correct sentences.','Avoid copying examples directly from the book.'],
+        illustration:'sentences', refImage:null, refAudio:null,
+        target:30
+      },
+      {
+        id:'hw5', type:'board', icon:'camera', title:'Copy the Board', figure:'Present Perfect notes',
+        sub:"From today's lesson", due:'2026-09-23',
+        groups:['Group A','Group B','Odd-Day Group','Even-Day Group'],
+        whatToDo:'Copy everything written on the classroom board into your notebook, then attach a photo of your notebook as proof.',
+        instructions:['Open the board photo and zoom in if needed.','Copy every line into your notebook neatly.','Take a photo of your finished notebook page.','Mark the task complete once finished.'],
+        illustration:'board', refImage:null, refAudio:null
+      },
+      {
+        id:'hw6', type:'translate', icon:'globe', title:'Translate the Text', figure:'"A Trip to Samarkand"',
+        sub:'150-word passage', due:'2026-09-27',
+        groups:['Group A','Group B','Odd-Day Group','Even-Day Group'],
+        whatToDo:'Translate the assigned English text into Uzbek. Listen to the audio if your teacher has added one.',
+        instructions:[],
+        illustration:'translate', refImage:null, refAudio:null,
+        originalText:'Last summer, my family and I visited Samarkand for the first time. We walked through the Registan Square and admired the beautiful blue tiles on the old madrasahs. Our guide told us stories about the Silk Road and the merchants who once traveled through this ancient city. In the evening, we tried plov at a small restaurant near the bazaar. It was one of the best trips of my life, and I hope to return again someday.'
+      }
   ];
 
-  const groups = ['Group A', 'Group B', 'Even-Day Group', 'Odd-Day Group'];
-  
-  for(let i = 1; i <= 24; i++) {
-    users.push({
-      id: 's' + i,
-      role: 'student',
-      username: 'student-' + i,
-      name: i === 1 ? 'Ali Valiyev' : (i === 2 ? 'Vali Karimov' : (i === 3 ? 'Aziz Rahimov' : 'Student ' + i)),
-      studentId: 'EV-00' + (100 + i),
-      group: groups[(i - 1) % 4],
-      level: 'B1',
-      teacher: 'Mr. Aziz',
-      password: '123',
-      streak: 8 + (i % 5),
-      points: 800 + (i * 20),
-      avatar: ''
-    });
-  }
+  const students = buildStudentRoster();
+  const users = [{id:'t1', role:'teacher', name:'Ms. Karimova', username:'ms_karimova', password:'teacher123'}].concat(students);
 
-  return {
-    users,
-    groups: [
-      {id:'g1', name:'Group A', studentCount: 6, activeHw: 4},
-      {id:'g2', name:'Group B', studentCount: 6, activeHw: 3},
-      {id:'g3', name:'Even-Day Group', studentCount: 6, activeHw: 2},
-      {id:'g4', name:'Odd-Day Group', studentCount: 6, activeHw: 3}
-    ],
-    homeworks: [
-      {id:'hw1', type:'Book / Units', title:'Essential 2', figure:'27–28 Units', group:'Group A', due:'2026-09-25', status:'Active', desc:'Complete 2 units per lesson.'},
-      {id:'hw2', type:'Book / Units', title:'Tactics Expanding', figure:'5–6 Units', group:'Group A', due:'2026-09-27', status:'Active', desc:'Complete listening exercises.'},
-      {id:'hw3', type:'Vocabulary', title:'Reading Vocabulary', figure:'10 words', group:'Group B', due:'2026-09-30', status:'Active', desc:'Learn vocabulary from assigned Reading text.'},
-      {id:'hw4', type:'Making Sentences', title:'Making Sentences', figure:'30 sentences', group:'Group A', due:'2026-09-28', status:'Active', desc:'Make 30 sentences using Present Perfect.'},
-      {id:'hw5', type:'Copy the Board', title:'Copy the Board', figure:'Board Photo', group:'Group A', due:'2026-09-28', status:'Active', desc:'Copy everything written on classroom board.'},
-      {id:'hw6', type:'Translate the Text', title:'Translate the Text', figure:'1 Passage', group:'Group B', due:'2026-09-29', status:'Active', desc:'Translate assigned English text to Uzbek.'}
-    ],
-    submissions: [
-      {id:'sub1', studentId:'s1', hwId:'hw4', content:'1. I have done my homework.\n2. She has visited London.\n3. They have finished the game.', date:'2026-09-20', status:'Approved', comment:'Great job Ali!'},
-      {id:'sub2', studentId:'s2', hwId:'hw6', content:'Ushbu matn ingliz tilidan o`zbekchaga tarjima qilindi.', date:'2026-09-21', status:'Pending', comment:''}
-    ],
-    vocabulary: [
-      {id:'v1', word:'important', translation:'muhim', example:'This lesson is important.', pronunciation:'/ɪmˈpɔː.tənt/'},
-      {id:'v2', word:'achieve', translation:'erishmoq', example:'She achieved her goal.', pronunciation:'/əˈtʃiːv/'},
-      {id:'v3', word:'confirm', translation:'tasdiqlamoq', example:'Please confirm your choice.', pronunciation:'/kənˈfɜːm/'}
-    ],
-    materials: [
-      {id:'m1', name:'Essential 2 Unit 27 Page', type:'Image', folder:'Essential 2', date:'2026-09-15', url:'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?q=80&w=600&auto=format&fit=crop'},
-      {id:'m2', name:'Tactics Audio Script', type:'PDF', folder:'Tactics Expanding', date:'2026-09-18', url:'#'}
-    ],
-    notifications: [
-      {id: 1, title: 'Ali Valiyev submitted HW', desc: 'Making Sentences submitted for review.', time: '10 mins ago'},
-      {id: 2, title: 'Deadline Alert', desc: 'Essential 2 HW deadline is approaching.', time: '1 hour ago'}
-    ]
+  const progress = {
+    s1: {
+      hw1:{status:'in-progress', pct:50},
+      hw2:{status:'not-started', pct:0},
+      hw3:{status:'in-progress', wordsLearned:['discover','achieve','wonder']},
+      hw4:{status:'in-progress', sentences:['I go to school every day.','She likes reading books.','They are playing football.']},
+      hw5:{status:'done', pct:100},
+      hw6:{status:'not-started', translation:''}
+    },
+    s2: {
+      hw1:{status:'not-started', pct:0},
+      hw2:{status:'done', pct:100},
+      hw3:{status:'done', wordsLearned:['discover','achieve','wonder','explore','ancient','journey','brilliant','curious']},
+      hw4:{status:'in-progress', sentences:['I go to school every day.']},
+      hw5:{status:'in-progress', pct:0},
+      hw6:{status:'not-started', translation:''}
+    },
+    s3: {
+      hw1:{status:'in-progress', pct:50},
+      hw2:{status:'not-started', pct:0},
+      hw3:{status:'not-started', wordsLearned:[]},
+      hw4:{status:'not-started', sentences:[]},
+      hw5:{status:'not-started', pct:0},
+      hw6:{status:'in-progress', translation:"Yaqinda tugataman..."}
+    },
+    s4: {
+      hw1:{status:'done', pct:100},
+      hw2:{status:'done', pct:100},
+      hw3:{status:'in-progress', wordsLearned:['discover','achieve']},
+      hw4:{status:'done', sentences:Array.from({length:30},(_,i)=>'Sample sentence number '+(i+1)+'.')},
+      hw5:{status:'done', pct:100},
+      hw6:{status:'not-started', translation:''}
+    }
   };
-}
+  students.slice(4).forEach((s, i)=>{ progress[s.id] = buildProgressForStudent(i, homeworks); });
 
-/* INDEXEDDB STORAGE */
-let dbInstance = null;
-function initDB() {
-  return new Promise((resolve) => {
-    const req = indexedDB.open("EverestSaaSDB_v5", 1);
-    req.onupgradeneeded = (e) => {
-      const db = e.target.result;
-      if (!db.objectStoreNames.contains("store")) db.createObjectStore("store");
-    };
-    req.onsuccess = (e) => { dbInstance = e.target.result; resolve(); };
-    req.onerror = () => resolve();
-  });
-}
-
-function saveDB() {
-  if (!dbInstance) return;
-  const tx = dbInstance.transaction("store", "readwrite");
-  tx.objectStore("store").put(DB, STORE_KEY);
-}
-
-function loadDB() {
-  return new Promise((resolve) => {
-    if (!dbInstance) { DB = generateInitialData(); return resolve(); }
-    const tx = dbInstance.transaction("store", "readonly");
-    const req = tx.objectStore("store").get(STORE_KEY);
-    req.onsuccess = () => { DB = req.result || generateInitialData(); resolve(); };
-    req.onerror = () => { DB = generateInitialData(); resolve(); };
-  });
+  return { users, groups: ['Group A','Group B','Odd-Day Group','Even-Day Group'], homeworks, progress };
 }
 
 let DB = null;
-let SESSION = null;
-let currentView = 'teacher-dash';
-let sidebarCollapsed = false;
+function loadDB(){
+  try{
+    const raw = localStorage.getItem(STORE_KEY);
+    if(raw){ DB = JSON.parse(raw); }
+    else { DB = defaultData(); saveDB(); }
+  }catch(e){ DB = defaultData(); }
+}
+function saveDB(){
+  try{ localStorage.setItem(STORE_KEY, JSON.stringify(DB)); }catch(e){}
+}
 
+let SESSION = null; // {userId, role}
+let currentView = 'dashboard';
+let currentHwId = null;
+
+/* =========================================================
+   AUTH
+   ========================================================= */
 function setLoginRole(role){
-  document.getElementById('btn-role-student').classList.toggle('active', role === 'student');
-  document.getElementById('btn-role-teacher').classList.toggle('active', role === 'teacher');
+  document.querySelectorAll('.role-toggle button').forEach(b=>b.classList.toggle('active', b.dataset.role===role));
+  const hint = document.getElementById('demo-hint');
+  if(role==='teacher'){
+    hint.innerHTML = '<b>Demo teacher:</b> ms_karimova / teacher123';
+  }else{
+    hint.innerHTML = '<b>Demo student:</b> aziza / student123<br><b>Also try:</b> jasur (Even-Day Group)';
+  }
   document.getElementById('login-username').dataset.role = role;
-  populateLoginDropdown(role);
 }
-
-function populateLoginDropdown(role){
-  const sel = document.getElementById('login-username');
-  sel.innerHTML = '';
-  DB.users.filter(u => u.role === role).forEach(u => {
-    const opt = document.createElement('option');
-    opt.value = u.username;
-    opt.textContent = `${u.name} (${u.username})`;
-    sel.appendChild(opt);
-  });
-}
+document.getElementById('login-username').dataset.role = 'student';
 
 function handleLogin(){
-  const role = document.getElementById('login-username').dataset.role || 'teacher';
-  const uname = document.getElementById('login-username').value;
+  const role = document.getElementById('login-username').dataset.role || 'student';
+  const uname = document.getElementById('login-username').value.trim().toLowerCase();
   const pass = document.getElementById('login-password').value;
-  const user = DB.users.find(u => u.username===uname && u.password===pass && u.role===role);
-  if(!user){ document.getElementById('login-error').textContent = 'Xato login yoki parol!'; return; }
+  const user = DB.users.find(u => u.username.toLowerCase()===uname && u.password===pass && u.role===role);
+  const err = document.getElementById('login-error');
+  if(!user){ err.textContent = 'Incorrect username or password for this role.'; return; }
+  err.textContent = '';
   SESSION = {userId:user.id, role:user.role};
-  try{ localStorage.setItem('everest_saas_session', JSON.stringify(SESSION)); }catch(e){}
+  try{ sessionStorage.setItem('barkamol_session', JSON.stringify(SESSION)); }catch(e){}
   enterApp();
 }
-
 function handleLogout(){
   SESSION = null;
-  try{ localStorage.removeItem('everest_saas_session'); }catch(e){}
+  try{ sessionStorage.removeItem('barkamol_session'); }catch(e){}
   document.getElementById('app-screen').classList.remove('active');
   document.getElementById('login-screen').classList.add('active');
-  showToast('Tizimdan chiqildi');
+  document.getElementById('login-password').value='';
 }
 
+function tryRestoreSession(){
+  try{
+    const raw = sessionStorage.getItem('barkamol_session');
+    if(raw){ SESSION = JSON.parse(raw); return true; }
+  }catch(e){}
+  return false;
+}
+
+/* =========================================================
+   APP SHELL / NAV
+   ========================================================= */
 function currentUser(){ return DB.users.find(u=>u.id===SESSION.userId); }
 
 function enterApp(){
   document.getElementById('login-screen').classList.remove('active');
   document.getElementById('app-screen').classList.add('active');
-  currentView = SESSION.role==='teacher' ? 'teacher-dash' : 'student-dash';
-  document.getElementById('top-date-display').textContent = new Date().toLocaleDateString('uz-UZ', { month:'short', day:'numeric', year:'numeric' });
+  currentView = SESSION.role==='teacher' ? 'teacher-home' : 'dashboard';
   renderSidebar();
-  renderMobileNav();
   renderMain();
-}
-
-function toggleSidebar(){
-  sidebarCollapsed = !sidebarCollapsed;
-  const sb = document.getElementById('sidebar');
-  sb.classList.toggle('collapsed', sidebarCollapsed);
 }
 
 function renderSidebar(){
   const user = currentUser();
+  const initials = user.name.split(' ').map(w=>w[0]).slice(0,2).join('').toUpperCase();
   const sb = document.getElementById('sidebar');
-  
-  let navItems = user.role==='teacher' ? [
-    ['teacher-dash','home','Dashboard'],
-    ['teacher-hw','book','Homework'],
-    ['teacher-students','students','Students'],
-    ['teacher-groups','groups','Groups'],
-    ['teacher-progress','chart','Progress'],
-    ['teacher-vocab','vocab','Vocabulary'],
-    ['teacher-materials','materials','Materials'],
-    ['teacher-settings','settings','Settings']
-  ] : [
-    ['student-dash','home','Dashboard'],
-    ['student-hw','book','Homework'],
-    ['student-progress','chart','Progress'],
-    ['student-profile','students','Profile']
-  ];
-
-  const initials = user.name ? user.name.split(' ').map(n=>n[0]).join('').substring(0,2).toUpperCase() : 'EV';
-
+  let navItems = '';
+  if(user.role==='student'){
+    navItems = [
+      ['dashboard','home','Homework'],
+      ['progress','chart','Progress']
+    ];
+  } else {
+    navItems = [
+      ['teacher-home','home','Homework'],
+      ['teacher-groups','people','Groups'],
+      ['teacher-progress','chart','Class Progress'],
+      ['teacher-submissions','inbox','Submissions']
+    ];
+  }
   sb.innerHTML = `
-    <div class="sidebar-header">
-      <div style="display:flex; align-items:center; gap:10px;">
-        <svg width="28" height="24" viewBox="0 0 48 38" fill="none"><path d="M2 34 16 11l7 11 6-9 17 21H2Z" stroke="#60A5FA" stroke-width="3.5" stroke-linejoin="round"/></svg>
-        <span class="brand-text" style="font-family:var(--font-heading); font-weight:800; font-size:18px;">EVEREST</span>
+    <div class="mark"><span class="dot"></span>Barkamol</div>
+    ${navItems.map(([id,icon,label])=>`
+      <button class="nav-item ${currentView===id?'active':''}" onclick="navigate('${id}')">
+        ${ICONS[icon]}<span>${label}</span>
+      </button>
+    `).join('')}
+    <div class="sidebar-foot">
+      <div class="user-chip">
+        <div class="avatar">${initials}</div>
+        <div>
+          <div class="u-name">${user.name}</div>
+          <div class="u-role">${user.role}${user.group? ' · '+user.group.replace(' Group','').replace('-Day','-Day'):''}</div>
+        </div>
       </div>
-      <button class="collapse-btn" onclick="toggleSidebar()">${ICONS.collapse}</button>
-    </div>
-
-    <div style="display:flex; flex-direction:column; gap:4px; flex:1;">
-      ${navItems.map(([id,icon,label])=>`
-        <button class="nav-btn ${currentView===id?'active':''}" onclick="navigate('${id}')">
-          ${ICONS[icon]}<span>${label}</span>
-        </button>
-      `).join('')}
-    </div>
-
-    <div class="sidebar-user">
-      <div class="avatar-img">${initials}</div>
-      <div class="sidebar-user-info" style="overflow:hidden; flex:1;">
-        <div style="font-weight:800; font-size:13px; white-space:nowrap; text-overflow:ellipsis; overflow:hidden;">${user.name}</div>
-        <div style="font-size:10px; color:var(--text-muted); font-weight:700; text-transform:uppercase;">${user.role}</div>
-      </div>
-      <button class="logout-icon-btn" title="Sign Out" onclick="handleLogout()">${ICONS.logout}</button>
+      <button class="logout-btn" onclick="handleLogout()">${ICONS.logout.replace('width="24" height="24"','width="14" height="14"')} Sign out</button>
     </div>
   `;
 }
 
-function renderMobileNav(){
-  const user = currentUser();
-  const nav = document.getElementById('mobile-nav');
-  let items = user.role==='teacher' ? 
-    [['teacher-dash','home','Dash'],['teacher-hw','book','HW'],['teacher-students','students','Students'],['teacher-progress','chart','Progress']] :
-    [['student-dash','home','Home'],['student-hw','book','HW'],['student-progress','chart','Progress']];
-
-  nav.style.display = 'flex';
-  nav.innerHTML = items.map(([id,icon,label])=>`
-    <button class="${currentView===id?'active':''}" onclick="navigate('${id}')">
-      <div style="width:18px;height:18px;">${ICONS[icon]}</div>
-      <span>${label}</span>
-    </button>
-  `).join('');
-}
-
-function navigate(view){
+function navigate(view, hwId){
   currentView = view;
+  currentHwId = hwId || null;
   renderSidebar();
-  renderMobileNav();
   renderMain();
   window.scrollTo(0,0);
 }
 
 function renderMain(){
   const el = document.getElementById('main-content');
-  if(currentView==='teacher-dash') el.innerHTML = renderTeacherDash();
-  else if(currentView==='teacher-hw') el.innerHTML = renderTeacherHW();
-  else if(currentView==='teacher-students') el.innerHTML = renderTeacherStudents();
+  if(currentView==='dashboard') el.innerHTML = renderStudentDashboard();
+  else if(currentView==='detail') el.innerHTML = renderDetailPage(currentHwId);
+  else if(currentView==='progress') el.innerHTML = renderStudentProgress();
+  else if(currentView==='teacher-home') el.innerHTML = renderTeacherHome();
   else if(currentView==='teacher-groups') el.innerHTML = renderTeacherGroups();
   else if(currentView==='teacher-progress') el.innerHTML = renderTeacherProgress();
-  else if(currentView==='teacher-vocab') el.innerHTML = renderTeacherVocab();
-  else if(currentView==='teacher-materials') el.innerHTML = renderTeacherMaterials();
-  else if(currentView==='teacher-settings') el.innerHTML = renderTeacherSettings();
-  else if(currentView==='student-dash') el.innerHTML = renderStudentDash();
-  else if(currentView==='student-hw') el.innerHTML = renderStudentHW();
-  else if(currentView==='student-progress') el.innerHTML = renderStudentProgress();
-  else if(currentView==='student-profile') el.innerHTML = renderStudentProfile();
+  else if(currentView==='teacher-submissions') el.innerHTML = renderTeacherSubmissions();
+  attachDynamicHandlers();
 }
 
-/* ================= TEACHER PANELS ================= */
-function renderTeacherDash(){
-  const user = currentUser();
-  return `
-    <div style="margin-bottom:24px;">
-      <h1 style="font-family:var(--font-heading); font-size:28px; font-weight:800;">Good evening, ${user.name} 👋</h1>
-      <p style="color:var(--text-muted); font-size:14px; margin-top:2px;">Manage your students and homework from one place.</p>
-    </div>
-
-    <div class="stats-grid">
-      <div class="stat-card glass-panel">
-        <div class="stat-card-top"><span class="stat-lbl">Total Students</span><div class="stat-icon" style="color:var(--accent-blue);">👨‍🎓</div></div>
-        <div class="stat-val">${DB.users.filter(u=>u.role==='student').length}</div>
-      </div>
-      <div class="stat-card glass-panel">
-        <div class="stat-card-top"><span class="stat-lbl">Groups</span><div class="stat-icon" style="color:var(--accent-cyan);">👥</div></div>
-        <div class="stat-val">${DB.groups.length}</div>
-      </div>
-      <div class="stat-card glass-panel">
-        <div class="stat-card-top"><span class="stat-lbl">Active Homework</span><div class="stat-icon" style="color:var(--accent-amber);">📚</div></div>
-        <div class="stat-val">${DB.homeworks.length}</div>
-      </div>
-      <div class="stat-card glass-panel">
-        <div class="stat-card-top"><span class="stat-lbl">Completed</span><div class="stat-icon" style="color:var(--accent-emerald);">🟢</div></div>
-        <div class="stat-val">18</div>
-      </div>
-      <div class="stat-card glass-panel">
-        <div class="stat-card-top"><span class="stat-lbl">In Progress</span><div class="stat-icon" style="color:var(--accent-amber);">🟡</div></div>
-        <div class="stat-val">12</div>
-      </div>
-      <div class="stat-card glass-panel">
-        <div class="stat-card-top"><span class="stat-lbl">Not Started</span><div class="stat-icon" style="color:var(--accent-rose);">🔴</div></div>
-        <div class="stat-val">7</div>
-      </div>
-    </div>
-
-    <div class="section-title">Quick Actions</div>
-    <div class="quick-actions">
-      <div class="action-card" onclick="openCreateHwModal()">
-        <div class="stat-icon" style="color:var(--accent-blue);">${ICONS.plus}</div>
-        <div><div style="font-weight:800; font-size:14px;">Create Homework</div><div style="font-size:11px; color:var(--text-muted);">Assign new tasks</div></div>
-      </div>
-      <div class="action-card" onclick="openAddStudentModal()">
-        <div class="stat-icon" style="color:var(--accent-emerald);">${ICONS.plus}</div>
-        <div><div style="font-weight:800; font-size:14px;">Add Student</div><div style="font-size:11px; color:var(--text-muted);">Register new user</div></div>
-      </div>
-      <div class="action-card" onclick="openCreateGroupModal()">
-        <div class="stat-icon" style="color:var(--accent-cyan);">${ICONS.plus}</div>
-        <div><div style="font-weight:800; font-size:14px;">Create Group</div><div style="font-size:11px; color:var(--text-muted);">Manage classes</div></div>
-      </div>
-      <div class="action-card" onclick="openUploadMaterialModal()">
-        <div class="stat-icon" style="color:var(--accent-amber);">${ICONS.plus}</div>
-        <div><div style="font-weight:800; font-size:14px;">Upload Material</div><div style="font-size:11px; color:var(--text-muted);">PDFs & Images</div></div>
-      </div>
-    </div>
-
-    <div class="section-title">Recent Homework</div>
-    <div class="data-table-container glass-panel">
-      <table class="data-table">
-        <thead>
-          <tr>
-            <th>Homework</th>
-            <th>Group</th>
-            <th>Deadline</th>
-            <th>Progress</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          ${DB.homeworks.map(hw => `
-            <tr>
-              <td><strong>${hw.title}</strong><br><small style="color:var(--text-muted);">${hw.figure}</small></td>
-              <td><span class="badge badge-progress">${hw.group}</span></td>
-              <td>${hw.due}</td>
-              <td>
-                <div style="display:flex; align-items:center; gap:8px;">
-                  <div class="progress-bar-bg" style="width:100px;"><div class="progress-bar-fill" style="width:65%;"></div></div>
-                  <span style="font-size:12px; font-weight:700;">65%</span>
-                </div>
-              </td>
-              <td>
-                <button class="btn btn-secondary" style="padding:6px 12px; font-size:12px;" onclick="viewSubmissions('${hw.id}')">Review Submissions</button>
-              </td>
-            </tr>
-          `).join('')}
-        </tbody>
-      </table>
-    </div>
-  `;
+/* =========================================================
+   HELPERS
+   ========================================================= */
+function studentHomeworks(user){
+  return DB.homeworks.filter(hw => hw.groups.includes(user.group));
 }
-
-function openCreateHwModal(){
-  const m = document.getElementById('modal-body');
-  m.innerHTML = `
-    <h2 style="font-family:var(--font-heading); font-weight:800; margin-bottom:20px;">Create Homework</h2>
-    
-    <label style="font-size:11px; font-weight:800; text-transform:uppercase; color:var(--text-muted); display:block; margin-bottom:8px;">Homework Type</label>
-    <div class="type-card-grid">
-      <div class="type-card active" onclick="selectHwType(this, 'Book / Units')">📚 Book / Units</div>
-      <div class="type-card" onclick="selectHwType(this, 'Vocabulary')">🧠 Vocabulary</div>
-      <div class="type-card" onclick="selectHwType(this, 'Making Sentences')">✍️ Sentences</div>
-      <div class="type-card" onclick="selectHwType(this, 'Copy the Board')">📸 Board Photo</div>
-      <div class="type-card" onclick="selectHwType(this, 'Translate the Text')">🌍 Translation</div>
-    </div>
-
-    <input type="hidden" id="hw-type-val" value="Book / Units">
-
-    <div class="field">
-      <label>Title</label>
-      <input id="hw-title" placeholder="e.g. Essential 2 - Units 27-28">
-    </div>
-
-    <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
-      <div class="field">
-        <label>Group</label>
-        <select id="hw-group">
-          ${DB.groups.map(g => `<option value="${g.name}">${g.name}</option>`).join('')}
-        </select>
-      </div>
-      <div class="field">
-        <label>Deadline</label>
-        <input id="hw-due" type="date" value="2026-09-30">
-      </div>
-    </div>
-
-    <div class="field">
-      <label>Instructions & Description</label>
-      <textarea id="hw-desc" rows="3" placeholder="What should students do?"></textarea>
-    </div>
-
-    <div style="display:flex; gap:12px; margin-top:24px;">
-      <button class="btn btn-secondary" style="flex:1;" onclick="closeModal()">Cancel</button>
-      <button class="btn btn-primary" style="flex:1;" onclick="saveHomework()">Create Homework</button>
-    </div>
-  `;
-  document.getElementById('modal-bg').classList.add('active');
+function hwFigureFor(hw, user){
+  if(hw.id==='hw1' && user.group==='Even-Day Group') return hw.figureEven;
+  return hw.figure;
 }
-
-function selectHwType(el, type){
-  document.querySelectorAll('.type-card').forEach(c => c.classList.remove('active'));
-  el.classList.add('active');
-  document.getElementById('hw-type-val').value = type;
+function getProgress(userId, hwId){
+  DB.progress[userId] = DB.progress[userId] || {};
+  return DB.progress[userId][hwId] || {status:'not-started'};
 }
-
-function saveHomework(){
-  const title = document.getElementById('hw-title').value.trim();
-  const type = document.getElementById('hw-type-val').value;
-  const group = document.getElementById('hw-group').value;
-  const due = document.getElementById('hw-due').value;
-  const desc = document.getElementById('hw-desc').value;
-
-  if(!title) { showToast('Please enter a title!'); return; }
-
-  DB.homeworks.unshift({
-    id: 'hw' + Date.now(),
-    type, title, figure: type, group, due, status: 'Active', desc
-  });
-
+function setProgress(userId, hwId, patch){
+  DB.progress[userId] = DB.progress[userId] || {};
+  DB.progress[userId][hwId] = Object.assign({}, DB.progress[userId][hwId]||{}, patch);
   saveDB();
-  closeModal();
-  showToast('✓ Homework created successfully');
-  renderMain();
 }
-
-function renderTeacherHW(){
-  return `
-    <div class="section-title">
-      <span>All Homework Assignments</span>
-      <button class="btn btn-primary" style="padding:8px 18px; font-size:13px;" onclick="openCreateHwModal()">${ICONS.plus} Create Homework</button>
-    </div>
-    <div class="hw-grid">
-      ${DB.homeworks.map(hw => `
-        <div class="glass-panel hw-card">
-          <span class="badge badge-progress" style="position:absolute; top:20px; right:20px;">${hw.group}</span>
-          <div style="font-size:12px; color:var(--accent-blue); font-weight:800;">${hw.type}</div>
-          <h3 style="font-family:var(--font-heading); font-size:18px; margin:8px 0; font-weight:800;">${hw.title}</h3>
-          <p style="font-size:13px; color:var(--text-muted); line-height:1.5;">${hw.desc}</p>
-          <div style="margin-top:20px; display:flex; justify-content:space-between; align-items:center; font-size:12px;">
-            <span style="color:var(--text-muted);">Due: ${hw.due}</span>
-            <button class="btn btn-secondary" style="padding:6px 12px; font-size:11px;" onclick="viewSubmissions('${hw.id}')">Submissions (${DB.submissions.filter(s=>s.hwId===hw.id).length})</button>
-          </div>
-        </div>
-      `).join('')}
-    </div>
-  `;
+function computePct(hw, prog){
+  if(hw.type==='reading-vocab'){
+    const total = hw.words.length;
+    const done = (prog.wordsLearned||[]).length;
+    return total? Math.round(done/total*100):0;
+  }
+  if(hw.type==='sentences'){
+    return Math.round(Math.min(1,(prog.sentences||[]).length/hw.target)*100);
+  }
+  if(hw.type==='translate'){
+    return prog.status==='done' ? 100 : ((prog.translation||'').length>10 ? 40 : 0);
+  }
+  if(typeof prog.pct==='number') return prog.pct;
+  return prog.status==='done'?100:(prog.status==='in-progress'?50:0);
 }
-
-function viewSubmissions(hwId){
-  const subs = DB.submissions.filter(s => s.hwId === hwId);
-  const m = document.getElementById('modal-body');
-  m.innerHTML = `
-    <h2 style="font-family:var(--font-heading); font-weight:800; margin-bottom:20px;">Student Submissions</h2>
-    ${subs.length === 0 ? `<p style="color:var(--text-muted);">No submissions yet for this homework.</p>` : ''}
-    ${subs.map(s => {
-      const st = DB.users.find(u => u.id === s.studentId);
-      return `
-        <div style="padding:16px; background:rgba(255,255,255,0.03); border-radius:var(--radius-md); border:1px solid var(--glass-border); margin-bottom:12px;">
-          <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
-            <strong>${st ? st.name : 'Student'}</strong>
-            <span class="badge badge-done">${s.status}</span>
-          </div>
-          <div style="font-size:13px; font-family:monospace; white-space:pre-wrap; background:rgba(0,0,0,0.3); padding:10px; border-radius:8px;">${s.content}</div>
-          <div style="margin-top:10px; display:flex; gap:8px;">
-            <button class="btn btn-primary" style="padding:6px 12px; font-size:12px;" onclick="approveSub('${s.id}')">Approve</button>
-          </div>
-        </div>
-      `;
-    }).join('')}
-    <button class="btn btn-secondary" style="width:100%; margin-top:16px;" onclick="closeModal()">Close</button>
-  `;
-  document.getElementById('modal-bg').classList.add('active');
+function deriveStatus(hw, prog){
+  const pct = computePct(hw, prog);
+  if(prog.status==='done' || pct>=100) return 'done';
+  if(pct>0 || prog.status==='in-progress') return 'in-progress';
+  return 'not-started';
 }
-
-function approveSub(subId){
-  const sub = DB.submissions.find(s => s.id === subId);
-  if(sub) { sub.status = 'Approved'; saveDB(); showToast('Approved!'); closeModal(); }
+function statusMeta(status){
+  if(status==='done') return {cls:'status-done', label:'Completed'};
+  if(status==='in-progress') return {cls:'status-progress', label:'In Progress'};
+  return {cls:'status-not', label:'Not Started'};
 }
-
-function renderTeacherStudents(){
-  const students = DB.users.filter(u=>u.role==='student');
-  return `
-    <div class="section-title">
-      <span>Student Directory (${students.length})</span>
-      <button class="btn btn-primary" style="padding:8px 18px; font-size:13px;" onclick="openAddStudentModal()">${ICONS.plus} Add Student</button>
-    </div>
-
-    <div class="data-table-container glass-panel">
-      <table class="data-table">
-        <thead>
-          <tr>
-            <th>Student</th>
-            <th>ID</th>
-            <th>Group</th>
-            <th>Streak</th>
-            <th>Points</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          ${students.map(s => `
-            <tr>
-              <td><strong>${s.name}</strong></td>
-              <td>${s.studentId}</td>
-              <td><span class="badge badge-progress">${s.group}</span></td>
-              <td>🔥 ${s.streak} Days</td>
-              <td>⭐ ${s.points}</td>
-              <td>
-                <button class="btn btn-secondary" style="padding:6px 12px; font-size:12px;" onclick="viewStudentProfile('${s.id}')">Profile</button>
-              </td>
-            </tr>
-          `).join('')}
-        </tbody>
-      </table>
-    </div>
-  `;
+function fmtDue(dateStr){
+  const d = new Date(dateStr+'T00:00:00');
+  return d.toLocaleDateString('en-US',{month:'short', day:'numeric'});
 }
-
-function openAddStudentModal(){
-  const m = document.getElementById('modal-body');
-  m.innerHTML = `
-    <h2 style="font-family:var(--font-heading); font-weight:800; margin-bottom:20px;">Add New Student</h2>
-    <div class="field">
-      <label>Full Name</label>
-      <input id="st-name" placeholder="e.g. Jasur Aliyev">
-    </div>
-    <div class="field">
-      <label>Group</label>
-      <select id="st-group">
-        ${DB.groups.map(g => `<option value="${g.name}">${g.name}</option>`).join('')}
-      </select>
-    </div>
-    <div style="display:flex; gap:12px; margin-top:24px;">
-      <button class="btn btn-secondary" style="flex:1;" onclick="closeModal()">Cancel</button>
-      <button class="btn btn-primary" style="flex:1;" onclick="saveStudent()">Add Student</button>
-    </div>
-  `;
-  document.getElementById('modal-bg').classList.add('active');
-}
-
-function saveStudent(){
-  const name = document.getElementById('st-name').value.trim();
-  const group = document.getElementById('st-group').value;
-
-  if(!name) { showToast('Name required!'); return; }
-
-  const id = 's' + Date.now();
-  DB.users.push({
-    id, role:'student', username:'student-' + Math.floor(Math.random()*1000),
-    name, studentId:'EV-00' + Math.floor(Math.random()*900+100), group, level:'B1', teacher:'Mr. Aziz', password:'123', streak:0, points:0, avatar:''
-  });
-
-  saveDB();
-  closeModal();
-  showToast('✓ Student added');
-  renderMain();
-}
-
-function viewStudentProfile(stId){
-  const st = DB.users.find(u=>u.id===stId);
-  const m = document.getElementById('modal-body');
-  m.innerHTML = `
-    <h2 style="font-family:var(--font-heading); font-weight:800;">${st.name}</h2>
-    <p style="color:var(--text-muted); font-size:13px; margin-bottom:20px;">${st.studentId} • ${st.group}</p>
-    
-    <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:20px; font-size:14px;">
-      <div><strong>Streak:</strong> 🔥 ${st.streak} Days</div>
-      <div><strong>Points:</strong> ⭐ ${st.points}</div>
-      <div><strong>Teacher:</strong> ${st.teacher}</div>
-      <div><strong>Level:</strong> ${st.level}</div>
-    </div>
-
-    <button class="btn btn-secondary" style="width:100%;" onclick="closeModal()">Close</button>
-  `;
-  document.getElementById('modal-bg').classList.add('active');
-}
-
-function renderTeacherGroups(){
-  return `
-    <div class="section-title">
-      <span>Class Groups</span>
-      <button class="btn btn-primary" style="padding:8px 18px; font-size:13px;" onclick="openCreateGroupModal()">${ICONS.plus} Create Group</button>
-    </div>
-    <div class="quick-actions">
-      ${DB.groups.map(g => `
-        <div class="glass-panel" style="padding:24px;">
-          <h3 style="font-family:var(--font-heading); font-size:20px; font-weight:800; margin-bottom:6px;">${g.name}</h3>
-          <p style="font-size:13px; color:var(--text-muted); margin-bottom:16px;">${g.studentCount} active students</p>
-          <button class="btn btn-secondary" style="width:100%; font-size:12px;">View Class Progress</button>
-        </div>
-      `).join('')}
-    </div>
-  `;
-}
-
-function openCreateGroupModal(){
-  const m = document.getElementById('modal-body');
-  m.innerHTML = `
-    <h2 style="font-family:var(--font-heading); font-weight:800; margin-bottom:20px;">Create New Group</h2>
-    <div class="field"><label>Group Name</label><input id="g-name" placeholder="e.g. Group C"></div>
-    <div style="display:flex; gap:12px; margin-top:24px;">
-      <button class="btn btn-secondary" style="flex:1;" onclick="closeModal()">Cancel</button>
-      <button class="btn btn-primary" style="flex:1;" onclick="saveGroup()">Create</button>
-    </div>
-  `;
-  document.getElementById('modal-bg').classList.add('active');
-}
-
-function saveGroup(){
-  const name = document.getElementById('g-name').value.trim();
-  if(!name) return;
-  DB.groups.push({id:'g'+Date.now(), name, studentCount:0, activeHw:0});
-  saveDB(); closeModal(); showToast('✓ Group created'); renderMain();
-}
-
-function renderTeacherProgress(){
-  const students = DB.users.filter(u=>u.role==='student').slice(0, 8);
-  return `
-    <div class="section-title">Student × Homework Matrix</div>
-    <div class="data-table-container glass-panel">
-      <table class="data-table">
-        <thead>
-          <tr>
-            <th>Student</th>
-            <th>Essential 2</th>
-            <th>Tactics</th>
-            <th>Vocabulary</th>
-            <th>Sentences</th>
-            <th>Board</th>
-          </tr>
-        </thead>
-        <tbody>
-          ${students.map(s => `
-            <tr>
-              <td><strong>${s.name}</strong></td>
-              <td><span class="badge badge-done">🟢 Done</span></td>
-              <td><span class="badge badge-progress">🟡 60%</span></td>
-              <td><span class="badge badge-done">🟢 Done</span></td>
-              <td><span class="badge badge-progress">25/30</span></td>
-              <td><span class="badge badge-none">🔴 No</span></td>
-            </tr>
-          `).join('')}
-        </tbody>
-      </table>
-    </div>
-  `;
-}
-
-function renderTeacherVocab(){
-  return `
-    <div class="section-title">
-      <span>Vocabulary Library</span>
-      <button class="btn btn-primary" style="padding:8px 18px; font-size:13px;" onclick="openAddWordModal()">${ICONS.plus} Add Word</button>
-    </div>
-    <div class="data-table-container glass-panel">
-      <table class="data-table">
-        <thead>
-          <tr><th>Word</th><th>Translation</th><th>Pronunciation</th><th>Example</th></tr>
-        </thead>
-        <tbody>
-          ${DB.vocabulary.map(v => `
-            <tr>
-              <td><strong>${v.word}</strong></td>
-              <td>${v.translation}</td>
-              <td style="color:var(--accent-cyan);">${v.pronunciation}</td>
-              <td style="color:var(--text-muted);">${v.example}</td>
-            </tr>
-          `).join('')}
-        </tbody>
-      </table>
-    </div>
-  `;
-}
-
-function openAddWordModal(){
-  const m = document.getElementById('modal-body');
-  m.innerHTML = `
-    <h2 style="font-family:var(--font-heading); font-weight:800; margin-bottom:20px;">Add Word</h2>
-    <div class="field"><label>Word</label><input id="v-word"></div>
-    <div class="field"><label>Translation</label><input id="v-trans"></div>
-    <div class="field"><label>Example Sentence</label><input id="v-ex"></div>
-    <div style="display:flex; gap:12px; margin-top:24px;">
-      <button class="btn btn-secondary" style="flex:1;" onclick="closeModal()">Cancel</button>
-      <button class="btn btn-primary" style="flex:1;" onclick="saveWord()">Save Word</button>
-    </div>
-  `;
-  document.getElementById('modal-bg').classList.add('active');
-}
-
-function saveWord(){
-  const word = document.getElementById('v-word').value.trim();
-  const translation = document.getElementById('v-trans').value.trim();
-  const example = document.getElementById('v-ex').value.trim();
-  if(!word) return;
-  DB.vocabulary.push({id:'v'+Date.now(), word, translation, example, pronunciation:'/.../'});
-  saveDB(); closeModal(); showToast('✓ Word added'); renderMain();
-}
-
-function renderTeacherMaterials(){
-  return `
-    <div class="section-title">
-      <span>Materials Library</span>
-      <button class="btn btn-primary" style="padding:8px 18px; font-size:13px;" onclick="openUploadMaterialModal()">${ICONS.plus} Upload Material</button>
-    </div>
-    <div class="quick-actions">
-      ${DB.materials.map(m => `
-        <div class="glass-panel" style="padding:20px;">
-          <div style="font-size:12px; color:var(--accent-blue); font-weight:800;">${m.type} •${m.folder}</div>
-          <h4 style="font-family:var(--font-heading); font-size:16px; margin:6px 0; font-weight:800;">${m.name}</h4>
-          <div style="font-size:11px; color:var(--text-muted);">${m.date}</div>
-        </div>
-      `).join('')}
-    </div>
-  `;
-}
-
-function openUploadMaterialModal(){
-  const m = document.getElementById('modal-body');
-  m.innerHTML = `
-    <h2 style="font-family:var(--font-heading); font-weight:800; margin-bottom:20px;">Upload Material</h2>
-    <div class="field"><label>Material Name</label><input id="m-name" placeholder="e.g. Board Photo Unit 27"></div>
-    <div class="field"><label>Folder</label><input id="m-folder" placeholder="e.g. Essential 2"></div>
-    <div style="display:flex; gap:12px; margin-top:24px;">
-      <button class="btn btn-secondary" style="flex:1;" onclick="closeModal()">Cancel</button>
-      <button class="btn btn-primary" style="flex:1;" onclick="saveMaterial()">Upload</button>
-    </div>
-  `;
-  document.getElementById('modal-bg').classList.add('active');
-}
-
-function saveMaterial(){
-  const name = document.getElementById('m-name').value.trim();
-  const folder = document.getElementById('m-folder').value.trim();
-  if(!name) return;
-  DB.materials.push({id:'m'+Date.now(), name, type:'Image', folder:folder||'General', date:'2026-09-21', url:'#'});
-  saveDB(); closeModal(); showToast('✓ Uploaded'); renderMain();
-}
-
-function renderTeacherSettings(){
-  return `
-    <div class="section-title">Teacher Settings</div>
-    <div class="glass-panel" style="padding:28px; max-width:600px;">
-      <h3 style="font-family:var(--font-heading); font-size:18px; margin-bottom:16px;">Account Settings</h3>
-      <button class="btn btn-danger" style="width:100%; margin-top:20px;" onclick="handleLogout()">Sign Out of EVEREST</button>
-    </div>
-  `;
-}
-
-/* ================= STUDENT PANELS ================= */
-function renderStudentDash(){
-  const user = currentUser();
-  return `
-    <div style="margin-bottom:24px;">
-      <h1 style="font-family:var(--font-heading); font-size:28px; font-weight:800;">Welcome back, ${user.name.split(' ')[0]} 👋</h1>
-      <p style="color:var(--text-muted); font-size:14px; margin-top:2px;">Group: ${user.group} • Level: ${user.level}</p>
-    </div>
-
-    <div class="stats-grid">
-      <div class="stat-card glass-panel">
-        <div class="stat-card-top"><span class="stat-lbl">Streak</span><div class="stat-icon" style="color:var(--accent-amber);">🔥</div></div>
-        <div class="stat-val">${user.streak} Days</div>
-      </div>
-      <div class="stat-card glass-panel">
-        <div class="stat-card-top"><span class="stat-lbl">Points</span><div class="stat-icon" style="color:var(--accent-cyan);">⭐</div></div>
-        <div class="stat-val">${user.points}</div>
-      </div>
-      <div class="stat-card glass-panel">
-        <div class="stat-card-top"><span class="stat-lbl">Assigned HW</span><div class="stat-icon" style="color:var(--accent-blue);">📚</div></div>
-        <div class="stat-val">${DB.homeworks.length}</div>
-      </div>
-    </div>
-
-    <div class="section-title">My Assigned Homework</div>
-    <div class="hw-grid">
-      ${DB.homeworks.map(hw => `
-        <div class="glass-panel hw-card">
-          <div style="font-size:12px; color:var(--accent-blue); font-weight:800;">${hw.type}</div>
-          <h3 style="font-family:var(--font-heading); font-size:18px; margin:8px 0; font-weight:800;">${hw.title}</h3>
-          <p style="font-size:13px; color:var(--text-muted);">${hw.desc}</p>
-          <button class="btn btn-primary" style="width:100%; margin-top:16px; font-size:13px;" onclick="openSubmitHwModal('${hw.id}')">Submit Work</button>
-        </div>
-      `).join('')}
-    </div>
-  `;
-}
-
-function openSubmitHwModal(hwId){
-  const hw = DB.homeworks.find(h=>h.id===hwId);
-  const m = document.getElementById('modal-body');
-  m.innerHTML = `
-    <h2 style="font-family:var(--font-heading); font-weight:800; margin-bottom:8px;">${hw.title}</h2>
-    <p style="color:var(--text-muted); font-size:13px; margin-bottom:20px;">${hw.desc}</p>
-    
-    <div class="field">
-      <label>Your Response / Translation / Text</label>
-      <textarea id="sub-content" rows="5" placeholder="Type your answer here..."></textarea>
-    </div>
-
-    <div style="display:flex; gap:12px; margin-top:24px;">
-      <button class="btn btn-secondary" style="flex:1;" onclick="closeModal()">Cancel</button>
-      <button class="btn btn-primary" style="flex:1;" onclick="submitStudentWork('${hw.id}')">Submit Homework</button>
-    </div>
-  `;
-  document.getElementById('modal-bg').classList.add('active');
-}
-
-function submitStudentWork(hwId){
-  const user = currentUser();
-  const content = document.getElementById('sub-content').value.trim();
-  if(!content) return;
-
-  DB.submissions.push({
-    id: 'sub' + Date.now(),
-    studentId: user.id,
-    hwId,
-    content,
-    date: '2026-09-21',
-    status: 'Pending',
-    comment: ''
-  });
-
-  user.points += 20;
-  saveDB();
-  closeModal();
-  showToast('✓ Submitted! (+20 pts)');
-  renderMain();
-}
-
-function renderStudentHW(){ return renderStudentDash(); }
-
-function renderStudentProgress(){
-  const user = currentUser();
-  return `
-    <div class="section-title">My Progress Analytics</div>
-    <div class="glass-panel" style="padding:28px;">
-      <h2 style="font-family:var(--font-heading); font-size:32px; font-weight:800; color:var(--accent-blue);">⭐ ${user.points} Total Points</h2>
-      <p style="color:var(--text-muted); font-size:14px; margin-bottom:20px;">🔥 ${user.streak} Days active streak</p>
-      <div class="progress-bar-bg" style="height:10px;"><div class="progress-bar-fill" style="width:75%;"></div></div>
-    </div>
-  `;
-}
-
-function renderStudentProfile(){
-  const user = currentUser();
-  return `
-    <div style="max-width:600px; margin:0 auto;">
-      <div class="glass-panel" style="padding:32px; text-align:center;">
-        <h2 style="font-family:var(--font-heading); font-size:24px; font-weight:800;">${user.name}</h2>
-        <p style="color:var(--text-muted); font-size:14px; margin-top:4px;">${user.studentId} • ${user.group}</p>
-        <button class="btn btn-danger" style="margin-top:24px; width:100%;" onclick="handleLogout()">Sign Out</button>
-      </div>
-    </div>
-  `;
-}
-
-/* UTILS */
-function closeModal(){ document.getElementById('modal-bg').classList.remove('active'); }
 function showToast(msg){
-  const t = document.getElementById('toast');
-  t.textContent = msg; t.classList.add('show');
-  setTimeout(()=>t.classList.remove('show'), 2500);
-}
-
-function showNotifications(){
-  const m = document.getElementById('modal-body');
-  m.innerHTML = `
-    <h2 style="font-family:var(--font-heading); font-weight:800; margin-bottom:20px;">Notifications</h2>
-    ${DB.notifications.map(n => `
-      <div style="padding:14px; background:rgba(255,255,255,0.03); border-radius:12px; margin-bottom:10px;">
-        <strong>${n.title}</strong>
-        <p style="font-size:12px; color:var(--text-muted); margin-top:2px;">${n.desc}</p>
-      </div>
-    `).join('')}
-    <button class="btn btn-secondary" style="width:100%; margin-top:12px;" onclick="closeModal()">Close</button>
-  `;
-  document.getElementById('modal-bg').classList.add('active');
-}
-
-function handleGlobalSearch(query){
-  if(!query) return;
-  console.log('Searching:', query);
-}
-
-function tryRestoreSession(){
-  try{
-    const raw = localStorage.getItem('everest_saas_session');
-    if(raw){ SESSION = JSON.parse(raw); return true; }
-  }catch(e){}
-  return false;
-}
-
-// INIT
-initDB().then(async () => {
-  await loadDB();
-  if(tryRestoreSession()) enterApp();
-  else populateLoginDropdown('teacher');
-});
-</script>
-</body>
-</html>
-<p style="color:var(--text-muted); font-size:14px; margin-top:4px;">Bugungi ta'lim jarayoni bo'yicha qisqacha ma'lumot.</p>
-    </div>
-
-    <!-- STATS GRID -->
-    <div class="stats-grid">
-      <div class="stat-card glass-panel">
-        <div class="stat-card-top">
-          <span class="stat-lbl">Jami O'quvchilar</span>
-          <div class="stat-icon">🎓</div>
-        </div>
-        <div class="stat-val">${DB.users.filter(u=>u.role==='student').length}</div>
-      </div>
-      <div class="stat-card glass-panel">
-        <div class="stat-card-top">
-          <span class="stat-lbl">Faol Topshiriqlar</span>
-          <div class="stat-icon">📚</div>
-        </div>
-        <div class="stat-val">${DB.homeworks.length}</div>
-      </div>
-      <div class="stat-card glass-panel">
-        <div class="stat-card-top">
-          <span class="stat-lbl">Guruhlar</span>
-          <div class="stat-icon">👥</div>
-        </div>
-        <div class="stat-val">${DB.groups.length}</div>
-      </div>
-      <div class="stat-card glass-panel">
-        <div class="stat-card-top">
-          <span class="stat-lbl">Topshirilgan Uy Ishlari</span>
-          <div class="stat-icon">📥</div>
-        </div>
-        <div class="stat-val">${DB.submissions.length}</div>
-      </div>
-    </div>
-
-    <!-- QUICK ACTIONS -->
-    <div class="section-title">Tezkor Amallar</div>
-    <div class="quick-actions">
-      <div class="action-card" onclick="openCreateHwModal()">
-        <div style="font-size:20px;">➕</div>
-        <div>
-          <div style="font-weight:700; font-size:14px;">Yangi Uy Ishi Yaratish</div>
-          <div style="font-size:11px; color:var(--text-muted);">Guruhlar uchun vazifa biriktirish</div>
-        </div>
-      </div>
-      <div class="action-card" onclick="navigate('teacher-students')">
-        <div style="font-size:20px;">👨‍🎓</div>
-        <div>
-          <div style="font-weight:700; font-size:14px;">O'quvchilarni Boshqarish</div>
-          <div style="font-size:11px; color:var(--text-muted);">Ro'yxat va natijalar</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- RECENT SUBMISSIONS TABLE -->
-    <div class="section-title">Oxirgi Topshirilgan Vazifalar</div>
-    <div class="data-table-container glass-panel">
-      <table class="data-table">
-        <thead>
-          <tr>
-            <th>O'quvchi</th>
-            <th>Vazifa</th>
-            <th>Sana</th>
-            <th>Holat</th>
-            <th>Amal</th>
-          </tr>
-        </thead>
-        <tbody>
-          ${DB.submissions.map(sub => {
-            const student = DB.users.find(u => u.id === sub.studentId) || { name: 'Noma'lum' };
-            const hw = DB.homeworks.find(h => h.id === sub.hwId) || { title: 'Noma\'lum' };
-            return `
-              <tr>
-                <td style="font-weight:700;">${student.name}</td>
-                <td>${hw.title}</td>
-                <td style="color:var(--text-muted);">${sub.date}</td>
-                <td>
-                  <span class="badge ${sub.status === 'Approved' ? 'badge-done' : 'badge-progress'}">
-                    ${sub.status}
-                  </span>
-                </td>
-                <td>
-                  <button class="btn btn-secondary" style="padding:6px 12px; font-size:12px;" onclick="viewSubmission('${sub.id}')">Tekshirish</button>
-                </td>
-              </tr>
-            `;
-          }).join('')}
-        </tbody>
-      </table>
-    </div>
-  `;
-}
-
-/* ================= O'QITUVCHI BO'LIMLARI ================= */
-function renderTeacherHW() { return `<div class="section-title">Uy Ishlarini Boshqarish</div><p style="color:var(--text-muted);">Vazifalar ro'yxati va yangi uy ishi yaratish bo'limi.</p>`; }
-function renderTeacherStudents() { return `<div class="section-title">O'quvchilar Ro'yxati</div><p style="color:var(--text-muted);">Barcha faol o'quvchilar va ularning ballari.</p>`; }
-function renderTeacherGroups() { return `<div class="section-title">Guruhlar</div><p style="color:var(--text-muted);">Sinf va guruhlarni sozlash.</p>`; }
-function renderTeacherProgress() { return `<div class="section-title">Natijalar va Statistika</div><p style="color:var(--text-muted);">O'zlashtirish grafikasi va tahlil.</p>`; }
-function renderTeacherVocab() { return `<div class="section-title">Lug'at Bazasi</div><p style="color:var(--text-muted);">Lug'at so'zlari va talaffuz bo'limi.</p>`; }
-function renderTeacherMaterials() { return `<div class="section-title">O'quv Materiallari</div><p style="color:var(--text-muted);">PDF va qo'shimcha fayllar.</p>`; }
-function renderTeacherSettings() { return `<div class="section-title">Sozlamalar</div><p style="color:var(--text-muted);">Profil va xavfsizlik sozlamalari.</p>`; }
-
-/* ================= O'QUVCHI (STUDENT) BO'LIMI ================= */
-function renderStudentDash() {
-  const user = currentUser();
-  return `
-    <div style="margin-bottom:24px;">
-      <h1 style="font-family:var(--font-heading); font-size:28px; font-weight:800;">Xush kelibsiz, ${user.name} 👋</h1>
-      <p style="color:var(--text-muted); font-size:14px; margin-top:4px;">Bugungi vazifalarni bajarishga tayyormisiz?</p>
-    </div>
-    <div class="stats-grid">
-      <div class="stat-card glass-panel">
-        <div class="stat-card-top"><span class="stat-lbl">Ketma-ketlik (Streak)</span><div class="stat-icon">🔥</div></div>
-        <div class="stat-val">${user.streak || 0} Kun</div>
-      </div>
-      <div class="stat-card glass-panel">
-        <div class="stat-card-top"><span class="stat-lbl">Umumiy Ballar</span><div class="stat-icon">⭐</div></div>
-        <div class="stat-val">${user.points || 0}</div>
-      </div>
-    </div>
-  `;
-}
-
-function renderStudentHW() { return `<div class="section-title">Mening Uy Ishlarim</div><p style="color:var(--text-muted);">Bajarilishi kerak bo'lgan vazifalar ro'yxati.</p>`; }
-function renderStudentProgress() { return `<div class="section-title">Mening Natijalarim</div><p style="color:var(--text-muted);">O'zlashtirish va ballar statistikasi.</p>`; }
-function renderStudentProfile() { return `<div class="section-title">Mening Profilim</div><p style="color:var(--text-muted);">Shaxsiy ma'lumotlar.</p>`; }
-
-/* ================= UI UTILITIES & INITIALIZATION ================= */
-function showToast(msg) {
   const t = document.getElementById('toast');
   t.textContent = msg;
   t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 3000);
+  clearTimeout(window.__toastT);
+  window.__toastT = setTimeout(()=>t.classList.remove('show'), 2200);
+}
+function speak(text){
+  try{
+    if(!('speechSynthesis' in window)){ showToast('Audio is not supported on this device'); return; }
+    window.speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(text);
+    u.lang = 'en-US';
+    u.rate = 0.92;
+    window.speechSynthesis.speak(u);
+  }catch(e){}
+}
+function resizeImageToDataURL(file, maxW, cb){
+  const reader = new FileReader();
+  reader.onload = function(e){
+    const img = new Image();
+    img.onload = function(){
+      const scale = Math.min(1, maxW / img.width);
+      const w = Math.round(img.width * scale);
+      const h = Math.round(img.height * scale);
+      const canvas = document.createElement('canvas');
+      canvas.width = w; canvas.height = h;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0, w, h);
+      cb(canvas.toDataURL('image/jpeg', 0.75));
+    };
+    img.onerror = function(){ cb(null); };
+    img.src = e.target.result;
+  };
+  reader.onerror = function(){ cb(null); };
+  reader.readAsDataURL(file);
+}
+function readFileAsDataURL(file, cb){
+  const reader = new FileReader();
+  reader.onload = function(e){ cb(e.target.result); };
+  reader.onerror = function(){ cb(null); };
+  reader.readAsDataURL(file);
 }
 
-function showNotifications() {
-  showToast("Yangi bildirishnomalar yo'q.");
+/* =========================================================
+   STUDENT: DASHBOARD
+   ========================================================= */
+function renderStudentDashboard(){
+  const user = currentUser();
+  const hws = studentHomeworks(user);
+  const completed = hws.filter(hw => deriveStatus(hw, getProgress(user.id,hw.id))==='done').length;
+  const total = hws.length;
+  const pct = total? Math.round(completed/total*100):0;
+  const circumference = 2*Math.PI*42;
+  const offset = circumference - (pct/100)*circumference;
+
+  const statuses = hws.map(hw=>deriveStatus(hw, getProgress(user.id,hw.id)));
+  const inProgressCount = statuses.filter(s=>s==='in-progress').length;
+  const notStartedCount = statuses.filter(s=>s==='not-started').length;
+
+  const today = new Date('2026-09-22T00:00:00');
+  const upcoming = hws
+    .map(hw=>({hw, prog:getProgress(user.id,hw.id)}))
+    .filter(x=>deriveStatus(x.hw, x.prog)!=='done')
+    .sort((a,b)=> new Date(a.hw.due) - new Date(b.hw.due))
+    .slice(0,4);
+
+  const panelRow = `
+    <div class="panel-row">
+      <div class="mini-panel">
+        <div class="mp-icon" style="background:var(--teal-soft); color:var(--teal);">${ICONS.check}</div>
+        <div><div class="mp-n">${completed}</div><div class="mp-l">Completed</div></div>
+      </div>
+      <div class="mini-panel">
+        <div class="mp-icon" style="background:var(--amber-soft); color:var(--amber);">${ICONS.clock}</div>
+        <div><div class="mp-n">${inProgressCount}</div><div class="mp-l">In Progress</div></div>
+      </div>
+      <div class="mini-panel">
+        <div class="mp-icon" style="background:var(--coral-soft); color:var(--coral);">${ICONS.inbox}</div>
+        <div><div class="mp-n">${notStartedCount}</div><div class="mp-l">Not Started</div></div>
+      </div>
+    </div>
+  `;
+
+  const deadlinesPanel = upcoming.length ? `
+    <div class="deadline-panel">
+      <div class="dp-head">${ICONS.clock.replace('width="24" height="24"','width="16" height="16"')} Upcoming deadlines</div>
+      ${upcoming.map(x=>{
+        const days = Math.round((new Date(x.hw.due) - today) / 86400000);
+        const dueLabel = days<0 ? 'Overdue' : (days===0 ? 'Due today' : (days===1 ? 'Due tomorrow' : 'Due in '+days+' days'));
+        return `
+        <div class="deadline-row" onclick="navigate('detail','${x.hw.id}')" style="cursor:pointer;">
+          ${iconBadge(x.hw.icon)}
+          <div>
+            <div class="d-title">${x.hw.title}</div>
+            <div class="d-sub">${hwFigureFor(x.hw, user)}</div>
+          </div>
+          <div class="d-due">${dueLabel}</div>
+        </div>`;
+      }).join('')}
+    </div>
+  ` : '';
+
+  const cards = hws.map(hw=>{
+    const prog = getProgress(user.id, hw.id);
+    const status = deriveStatus(hw, prog);
+    const meta = statusMeta(status);
+    const pctVal = computePct(hw, prog);
+    const figure = hwFigureFor(hw, user);
+    return `
+    <div class="hw-card" onclick="navigate('detail','${hw.id}')">
+      <span class="status-tag ${meta.cls}"><span class="dot"></span>${meta.label}</span>
+      ${iconBadge(hw.icon)}
+      <div>
+        <h3>${hw.title}</h3>
+        <div class="hw-figure">${figure}</div>
+        <div class="hw-sub">${hw.sub}</div>
+      </div>
+      <div class="mini-bar"><div style="width:${pctVal}%; background:${status==='done'?'var(--teal)':'var(--indigo)'}"></div></div>
+      <div class="due">${ICONS.clock.replace('width="24" height="24"','width="13" height="13"')} Due ${fmtDue(hw.due)}</div>
+    </div>`;
+  }).join('');
+
+  return `
+    <div class="topbar">
+      <div>
+        <h1>Today's Homework</h1>
+        <div class="sub">${user.group} · ${completed} of ${total} tasks completed</div>
+      </div>
+      <span class="pill pill-group">${user.group}</span>
+    </div>
+    <div class="progress-hero">
+      <div class="ph-text">
+        <div class="greet">👋 Hello, ${user.name.split(' ')[0]}</div>
+        <h2>${completed===total && total>0 ? 'Everything\'s done — great work!' : 'Keep going, you\'re making progress.'}</h2>
+      </div>
+      <div class="ring-wrap">
+        <svg width="104" height="104" viewBox="0 0 104 104">
+          <circle cx="52" cy="52" r="42" stroke="rgba(255,255,255,.22)" stroke-width="9" fill="none"/>
+          <circle cx="52" cy="52" r="42" stroke="#E8A33D" stroke-width="9" fill="none" stroke-linecap="round"
+            stroke-dasharray="${circumference}" stroke-dashoffset="${offset}"/>
+        </svg>
+        <div class="ring-label"><div class="n">${pct}%</div><div class="d">${completed}/${total}</div></div>
+      </div>
+    </div>
+    ${panelRow}
+    ${deadlinesPanel}
+    <div class="hw-grid">${cards}</div>
+  `;
 }
 
-function handleGlobalSearch(val) {
-  console.log("Qidiruv:", val);
-}
+/* =========================================================
+   STUDENT: DETAIL PAGE
+   ========================================================= */
+function renderDetailPage(hwId){
+  const user = currentUser();
+  const hw = DB.homeworks.find(h=>h.id===hwId);
+  if(!hw) return `<p>Task not found.</p>`;
+  const prog = getProgress(user.id, hw.id);
+  const status = deriveStatus(hw, prog);
+  const pct = computePct(hw, prog);
+  const figure = hwFigureFor(hw, user);
 
-function openCreateHwModal() {
-  showToast("Yangi uy ishi yaratish oynasi");
-}
+  const audioBlock = hw.refAudio ? `
+      <div class="detail-block">
+        <h4>Listen</h4>
+        <div class="audio-block">
+          ${ICONS.music.replace('width="24" height="24"','width="18" height="18"')}
+          <audio controls src="${hw.refAudio}"></audio>
+        </div>
+      </div>` : '';
 
-function viewSubmission(id) {
-  showToast("Vazifa ID: " + id);
-}
-
-window.addEventListener('DOMContentLoaded', async () => {
-  await initDB();
-  await loadDB();
-  
-  try {
-    const saved = localStorage.getItem('everest_saas_session');
-    if (saved) SESSION = JSON.parse(saved);
-  } catch(e) {}
-
-  if (SESSION && DB.users.some(u => u.id === SESSION.userId)) {
-    enterApp();
-  } else {
-    setLoginRole('teacher');
+  function refOrIllustration(){
+    return hw.refImage
+      ? `<div class="ref-image"><img src="${hw.refImage}" alt="Reference"></div>`
+      : `<div class="ref-image">${refIllustration(hw.illustration)}</div>`;
   }
-});
+
+  function photoSubmissionBlock(){
+    const img = prog.submissionImage;
+    return `
+      <div class="detail-block">
+        <h4>Your photo</h4>
+        ${img ? `
+          <div class="submission-preview">
+            <img src="${img}" alt="Your submission">
+            <button class="rm-photo" onclick="removeSubmissionPhoto('${hw.id}')">×</button>
+          </div>
+        ` : `
+          <label class="upload-zone" for="submission-photo-input">
+            ${ICONS.upload}
+            <div class="uz-label">Tap to attach a photo of your work</div>
+            <input type="file" accept="image/*" id="submission-photo-input" onchange="handleSubmissionPhoto('${hw.id}', this)">
+          </label>
+        `}
+      </div>
+    `;
+  }
+
+  let body = '';
+
+  if(hw.type==='essential2' || hw.type==='tactics'){
+    body = `
+      <div class="detail-block">
+        <h4>What to do</h4>
+        <p>${hw.whatToDo}${hw.id==='hw1' && user.group==='Even-Day Group' ? ' For the Even-Day Group, this is a revision task: '+hw.figureEven+'.' : ''}</p>
+      </div>
+      ${audioBlock}
+      <div class="detail-block">
+        <h4>Example</h4>
+        ${refOrIllustration()}
+      </div>
+      <div class="detail-block">
+        <h4>Instructions</h4>
+        <ol>${hw.instructions.map(i=>`<li>${i}</li>`).join('')}</ol>
+      </div>
+      ${photoSubmissionBlock()}
+      <div class="detail-block">
+        <div class="complete-bar">
+          <div>
+            <div class="progress-pct">${pct}%</div>
+            <div style="font-size:12.5px;color:var(--ink-soft);">complete</div>
+          </div>
+          <button class="check-btn ${status==='done'?'done':''}" onclick="toggleSimpleDone('${hw.id}')">
+            ${ICONS.check.replace('width="24" height="24"','width="16" height="16"')}
+            ${status==='done' ? 'Marked as completed' : 'Mark as completed'}
+          </button>
+        </div>
+      </div>
+    `;
+  }
+  else if(hw.type==='reading-vocab'){
+    const learned = prog.wordsLearned || [];
+    body = `
+      <div class="detail-block">
+        <h4>What to do</h4>
+        <p>${hw.whatToDo} Tap each word once you've learned it.</p>
+      </div>
+      ${audioBlock}
+      <div class="detail-block">
+        <h4>Vocabulary (${learned.length}/${hw.words.length} learned)</h4>
+        <div class="mini-bar" style="margin-bottom:12px;"><div style="width:${pct}%; background:var(--teal);"></div></div>
+        ${hw.words.map(w=>{
+          const checked = learned.includes(w.en);
+          return `
+          <div class="word-row">
+            <button class="speaker-btn" onclick="speak('${w.en.replace(/'/g,"\\'")}')" title="Listen">${ICONS.speaker}</button>
+            <div class="word-check ${checked?'checked':''}" onclick="toggleWord('${hw.id}','${w.en}')">${ICONS.check}</div>
+            <div class="wtext">
+              <div class="w-en">${w.en} <span class="w-uz">— ${w.uz}</span></div>
+              <div class="w-ex">"${w.ex}"</div>
+            </div>
+          </div>`;
+        }).join('')}
+      </div>
+    `;
+  }
+  else if(hw.type==='sentences'){
+    const sentences = prog.sentences || [];
+    body = `
+      <div class="detail-block">
+        <h4>What to do</h4>
+        <p>${hw.whatToDo}</p>
+        <ul style="margin-top:10px;">${hw.instructions.map(i=>`<li>${i}</li>`).join('')}</ul>
+      </div>
+      ${audioBlock}
+      <div class="detail-block">
+        <div class="sent-progress-row">
+          <div class="sent-count">${sentences.length}/${hw.target}</div>
+          <div style="flex:1;">
+            <div class="mini-bar"><div style="width:${pct}%; background:${pct>=100?'var(--teal)':'var(--coral)'}"></div></div>
+          </div>
+        </div>
+        <div id="sentence-list">
+          ${sentences.map((s,i)=>`
+            <div class="sent-item">
+              <div class="num">${i+1}.</div>
+              <div class="txt">${s}</div>
+              <button class="rm" onclick="removeSentence('${hw.id}', ${i})">×</button>
+            </div>
+          `).join('') || `<p style="color:var(--ink-soft); font-size:14px; padding:10px 0;">No sentences yet — add your first one below.</p>`}
+        </div>
+        <div class="add-sent-row">
+          <input type="text" id="new-sentence-input" placeholder="Type a new sentence..." onkeydown="if(event.key==='Enter') addSentence('${hw.id}')">
+          <button onclick="addSentence('${hw.id}')">Add</button>
+        </div>
+      </div>
+    `;
+  }
+  else if(hw.type==='board'){
+    body = `
+      <div class="detail-block">
+        <h4>What to do</h4>
+        <p>${hw.whatToDo}</p>
+      </div>
+      ${audioBlock}
+      <div class="detail-block">
+        <h4>Board photo</h4>
+        ${refOrIllustration()}
+      </div>
+      ${photoSubmissionBlock()}
+      <div class="detail-block">
+        <div class="complete-bar">
+          <div>
+            <div class="progress-pct">${pct}%</div>
+            <div style="font-size:12.5px;color:var(--ink-soft);">complete</div>
+          </div>
+          <button class="check-btn ${status==='done'?'done':''}" onclick="toggleSimpleDone('${hw.id}')">
+            ${ICONS.check.replace('width="24" height="24"','width="16" height="16"')}
+            ${status==='done' ? "I've copied the board" : "I copied the board"}
+          </button>
+        </div>
+      </div>
+    `;
+  }
+  else if(hw.type==='translate'){
+    const translation = prog.translation || '';
+    body = `
+      <div class="detail-block">
+        <h4>Original text</h4>
+        <p>${hw.originalText}</p>
+      </div>
+      ${audioBlock}
+      ${hw.refImage ? `<div class="detail-block"><h4>Reference image</h4>${refOrIllustration()}</div>` : ''}
+      <div class="detail-block">
+        <h4>Your translation</h4>
+        <textarea class="translate-input" id="translation-input" placeholder="O'zbek tilida tarjima qiling...">${translation}</textarea>
+        <div style="display:flex; justify-content:flex-end; margin-top:14px;">
+          <button class="check-btn ${status==='done'?'done':''}" onclick="submitTranslation('${hw.id}')">
+            ${ICONS.check.replace('width="24" height="24"','width="16" height="16"')}
+            ${status==='done' ? 'Submitted' : 'Submit Translation'}
+          </button>
+        </div>
+      </div>
+      ${photoSubmissionBlock()}
+    `;
+  }
+  else {
+    body = `
+      <div class="detail-block">
+        <h4>What to do</h4>
+        <p>${hw.whatToDo || hw.sub}</p>
+      </div>
+      ${audioBlock}
+      ${hw.refImage ? `<div class="detail-block"><h4>Reference</h4>${refOrIllustration()}</div>` : ''}
+      ${photoSubmissionBlock()}
+      <div class="detail-block">
+        <div class="complete-bar">
+          <div>
+            <div class="progress-pct">${pct}%</div>
+            <div style="font-size:12.5px;color:var(--ink-soft);">complete</div>
+          </div>
+          <button class="check-btn ${status==='done'?'done':''}" onclick="toggleSimpleDone('${hw.id}')">
+            ${ICONS.check.replace('width="24" height="24"','width="16" height="16"')}
+            ${status==='done' ? 'Marked as completed' : 'Mark as completed'}
+          </button>
+        </div>
+      </div>
+    `;
+  }
+
+  return `
+    <button class="back-btn" onclick="navigate('dashboard')">← Back to homework</button>
+    <div class="detail-wrap">
+      <div class="detail-head">
+        ${iconBadge(hw.icon)}
+        <div>
+          <h1>${hw.title}</h1>
+          <div class="hw-figure">${figure}</div>
+        </div>
+      </div>
+      ${body}
+    </div>
+  `;
+}
+function handleSubmissionPhoto(hwId, inputEl){
+  const file = inputEl.files && inputEl.files[0];
+  if(!file) return;
+  const user = currentUser();
+  resizeImageToDataURL(file, 900, function(dataUrl){
+    if(!dataUrl){ showToast('Could not read that image'); return; }
+    setProgress(user.id, hwId, {submissionImage:dataUrl, reviewed:false});
+    showToast('Photo attached');
+    renderMain();
+  });
+}
+function removeSubmissionPhoto(hwId){
+  const user = currentUser();
+  setProgress(user.id, hwId, {submissionImage:null});
+  renderMain();
+}
+
+function toggleSimpleDone(hwId){
+  const user = currentUser();
+  const prog = getProgress(user.id, hwId);
+  const nowDone = prog.status!=='done';
+  setProgress(user.id, hwId, {status: nowDone?'done':'in-progress', pct: nowDone?100:50});
+  showToast(nowDone ? 'Marked as completed' : 'Marked as in progress');
+  renderMain();
+}
+function toggleWord(hwId, word){
+  const user = currentUser();
+  const prog = getProgress(user.id, hwId);
+  let learned = prog.wordsLearned ? [...prog.wordsLearned] : [];
+  if(learned.includes(word)) learned = learned.filter(w=>w!==word);
+  else learned.push(word);
+  const hw = DB.homeworks.find(h=>h.id===hwId);
+  const status = learned.length>=hw.words.length ? 'done' : (learned.length>0?'in-progress':'not-started');
+  setProgress(user.id, hwId, {wordsLearned:learned, status});
+  renderMain();
+}
+function addSentence(hwId){
+  const input = document.getElementById('new-sentence-input');
+  const val = input.value.trim();
+  if(!val) return;
+  const user = currentUser();
+  const prog = getProgress(user.id, hwId);
+  const sentences = prog.sentences ? [...prog.sentences, val] : [val];
+  const hw = DB.homeworks.find(h=>h.id===hwId);
+  const status = sentences.length>=hw.target ? 'done' : 'in-progress';
+  setProgress(user.id, hwId, {sentences, status});
+  renderMain();
+  setTimeout(()=>{ const i=document.getElementById('new-sentence-input'); if(i) i.focus(); }, 0);
+}
+function removeSentence(hwId, idx){
+  const user = currentUser();
+  const prog = getProgress(user.id, hwId);
+  const sentences = (prog.sentences||[]).filter((_,i)=>i!==idx);
+  const hw = DB.homeworks.find(h=>h.id===hwId);
+  const status = sentences.length>=hw.target ? 'done' : (sentences.length>0?'in-progress':'not-started');
+  setProgress(user.id, hwId, {sentences, status});
+  renderMain();
+}
+function submitTranslation(hwId){
+  const val = document.getElementById('translation-input').value.trim();
+  const user = currentUser();
+  const status = val.length>10 ? 'done' : 'not-started';
+  setProgress(user.id, hwId, {translation:val, status});
+  showToast(status==='done' ? 'Translation submitted' : 'Add more text before submitting');
+  renderMain();
+}
+
+/* =========================================================
+   STUDENT: PROGRESS PAGE
+   ========================================================= */
+function renderStudentProgress(){
+  const user = currentUser();
+  const hws = studentHomeworks(user);
+  const statuses = hws.map(hw=>deriveStatus(hw, getProgress(user.id,hw.id)));
+  const completed = statuses.filter(s=>s==='done').length;
+  const inProgress = statuses.filter(s=>s==='in-progress').length;
+  const notStarted = statuses.filter(s=>s==='not-started').length;
+
+  const rows = hws.map(hw=>{
+    const prog = getProgress(user.id, hw.id);
+    const status = deriveStatus(hw, prog);
+    const meta = statusMeta(status);
+    const pct = computePct(hw, prog);
+    let detail = meta.label;
+    if(hw.type==='sentences') detail = `${(prog.sentences||[]).length}/${hw.target}`;
+    if(hw.type==='reading-vocab') detail = `${(prog.wordsLearned||[]).length}/${hw.words.length} words`;
+    return `
+      <div class="progress-list-row">
+        <div style="display:flex; align-items:center; gap:14px;">
+          ${iconBadge(hw.icon)}
+          <div>
+            <div class="name">${hw.title}</div>
+            <div style="font-size:12.5px; color:var(--ink-soft);">${detail}</div>
+          </div>
+        </div>
+        <div style="display:flex; align-items:center; gap:14px;">
+          <div class="mini-bar" style="width:110px;"><div style="width:${pct}%; background:${status==='done'?'var(--teal)':'var(--indigo)'}"></div></div>
+          <span class="pill ${meta.cls}" style="background:transparent; padding:0;"><span class="dot" style="width:8px;height:8px;border-radius:50%; background:${status==='done'?'var(--teal)':status==='in-progress'?'var(--amber)':'var(--coral)'}"></span> ${meta.label}</span>
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  return `
+    <div class="topbar">
+      <div><h1>Your Progress</h1><div class="sub">${user.group}</div></div>
+    </div>
+    <div class="stat-grid">
+      <div class="stat-card"><div class="n">${hws.length}</div><div class="l">Total Homework</div></div>
+      <div class="stat-card"><div class="n" style="color:var(--teal)">${completed}</div><div class="l">Completed</div></div>
+      <div class="stat-card"><div class="n" style="color:var(--amber)">${inProgress}</div><div class="l">In Progress</div></div>
+      <div class="stat-card"><div class="n" style="color:var(--coral)">${notStarted}</div><div class="l">Not Started</div></div>
+    </div>
+    ${rows}
+  `;
+}
+
+/* =========================================================
+   TEACHER: HOMEWORK MANAGEMENT
+   ========================================================= */
+function renderTeacherHome(){
+  const students = DB.users.filter(u=>u.role==='student');
+  const totalDone = students.reduce((acc,s)=>acc+studentHomeworks(s).filter(hw=>deriveStatus(hw,getProgress(s.id,hw.id))==='done').length,0);
+  const totalTasks = students.reduce((acc,s)=>acc+studentHomeworks(s).length,0);
+  const avgPct = totalTasks? Math.round(totalDone/totalTasks*100):0;
+  const pendingReview = students.reduce((acc,s)=>{
+    return acc + DB.homeworks.filter(hw=>{
+      const p = getProgress(s.id, hw.id);
+      return p.submissionImage && !p.reviewed;
+    }).length;
+  },0);
+
+  const overviewRow = `
+    <div class="panel-row">
+      <div class="mini-panel">
+        <div class="mp-icon" style="background:rgba(75,74,196,.12); color:var(--indigo);">${ICONS.people}</div>
+        <div><div class="mp-n">${students.length}</div><div class="mp-l">Students</div></div>
+      </div>
+      <div class="mini-panel">
+        <div class="mp-icon" style="background:var(--teal-soft); color:var(--teal);">${ICONS.chart}</div>
+        <div><div class="mp-n">${avgPct}%</div><div class="mp-l">Avg completion</div></div>
+      </div>
+      <div class="mini-panel">
+        <div class="mp-icon" style="background:var(--amber-soft); color:var(--amber);">${ICONS.inbox}</div>
+        <div><div class="mp-n">${pendingReview}</div><div class="mp-l">Photos to review</div></div>
+      </div>
+    </div>
+  `;
+
+  const rows = DB.homeworks.map(hw=>{
+    const groupChips = hw.groups.map(g=>`<span class="group-chip">${g}</span>`).join('');
+    return `
+    <div class="t-row">
+      <div style="display:flex; align-items:center; gap:12px;">
+        ${iconBadge(hw.icon)}
+        <div>
+          <div style="font-weight:800;">${hw.title}</div>
+          <div style="font-size:12.5px; color:var(--ink-soft);">${hw.figure}</div>
+        </div>
+      </div>
+      <div>${fmtDue(hw.due)}</div>
+      <div style="display:flex; flex-wrap:wrap;">${groupChips}</div>
+      <div style="font-size:13px; color:var(--ink-soft);">${hw.type.replace('-',' ')}</div>
+      <div style="text-align:right;">
+        <button class="icon-btn" title="Edit" onclick="openHwModal('${hw.id}')">${ICONS.edit}</button>
+        <button class="icon-btn" title="Delete" onclick="deleteHomework('${hw.id}')">${ICONS.trash}</button>
+      </div>
+    </div>`;
+  }).join('');
+
+  return `
+    <div class="topbar">
+      <div><h1>Homework</h1><div class="sub">${DB.homeworks.length} tasks · Manage what students see</div></div>
+      <button class="btn btn-outline" onclick="openHwModal()">${ICONS.plus.replace('width="24" height="24"','width="14" height="14"')} New homework</button>
+    </div>
+    ${overviewRow}
+    <div class="table-wrap">
+      <div class="t-row head"><div>Task</div><div>Due</div><div>Groups</div><div>Type</div><div></div></div>
+      ${rows}
+    </div>
+  `;
+}
+
+let __modalMedia = {refImage:null, refAudio:null};
+function openHwModal(hwId){
+  const hw = hwId ? DB.homeworks.find(h=>h.id===hwId) : null;
+  const groups = DB.groups;
+  __modalMedia = {refImage: hw?hw.refImage||null:null, refAudio: hw?hw.refAudio||null:null};
+  document.getElementById('modal-body').innerHTML = `
+    <h3>${hw? 'Edit homework':'Create homework'}</h3>
+    <div class="field"><label>Title</label><input id="m-title" value="${hw?hw.title:''}" placeholder="e.g. Grammar Practice"></div>
+    <div class="field"><label>Headline figure (shown big on the card)</label><input id="m-figure" value="${hw?hw.figure:''}" placeholder="e.g. 12 – 15 Units"></div>
+    <div class="field"><label>Short subtitle</label><input id="m-sub" value="${hw?hw.sub:''}" placeholder="e.g. 2 units per lesson"></div>
+    <div class="field"><label>What to do</label><textarea id="m-whatToDo">${hw?hw.whatToDo||'':''}</textarea></div>
+    <div class="field"><label>Due date</label><input id="m-due" type="date" value="${hw?hw.due:'2026-10-01'}"></div>
+    <div class="field">
+      <label>Reference photo (optional)</label>
+      <div class="modal-upload-row">
+        <label class="uf-btn" for="m-image-input">${ICONS.upload.replace('width="24" height="24"','width="14" height="14"')} Upload photo</label>
+        <input type="file" accept="image/*" id="m-image-input" onchange="handleModalImage(this)">
+        <span class="uf-status" id="m-image-status">${__modalMedia.refImage? 'Photo attached':''}</span>
+      </div>
+    </div>
+    <div class="field">
+      <label>Audio clip (optional — e.g. listening or pronunciation)</label>
+      <div class="modal-upload-row">
+        <label class="uf-btn" for="m-audio-input">${ICONS.music.replace('width="24" height="24"','width="14" height="14"')} Upload audio</label>
+        <input type="file" accept="audio/*" id="m-audio-input" onchange="handleModalAudio(this)">
+        <span class="uf-status" id="m-audio-status">${__modalMedia.refAudio? 'Audio attached':''}</span>
+      </div>
+    </div>
+    <div class="field">
+      <label>Assign to groups</label>
+      <div class="checkbox-grid" id="m-groups">
+        ${groups.map(g=>`<button type="button" class="chip-check ${hw && hw.groups.includes(g)?'on':''}" data-g="${g}" onclick="this.classList.toggle('on')">${g}</button>`).join('')}
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-ghost" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-primary" style="flex:1;" onclick="saveHwModal('${hw?hw.id:''}')">${hw?'Save changes':'Create homework'}</button>
+    </div>
+  `;
+  document.getElementById('modal-bg').classList.add('active');
+}
+function handleModalImage(inputEl){
+  const file = inputEl.files && inputEl.files[0];
+  if(!file) return;
+  resizeImageToDataURL(file, 1000, function(dataUrl){
+    if(!dataUrl){ showToast('Could not read that image'); return; }
+    __modalMedia.refImage = dataUrl;
+    const el = document.getElementById('m-image-status');
+    if(el) el.textContent = 'Photo attached';
+  });
+}
+function handleModalAudio(inputEl){
+  const file = inputEl.files && inputEl.files[0];
+  if(!file) return;
+  if(file.size > 3*1024*1024){ showToast('Please choose an audio file under 3MB'); return; }
+  readFileAsDataURL(file, function(dataUrl){
+    if(!dataUrl){ showToast('Could not read that audio file'); return; }
+    __modalMedia.refAudio = dataUrl;
+    const el = document.getElementById('m-audio-status');
+    if(el) el.textContent = 'Audio attached';
+  });
+}
+function saveHwModal(hwId){
+  const title = document.getElementById('m-title').value.trim() || 'Untitled task';
+  const figure = document.getElementById('m-figure').value.trim();
+  const sub = document.getElementById('m-sub').value.trim();
+  const whatToDo = document.getElementById('m-whatToDo').value.trim();
+  const due = document.getElementById('m-due').value || '2026-10-01';
+  const groups = Array.from(document.querySelectorAll('#m-groups .chip-check.on')).map(b=>b.dataset.g);
+  const refImage = __modalMedia.refImage;
+  const refAudio = __modalMedia.refAudio;
+
+  if(hwId){
+    const hw = DB.homeworks.find(h=>h.id===hwId);
+    Object.assign(hw, {title, figure, sub, whatToDo, due, groups, refImage, refAudio});
+  } else {
+    const id = 'hw'+(Date.now());
+    DB.homeworks.push({
+      id, type:'custom', icon:'book', title, figure, sub, whatToDo, due,
+      groups: groups.length?groups:DB.groups, instructions:[], illustration:'essential2',
+      refImage, refAudio
+    });
+  }
+  saveDB();
+  closeModal();
+  showToast(hwId? 'Homework updated':'Homework created');
+  renderMain();
+}
+function deleteHomework(hwId){
+  document.getElementById('modal-body').innerHTML = `
+    <h3>Delete this homework?</h3>
+    <p style="color:var(--ink-soft); font-size:14.5px; line-height:1.6;">This removes it for every student and can't be undone.</p>
+    <div class="modal-actions">
+      <button class="btn-ghost" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-primary" style="flex:1; background:var(--coral);" onclick="confirmDeleteHw('${hwId}')">Delete</button>
+    </div>
+  `;
+  document.getElementById('modal-bg').classList.add('active');
+}
+function confirmDeleteHw(hwId){
+  DB.homeworks = DB.homeworks.filter(h=>h.id!==hwId);
+  saveDB();
+  closeModal();
+  showToast('Homework deleted');
+  renderMain();
+}
+function closeModal(){ document.getElementById('modal-bg').classList.remove('active'); }
+
+/* =========================================================
+   TEACHER: GROUPS
+   ========================================================= */
+function renderTeacherGroups(){
+  const groupCards = DB.groups.map(g=>{
+    const members = DB.users.filter(u=>u.role==='student' && u.group===g);
+    return `
+      <div class="detail-block" style="margin-bottom:16px;">
+        <h4 style="margin-bottom:14px;">${g} <span style="font-weight:500; text-transform:none; letter-spacing:0; color:var(--ink-soft);">· ${members.length} students</span></h4>
+        ${members.map(m=>{
+          const hws = studentHomeworks(m);
+          const done = hws.filter(hw=>deriveStatus(hw, getProgress(m.id,hw.id))==='done').length;
+          return `<div class="progress-list-row">
+            <div style="display:flex; align-items:center; gap:12px;">
+              <div class="avatar" style="background:var(--indigo); color:#fff;">${m.name.split(' ').map(w=>w[0]).slice(0,2).join('')}</div>
+              <div class="name">${m.name}</div>
+            </div>
+            <div style="font-size:13px; color:var(--ink-soft); font-weight:700;">${done}/${hws.length} done</div>
+          </div>`;
+        }).join('') || `<p style="color:var(--ink-soft); font-size:14px;">No students in this group yet.</p>`}
+      </div>
+    `;
+  }).join('');
+
+  return `
+    <div class="topbar"><div><h1>Groups</h1><div class="sub">${DB.groups.length} groups · Even-Day and Odd-Day rotate the Essential 2 assignment</div></div></div>
+    ${groupCards}
+  `;
+}
+
+/* =========================================================
+   TEACHER: CLASS PROGRESS
+   ========================================================= */
+function renderTeacherProgress(){
+  const students = DB.users.filter(u=>u.role==='student');
+  const rows = students.map(s=>{
+    const hws = studentHomeworks(s);
+    const done = hws.filter(hw=>deriveStatus(hw, getProgress(s.id,hw.id))==='done').length;
+    const inProg = hws.filter(hw=>deriveStatus(hw, getProgress(s.id,hw.id))==='in-progress').length;
+    const pct = hws.length? Math.round(done/hws.length*100):0;
+    return `
+      <div class="progress-list-row">
+        <div style="display:flex; align-items:center; gap:12px;">
+          <div class="avatar" style="background:var(--indigo); color:#fff;">${s.name.split(' ').map(w=>w[0]).slice(0,2).join('')}</div>
+          <div>
+            <div class="name">${s.name}</div>
+            <div style="font-size:12px; color:var(--ink-soft);">${s.group}</div>
+          </div>
+        </div>
+        <div style="display:flex; align-items:center; gap:14px;">
+          <div style="font-size:12.5px; color:var(--ink-soft); font-weight:700;">${done} done · ${inProg} in progress</div>
+          <div class="mini-bar" style="width:120px;"><div style="width:${pct}%; background:var(--indigo);"></div></div>
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  const totalDone = students.reduce((acc,s)=>acc+studentHomeworks(s).filter(hw=>deriveStatus(hw,getProgress(s.id,hw.id))==='done').length,0);
+  const totalTasks = students.reduce((acc,s)=>acc+studentHomeworks(s).length,0);
+
+  return `
+    <div class="topbar"><div><h1>Class Progress</h1><div class="sub">Across all groups</div></div></div>
+    <div class="stat-grid">
+      <div class="stat-card"><div class="n">${students.length}</div><div class="l">Students</div></div>
+      <div class="stat-card"><div class="n">${DB.homeworks.length}</div><div class="l">Active Homework</div></div>
+      <div class="stat-card"><div class="n" style="color:var(--teal)">${totalDone}</div><div class="l">Tasks Completed</div></div>
+      <div class="stat-card"><div class="n">${totalTasks? Math.round(totalDone/totalTasks*100):0}%</div><div class="l">Overall Completion</div></div>
+    </div>
+    ${rows}
+  `;
+}
+
+function attachDynamicHandlers(){ /* reserved for future use */ }
+
+/* =========================================================
+   TEACHER: SUBMISSIONS (photo review panel)
+   ========================================================= */
+function renderTeacherSubmissions(){
+  const students = DB.users.filter(u=>u.role==='student');
+  const items = [];
+  students.forEach(s=>{
+    studentHomeworks(s).forEach(hw=>{
+      const p = getProgress(s.id, hw.id);
+      if(p.submissionImage){
+        items.push({student:s, hw, prog:p});
+      }
+    });
+  });
+  items.sort((a,b)=> (a.prog.reviewed===b.prog.reviewed) ? 0 : (a.prog.reviewed?1:-1));
+
+  const cards = items.map(it=>`
+    <div class="submission-card">
+      <div class="sc-thumb" onclick="openLightbox('${it.prog.submissionImage.replace(/'/g,"\\'")}')">
+        <img src="${it.prog.submissionImage}" alt="Submission">
+      </div>
+      <div class="sc-info">
+        <div class="sc-name">${it.student.name}</div>
+        <div class="sc-task">${it.hw.title} · ${it.student.group}</div>
+      </div>
+      <span class="review-badge ${it.prog.reviewed?'done':''}" style="cursor:pointer;" onclick="toggleReviewed('${it.student.id}','${it.hw.id}')">
+        ${it.prog.reviewed? 'Reviewed ✓' : 'Needs review'}
+      </span>
+    </div>
+  `).join('');
+
+  return `
+    <div class="topbar"><div><h1>Submissions</h1><div class="sub">${items.length} photo submissions across all students</div></div></div>
+    ${items.length ? cards : `
+      <div class="empty-state">
+        ${ICONS.empty}
+        <p>No photo submissions yet. Once students attach photos to their homework, they'll show up here.</p>
+      </div>
+    `}
+  `;
+}
+function toggleReviewed(studentId, hwId){
+  const p = getProgress(studentId, hwId);
+  setProgress(studentId, hwId, {reviewed: !p.reviewed});
+  renderMain();
+}
+function openLightbox(src){
+  document.getElementById('lightbox-img').src = src;
+  document.getElementById('lightbox-bg').classList.add('active');
+}
+function closeLightbox(){
+  document.getElementById('lightbox-bg').classList.remove('active');
+  document.getElementById('lightbox-img').src = '';
+}
+
+/* =========================================================
+   INIT
+   ========================================================= */
+loadDB();
+if(tryRestoreSession() && DB.users.find(u=>u.id===SESSION.userId)){
+  enterApp();
+}
+document.getElementById('login-password').addEventListener('keydown', e=>{ if(e.key==='Enter') handleLogin(); });
 </script>
 </body>
 </html>
