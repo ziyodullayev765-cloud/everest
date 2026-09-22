@@ -2,1682 +2,1386 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Barkamol — English Homework</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>Barkamol — English Mobile App</title>
+<!-- Tailwind CSS CDN -->
+<script src="https://cdn.tailwindcss.com"></script>
+<!-- FontAwesome Icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<!-- Google Fonts -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<style>
-/* ============ TOKENS ============ */
-:root{
-  --paper:#FBF8F2;
-  --paper-2:#F3EEE3;
-  --ink:#1C2541;
-  --ink-soft:#5B6478;
-  --indigo:#4B4AC4;
-  --indigo-deep:#38369A;
-  --amber:#E8A33D;
-  --amber-soft:#FBEBD2;
-  --teal:#2E9E82;
-  --teal-soft:#DCF2EA;
-  --coral:#E4572E;
-  --coral-soft:#FBE2D9;
-  --line:#E7E1D3;
-  --card:#FFFFFF;
-  --radius-lg:26px;
-  --radius-md:18px;
-  --radius-sm:12px;
-  --shadow: 0 1px 2px rgba(28,37,65,.04), 0 12px 28px -12px rgba(28,37,65,.16);
-  --font-display:'Fraunces', serif;
-  --font-body:'Manrope', sans-serif;
-  box-sizing:border-box;
-  padding-top: env(safe-area-inset-top, 0px);
-  padding-bottom: env(safe-area-inset-bottom, 0px);
-}
-*{box-sizing:border-box;}
-html{scroll-padding-top: env(safe-area-inset-top, 0px);}
-html,body{height:100%;}
-body{
-  margin:0;
-  font-family:var(--font-body);
-  background:var(--paper);
-  color:var(--ink);
-  -webkit-font-smoothing:antialiased;
-  overflow-x:hidden;
-}
-h1,h2,h3,.display{font-family:var(--font-display); font-weight:600; letter-spacing:-0.01em; margin:0;}
-p{margin:0;}
-button{font-family:var(--font-body); cursor:pointer;}
-img,svg{display:block; max-width:100%;}
-::selection{background:var(--amber-soft);}
-a{color:inherit;}
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
-.screen{display:none; min-height:100%;}
-.screen.active{display:block;}
-
-/* ============ LOGIN ============ */
-#login-screen.active{
-  display:flex; align-items:center; justify-content:center;
-  min-height:100vh; min-height:100dvh;
-  padding:32px 20px;
-  background:
-    radial-gradient(600px 420px at 85% -10%, rgba(75,74,196,.10), transparent 60%),
-    radial-gradient(500px 380px at -10% 110%, rgba(232,163,61,.16), transparent 60%),
-    var(--paper);
-}
-.login-wrap{width:100%; max-width:920px; display:grid; grid-template-columns:1.1fr 1fr; gap:0; background:var(--card); border-radius:32px; overflow:hidden; box-shadow:var(--shadow); border:1px solid var(--line);}
-@media (max-width:760px){ .login-wrap{grid-template-columns:1fr;} .login-hero{display:none !important;} }
-
-.login-hero{
-  background:linear-gradient(160deg, var(--indigo) 0%, var(--indigo-deep) 100%);
-  color:#fff; padding:48px 40px; position:relative; overflow:hidden;
-  display:flex; flex-direction:column; justify-content:space-between;
-}
-.login-hero .mark{font-family:var(--font-display); font-size:22px; font-weight:600;}
-.login-hero .headline{font-size:clamp(28px,3.4vw,38px); line-height:1.12; margin-top:28px;}
-.login-hero .headline em{font-style:italic; color:var(--amber);}
-.hero-decor{position:absolute; inset:0; opacity:.5; pointer-events:none;}
-.login-hero .foot{font-size:13.5px; color:rgba(255,255,255,.72); line-height:1.5; margin-top:32px;}
-
-.login-form-pane{padding:44px 40px;}
-.login-form-pane .eyebrow{color:var(--ink-soft); font-size:14px;}
-.login-form-pane h1{font-size:28px; margin-top:6px;}
-.role-toggle{display:flex; background:var(--paper-2); border-radius:100px; padding:4px; margin:26px 0 22px;}
-.role-toggle button{flex:1; border:none; background:transparent; padding:10px 0; border-radius:100px; font-weight:700; font-size:14px; color:var(--ink-soft); transition:all .2s ease;}
-.role-toggle button.active{background:var(--ink); color:#fff;}
-.field{margin-bottom:14px;}
-.field label{display:block; font-size:12.5px; font-weight:700; color:var(--ink-soft); margin-bottom:6px; text-transform:uppercase; letter-spacing:.04em;}
-.field input, .field select{width:100%; padding:13px 14px; border-radius:12px; border:1.5px solid var(--line); font-size:15.5px; font-family:var(--font-body); background:var(--paper); color:var(--ink);}
-.field input:focus, .field select:focus{outline:none; border-color:var(--indigo);}
-.btn{display:inline-flex; align-items:center; justify-content:center; gap:8px; border:none; border-radius:100px; padding:14px 22px; font-weight:700; font-size:15px; transition:transform .12s ease, opacity .15s ease;}
-.btn:active{transform:scale(.97);}
-.btn-primary{background:var(--ink); color:#fff; width:100%; margin-top:6px;}
-.btn-primary:hover{opacity:.9;}
-.login-error{color:var(--coral); font-size:13.5px; margin-top:10px; min-height:16px;}
-.demo-hint{margin-top:22px; padding:14px 16px; background:var(--paper-2); border-radius:14px; font-size:13px; color:var(--ink-soft); line-height:1.6;}
-.demo-hint b{color:var(--ink);}
-
-/* ============ APP SHELL ============ */
-#app-screen.active{display:flex; min-height:100vh; min-height:100dvh;}
-.sidebar{
-  width:240px; flex-shrink:0; background:var(--ink); color:#fff;
-  padding:26px 20px; display:flex; flex-direction:column; gap:6px;
-  position:sticky; top:0; height:100vh; height:100dvh;
-}
-.sidebar .mark{font-family:var(--font-display); font-size:19px; font-weight:600; padding:0 10px 22px; display:flex; align-items:center; gap:9px;}
-.sidebar .mark .dot{width:9px;height:9px;border-radius:50%;background:var(--amber);}
-.nav-item{display:flex; align-items:center; gap:11px; padding:11px 12px; border-radius:12px; color:rgba(255,255,255,.68); font-weight:600; font-size:14.5px; border:none; background:transparent; text-align:left; width:100%;}
-.nav-item svg{width:18px;height:18px; flex-shrink:0; opacity:.85;}
-.nav-item.active{background:rgba(255,255,255,.1); color:#fff;}
-.nav-item:hover{color:#fff;}
-.sidebar-foot{margin-top:auto; padding-top:16px; border-top:1px solid rgba(255,255,255,.12);}
-.user-chip{display:flex; align-items:center; gap:10px; padding:8px 10px; border-radius:12px;}
-.avatar{width:34px;height:34px;border-radius:50%; background:var(--amber); color:var(--ink); display:flex; align-items:center; justify-content:center; font-weight:800; font-size:14px; flex-shrink:0;}
-.user-chip .u-name{font-size:13.5px; font-weight:700; color:#fff;}
-.user-chip .u-role{font-size:11.5px; color:rgba(255,255,255,.55); text-transform:capitalize;}
-.logout-btn{margin-top:10px; width:100%; text-align:left; background:transparent; border:none; color:rgba(255,255,255,.55); font-size:13px; font-weight:600; padding:8px 10px;}
-.logout-btn:hover{color:#fff;}
-
-.main{flex:1; min-width:0; padding:30px 36px 80px;}
-@media (max-width:860px){
-  .sidebar{position:fixed; left:0; bottom:0; top:auto; width:100%; height:auto; flex-direction:row; align-items:center; padding:10px 10px calc(10px + env(safe-area-inset-bottom,0px)); z-index:50; box-shadow:0 -8px 24px rgba(0,0,0,.15); gap:0; justify-content:space-around;}
-  .sidebar .mark, .sidebar-foot{display:none;}
-  .nav-item{flex-direction:column; gap:4px; font-size:10.5px; padding:8px 6px; flex:1;}
-  .nav-item svg{width:20px;height:20px;}
-  .main{padding:20px 16px 100px;}
-  body{padding-bottom:64px;}
-}
-
-.topbar{display:flex; align-items:center; justify-content:space-between; margin-bottom:26px; gap:16px; flex-wrap:wrap;}
-.topbar h1{font-size:clamp(22px,3vw,30px);}
-.topbar .sub{color:var(--ink-soft); font-size:14.5px; margin-top:4px;}
-.pill{display:inline-flex; align-items:center; gap:6px; padding:6px 13px; border-radius:100px; font-size:12.5px; font-weight:700;}
-.pill-group{background:var(--indigo); color:#fff;}
-
-/* ============ DASHBOARD PROGRESS ============ */
-.progress-hero{
-  background:linear-gradient(135deg, var(--indigo) 0%, var(--indigo-deep) 100%);
-  border-radius:var(--radius-lg); padding:28px 30px; color:#fff; margin-bottom:28px;
-  display:flex; align-items:center; justify-content:space-between; gap:24px; flex-wrap:wrap;
-  position:relative; overflow:hidden;
-}
-.progress-hero::after{content:'';position:absolute; right:-40px; top:-60px; width:220px; height:220px; border-radius:50%; background:rgba(255,255,255,.06);}
-.progress-hero .ph-text{position:relative; z-index:1;}
-.progress-hero .ph-text .greet{font-size:14.5px; color:rgba(255,255,255,.7); font-weight:600;}
-.progress-hero .ph-text h2{font-size:clamp(20px,2.6vw,26px); margin-top:4px;}
-.ring-wrap{position:relative; width:104px; height:104px; flex-shrink:0; z-index:1;}
-.ring-wrap svg{transform:rotate(-90deg);}
-.ring-label{position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center;}
-.ring-label .n{font-size:22px; font-weight:800; font-family:var(--font-display);}
-.ring-label .d{font-size:10px; color:rgba(255,255,255,.7); font-weight:700;}
-
-/* ============ CARDS GRID ============ */
-.hw-grid{display:grid; grid-template-columns:repeat(auto-fill, minmax(270px,1fr)); gap:18px;}
-.hw-card{
-  background:var(--card); border:1px solid var(--line); border-radius:var(--radius-md);
-  padding:20px; cursor:pointer; transition:transform .15s ease, box-shadow .15s ease;
-  display:flex; flex-direction:column; gap:14px; position:relative;
-}
-.hw-card:hover{transform:translateY(-3px); box-shadow:var(--shadow);}
-.hw-card .icon-badge{width:52px; height:52px; border-radius:16px; display:flex; align-items:center; justify-content:center;}
-.hw-card .icon-badge svg{width:28px;height:28px;}
-.hw-card h3{font-size:17.5px; line-height:1.25;}
-.hw-card .hw-sub{font-size:13.5px; color:var(--ink-soft); margin-top:4px;}
-.hw-card .hw-figure{font-family:var(--font-display); font-size:20px; font-weight:600; margin-top:2px;}
-.status-tag{position:absolute; top:18px; right:18px; font-size:11px; font-weight:800; padding:4px 10px; border-radius:100px; display:flex; align-items:center; gap:5px;}
-.status-tag .dot{width:6px;height:6px;border-radius:50%;}
-.status-not{background:var(--coral-soft); color:#B23E1C;}
-.status-not .dot{background:var(--coral);}
-.status-progress{background:var(--amber-soft); color:#8A5A0F;}
-.status-progress .dot{background:var(--amber);}
-.status-done{background:var(--teal-soft); color:#1E6E58;}
-.status-done .dot{background:var(--teal);}
-.mini-bar{height:7px; background:var(--paper-2); border-radius:100px; overflow:hidden; margin-top:4px;}
-.mini-bar > div{height:100%; background:var(--indigo); border-radius:100px; transition:width .3s ease;}
-.hw-card .due{font-size:12px; color:var(--ink-soft); margin-top:auto; display:flex; align-items:center; gap:5px;}
-
-/* ============ DETAIL PAGE ============ */
-.detail-wrap{max-width:760px;}
-.back-btn{display:inline-flex; align-items:center; gap:7px; background:transparent; border:none; color:var(--ink-soft); font-weight:700; font-size:14px; padding:8px 0; margin-bottom:14px;}
-.back-btn:hover{color:var(--ink);}
-.detail-head{display:flex; align-items:center; gap:16px; margin-bottom:20px;}
-.detail-head .icon-badge{width:64px;height:64px;border-radius:20px;}
-.detail-head .icon-badge svg{width:34px;height:34px;}
-.detail-head h1{font-size:clamp(24px,3.4vw,32px);}
-.detail-head .hw-figure{font-size:16px; color:var(--ink-soft); font-weight:700; font-family:var(--font-body); margin-top:3px;}
-.detail-block{background:var(--card); border:1px solid var(--line); border-radius:var(--radius-md); padding:22px 24px; margin-bottom:16px;}
-.detail-block h4{font-size:13px; text-transform:uppercase; letter-spacing:.05em; color:var(--ink-soft); font-weight:800; margin-bottom:12px;}
-.detail-block p, .detail-block li{font-size:15.5px; line-height:1.65; color:var(--ink);}
-.detail-block ol, .detail-block ul{margin:0; padding-left:20px; display:flex; flex-direction:column; gap:8px;}
-.ref-image{width:100%; border-radius:14px; overflow:hidden; border:1px solid var(--line);}
-.ref-image svg{width:100%; height:auto; display:block;}
-.complete-bar{display:flex; align-items:center; justify-content:space-between; gap:14px; flex-wrap:wrap;}
-.progress-pct{font-family:var(--font-display); font-size:22px; font-weight:700;}
-.check-btn{background:var(--teal); color:#fff; border:none; padding:13px 22px; border-radius:100px; font-weight:800; font-size:14.5px; display:inline-flex; align-items:center; gap:8px;}
-.check-btn.done{background:var(--paper-2); color:var(--ink-soft);}
-.check-btn:hover{opacity:.92;}
-
-/* word list */
-.word-row{display:flex; align-items:center; gap:14px; padding:14px 0; border-bottom:1px solid var(--line);}
-.word-row:last-child{border-bottom:none;}
-.word-row .wtext{flex:1; min-width:0;}
-.word-row .w-en{font-weight:800; font-size:16px;}
-.word-row .w-uz{font-size:13.5px; color:var(--indigo); font-weight:700;}
-.word-row .w-ex{font-size:13px; color:var(--ink-soft); font-style:italic; margin-top:2px;}
-.word-check{width:26px;height:26px; border-radius:8px; border:2px solid var(--line); flex-shrink:0; display:flex; align-items:center; justify-content:center; background:#fff;}
-.word-check.checked{background:var(--teal); border-color:var(--teal);}
-.word-check svg{width:15px;height:15px; opacity:0;}
-.word-check.checked svg{opacity:1;}
-
-/* sentences */
-.sent-progress-row{display:flex; align-items:center; gap:16px; margin-bottom:18px;}
-.sent-count{font-family:var(--font-display); font-size:28px; font-weight:700; white-space:nowrap;}
-.sent-item{display:flex; align-items:flex-start; gap:10px; padding:11px 0; border-bottom:1px solid var(--line);}
-.sent-item .num{color:var(--ink-soft); font-weight:800; font-size:13px; min-width:22px; padding-top:2px;}
-.sent-item .txt{flex:1; font-size:15px; line-height:1.5;}
-.sent-item .rm{background:none; border:none; color:var(--ink-soft); font-size:18px; padding:0 4px;}
-.add-sent-row{display:flex; gap:10px; margin-top:14px;}
-.add-sent-row input{flex:1; padding:12px 14px; border-radius:12px; border:1.5px solid var(--line); font-size:15px; font-family:var(--font-body);}
-.add-sent-row input:focus{outline:none; border-color:var(--indigo);}
-.add-sent-row button{background:var(--ink); color:#fff; border:none; border-radius:12px; padding:0 20px; font-weight:700; font-size:14px;}
-
-textarea.translate-input{width:100%; min-height:160px; border-radius:14px; border:1.5px solid var(--line); padding:16px; font-family:var(--font-body); font-size:15.5px; line-height:1.6; resize:vertical;}
-textarea.translate-input:focus{outline:none; border-color:var(--indigo);}
-
-/* ============ PROGRESS PAGE ============ */
-.stat-grid{display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-bottom:26px;}
-@media (max-width:700px){.stat-grid{grid-template-columns:repeat(2,1fr);}}
-.stat-card{background:var(--card); border:1px solid var(--line); border-radius:var(--radius-md); padding:20px;}
-.stat-card .n{font-family:var(--font-display); font-size:30px; font-weight:700;}
-.stat-card .l{font-size:12.5px; color:var(--ink-soft); font-weight:700; margin-top:4px;}
-.progress-list-row{display:flex; align-items:center; justify-content:space-between; padding:16px 20px; background:var(--card); border:1px solid var(--line); border-radius:14px; margin-bottom:10px; gap:12px; flex-wrap:wrap;}
-.progress-list-row .name{font-weight:700; font-size:15px;}
-
-/* ============ TEACHER PANEL ============ */
-.section-title{display:flex; align-items:center; justify-content:between; justify-content:space-between; margin:32px 0 14px; gap:12px;}
-.section-title h2{font-size:19px;}
-.btn-outline{background:transparent; border:1.5px solid var(--ink); color:var(--ink); padding:10px 18px; border-radius:100px; font-weight:700; font-size:13.5px;}
-.btn-outline:hover{background:var(--ink); color:#fff;}
-.table-wrap{background:var(--card); border:1px solid var(--line); border-radius:var(--radius-md); overflow:hidden;}
-.t-row{display:grid; grid-template-columns:2.2fr 1fr 1fr 1fr auto; gap:10px; align-items:center; padding:14px 18px; border-bottom:1px solid var(--line); font-size:14px;}
-.t-row.head{background:var(--paper-2); font-weight:800; font-size:11.5px; text-transform:uppercase; letter-spacing:.04em; color:var(--ink-soft);}
-.t-row:last-child{border-bottom:none;}
-@media (max-width:700px){ .t-row{grid-template-columns:1fr; gap:4px;} .t-row.head{display:none;} .t-row{padding:14px 16px;} }
-.icon-btn{background:var(--paper-2); border:none; width:32px; height:32px; border-radius:9px; display:inline-flex; align-items:center; justify-content:center; margin-left:6px;}
-.icon-btn:hover{background:var(--line);}
-.icon-btn svg{width:15px;height:15px;}
-
-.group-chip{display:inline-flex; padding:4px 10px; border-radius:100px; font-size:11.5px; font-weight:700; background:var(--indigo); color:#fff; margin:0 5px 5px 0;}
-
-/* modal */
-.modal-bg{position:fixed; inset:0; background:rgba(28,37,65,.5); display:none; align-items:center; justify-content:center; z-index:100; padding:20px; backdrop-filter:blur(2px);}
-.modal-bg.active{display:flex;}
-.modal{background:#fff; border-radius:24px; padding:28px; width:100%; max-width:520px; max-height:88vh; overflow-y:auto;}
-.modal h3{font-size:20px; margin-bottom:18px;}
-.modal .field textarea{width:100%; padding:12px 14px; border-radius:12px; border:1.5px solid var(--line); font-family:var(--font-body); font-size:14.5px; min-height:80px;}
-.modal-actions{display:flex; gap:10px; margin-top:20px;}
-.modal-actions .btn-primary{margin-top:0;}
-.btn-ghost{background:var(--paper-2); color:var(--ink); border:none; border-radius:100px; padding:14px 22px; font-weight:700; font-size:15px; flex:1;}
-.checkbox-grid{display:flex; flex-wrap:wrap; gap:8px;}
-.chip-check{padding:8px 14px; border-radius:100px; border:1.5px solid var(--line); font-size:13px; font-weight:700; background:#fff; color:var(--ink-soft);}
-.chip-check.on{background:var(--ink); color:#fff; border-color:var(--ink);}
-
-.empty-state{text-align:center; padding:60px 20px; color:var(--ink-soft);}
-.empty-state svg{width:64px;height:64px; margin:0 auto 16px; opacity:.3;}
-
-/* ============ PANELS (dashboard status panels, like a marketplace app) ============ */
-.panel-row{display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin-bottom:22px;}
-@media (max-width:700px){.panel-row{grid-template-columns:1fr 1fr;}}
-.mini-panel{background:var(--card); border:1px solid var(--line); border-radius:16px; padding:16px 18px; display:flex; align-items:center; gap:12px;}
-.mini-panel .mp-icon{width:40px; height:40px; border-radius:12px; display:flex; align-items:center; justify-content:center; flex-shrink:0;}
-.mini-panel .mp-icon svg{width:20px;height:20px;}
-.mini-panel .mp-n{font-family:var(--font-display); font-size:22px; font-weight:700; line-height:1;}
-.mini-panel .mp-l{font-size:11.5px; color:var(--ink-soft); font-weight:700; margin-top:3px;}
-
-.deadline-panel{background:var(--card); border:1px solid var(--line); border-radius:var(--radius-md); overflow:hidden; margin-bottom:26px;}
-.deadline-panel .dp-head{padding:16px 20px; border-bottom:1px solid var(--line); font-weight:800; font-size:14px; display:flex; align-items:center; gap:8px;}
-.deadline-row{display:flex; align-items:center; gap:14px; padding:13px 20px; border-bottom:1px solid var(--line);}
-.deadline-row:last-child{border-bottom:none;}
-.deadline-row .d-badge{width:38px; height:38px; border-radius:11px; display:flex; align-items:center; justify-content:center; flex-shrink:0;}
-.deadline-row .d-badge svg{width:18px;height:18px;}
-.deadline-row .d-title{font-weight:700; font-size:14.5px;}
-.deadline-row .d-sub{font-size:12px; color:var(--ink-soft);}
-.deadline-row .d-due{margin-left:auto; font-size:12px; font-weight:800; color:var(--coral); white-space:nowrap;}
-
-/* audio block on detail page */
-.audio-block{display:flex; align-items:center; gap:12px; background:var(--paper-2); border-radius:14px; padding:12px 16px;}
-.audio-block audio{flex:1; height:36px;}
-.speaker-btn{background:var(--indigo); color:#fff; border:none; width:32px; height:32px; border-radius:9px; display:inline-flex; align-items:center; justify-content:center; flex-shrink:0;}
-.speaker-btn svg{width:16px;height:16px;}
-.speaker-btn:hover{opacity:.88;}
-
-/* upload dropzone */
-.upload-zone{border:1.5px dashed var(--line); border-radius:14px; padding:22px; text-align:center; cursor:pointer; transition:border-color .15s ease, background .15s ease;}
-.upload-zone:hover{border-color:var(--indigo); background:var(--paper-2);}
-.upload-zone svg{width:26px;height:26px; margin:0 auto 8px; color:var(--ink-soft);}
-.upload-zone .uz-label{font-size:13.5px; font-weight:700; color:var(--ink-soft);}
-.upload-zone input[type=file]{display:none;}
-.submission-preview{position:relative; border-radius:14px; overflow:hidden; border:1px solid var(--line);}
-.submission-preview img{width:100%; display:block;}
-.submission-preview .rm-photo{position:absolute; top:10px; right:10px; background:rgba(28,37,65,.75); color:#fff; border:none; width:30px; height:30px; border-radius:9px; display:flex; align-items:center; justify-content:center; font-size:16px;}
-
-/* teacher modal upload rows */
-.modal-upload-row{display:flex; align-items:center; gap:10px; margin-bottom:14px;}
-.modal-upload-row .uf-btn{background:var(--paper-2); border:1.5px solid var(--line); border-radius:10px; padding:9px 14px; font-size:13px; font-weight:700; color:var(--ink-soft); display:inline-flex; align-items:center; gap:7px;}
-.modal-upload-row .uf-btn svg{width:14px;height:14px;}
-.modal-upload-row .uf-status{font-size:12px; color:var(--teal); font-weight:700;}
-
-/* submissions review list (teacher) */
-.submission-card{display:flex; gap:14px; background:var(--card); border:1px solid var(--line); border-radius:16px; padding:14px; margin-bottom:12px; align-items:center; flex-wrap:wrap;}
-.submission-card .sc-thumb{width:74px; height:74px; border-radius:12px; overflow:hidden; flex-shrink:0; border:1px solid var(--line); cursor:pointer;}
-.submission-card .sc-thumb img{width:100%; height:100%; object-fit:cover;}
-.submission-card .sc-info{flex:1; min-width:160px;}
-.submission-card .sc-name{font-weight:800; font-size:14.5px;}
-.submission-card .sc-task{font-size:12.5px; color:var(--ink-soft); margin-top:2px;}
-.review-badge{font-size:11px; font-weight:800; padding:5px 11px; border-radius:100px; background:var(--amber-soft); color:#8A5A0F;}
-.review-badge.done{background:var(--teal-soft); color:#1E6E58;}
-.lightbox-bg{position:fixed; inset:0; background:rgba(15,18,32,.9); z-index:150; display:none; align-items:center; justify-content:center; padding:24px;}
-.lightbox-bg.active{display:flex;}
-.lightbox-bg img{max-width:100%; max-height:90vh; border-radius:12px;}
-.lightbox-bg .lb-close{position:absolute; top:20px; right:24px; background:rgba(255,255,255,.15); color:#fff; border:none; width:40px; height:40px; border-radius:50%; font-size:20px;}
-
-.toast{position:fixed; bottom:24px; left:50%; transform:translateX(-50%) translateY(20px); background:var(--ink); color:#fff; padding:13px 22px; border-radius:100px; font-size:14px; font-weight:700; opacity:0; transition:all .25s ease; z-index:200; pointer-events:none; white-space:nowrap;}
-.toast.show{opacity:1; transform:translateX(-50%) translateY(0);}
-@media (max-width:860px){.toast{bottom:76px;}}
-
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]){
-    --paper:#15192B; --paper-2:#1E2338; --ink:#F3F1E9; --ink-soft:#9AA1B8;
-    --card:#1B2036; --line:#2B3050; --amber-soft:#3A2E17; --teal-soft:#122D26; --coral-soft:#3A1F16;
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        fontFamily: {
+          sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+        },
+        colors: {
+          everest: {
+            900: '#0B132B',
+            800: '#1C2541',
+            700: '#2A3A5E',
+            accent: '#3A86FF',
+            gold: '#FFD166',
+            teal: '#06D6A0',
+          }
+        }
+      }
+    }
   }
-}
-:root[data-theme="dark"]{
-  --paper:#15192B; --paper-2:#1E2338; --ink:#F3F1E9; --ink-soft:#9AA1B8;
-  --card:#1B2036; --line:#2B3050; --amber-soft:#3A2E17; --teal-soft:#122D26; --coral-soft:#3A1F16;
-}
+</script>
+
+<style>
+  * {
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+  }
+  
+  body, input, textarea, button {
+    user-select: text;
+  }
+
+  /* Mount Everest Background with Dark Glass Gradient Overlay */
+  body {
+    background: 
+      linear-gradient(180deg, rgba(11, 19, 43, 0.72) 0%, rgba(15, 23, 42, 0.88) 60%, rgba(2, 6, 23, 0.96) 100%),
+      url('https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=2000&q=80') center/cover no-repeat fixed;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    color: #F8FAFC;
+    min-height: 100vh;
+    margin: 0;
+    overflow-x: hidden;
+  }
+
+  /* Custom Glassmorphism UI */
+  .glass-card {
+    background: rgba(30, 41, 59, 0.65);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+  }
+
+  .glass-card-interactive {
+    background: rgba(30, 41, 59, 0.65);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .glass-card-interactive:active {
+    transform: scale(0.98);
+    background: rgba(30, 41, 59, 0.8);
+  }
+
+  .glass-pill {
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+  }
+
+  .glass-input {
+    background: rgba(15, 23, 42, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: #FFFFFF;
+    backdrop-filter: blur(8px);
+  }
+  .glass-input:focus {
+    outline: none;
+    border-color: #3A86FF;
+    box-shadow: 0 0 0 3px rgba(58, 134, 255, 0.25);
+  }
+
+  /* Mobile App Notch/Island */
+  .dynamic-island {
+    box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+    backdrop-filter: blur(20px);
+  }
+
+  /* Scrollbar Styling */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: rgba(15, 23, 42, 0.5);
+  }
+  ::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 999px;
+  }
+
+  /* Recording Pulsing effect */
+  @keyframes pulse-red {
+    0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+    70% { transform: scale(1.05); box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
+    100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+  }
+  .recording-pulse {
+    animation: pulse-red 1.5s infinite;
+  }
 </style>
 </head>
-<body>
 
-<!-- ============ LOGIN SCREEN ============ -->
-<div id="login-screen" class="screen active">
-  <div class="login-wrap">
-    <div class="login-hero">
-      <svg class="hero-decor" viewBox="0 0 400 500" xmlns="http://www.w3.org/2000/svg">
-        <circle cx="330" cy="60" r="120" fill="rgba(255,255,255,.05)"/>
-        <circle cx="30" cy="460" r="90" fill="rgba(232,163,61,.12)"/>
-      </svg>
-      <div class="mark">📘 Barkamol English</div>
+<body class="flex flex-col items-center justify-start min-h-screen pb-24 md:pb-8 pt-2 px-2 sm:px-4">
+
+<!-- Main App Container mimicking sleek smartphone frame on large screens -->
+<div id="app" class="w-full max-w-md md:max-w-4xl mx-auto flex flex-col min-h-[92vh] relative">
+
+  <!-- Mobile Top Status Bar / Notch Header -->
+  <header class="sticky top-2 z-40 mb-3 px-2">
+    <div class="dynamic-island bg-slate-900/80 border border-white/10 rounded-3xl p-3 flex items-center justify-between shadow-2xl">
+      <!-- App Brand -->
+      <div class="flex items-center gap-2.5">
+        <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-blue-600 to-teal-400 flex items-center justify-center text-white shadow-lg shadow-blue-500/30">
+          <i class="fa-solid me-0 fa-mountain text-lg"></i>
+        </div>
+        <div>
+          <h1 class="text-base font-extrabold tracking-tight bg-gradient-to-r from-white via-slate-200 to-blue-200 bg-clip-text text-transparent leading-none">
+            BARKAMOL
+          </h1>
+          <span class="text-[10px] font-medium tracking-wider text-blue-300 uppercase">English Heights Academy</span>
+        </div>
+      </div>
+
+      <!-- Role Selector & User Profile -->
+      <div class="flex items-center gap-2">
+        <div class="flex bg-slate-950/60 p-1 rounded-2xl border border-white/10 text-xs">
+          <button id="roleStudentBtn" onclick="switchRole('student')" class="px-2.5 py-1 rounded-xl font-semibold transition-all duration-200 text-white bg-blue-600 shadow">
+            Student
+          </button>
+          <button id="roleTeacherBtn" onclick="switchRole('teacher')" class="px-2.5 py-1 rounded-xl font-semibold transition-all duration-200 text-slate-400 hover:text-white">
+            Teacher
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN VIEW CONTAINER -->
+  <main class="flex-1 px-1">
+
+    <!-- STUDENT VIEW -->
+    <div id="studentView" class="space-y-4">
+
+      <!-- Student Banner -->
+      <div class="glass-card rounded-3xl p-4 sm:p-5 relative overflow-hidden border border-white/15">
+        <div class="absolute -right-6 -bottom-6 opacity-10 text-8xl text-white font-black">
+          <i class="fa-solid fa-graduation-cap"></i>
+        </div>
+        <div class="flex items-center justify-between mb-2">
+          <div class="flex items-center gap-2">
+            <span class="px-2.5 py-1 bg-teal-500/20 text-teal-300 border border-teal-500/30 text-xs font-bold rounded-full">
+              Level B1 Intermediate
+            </span>
+            <span class="px-2.5 py-1 bg-amber-500/20 text-amber-300 border border-amber-500/30 text-xs font-bold rounded-full flex items-center gap-1">
+              <i class="fa-solid fa-fire"></i> 5 Day Streak
+            </span>
+          </div>
+        </div>
+        <h2 class="text-xl font-bold text-white">Welcome back, Nodira 👋</h2>
+        <p class="text-xs text-slate-300 mt-0.5">Reach your peak performance today. Complete 2 tasks to finish your daily homework.</p>
+        
+        <!-- Quick Progress Bar -->
+        <div class="mt-4">
+          <div class="flex justify-between text-xs font-semibold mb-1">
+            <span class="text-slate-300">Weekly Goal Progress</span>
+            <span class="text-blue-400" id="completionRateText">75%</span>
+          </div>
+          <div class="w-full bg-slate-950/50 rounded-full h-2.5 overflow-hidden border border-white/5">
+            <div id="completionProgressBar" class="bg-gradient-to-r from-blue-500 to-teal-400 h-2.5 rounded-full transition-all duration-500" style="width: 75%"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Category Filter Pills -->
+      <div class="flex items-center gap-2 overflow-x-auto pb-1 no-scrollbar text-xs font-medium">
+        <button onclick="filterHomeworks('all')" id="filter-all" class="hw-filter-pill px-4 py-2 rounded-2xl glass-pill bg-blue-600/80 text-white border-blue-400/30 shadow">
+          All Tasks
+        </button>
+        <button onclick="filterHomeworks('pending')" id="filter-pending" class="hw-filter-pill px-4 py-2 rounded-2xl glass-pill text-slate-300 hover:text-white">
+          Active <span id="badgePending" class="ml-1 px-1.5 py-0.5 rounded-full bg-amber-500/30 text-amber-300 text-[10px]">2</span>
+        </button>
+        <button onclick="filterHomeworks('submitted')" id="filter-submitted" class="hw-filter-pill px-4 py-2 rounded-2xl glass-pill text-slate-300 hover:text-white">
+          Submitted
+        </button>
+        <button onclick="filterHomeworks('graded')" id="filter-graded" class="hw-filter-pill px-4 py-2 rounded-2xl glass-pill text-slate-300 hover:text-white">
+          Graded
+        </button>
+      </div>
+
+      <!-- Homework Tasks List -->
+      <div id="studentHwList" class="space-y-3">
+        <!-- Dynamically rendered homework items will go here -->
+      </div>
+    </div>
+
+    <!-- TEACHER VIEW -->
+    <div id="teacherView" class="hidden space-y-4">
+      <!-- Teacher Header Stat Cards -->
+      <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+        <div class="glass-card rounded-2xl p-3.5 border border-white/10">
+          <div class="text-xs text-slate-400 font-medium">Active Homeworks</div>
+          <div class="text-2xl font-extrabold text-white mt-1" id="statActiveHws">3</div>
+          <div class="text-[10px] text-teal-400 mt-1 flex items-center gap-1">
+            <i class="fa-solid fa-circle-check"></i> Updated today
+          </div>
+        </div>
+
+        <div class="glass-card rounded-2xl p-3.5 border border-white/10">
+          <div class="text-xs text-slate-400 font-medium">Submissions to Grade</div>
+          <div class="text-2xl font-extrabold text-amber-400 mt-1" id="statPendingGrades">4</div>
+          <div class="text-[10px] text-amber-300/80 mt-1 flex items-center gap-1">
+            <i class="fa-solid fa-clock"></i> Requires review
+          </div>
+        </div>
+
+        <div class="glass-card rounded-2xl p-3.5 border border-white/10 col-span-2 sm:col-span-1">
+          <div class="text-xs text-slate-400 font-medium">Group Avg Score</div>
+          <div class="text-2xl font-extrabold text-blue-400 mt-1">91.5%</div>
+          <div class="text-[10px] text-blue-300 mt-1 flex items-center gap-1">
+            <i class="fa-solid fa-arrow-trend-up"></i> Group 4A Intermediate
+          </div>
+        </div>
+      </div>
+
+      <!-- Teacher Navigation Action Bar -->
+      <div class="flex items-center justify-between bg-slate-900/60 p-1.5 rounded-2xl border border-white/10">
+        <div class="flex gap-1 text-xs font-semibold">
+          <button id="teacherTabBtnAssignments" onclick="switchTeacherSubTab('assignments')" class="px-3 py-1.5 rounded-xl text-white bg-blue-600 shadow">
+            Assignments
+          </button>
+          <button id="teacherTabBtnGrading" onclick="switchTeacherSubTab('grading')" class="px-3 py-1.5 rounded-xl text-slate-400 hover:text-white">
+            Submissions & Grades
+          </button>
+          <button id="teacherTabBtnMatrix" onclick="switchTeacherSubTab('matrix')" class="px-3 py-1.5 rounded-xl text-slate-400 hover:text-white">
+            Progress Matrix
+          </button>
+        </div>
+        <button onclick="openCreateHomeworkModal()" class="px-3 py-1.5 bg-gradient-to-r from-teal-500 to-blue-600 hover:from-teal-400 hover:to-blue-500 text-white rounded-xl text-xs font-bold shadow-lg flex items-center gap-1.5">
+          <i class="fa-solid fa-plus text-xs"></i> New Task
+        </button>
+      </div>
+
+      <!-- Teacher Sub Tab: Assignments List -->
+      <div id="teacherTabAssignments" class="space-y-3">
+        <!-- Rendered by JS -->
+      </div>
+
+      <!-- Teacher Sub Tab: Submissions & Grading -->
+      <div id="teacherTabGrading" class="hidden space-y-3">
+        <!-- Rendered by JS -->
+      </div>
+
+      <!-- Teacher Sub Tab: Group Progress Matrix -->
+      <div id="teacherTabMatrix" class="hidden glass-card rounded-3xl p-4 border border-white/10 overflow-x-auto">
+        <h3 class="text-sm font-bold text-white mb-3 flex items-center gap-2">
+          <i class="fa-solid fa-chart-grid text-blue-400"></i> Student Submission Matrix (Group 4A)
+        </h3>
+        <table class="w-full text-left text-xs text-slate-300 min-w-[500px]">
+          <thead>
+            <tr class="border-b border-white/10 text-slate-400">
+              <th class="py-2 px-2">Student Name</th>
+              <th class="py-2 px-2">Unit 7 Vocab</th>
+              <th class="py-2 px-2">Everest Essay</th>
+              <th class="py-2 px-2">Speaking Challenge</th>
+              <th class="py-2 px-2">Avg Score</th>
+            </tr>
+          </thead>
+          <tbody id="progressMatrixBody" class="divide-y divide-white/5">
+            <!-- Dynamic Matrix populated by JS -->
+          </tbody>
+        </table>
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- MOBILE BOTTOM NATIVE APP NAVBAR -->
+  <nav class="fixed bottom-3 left-1/2 -translate-x-1/2 w-[92%] max-w-md bg-slate-950/85 backdrop-blur-2xl border border-white/15 rounded-3xl py-2 px-4 shadow-2xl z-40 flex items-center justify-around text-slate-400">
+    <button onclick="setMobileNav('tasks')" id="navBtnTasks" class="flex flex-col items-center gap-1 text-blue-400 transition-all duration-200">
+      <i class="fa-solid fa-book-bookmark text-lg"></i>
+      <span class="text-[10px] font-semibold">Tasks</span>
+    </button>
+    <button onclick="setMobileNav('practice')" id="navBtnPractice" class="flex flex-col items-center gap-1 hover:text-white transition-all duration-200">
+      <i class="fa-solid fa-wand-magic-sparkles text-lg"></i>
+      <span class="text-[10px] font-semibold">Practice</span>
+    </button>
+    <button onclick="setMobileNav('analytics')" id="navBtnAnalytics" class="flex flex-col items-center gap-1 hover:text-white transition-all duration-200">
+      <i class="fa-solid fa-chart-line text-lg"></i>
+      <span class="text-[10px] font-semibold">Stats</span>
+    </button>
+  </nav>
+
+</div>
+
+<!-- MODAL: STUDENT HOMEWORK SUBMISSION & INTERACTIVE TASK EXECUTION -->
+<div id="studentHwModal" class="fixed inset-0 z-50 hidden bg-slate-950/80 backdrop-blur-md flex items-end sm:items-center justify-center p-0 sm:p-4 overflow-y-auto">
+  <div class="glass-card w-full max-w-lg bg-slate-900/90 rounded-t-3xl sm:rounded-3xl border border-white/20 p-5 max-h-[90vh] overflow-y-auto shadow-2xl flex flex-col space-y-4">
+    
+    <!-- Modal Header -->
+    <div class="flex items-center justify-between pb-3 border-b border-white/10">
       <div>
-        <div class="headline">Your homework,<br>made <em>obvious</em>.</div>
-        <p style="margin-top:14px; color:rgba(255,255,255,.75); font-size:15px; line-height:1.6; max-width:340px;">Six clear tasks, one place. See exactly what's due, submit it, and watch your progress fill in.</p>
+        <span id="modalTaskBadge" class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-blue-500/20 text-blue-300 border border-blue-500/30">Vocabulary & Grammar</span>
+        <h3 id="modalTaskTitle" class="text-lg font-extrabold text-white mt-1">Unit 7: Everest Expedition</h3>
       </div>
-      <div class="foot">Built for Group A · Group B · Even-Day · Odd-Day students</div>
+      <button onclick="closeStudentHwModal()" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-slate-300">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
     </div>
-    <div class="login-form-pane">
-      <div class="eyebrow">Welcome back</div>
-      <h1>Sign in to continue</h1>
-      <div class="role-toggle">
-        <button type="button" class="active" data-role="student" onclick="setLoginRole('student')">Student</button>
-        <button type="button" data-role="teacher" onclick="setLoginRole('teacher')">Teacher</button>
+
+    <!-- Task Description & Teacher Media Attachments -->
+    <div class="space-y-3 text-xs text-slate-300">
+      <div class="bg-slate-950/50 p-3.5 rounded-2xl border border-white/10">
+        <h4 class="font-bold text-white mb-1 text-xs">Instructions from Teacher:</h4>
+        <p id="modalTaskDesc" class="leading-relaxed">Complete vocabulary translations, practice audio reading, and upload notebook photos.</p>
+        
+        <!-- Teacher Attachments Container -->
+        <div id="modalTeacherAttachments" class="mt-3 space-y-2 hidden">
+          <div class="text-[11px] font-semibold text-slate-400">Teacher Attached Reference Media:</div>
+          <!-- Teacher Images -->
+          <div id="modalTeacherImages" class="grid grid-cols-4 gap-2"></div>
+          <!-- Teacher Audio -->
+          <div id="modalTeacherAudio" class="hidden"></div>
+        </div>
       </div>
-      <div class="field">
-        <label>Username</label>
-        <input id="login-username" type="text" placeholder="e.g. aziza">
+
+      <!-- SECTION 1: VOCABULARY MATCH / PRACTICE -->
+      <div id="sectionVocab" class="hidden space-y-2 bg-slate-950/40 p-3 rounded-2xl border border-white/10">
+        <div class="flex items-center justify-between">
+          <span class="font-bold text-white text-xs flex items-center gap-1.5">
+            <i class="fa-solid fa-spell-check text-teal-400"></i> Vocabulary Pronunciation & Check
+          </span>
+          <span class="text-[10px] text-slate-400">Click speaker to listen</span>
+        </div>
+        <div id="vocabListContainer" class="space-y-2">
+          <!-- Populated dynamically -->
+        </div>
       </div>
-      <div class="field">
-        <label>Password</label>
-        <input id="login-password" type="password" placeholder="••••••••">
+
+      <!-- SECTION 2: SENTENCE BUILDER / TRANSLATION -->
+      <div id="sectionSentences" class="hidden space-y-2 bg-slate-950/40 p-3 rounded-2xl border border-white/10">
+        <div class="flex items-center justify-between">
+          <span class="font-bold text-white text-xs flex items-center gap-1.5">
+            <i class="fa-solid fa-pen-nib text-blue-400"></i> Translation & Sentence Construction
+          </span>
+          <button type="button" onclick="addSentenceInput()" class="text-[11px] text-blue-400 hover:underline flex items-center gap-1 font-semibold">
+            <i class="fa-solid fa-plus"></i> Add Sentence
+          </button>
+        </div>
+        <div id="sentenceInputsContainer" class="space-y-2">
+          <!-- Dynamically added sentence fields -->
+        </div>
       </div>
-      <button class="btn btn-primary" onclick="handleLogin()">Sign in</button>
-      <div class="login-error" id="login-error"></div>
-      <div class="demo-hint" id="demo-hint">
-        <b>Demo student:</b> aziza / student123<br>
-        <b>Demo teacher:</b> ms_karimova / teacher123
+
+      <!-- SECTION 3: MULTI-IMAGE UPLOAD (UP TO 4 PHOTOS) -->
+      <div class="space-y-2 bg-slate-950/40 p-3 rounded-2xl border border-white/10">
+        <div class="flex items-center justify-between">
+          <span class="font-bold text-white text-xs flex items-center gap-1.5">
+            <i class="fa-solid fa-images text-amber-400"></i> Notebook / Worksheet Proof (Up to 4 Images)
+          </span>
+          <span id="imgSlotCounter" class="text-[10px] font-bold text-amber-400">0 / 4 Uploaded</span>
+        </div>
+        <p class="text-[11px] text-slate-400">Attach clear photos of your written notebooks or workbooks.</p>
+        
+        <!-- 4 Image Slots Grid -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 pt-1">
+          <!-- Image Slots 0 to 3 -->
+          <template id="imgSlotTemplate">
+            <div class="image-upload-slot relative h-24 rounded-2xl border-2 border-dashed border-white/20 bg-slate-900/60 flex flex-col items-center justify-center text-center cursor-pointer hover:border-blue-500 transition-all overflow-hidden group">
+              <input type="file" accept="image/*" class="slot-file-input absolute inset-0 opacity-0 cursor-pointer z-10">
+              <div class="slot-empty-state flex flex-col items-center gap-1 text-slate-400 group-hover:text-blue-300">
+                <i class="fa-solid fa-camera text-lg"></i>
+                <span class="text-[10px] font-semibold">Add Photo</span>
+              </div>
+              <img class="slot-preview hidden w-full h-full object-cover rounded-xl" src="" alt="Preview">
+              <button type="button" class="slot-remove-btn hidden absolute top-1.5 right-1.5 z-20 w-6 h-6 rounded-full bg-red-600/90 text-white text-xs flex items-center justify-center shadow-lg hover:bg-red-500">
+                <i class="fa-solid fa-xmark"></i>
+              </button>
+            </div>
+          </template>
+          <div id="studentImageSlotsGrid" class="contents"></div>
+        </div>
       </div>
+
+      <!-- SECTION 4: AUDIO RECORDING OR FILE UPLOAD -->
+      <div class="space-y-2 bg-slate-950/40 p-3 rounded-2xl border border-white/10">
+        <span class="font-bold text-white text-xs flex items-center gap-1.5">
+          <i class="fa-solid fa-microphone text-rose-400"></i> Speaking / Voice Submission
+        </span>
+        <p class="text-[11px] text-slate-400">Record voice note directly or upload an audio file.</p>
+
+        <div class="flex flex-col sm:flex-row items-center gap-2 pt-1">
+          <!-- Voice Recorder Toggle Button -->
+          <button type="button" id="recordAudioBtn" onclick="toggleAudioRecording()" class="w-full sm:w-auto flex-1 py-2.5 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-semibold text-xs flex items-center justify-center gap-2 border border-white/10 transition">
+            <i id="recordIcon" class="fa-solid fa-microphone text-rose-400"></i>
+            <span id="recordStatusText">Start Voice Recording</span>
+          </button>
+
+          <span class="text-[10px] text-slate-500 font-bold uppercase">or</span>
+
+          <!-- Audio File Upload Input -->
+          <label class="w-full sm:w-auto flex-1 py-2.5 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold text-xs flex items-center justify-center gap-2 border border-white/10 cursor-pointer text-center">
+            <i class="fa-solid fa-file-audio text-blue-400"></i>
+            <span>Upload MP3/M4A</span>
+            <input type="file" id="audioFileInput" accept="audio/*" onchange="handleAudioFileUpload(event)" class="hidden">
+          </label>
+        </div>
+
+        <!-- Audio Preview Player -->
+        <div id="audioPreviewContainer" class="hidden mt-2 p-2 bg-slate-900 rounded-xl border border-white/10 flex items-center justify-between">
+          <audio id="audioPlayer" controls class="w-full h-8 text-xs"></audio>
+          <button type="button" onclick="removeSubmittedAudio()" class="ml-2 text-red-400 hover:text-red-300 p-1">
+            <i class="fa-solid fa-trash-can text-sm"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Additional Notes Field -->
+      <div>
+        <label class="block text-[11px] font-semibold text-slate-400 mb-1">Student Notes / Message to Teacher:</label>
+        <textarea id="studentComments" rows="2" class="glass-input w-full p-2.5 rounded-xl text-xs" placeholder="Add any comments about your homework..."></textarea>
+      </div>
+
     </div>
+
+    <!-- Modal Footer Actions -->
+    <div class="flex items-center justify-end gap-2 pt-3 border-t border-white/10">
+      <button onclick="closeStudentHwModal()" class="px-4 py-2 rounded-xl text-xs font-semibold text-slate-300 hover:bg-white/5">
+        Cancel
+      </button>
+      <button onclick="submitStudentHomework()" class="px-5 py-2.5 rounded-xl text-xs font-bold text-white bg-gradient-to-r from-blue-600 to-teal-500 hover:from-blue-500 hover:to-teal-400 shadow-lg shadow-blue-500/20 flex items-center gap-1.5">
+        <i class="fa-solid fa-paper-plane"></i> Submit Homework
+      </button>
+    </div>
+
   </div>
 </div>
 
-<!-- ============ APP SCREEN ============ -->
-<div id="app-screen" class="screen">
-  <nav class="sidebar" id="sidebar"></nav>
-  <main class="main" id="main-content"></main>
+<!-- MODAL: TEACHER CREATE / EDIT HOMEWORK -->
+<div id="teacherHwModal" class="fixed inset-0 z-50 hidden bg-slate-950/80 backdrop-blur-md flex items-end sm:items-center justify-center p-0 sm:p-4 overflow-y-auto">
+  <div class="glass-card w-full max-w-lg bg-slate-900/90 rounded-t-3xl sm:rounded-3xl border border-white/20 p-5 max-h-[90vh] overflow-y-auto shadow-2xl space-y-4">
+    
+    <div class="flex items-center justify-between pb-3 border-b border-white/10">
+      <h3 id="teacherModalTitle" class="text-lg font-extrabold text-white">Create Homework Assignment</h3>
+      <button onclick="closeTeacherHwModal()" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-slate-300">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+
+    <form id="teacherHwForm" onsubmit="saveTeacherHomework(event)" class="space-y-3 text-xs">
+      <div>
+        <label class="block text-slate-300 font-semibold mb-1">Homework Title</label>
+        <input type="text" id="tHwTitle" required class="glass-input w-full p-2.5 rounded-xl" placeholder="e.g., Unit 8: Everest Adventure Reading">
+      </div>
+
+      <div class="grid grid-cols-2 gap-2">
+        <div>
+          <label class="block text-slate-300 font-semibold mb-1">Category</label>
+          <select id="tHwCategory" class="glass-input w-full p-2.5 rounded-xl bg-slate-900 text-white">
+            <option value="Vocabulary & Grammar">Vocabulary & Grammar</option>
+            <option value="Reading & Writing">Reading & Writing</option>
+            <option value="Speaking Challenge">Speaking Challenge</option>
+            <option value="Exam Prep">Exam Prep</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-slate-300 font-semibold mb-1">Due Date</label>
+          <input type="date" id="tHwDueDate" required class="glass-input w-full p-2.5 rounded-xl">
+        </div>
+      </div>
+
+      <div>
+        <label class="block text-slate-300 font-semibold mb-1">Detailed Instructions</label>
+        <textarea id="tHwInstructions" rows="3" required class="glass-input w-full p-2.5 rounded-xl" placeholder="Provide step by step instructions for students..."></textarea>
+      </div>
+
+      <!-- Teacher Reference Vocabulary Inputs -->
+      <div class="p-3 bg-slate-950/40 rounded-2xl border border-white/10 space-y-2">
+        <label class="block font-bold text-white text-xs">Vocabulary Words for Practice (Comma separated)</label>
+        <input type="text" id="tHwVocab" class="glass-input w-full p-2.5 rounded-xl" placeholder="summit, expedition, glacier, oxygen">
+      </div>
+
+      <!-- Teacher Multi-Image Reference Attachments (Up to 4) -->
+      <div class="p-3 bg-slate-950/40 rounded-2xl border border-white/10 space-y-2">
+        <div class="flex items-center justify-between">
+          <label class="font-bold text-white text-xs">Attach Reference Materials (Up to 4 Photos)</label>
+          <span id="tImgSlotCounter" class="text-[10px] text-amber-400 font-bold">0 / 4</span>
+        </div>
+        <div class="grid grid-cols-4 gap-2 pt-1" id="teacherImageSlotsGrid">
+          <!-- Rendered dynamically -->
+        </div>
+      </div>
+
+      <!-- Teacher Reference Audio Attachment -->
+      <div class="p-3 bg-slate-950/40 rounded-2xl border border-white/10 space-y-2">
+        <label class="block font-bold text-white text-xs">Attach Listening Sample Audio (Optional)</label>
+        <label class="w-full py-2 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold text-xs flex items-center justify-center gap-2 border border-white/10 cursor-pointer">
+          <i class="fa-solid fa-cloud-arrow-up text-blue-400"></i>
+          <span id="tAudioFileName">Select Audio Sample File</span>
+          <input type="file" id="tAudioFileInput" accept="audio/*" onchange="handleTeacherAudioUpload(event)" class="hidden">
+        </label>
+      </div>
+
+      <div class="flex justify-end gap-2 pt-2">
+        <button type="button" onclick="closeTeacherHwModal()" class="px-4 py-2 rounded-xl text-slate-300 hover:bg-white/5">Cancel</button>
+        <button type="submit" class="px-5 py-2 rounded-xl font-bold text-white bg-blue-600 hover:bg-blue-500 shadow-lg">Save Assignment</button>
+      </div>
+    </form>
+  </div>
 </div>
 
-<div class="modal-bg" id="modal-bg">
-  <div class="modal" id="modal-body"></div>
+<!-- MODAL: TEACHER GRADE SUBMISSION & LIGHTBOX -->
+<div id="gradeSubmissionModal" class="fixed inset-0 z-50 hidden bg-slate-950/80 backdrop-blur-md flex items-end sm:items-center justify-center p-0 sm:p-4 overflow-y-auto">
+  <div class="glass-card w-full max-w-lg bg-slate-900/95 rounded-t-3xl sm:rounded-3xl border border-white/20 p-5 max-h-[90vh] overflow-y-auto shadow-2xl space-y-4">
+    
+    <div class="flex items-center justify-between pb-3 border-b border-white/10">
+      <div>
+        <h3 class="text-base font-extrabold text-white" id="gradeStudentName">Review Submission</h3>
+        <span class="text-[10px] text-slate-400" id="gradeHwTitle">Task: Everest Reading</span>
+      </div>
+      <button onclick="closeGradeModal()" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-slate-300">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+
+    <!-- Student Submission Content Display -->
+    <div class="space-y-3 text-xs">
+      
+      <!-- Submitted Images Lightbox -->
+      <div id="gradeImagesSection" class="p-3 bg-slate-950/50 rounded-2xl border border-white/10 space-y-2">
+        <span class="font-bold text-white text-xs block">Submitted Notebook Photos:</span>
+        <div id="gradeImagesGrid" class="grid grid-cols-4 gap-2"></div>
+      </div>
+
+      <!-- Submitted Audio Player -->
+      <div id="gradeAudioSection" class="p-3 bg-slate-950/50 rounded-2xl border border-white/10 space-y-2 hidden">
+        <span class="font-bold text-white text-xs block">Submitted Audio Recording:</span>
+        <audio id="gradeAudioPlayer" controls class="w-full h-8 text-xs"></audio>
+      </div>
+
+      <!-- Submitted Written Sentences -->
+      <div id="gradeSentencesSection" class="p-3 bg-slate-950/50 rounded-2xl border border-white/10 space-y-2 hidden">
+        <span class="font-bold text-white text-xs block">Submitted Sentences / Answers:</span>
+        <div id="gradeSentencesList" class="space-y-1.5 text-slate-300"></div>
+      </div>
+
+      <!-- Student Notes -->
+      <div class="p-3 bg-slate-950/50 rounded-2xl border border-white/10">
+        <span class="font-bold text-white text-xs block mb-1">Student Note:</span>
+        <p id="gradeStudentNote" class="text-slate-300 italic text-[11px]">No extra comment provided.</p>
+      </div>
+
+      <!-- Grading Form -->
+      <form id="gradingForm" onsubmit="saveGradeSubmission(event)" class="space-y-3 pt-2">
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="block text-slate-300 font-semibold mb-1">Score Grade (%)</label>
+            <input type="number" id="gradeScoreInput" min="0" max="100" required class="glass-input w-full p-2.5 rounded-xl font-bold text-teal-400" placeholder="95">
+          </div>
+          <div>
+            <label class="block text-slate-300 font-semibold mb-1">Status</label>
+            <select id="gradeStatusInput" class="glass-input w-full p-2.5 rounded-xl bg-slate-900 text-white">
+              <option value="graded">Graded & Completed</option>
+              <option value="revision">Needs Revision</option>
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-slate-300 font-semibold mb-1">Teacher Feedback & Advice</label>
+          <textarea id="gradeFeedbackInput" rows="3" required class="glass-input w-full p-2.5 rounded-xl" placeholder="Great job on handwriting and pronunciation! Work on past perfect tense..."></textarea>
+        </div>
+
+        <div class="flex justify-end gap-2 pt-2">
+          <button type="button" onclick="closeGradeModal()" class="px-4 py-2 rounded-xl text-slate-300 hover:bg-white/5">Cancel</button>
+          <button type="submit" class="px-5 py-2 rounded-xl font-bold text-white bg-gradient-to-r from-teal-500 to-blue-600 shadow-lg">Save Grade & Review</button>
+        </div>
+      </form>
+
+    </div>
+
+  </div>
 </div>
 
-<div class="lightbox-bg" id="lightbox-bg" onclick="closeLightbox()">
-  <button class="lb-close" onclick="closeLightbox()">×</button>
-  <img id="lightbox-img" src="" alt="" onclick="event.stopPropagation()">
+<!-- LIGHTBOX ZOOM MODAL FOR FULL SCREEN IMAGE VIEW -->
+<div id="lightboxModal" class="fixed inset-0 z-50 hidden bg-black/90 backdrop-blur-lg flex items-center justify-center p-4" onclick="closeLightbox()">
+  <div class="relative max-w-3xl max-h-[90vh] flex items-center justify-center" onclick="event.stopPropagation()">
+    <img id="lightboxImg" class="max-w-full max-h-[85vh] rounded-2xl object-contain shadow-2xl border border-white/20" src="" alt="Zoomed view">
+    <button onclick="closeLightbox()" class="absolute -top-10 right-0 text-white text-xl p-2 hover:text-slate-300">
+      <i class="fa-solid fa-xmark"></i> Close
+    </button>
+  </div>
 </div>
-
-<div class="toast" id="toast"></div>
 
 <script>
-/* =========================================================
-   DATA LAYER
-   ========================================================= */
-const STORE_KEY = 'barkamol_hw_v2';
+/**
+ * BARKAMOL ENGLISH HOMEWORK APP - CORE LOGIC
+ */
 
-const ICONS = {
-  book: `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M4 4.5C4 3.67 4.67 3 5.5 3H12v16H5.5C4.67 19 4 19.67 4 20.5V4.5Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M20 4.5c0-.83-.67-1.5-1.5-1.5H12v16h6.5c.83 0 1.5.67 1.5 1.5V4.5Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>`,
-  layers: `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 3 3 8l9 5 9-5-9-5Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="m3 12 9 5 9-5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="m3 16 9 5 9-5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
-  brain: `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M9 4.5a2.5 2.5 0 0 0-2.5 2.5v.2A2.8 2.8 0 0 0 4.5 10c0 .6.17 1.15.46 1.63A2.7 2.7 0 0 0 4 14c0 1.1.68 2.05 1.65 2.45A2.5 2.5 0 0 0 8 20a2.5 2.5 0 0 0 2.5-2.5V7A2.5 2.5 0 0 0 9 4.5Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M15 4.5a2.5 2.5 0 0 1 2.5 2.5v.2A2.8 2.8 0 0 1 19.5 10a2.8 2.8 0 0 1-.46 1.63A2.7 2.7 0 0 1 20 14a2.5 2.5 0 0 1-1.65 2.45A2.5 2.5 0 0 1 16 20a2.5 2.5 0 0 1-2.5-2.5V7A2.5 2.5 0 0 1 15 4.5Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>`,
-  pencil: `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="m14.5 5.5 4 4L7 21l-4.7.7L3 17l11.5-11.5Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="m12.5 7.5 4 4" stroke="currentColor" stroke-width="1.6"/></svg>`,
-  camera: `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M4 8.5A1.5 1.5 0 0 1 5.5 7h2l1.2-2h6.6l1.2 2h2A1.5 1.5 0 0 1 20 8.5v9A1.5 1.5 0 0 1 18.5 19h-13A1.5 1.5 0 0 1 4 17.5v-9Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><circle cx="12" cy="13" r="3.4" stroke="currentColor" stroke-width="1.6"/></svg>`,
-  globe: `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="8.5" stroke="currentColor" stroke-width="1.6"/><path d="M3.5 12h17M12 3.5c2.5 2.4 3.8 5.4 3.8 8.5s-1.3 6.1-3.8 8.5c-2.5-2.4-3.8-5.4-3.8-8.5S9.5 5.9 12 3.5Z" stroke="currentColor" stroke-width="1.6"/></svg>`,
-  check: `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
-  home: `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M4 11.5 12 4l8 7.5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/><path d="M6 10v9.5h12V10" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
-  chart: `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 19V10M12 19V5M19 19v-6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>`,
-  people: `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="9" cy="8" r="3" stroke="currentColor" stroke-width="1.6"/><path d="M3.5 19c0-3 2.5-5 5.5-5s5.5 2 5.5 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><circle cx="17" cy="9" r="2.3" stroke="currentColor" stroke-width="1.6"/><path d="M15.5 19c.1-2.2 1.4-3.9 3.3-4.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>`,
-  edit: `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="m14.5 4.5 5 5L8 21H3v-5L14.5 4.5Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>`,
-  trash: `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M4 7h16M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2m-9 0 1 12.5A1.5 1.5 0 0 0 7.5 21h9a1.5 1.5 0 0 0 1.5-1.5L19 7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
-  plus: `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>`,
-  logout: `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M9 4H5.5A1.5 1.5 0 0 0 4 5.5v13A1.5 1.5 0 0 0 5.5 20H9M16 15l4-3-4-3M20 12H9" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
-  clock: `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="8.5" stroke="currentColor" stroke-width="1.6"/><path d="M12 7v5l3.5 2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
-  empty: `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M4 7.5 12 3l8 4.5v9L12 21l-8-4.5v-9Z" stroke="currentColor" stroke-width="1.4"/><path d="M4 7.5 12 12m0 0 8-4.5M12 12v9" stroke="currentColor" stroke-width="1.4"/></svg>`,
-  speaker: `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M4 9.5v5h3.5L13 19V5L7.5 9.5H4Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M16.5 8.5a5 5 0 0 1 0 7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><path d="M19 6a8.5 8.5 0 0 1 0 12" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>`,
-  upload: `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 15V4M12 4 7.5 8.5M12 4l4.5 4.5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/><path d="M4.5 15v3A2.5 2.5 0 0 0 7 20.5h10a2.5 2.5 0 0 0 2.5-2.5v-3" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
-  music: `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M9 18V5.8L19 4v11.2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><circle cx="6.5" cy="18" r="2.5" stroke="currentColor" stroke-width="1.6"/><circle cx="16.5" cy="15.2" r="2.5" stroke="currentColor" stroke-width="1.6"/></svg>`,
-  inbox: `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M4 12h4l1.8 3h4.4l1.8-3h4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M5.5 5h13L21 12v5.5A1.5 1.5 0 0 1 19.5 19h-15A1.5 1.5 0 0 1 3 17.5V12L5.5 5Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>`
+// Initial Seed Data with 4-image array support & audio attachments
+const DEFAULT_HOMEWORKS = [
+  {
+    id: 'hw-101',
+    title: 'Unit 7: Conquer Mount Everest',
+    category: 'Vocabulary & Grammar',
+    dueDate: '2026-10-05',
+    instructions: '1. Learn the 4 target vocabulary terms below. Test speech pronunciation.\n2. Write 3 original sentences using past continuous tense.\n3. Take photos of your workbook (up to 4 photos).\n4. Record reading the paragraph out loud.',
+    vocabList: ['Summit', 'Expedition', 'Glacier', 'Acclimate'],
+    teacherImages: ['https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=400&q=80'],
+    teacherAudio: null,
+    status: 'pending', // pending, submitted, graded
+  },
+  {
+    id: 'hw-102',
+    title: 'Speaking Challenge: My Favorite Hobby',
+    category: 'Speaking Challenge',
+    dueDate: '2026-10-02',
+    instructions: 'Record a 60-second voice note speaking in English about your favorite weekend hobby. Include photos of your outline if possible.',
+    vocabList: ['Passionate', 'Enthusiastic', 'Leisure', 'Dedication'],
+    teacherImages: [],
+    teacherAudio: null,
+    status: 'submitted',
+    submission: {
+      studentName: 'Nodira Alimova',
+      submittedAt: '2026-09-21',
+      images: [
+        'https://images.unsplash.com/photo-1455390582262-044cdead277a?auto=format&fit=crop&w=400&q=80',
+        'https://images.unsplash.com/photo-1517842645767-c639042777db?auto=format&fit=crop&w=400&q=80'
+      ],
+      audio: 'demo-audio-placeholder',
+      sentences: ['I am passionate about mountaineering.', 'In my leisure time, I study English grammar.'],
+      studentNotes: 'I recorded two takes, hope my pronunciation is good!',
+      grade: null,
+      feedback: null
+    }
+  },
+  {
+    id: 'hw-103',
+    title: 'Grammar Focus: Present Perfect vs Past Simple',
+    category: 'Vocabulary & Grammar',
+    dueDate: '2026-09-18',
+    instructions: 'Complete exercises 1 to 5 on page 42. Attach clear photos of your handwriting.',
+    vocabList: ['Already', 'Yet', 'Ever', 'Never'],
+    teacherImages: [],
+    teacherAudio: null,
+    status: 'graded',
+    submission: {
+      studentName: 'Nodira Alimova',
+      submittedAt: '2026-09-17',
+      images: ['https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&w=400&q=80'],
+      audio: null,
+      sentences: ['I have already finished my homework.', 'She visited Tashkent last year.'],
+      studentNotes: 'Done on Thursday evening.',
+      grade: 95,
+      feedback: 'Excellent work Nodira! Handwriting is clear and grammar is accurate.'
+    }
+  }
+];
+
+// Application Global State
+let appState = {
+  role: 'student', // 'student' or 'teacher'
+  teacherSubTab: 'assignments', // 'assignments', 'grading', 'matrix'
+  homeworks: [],
+  currentFilter: 'all',
+  activeHwId: null,
+  
+  // Student active submission state (temporary holding area for modal)
+  studentMedia: {
+    images: [null, null, null, null], // Max 4 slots
+    audioBlob: null,
+    audioUrl: null
+  },
+  
+  // Teacher modal temporary holding state
+  teacherMedia: {
+    images: [null, null, null, null],
+    audioBlob: null,
+    audioUrl: null
+  },
+
+  // Audio recording state
+  mediaRecorder: null,
+  audioChunks: [],
+  isRecording: false
 };
 
-const CATEGORY_STYLE = {
-  book:   {bg:'var(--indigo)',  soft:'rgba(75,74,196,.1)'},
-  layers: {bg:'var(--amber)',   soft:'rgba(232,163,61,.14)'},
-  brain:  {bg:'var(--teal)',    soft:'rgba(46,158,130,.12)'},
-  pencil: {bg:'var(--coral)',   soft:'rgba(228,87,46,.1)'},
-  camera: {bg:'#8B5CF6',        soft:'rgba(139,92,246,.1)'},
-  globe:  {bg:'#0EA5B7',        soft:'rgba(14,165,183,.1)'}
-};
+// Initialize App
+document.addEventListener('DOMContentLoaded', () => {
+  loadStoredData();
+  renderApp();
+});
 
-function iconBadge(iconKey, size){
-  const s = CATEGORY_STYLE[iconKey] || CATEGORY_STYLE.book;
-  return `<div class="icon-badge" style="background:${s.soft}; color:${s.bg};">${ICONS[iconKey]}</div>`;
+function loadStoredData() {
+  const saved = localStorage.getItem('barkamol_hw_data_v2');
+  if (saved) {
+    try {
+      appState.homeworks = JSON.parse(saved);
+    } catch (e) {
+      appState.homeworks = DEFAULT_HOMEWORKS;
+    }
+  } else {
+    appState.homeworks = DEFAULT_HOMEWORKS;
+    saveToStorage();
+  }
 }
 
-// Reference illustrations (inline SVG, category-specific, not stock art)
-function refIllustration(kind){
-  if(kind==='essential2'){
-    return `<svg viewBox="0 0 600 260" xmlns="http://www.w3.org/2000/svg">
-      <rect width="600" height="260" fill="#EDEBFB"/>
-      <rect x="60" y="55" width="130" height="160" rx="6" fill="#4B4AC4"/>
-      <rect x="75" y="70" width="100" height="8" rx="4" fill="#fff" opacity=".85"/>
-      <rect x="75" y="88" width="70" height="8" rx="4" fill="#fff" opacity=".55"/>
-      <text x="125" y="150" font-family="Fraunces, serif" font-size="34" fill="#fff" text-anchor="middle" font-weight="700">27</text>
-      <rect x="210" y="55" width="130" height="160" rx="6" fill="#38369A"/>
-      <rect x="225" y="70" width="100" height="8" rx="4" fill="#fff" opacity=".85"/>
-      <rect x="225" y="88" width="70" height="8" rx="4" fill="#fff" opacity=".55"/>
-      <text x="275" y="150" font-family="Fraunces, serif" font-size="34" fill="#fff" text-anchor="middle" font-weight="700">28</text>
-      <path d="M355 130h150" stroke="#4B4AC4" stroke-width="3" stroke-dasharray="2 10" stroke-linecap="round"/>
-      <path d="M490 122 505 130 490 138" stroke="#4B4AC4" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-      <circle cx="545" cy="130" r="34" fill="#E8A33D"/>
-      <text x="545" y="137" font-family="Manrope, sans-serif" font-size="14" fill="#1C2541" text-anchor="middle" font-weight="800">NEXT</text>
-    </svg>`;
-  }
-  if(kind==='tactics'){
-    return `<svg viewBox="0 0 600 260" xmlns="http://www.w3.org/2000/svg">
-      <rect width="600" height="260" fill="#FBEBD2"/>
-      <rect x="90" y="45" width="420" height="170" rx="10" fill="#fff" stroke="#E8A33D" stroke-width="2"/>
-      <rect x="115" y="70" width="150" height="10" rx="5" fill="#E8A33D"/>
-      <rect x="115" y="95" width="370" height="6" rx="3" fill="#E7E1D3"/>
-      <rect x="115" y="112" width="370" height="6" rx="3" fill="#E7E1D3"/>
-      <rect x="115" y="129" width="260" height="6" rx="3" fill="#E7E1D3"/>
-      <rect x="115" y="155" width="90" height="34" rx="8" fill="#E8A33D"/>
-      <text x="160" y="177" font-family="Fraunces, serif" font-size="18" fill="#fff" text-anchor="middle" font-weight="700">Unit 5</text>
-      <rect x="215" y="155" width="90" height="34" rx="8" fill="#1C2541"/>
-      <text x="260" y="177" font-family="Fraunces, serif" font-size="18" fill="#fff" text-anchor="middle" font-weight="700">Unit 6</text>
-    </svg>`;
-  }
-  if(kind==='reading'){
-    return `<svg viewBox="0 0 600 260" xmlns="http://www.w3.org/2000/svg">
-      <rect width="600" height="260" fill="#DCF2EA"/>
-      <rect x="80" y="60" width="180" height="130" rx="10" fill="#fff" stroke="#2E9E82" stroke-width="2"/>
-      <rect x="100" y="80" width="100" height="8" rx="4" fill="#2E9E82"/>
-      <rect x="100" y="98" width="140" height="6" rx="3" fill="#E7E1D3"/>
-      <rect x="100" y="112" width="140" height="6" rx="3" fill="#E7E1D3"/>
-      <rect x="100" y="126" width="90" height="6" rx="3" fill="#E7E1D3"/>
-      <g>
-        <rect x="330" y="55" width="190" height="42" rx="21" fill="#fff" stroke="#2E9E82" stroke-width="1.5"/>
-        <text x="425" y="81" font-family="Manrope" font-size="16" font-weight="800" fill="#1C2541" text-anchor="middle">discover</text>
-        <rect x="330" y="108" width="190" height="42" rx="21" fill="#fff" stroke="#2E9E82" stroke-width="1.5"/>
-        <text x="425" y="134" font-family="Manrope" font-size="16" font-weight="800" fill="#1C2541" text-anchor="middle">achieve</text>
-        <rect x="330" y="161" width="190" height="42" rx="21" fill="#2E9E82"/>
-        <text x="425" y="187" font-family="Manrope" font-size="16" font-weight="800" fill="#fff" text-anchor="middle">wonder</text>
-      </g>
-    </svg>`;
-  }
-  if(kind==='sentences'){
-    return `<svg viewBox="0 0 600 260" xmlns="http://www.w3.org/2000/svg">
-      <rect width="600" height="260" fill="#FBE2D9"/>
-      <rect x="90" y="40" width="300" height="180" rx="8" fill="#fff" stroke="#E4572E" stroke-width="2"/>
-      <line x1="90" y1="80" x2="390" y2="80" stroke="#E7E1D3" stroke-width="1.5"/>
-      <line x1="90" y1="112" x2="390" y2="112" stroke="#E7E1D3" stroke-width="1.5"/>
-      <line x1="90" y1="144" x2="390" y2="144" stroke="#E7E1D3" stroke-width="1.5"/>
-      <line x1="90" y1="176" x2="390" y2="176" stroke="#E7E1D3" stroke-width="1.5"/>
-      <rect x="106" y="62" width="230" height="10" rx="5" fill="#E4572E"/>
-      <rect x="106" y="94" width="180" height="10" rx="5" fill="#1C2541" opacity=".7"/>
-      <rect x="106" y="126" width="210" height="10" rx="5" fill="#1C2541" opacity=".4"/>
-      <path d="M420 60 480 200" stroke="#E4572E" stroke-width="4" stroke-linecap="round"/>
-      <circle cx="420" cy="60" r="7" fill="#E4572E"/>
-      <text x="500" y="150" font-family="Fraunces, serif" font-size="42" font-weight="700" fill="#E4572E">30</text>
-    </svg>`;
-  }
-  if(kind==='board'){
-    return `<svg viewBox="0 0 600 260" xmlns="http://www.w3.org/2000/svg">
-      <rect width="600" height="260" fill="#EDE7FB"/>
-      <rect x="70" y="45" width="460" height="170" rx="8" fill="#2B2A55"/>
-      <rect x="70" y="45" width="460" height="170" rx="8" fill="none" stroke="#8B5CF6" stroke-width="4"/>
-      <text x="100" y="90" font-family="'Fraunces', serif" font-size="20" fill="#fff" opacity=".9">Present Perfect</text>
-      <line x1="100" y1="105" x2="330" y2="105" stroke="#8B5CF6" stroke-width="2"/>
-      <text x="100" y="135" font-family="Manrope" font-size="15" fill="#fff" opacity=".75">have / has + past participle</text>
-      <text x="100" y="160" font-family="Manrope" font-size="15" fill="#fff" opacity=".6">She has finished her homework.</text>
-      <rect x="100" y="178" width="60" height="10" rx="5" fill="#8B5CF6"/>
-      <rect x="380" y="70" width="120" height="90" rx="10" fill="rgba(255,255,255,.08)" stroke="#fff" stroke-width="2" stroke-dasharray="5 6"/>
-      <path d="M425 105h30M440 90v30" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/>
-    </svg>`;
-  }
-  if(kind==='translate'){
-    return `<svg viewBox="0 0 600 260" xmlns="http://www.w3.org/2000/svg">
-      <rect width="600" height="260" fill="#DFF3F5"/>
-      <rect x="60" y="60" width="200" height="140" rx="10" fill="#fff" stroke="#0EA5B7" stroke-width="2"/>
-      <text x="80" y="90" font-family="Manrope" font-weight="800" font-size="13" fill="#0EA5B7">ENGLISH</text>
-      <rect x="80" y="102" width="150" height="7" rx="3.5" fill="#E7E1D3"/>
-      <rect x="80" y="118" width="120" height="7" rx="3.5" fill="#E7E1D3"/>
-      <rect x="80" y="134" width="140" height="7" rx="3.5" fill="#E7E1D3"/>
-      <g>
-        <path d="M275 130h60" stroke="#0EA5B7" stroke-width="3" stroke-linecap="round"/>
-        <path d="M320 118 337 130 320 142" stroke="#0EA5B7" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-      </g>
-      <rect x="350" y="60" width="200" height="140" rx="10" fill="#0EA5B7"/>
-      <text x="370" y="90" font-family="Manrope" font-weight="800" font-size="13" fill="#fff">O'ZBEKCHA</text>
-      <rect x="370" y="102" width="150" height="7" rx="3.5" fill="rgba(255,255,255,.55)"/>
-      <rect x="370" y="118" width="110" height="7" rx="3.5" fill="rgba(255,255,255,.55)"/>
-      <rect x="370" y="134" width="130" height="7" rx="3.5" fill="rgba(255,255,255,.55)"/>
-    </svg>`;
-  }
-  return '';
+function saveToStorage() {
+  localStorage.setItem('barkamol_hw_data_v2', JSON.stringify(appState.homeworks));
 }
 
-function pseudoRand(seed){ const x = Math.sin(seed*99991+1)*10000; return x - Math.floor(x); }
+// Role Switcher
+function switchRole(role) {
+  appState.role = role;
+  const sBtn = document.getElementById('roleStudentBtn');
+  const tBtn = document.getElementById('roleTeacherBtn');
+  const studentView = document.getElementById('studentView');
+  const teacherView = document.getElementById('teacherView');
 
-function buildStudentRoster(){
-  const base = [
-    {id:'s1', role:'student', name:'Aziza Yusupova', username:'aziza', password:'student123', group:'Odd-Day Group'},
-    {id:'s2', role:'student', name:'Jasur Tashkentov', username:'jasur', password:'student123', group:'Even-Day Group'},
-    {id:'s3', role:'student', name:'Dilnoza Rakhimova', username:'dilnoza', password:'student123', group:'Group A'},
-    {id:'s4', role:'student', name:'Sardor Aliyev', username:'sardor', password:'student123', group:'Group B'}
-  ];
-  const groups = ['Group A','Group B','Odd-Day Group','Even-Day Group'];
-  const male = ["Bekzod","Davron","Elyor","Farrux","Ibrohim","Kamron","Laziz","Muxtor","Nodir","Otabek","Temur","Ulugbek","Xurshid","Yusuf","Zafar","Rustam","Shoxrux","Anvar","Bexruz","Diyor","Aziz","Sherzod","Alisher","Javlon","Behruz","Sanjar"];
-  const female = ["Barno","Elnora","Feruza","Gulnora","Hilola","Iroda","Kamila","Laylo","Madina","Nargiza","Malika","Sabina","Umida","Yulduz","Zarina","Shahnoza","Mohira","Sevinch","Nilufar","Ozoda","Gulbahor","Diyora","Shirin","Latofat","Marjona","Nozima"];
-  const surnames = ["Yusupov","Aliyev","Rakhimov","Karimov","Tashkentov","Nazarov","Ergashev","Xolmatov","Saidov","Murodov","Islomov","Abdullayev","Toshpulatov","Qodirov","Mirzayev","Sattorov","Umarov","Gulomov","Rashidov","Yoldashev"];
-  const extra = [];
-  for(let i=0;i<26;i++){
-    const isMale = i % 2 === 0;
-    const first = isMale ? male[i % male.length] : female[i % female.length];
-    const last = surnames[i % surnames.length] + (isMale ? '' : 'a');
-    const group = groups[(i+2) % groups.length];
-    const uname = first.toLowerCase() + (i+5);
-    extra.push({id:'s'+(i+5), role:'student', name:first+' '+last, username:uname, password:'student123', group});
+  if (role === 'student') {
+    sBtn.className = "px-2.5 py-1 rounded-xl font-semibold transition-all duration-200 text-white bg-blue-600 shadow";
+    tBtn.className = "px-2.5 py-1 rounded-xl font-semibold transition-all duration-200 text-slate-400 hover:text-white";
+    studentView.classList.remove('hidden');
+    teacherView.classList.add('hidden');
+  } else {
+    tBtn.className = "px-2.5 py-1 rounded-xl font-semibold transition-all duration-200 text-white bg-blue-600 shadow";
+    sBtn.className = "px-2.5 py-1 rounded-xl font-semibold transition-all duration-200 text-slate-400 hover:text-white";
+    teacherView.classList.remove('hidden');
+    studentView.classList.add('hidden');
   }
-  return base.concat(extra);
+  renderApp();
 }
 
-function buildProgressForStudent(idx, homeworks){
-  const prog = {};
-  homeworks.forEach((hw, hIdx)=>{
-    const r = pseudoRand(idx*13 + hIdx*7 + 3);
-    const status = r<0.32 ? 'done' : (r<0.72 ? 'in-progress' : 'not-started');
-    if(hw.type==='reading-vocab'){
-      const total = hw.words.length;
-      const count = status==='done' ? total : (status==='in-progress' ? Math.max(1, Math.round(total*pseudoRand(idx+hIdx+9))) : 0);
-      prog[hw.id] = {status, wordsLearned: hw.words.slice(0,count).map(w=>w.en)};
-    } else if(hw.type==='sentences'){
-      const count = status==='done' ? hw.target : (status==='in-progress' ? Math.max(1, Math.round(hw.target*pseudoRand(idx+hIdx+17))) : 0);
-      prog[hw.id] = {status, sentences: Array.from({length:count}, (_,i)=> "Sentence " + (i+1) + " written by this student.")};
-    } else if(hw.type==='translate'){
-      const text = status==='not-started' ? '' : (status==='done' ? "To'liq tarjima shu yerda joylashtirilgan." : "Tarjima hali tugallanmagan...");
-      prog[hw.id] = {status, translation:text};
+// Teacher Sub tabs
+function switchTeacherSubTab(tab) {
+  appState.teacherSubTab = tab;
+  ['assignments', 'grading', 'matrix'].forEach(t => {
+    const btn = document.getElementById(`teacherTabBtn${t.charAt(0).toUpperCase() + t.slice(1)}`);
+    const sec = document.getElementById(`teacherTab${t.charAt(0).toUpperCase() + t.slice(1)}`);
+    if (t === tab) {
+      btn.className = "px-3 py-1.5 rounded-xl text-white bg-blue-600 shadow";
+      sec.classList.remove('hidden');
     } else {
-      const pct = status==='done' ? 100 : (status==='in-progress' ? (25+Math.round(pseudoRand(idx+hIdx+29)*50)) : 0);
-      prog[hw.id] = {status, pct};
+      btn.className = "px-3 py-1.5 rounded-xl text-slate-400 hover:text-white";
+      sec.classList.add('hidden');
     }
   });
-  return prog;
+  renderTeacherView();
 }
 
-function defaultData(){
-  const homeworks = [
-      {
-        id:'hw1', type:'essential2', icon:'book', title:'Essential 2', figure:'27 → 28 Units',
-        figureEven:'21 → 24 Units — Revision', sub:'2 units per lesson', due:'2026-09-24',
-        groups:['Group A','Group B','Odd-Day Group','Even-Day Group'],
-        whatToDo:'Complete Units 27 and 28 in your Essential 2 workbook.',
-        instructions:['Study the new vocabulary for both units.','Read through each unit once for meaning.','Complete every exercise in writing.','Review any words you found difficult.'],
-        illustration:'essential2', refImage:null, refAudio:null
-      },
-      {
-        id:'hw2', type:'tactics', icon:'layers', title:'Tactics Expanding', figure:'5 – 6 Units',
-        sub:'2 units per lesson', due:'2026-09-24',
-        groups:['Group A','Group B','Odd-Day Group','Even-Day Group'],
-        whatToDo:'Complete Units 5 and 6 in your Tactics Expanding book.',
-        instructions:['Study Unit 5.','Study Unit 6.','Learn the new vocabulary from both units.','Complete the exercises.','Review any difficult words.'],
-        illustration:'tactics', refImage:null, refAudio:null
-      },
-      {
-        id:'hw3', type:'reading-vocab', icon:'brain', title:'Learn Reading Vocabulary', figure:'8 new words',
-        sub:"From this week's Reading text", due:'2026-09-25',
-        groups:['Group A','Group B','Odd-Day Group','Even-Day Group'],
-        whatToDo:'Learn all the vocabulary from the assigned Reading passage below. Tap the speaker to hear each word.',
-        instructions:[],
-        illustration:'reading', refImage:null, refAudio:null,
-        words:[
-          {en:'discover', uz:'kashf qilmoq', ex:'Scientists discover new species every year.'},
-          {en:'achieve', uz:'erishmoq', ex:'She worked hard to achieve her goal.'},
-          {en:'wonder', uz:'hayron qolmoq / hayrat', ex:'I wonder what the weather will be tomorrow.'},
-          {en:'explore', uz:"kashf etmoq / o'rganmoq", ex:'They explored the old castle together.'},
-          {en:'ancient', uz:'qadimiy', ex:'The museum has many ancient artifacts.'},
-          {en:'journey', uz:'sayohat', ex:'Our journey to the mountains took six hours.'},
-          {en:'brilliant', uz:'ajoyib / juda aqlli', ex:'That was a brilliant idea.'},
-          {en:'curious', uz:'qiziquvchan', ex:'Children are naturally curious about the world.'}
-        ]
-      },
-      {
-        id:'hw4', type:'sentences', icon:'pencil', title:'Making Sentences', figure:'30 sentences',
-        sub:"Using this week's vocabulary", due:'2026-09-26',
-        groups:['Group A','Group B','Odd-Day Group','Even-Day Group'],
-        whatToDo:"Write 30 original sentences using the vocabulary from this week's lessons.",
-        instructions:['Use a different vocabulary word in each sentence where possible.','Write full, grammatically correct sentences.','Avoid copying examples directly from the book.'],
-        illustration:'sentences', refImage:null, refAudio:null,
-        target:30
-      },
-      {
-        id:'hw5', type:'board', icon:'camera', title:'Copy the Board', figure:'Present Perfect notes',
-        sub:"From today's lesson", due:'2026-09-23',
-        groups:['Group A','Group B','Odd-Day Group','Even-Day Group'],
-        whatToDo:'Copy everything written on the classroom board into your notebook, then attach a photo of your notebook as proof.',
-        instructions:['Open the board photo and zoom in if needed.','Copy every line into your notebook neatly.','Take a photo of your finished notebook page.','Mark the task complete once finished.'],
-        illustration:'board', refImage:null, refAudio:null
-      },
-      {
-        id:'hw6', type:'translate', icon:'globe', title:'Translate the Text', figure:'"A Trip to Samarkand"',
-        sub:'150-word passage', due:'2026-09-27',
-        groups:['Group A','Group B','Odd-Day Group','Even-Day Group'],
-        whatToDo:'Translate the assigned English text into Uzbek. Listen to the audio if your teacher has added one.',
-        instructions:[],
-        illustration:'translate', refImage:null, refAudio:null,
-        originalText:'Last summer, my family and I visited Samarkand for the first time. We walked through the Registan Square and admired the beautiful blue tiles on the old madrasahs. Our guide told us stories about the Silk Road and the merchants who once traveled through this ancient city. In the evening, we tried plov at a small restaurant near the bazaar. It was one of the best trips of my life, and I hope to return again someday.'
-      }
-  ];
-
-  const students = buildStudentRoster();
-  const users = [{id:'t1', role:'teacher', name:'Ms. Karimova', username:'ms_karimova', password:'teacher123'}].concat(students);
-
-  const progress = {
-    s1: {
-      hw1:{status:'in-progress', pct:50},
-      hw2:{status:'not-started', pct:0},
-      hw3:{status:'in-progress', wordsLearned:['discover','achieve','wonder']},
-      hw4:{status:'in-progress', sentences:['I go to school every day.','She likes reading books.','They are playing football.']},
-      hw5:{status:'done', pct:100},
-      hw6:{status:'not-started', translation:''}
-    },
-    s2: {
-      hw1:{status:'not-started', pct:0},
-      hw2:{status:'done', pct:100},
-      hw3:{status:'done', wordsLearned:['discover','achieve','wonder','explore','ancient','journey','brilliant','curious']},
-      hw4:{status:'in-progress', sentences:['I go to school every day.']},
-      hw5:{status:'in-progress', pct:0},
-      hw6:{status:'not-started', translation:''}
-    },
-    s3: {
-      hw1:{status:'in-progress', pct:50},
-      hw2:{status:'not-started', pct:0},
-      hw3:{status:'not-started', wordsLearned:[]},
-      hw4:{status:'not-started', sentences:[]},
-      hw5:{status:'not-started', pct:0},
-      hw6:{status:'in-progress', translation:"Yaqinda tugataman..."}
-    },
-    s4: {
-      hw1:{status:'done', pct:100},
-      hw2:{status:'done', pct:100},
-      hw3:{status:'in-progress', wordsLearned:['discover','achieve']},
-      hw4:{status:'done', sentences:Array.from({length:30},(_,i)=>'Sample sentence number '+(i+1)+'.')},
-      hw5:{status:'done', pct:100},
-      hw6:{status:'not-started', translation:''}
-    }
-  };
-  students.slice(4).forEach((s, i)=>{ progress[s.id] = buildProgressForStudent(i, homeworks); });
-
-  return { users, groups: ['Group A','Group B','Odd-Day Group','Even-Day Group'], homeworks, progress };
+// RENDER FUNCTIONS
+function renderApp() {
+  renderStudentView();
+  renderTeacherView();
 }
 
-let DB = null;
-function loadDB(){
-  try{
-    const raw = localStorage.getItem(STORE_KEY);
-    if(raw){ DB = JSON.parse(raw); }
-    else { DB = defaultData(); saveDB(); }
-  }catch(e){ DB = defaultData(); }
-}
-function saveDB(){
-  try{ localStorage.setItem(STORE_KEY, JSON.stringify(DB)); }catch(e){}
-}
-
-let SESSION = null; // {userId, role}
-let currentView = 'dashboard';
-let currentHwId = null;
-
-/* =========================================================
-   AUTH
-   ========================================================= */
-function setLoginRole(role){
-  document.querySelectorAll('.role-toggle button').forEach(b=>b.classList.toggle('active', b.dataset.role===role));
-  const hint = document.getElementById('demo-hint');
-  if(role==='teacher'){
-    hint.innerHTML = '<b>Demo teacher:</b> ms_karimova / teacher123';
-  }else{
-    hint.innerHTML = '<b>Demo student:</b> aziza / student123<br><b>Also try:</b> jasur (Even-Day Group)';
+function filterHomeworks(filter) {
+  appState.currentFilter = filter;
+  document.querySelectorAll('.hw-filter-pill').forEach(btn => {
+    btn.className = "hw-filter-pill px-4 py-2 rounded-2xl glass-pill text-slate-300 hover:text-white";
+  });
+  const activeBtn = document.getElementById(`filter-${filter}`);
+  if (activeBtn) {
+    activeBtn.className = "hw-filter-pill px-4 py-2 rounded-2xl glass-pill bg-blue-600/80 text-white border-blue-400/30 shadow";
   }
-  document.getElementById('login-username').dataset.role = role;
-}
-document.getElementById('login-username').dataset.role = 'student';
-
-function handleLogin(){
-  const role = document.getElementById('login-username').dataset.role || 'student';
-  const uname = document.getElementById('login-username').value.trim().toLowerCase();
-  const pass = document.getElementById('login-password').value;
-  const user = DB.users.find(u => u.username.toLowerCase()===uname && u.password===pass && u.role===role);
-  const err = document.getElementById('login-error');
-  if(!user){ err.textContent = 'Incorrect username or password for this role.'; return; }
-  err.textContent = '';
-  SESSION = {userId:user.id, role:user.role};
-  try{ sessionStorage.setItem('barkamol_session', JSON.stringify(SESSION)); }catch(e){}
-  enterApp();
-}
-function handleLogout(){
-  SESSION = null;
-  try{ sessionStorage.removeItem('barkamol_session'); }catch(e){}
-  document.getElementById('app-screen').classList.remove('active');
-  document.getElementById('login-screen').classList.add('active');
-  document.getElementById('login-password').value='';
+  renderStudentView();
 }
 
-function tryRestoreSession(){
-  try{
-    const raw = sessionStorage.getItem('barkamol_session');
-    if(raw){ SESSION = JSON.parse(raw); return true; }
-  }catch(e){}
-  return false;
-}
+function renderStudentView() {
+  const container = document.getElementById('studentHwList');
+  container.innerHTML = '';
 
-/* =========================================================
-   APP SHELL / NAV
-   ========================================================= */
-function currentUser(){ return DB.users.find(u=>u.id===SESSION.userId); }
-
-function enterApp(){
-  document.getElementById('login-screen').classList.remove('active');
-  document.getElementById('app-screen').classList.add('active');
-  currentView = SESSION.role==='teacher' ? 'teacher-home' : 'dashboard';
-  renderSidebar();
-  renderMain();
-}
-
-function renderSidebar(){
-  const user = currentUser();
-  const initials = user.name.split(' ').map(w=>w[0]).slice(0,2).join('').toUpperCase();
-  const sb = document.getElementById('sidebar');
-  let navItems = '';
-  if(user.role==='student'){
-    navItems = [
-      ['dashboard','home','Homework'],
-      ['progress','chart','Progress']
-    ];
-  } else {
-    navItems = [
-      ['teacher-home','home','Homework'],
-      ['teacher-groups','people','Groups'],
-      ['teacher-progress','chart','Class Progress'],
-      ['teacher-submissions','inbox','Submissions']
-    ];
+  let list = appState.homeworks;
+  if (appState.currentFilter === 'pending') {
+    list = list.filter(h => h.status === 'pending');
+  } else if (appState.currentFilter === 'submitted') {
+    list = list.filter(h => h.status === 'submitted');
+  } else if (appState.currentFilter === 'graded') {
+    list = list.filter(h => h.status === 'graded');
   }
-  sb.innerHTML = `
-    <div class="mark"><span class="dot"></span>Barkamol</div>
-    ${navItems.map(([id,icon,label])=>`
-      <button class="nav-item ${currentView===id?'active':''}" onclick="navigate('${id}')">
-        ${ICONS[icon]}<span>${label}</span>
-      </button>
-    `).join('')}
-    <div class="sidebar-foot">
-      <div class="user-chip">
-        <div class="avatar">${initials}</div>
-        <div>
-          <div class="u-name">${user.name}</div>
-          <div class="u-role">${user.role}${user.group? ' · '+user.group.replace(' Group','').replace('-Day','-Day'):''}</div>
-        </div>
+
+  // Update Pending badge count
+  const pendingCount = appState.homeworks.filter(h => h.status === 'pending').length;
+  document.getElementById('badgePending').innerText = pendingCount;
+
+  if (list.length === 0) {
+    container.innerHTML = `
+      <div class="glass-card rounded-3xl p-8 text-center text-slate-400 space-y-2 border border-white/10">
+        <i class="fa-solid fa-square-check text-4xl text-teal-400 mb-1"></i>
+        <h4 class="font-bold text-white text-base">All Caught Up!</h4>
+        <p class="text-xs">No tasks found in this section.</p>
       </div>
-      <button class="logout-btn" onclick="handleLogout()">${ICONS.logout.replace('width="24" height="24"','width="14" height="14"')} Sign out</button>
-    </div>
-  `;
+    `;
+    return;
+  }
+
+  list.forEach(hw => {
+    let statusBadge = '';
+    if (hw.status === 'pending') {
+      statusBadge = `<span class="px-2.5 py-1 bg-amber-500/20 text-amber-300 border border-amber-500/30 text-[10px] font-bold rounded-full flex items-center gap-1"><i class="fa-solid fa-clock"></i> Pending</span>`;
+    } else if (hw.status === 'submitted') {
+      statusBadge = `<span class="px-2.5 py-1 bg-blue-500/20 text-blue-300 border border-blue-500/30 text-[10px] font-bold rounded-full flex items-center gap-1"><i class="fa-solid fa-spinner fa-spin"></i> Submitted</span>`;
+    } else if (hw.status === 'graded') {
+      statusBadge = `<span class="px-2.5 py-1 bg-teal-500/20 text-teal-300 border border-teal-500/30 text-[10px] font-bold rounded-full flex items-center gap-1"><i class="fa-solid fa-star"></i> Grade: ${hw.submission?.grade || 100}%</span>`;
+    }
+
+    const card = document.createElement('div');
+    card.className = "glass-card-interactive rounded-2xl p-4 border border-white/10 flex flex-col space-y-3 cursor-pointer";
+    card.onclick = () => openStudentHwModal(hw.id);
+
+    card.innerHTML = `
+      <div class="flex items-start justify-between">
+        <div class="space-y-1">
+          <span class="text-[10px] font-semibold text-blue-400 uppercase tracking-wider">${hw.category}</span>
+          <h3 class="text-base font-bold text-white leading-snug">${hw.title}</h3>
+        </div>
+        ${statusBadge}
+      </div>
+
+      <p class="text-xs text-slate-300 line-clamp-2">${hw.instructions}</p>
+
+      <div class="flex items-center justify-between pt-2 border-t border-white/10 text-xs text-slate-400">
+        <div class="flex items-center gap-3">
+          <span class="flex items-center gap-1"><i class="fa-regular fa-calendar text-slate-400"></i> Due ${hw.dueDate}</span>
+          ${hw.vocabList?.length ? `<span class="flex items-center gap-1 text-teal-300"><i class="fa-solid fa-book"></i> ${hw.vocabList.length} Vocab</span>` : ''}
+        </div>
+        <button class="px-3 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-white font-semibold text-xs flex items-center gap-1 transition">
+          ${hw.status === 'pending' ? 'Start Task' : 'View Details'} <i class="fa-solid fa-chevron-right text-[10px]"></i>
+        </button>
+      </div>
+    `;
+
+    container.appendChild(card);
+  });
 }
 
-function navigate(view, hwId){
-  currentView = view;
-  currentHwId = hwId || null;
-  renderSidebar();
-  renderMain();
-  window.scrollTo(0,0);
+function renderTeacherView() {
+  // Stats update
+  const activeCount = appState.homeworks.length;
+  const pendingGradesCount = appState.homeworks.filter(h => h.status === 'submitted').length;
+  document.getElementById('statActiveHws').innerText = activeCount;
+  document.getElementById('statPendingGrades').innerText = pendingGradesCount;
+
+  // Render Sub Tabs
+  if (appState.teacherSubTab === 'assignments') {
+    const container = document.getElementById('teacherTabAssignments');
+    container.innerHTML = '';
+
+    appState.homeworks.forEach(hw => {
+      const card = document.createElement('div');
+      card.className = "glass-card rounded-2xl p-4 border border-white/10 flex flex-col space-y-3";
+      card.innerHTML = `
+        <div class="flex items-start justify-between">
+          <div>
+            <span class="text-[10px] font-semibold text-teal-400 uppercase tracking-wider">${hw.category}</span>
+            <h4 class="text-base font-bold text-white">${hw.title}</h4>
+            <p class="text-xs text-slate-400 mt-1">Due: ${hw.dueDate}</p>
+          </div>
+          <div class="flex items-center gap-1">
+            <button onclick="editTeacherHomework('${hw.id}')" class="p-2 rounded-xl bg-slate-800 text-blue-400 hover:bg-slate-700">
+              <i class="fa-solid fa-pen-to-square"></i>
+            </button>
+            <button onclick="deleteTeacherHomework('${hw.id}')" class="p-2 rounded-xl bg-slate-800 text-red-400 hover:bg-slate-700">
+              <i class="fa-solid fa-trash"></i>
+            </button>
+          </div>
+        </div>
+        <p class="text-xs text-slate-300">${hw.instructions}</p>
+      `;
+      container.appendChild(card);
+    });
+  } else if (appState.teacherSubTab === 'grading') {
+    const container = document.getElementById('teacherTabGrading');
+    container.innerHTML = '';
+
+    const submissions = appState.homeworks.filter(h => h.status === 'submitted' || h.status === 'graded');
+
+    if (submissions.length === 0) {
+      container.innerHTML = `<div class="glass-card rounded-2xl p-6 text-center text-slate-400 text-xs">No student submissions yet.</div>`;
+      return;
+    }
+
+    submissions.forEach(hw => {
+      const sub = hw.submission;
+      const card = document.createElement('div');
+      card.className = "glass-card rounded-2xl p-4 border border-white/10 flex items-center justify-between";
+      card.innerHTML = `
+        <div class="space-y-1">
+          <div class="flex items-center gap-2">
+            <h4 class="text-sm font-bold text-white">${sub.studentName}</h4>
+            ${hw.status === 'graded' 
+              ? `<span class="px-2 py-0.5 rounded-full bg-teal-500/20 text-teal-300 text-[10px] font-bold">Graded (${sub.grade}%)</span>`
+              : `<span class="px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 text-[10px] font-bold">Needs Grading</span>`}
+          </div>
+          <p class="text-xs text-slate-300">${hw.title}</p>
+          <span class="text-[10px] text-slate-400">Submitted on: ${sub.submittedAt}</span>
+        </div>
+        <button onclick="openGradeModal('${hw.id}')" class="px-3.5 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs shadow-lg">
+          ${hw.status === 'graded' ? 'Edit Grade' : 'Review & Grade'}
+        </button>
+      `;
+      container.appendChild(card);
+    });
+  } else if (appState.teacherSubTab === 'matrix') {
+    const tbody = document.getElementById('progressMatrixBody');
+    tbody.innerHTML = `
+      <tr>
+        <td class="py-2.5 px-2 font-bold text-white">Nodira Alimova</td>
+        <td class="py-2.5 px-2 text-teal-400 font-bold"><i class="fa-solid fa-check"></i> 95%</td>
+        <td class="py-2.5 px-2 text-teal-400 font-bold"><i class="fa-solid fa-check"></i> 90%</td>
+        <td class="py-2.5 px-2 text-amber-400 font-bold"><i class="fa-solid fa-clock"></i> Submitted</td>
+        <td class="py-2.5 px-2 font-extrabold text-blue-400">92.5%</td>
+      </tr>
+      <tr>
+        <td class="py-2.5 px-2 font-bold text-white">Jasur Bekov</td>
+        <td class="py-2.5 px-2 text-teal-400 font-bold"><i class="fa-solid fa-check"></i> 88%</td>
+        <td class="py-2.5 px-2 text-slate-500">Pending</td>
+        <td class="py-2.5 px-2 text-slate-500">Pending</td>
+        <td class="py-2.5 px-2 font-extrabold text-blue-400">88.0%</td>
+      </tr>
+    `;
+  }
 }
 
-function renderMain(){
-  const el = document.getElementById('main-content');
-  if(currentView==='dashboard') el.innerHTML = renderStudentDashboard();
-  else if(currentView==='detail') el.innerHTML = renderDetailPage(currentHwId);
-  else if(currentView==='progress') el.innerHTML = renderStudentProgress();
-  else if(currentView==='teacher-home') el.innerHTML = renderTeacherHome();
-  else if(currentView==='teacher-groups') el.innerHTML = renderTeacherGroups();
-  else if(currentView==='teacher-progress') el.innerHTML = renderTeacherProgress();
-  else if(currentView==='teacher-submissions') el.innerHTML = renderTeacherSubmissions();
-  attachDynamicHandlers();
+// SPEECH SYNTHESIS FOR VOCAB PRONUNCIATION
+function speakWord(word) {
+  if ('speechSynthesis' in window) {
+    const utterance = new SpeechSynthesisUtterance(word);
+    utterance.lang = 'en-US';
+    utterance.rate = 0.85;
+    window.speechSynthesis.speak(utterance);
+  } else {
+    alert('Speech synthesis is not supported on your browser.');
+  }
 }
 
-/* =========================================================
-   HELPERS
-   ========================================================= */
-function studentHomeworks(user){
-  return DB.homeworks.filter(hw => hw.groups.includes(user.group));
-}
-function hwFigureFor(hw, user){
-  if(hw.id==='hw1' && user.group==='Even-Day Group') return hw.figureEven;
-  return hw.figure;
-}
-function getProgress(userId, hwId){
-  DB.progress[userId] = DB.progress[userId] || {};
-  return DB.progress[userId][hwId] || {status:'not-started'};
-}
-function setProgress(userId, hwId, patch){
-  DB.progress[userId] = DB.progress[userId] || {};
-  DB.progress[userId][hwId] = Object.assign({}, DB.progress[userId][hwId]||{}, patch);
-  saveDB();
-}
-function computePct(hw, prog){
-  if(hw.type==='reading-vocab'){
-    const total = hw.words.length;
-    const done = (prog.wordsLearned||[]).length;
-    return total? Math.round(done/total*100):0;
+// STUDENT MODAL FUNCTIONS & MULTI IMAGE SETUP
+function openStudentHwModal(hwId) {
+  const hw = appState.homeworks.find(h => h.id === hwId);
+  if (!hw) return;
+
+  appState.activeHwId = hwId;
+  document.getElementById('modalTaskTitle').innerText = hw.title;
+  document.getElementById('modalTaskBadge').innerText = hw.category;
+  document.getElementById('modalTaskDesc').innerText = hw.instructions;
+
+  // Teacher media preview in student view
+  const teacherMediaDiv = document.getElementById('modalTeacherAttachments');
+  const teacherImgGrid = document.getElementById('modalTeacherImages');
+  teacherImgGrid.innerHTML = '';
+
+  if (hw.teacherImages && hw.teacherImages.length > 0) {
+    teacherMediaDiv.classList.remove('hidden');
+    hw.teacherImages.forEach(src => {
+      if (src) {
+        const img = document.createElement('img');
+        img.src = src;
+        img.className = "w-full h-16 object-cover rounded-xl border border-white/20 cursor-pointer hover:opacity-80";
+        img.onclick = () => openLightbox(src);
+        teacherImgGrid.appendChild(img);
+      }
+    });
+  } else {
+    teacherMediaDiv.classList.add('hidden');
   }
-  if(hw.type==='sentences'){
-    return Math.round(Math.min(1,(prog.sentences||[]).length/hw.target)*100);
+
+  // Vocab Section
+  const vocabSec = document.getElementById('sectionVocab');
+  const vocabCont = document.getElementById('vocabListContainer');
+  vocabCont.innerHTML = '';
+  if (hw.vocabList && hw.vocabList.length > 0) {
+    vocabSec.classList.remove('hidden');
+    hw.vocabList.forEach(word => {
+      const row = document.createElement('div');
+      row.className = "flex items-center justify-between p-2 rounded-xl bg-slate-900/80 border border-white/10";
+      row.innerHTML = `
+        <span class="font-bold text-white text-xs">${word}</span>
+        <button type="button" onclick="speakWord('${word}')" class="px-2.5 py-1 rounded-lg bg-teal-500/20 text-teal-300 hover:bg-teal-500/30 text-xs flex items-center gap-1 font-semibold">
+          <i class="fa-solid fa-volume-high"></i> Listen
+        </button>
+      `;
+      vocabCont.appendChild(row);
+    });
+  } else {
+    vocabSec.classList.add('hidden');
   }
-  if(hw.type==='translate'){
-    return prog.status==='done' ? 100 : ((prog.translation||'').length>10 ? 40 : 0);
+
+  // Sentences Section
+  const sentSec = document.getElementById('sectionSentences');
+  const sentCont = document.getElementById('sentenceInputsContainer');
+  sentCont.innerHTML = '';
+  sentSec.classList.remove('hidden');
+  addSentenceInput(); // Start with 1 default sentence field
+
+  // Initialize Image Upload Slots (4 Slots)
+  appState.studentMedia.images = [null, null, null, null];
+  renderImageSlots('studentImageSlotsGrid', appState.studentMedia.images, handleStudentImageUpload);
+
+  // Audio Reset
+  appState.studentMedia.audioBlob = null;
+  appState.studentMedia.audioUrl = null;
+  document.getElementById('audioPreviewContainer').classList.add('hidden');
+
+  // Load existing submission if any
+  if (hw.submission) {
+    document.getElementById('studentComments').value = hw.submission.studentNotes || '';
+  } else {
+    document.getElementById('studentComments').value = '';
   }
-  if(typeof prog.pct==='number') return prog.pct;
-  return prog.status==='done'?100:(prog.status==='in-progress'?50:0);
+
+  document.getElementById('studentHwModal').classList.remove('hidden');
 }
-function deriveStatus(hw, prog){
-  const pct = computePct(hw, prog);
-  if(prog.status==='done' || pct>=100) return 'done';
-  if(pct>0 || prog.status==='in-progress') return 'in-progress';
-  return 'not-started';
+
+function closeStudentHwModal() {
+  document.getElementById('studentHwModal').classList.add('hidden');
 }
-function statusMeta(status){
-  if(status==='done') return {cls:'status-done', label:'Completed'};
-  if(status==='in-progress') return {cls:'status-progress', label:'In Progress'};
-  return {cls:'status-not', label:'Not Started'};
+
+// RENDER MULTI-IMAGE SLOTS (UP TO 4)
+function renderImageSlots(gridId, imageArray, uploadCallback) {
+  const grid = document.getElementById(gridId);
+  grid.innerHTML = '';
+
+  let filledCount = 0;
+
+  for (let i = 0; i < 4; i++) {
+    const template = document.getElementById('imgSlotTemplate');
+    const clone = template.content.cloneNode(true);
+
+    const slotDiv = clone.querySelector('.image-upload-slot');
+    const fileInput = clone.querySelector('.slot-file-input');
+    const emptyState = clone.querySelector('.slot-empty-state');
+    const previewImg = clone.querySelector('.slot-preview');
+    const removeBtn = clone.querySelector('.slot-remove-btn');
+
+    const src = imageArray[i];
+
+    if (src) {
+      filledCount++;
+      emptyState.classList.add('hidden');
+      previewImg.classList.remove('hidden');
+      previewImg.src = src;
+      removeBtn.classList.remove('hidden');
+
+      previewImg.onclick = () => openLightbox(src);
+      removeBtn.onclick = (e) => {
+        e.stopPropagation();
+        imageArray[i] = null;
+        renderImageSlots(gridId, imageArray, uploadCallback);
+      };
+    } else {
+      fileInput.onchange = (e) => uploadCallback(e, i, gridId, imageArray);
+    }
+
+    grid.appendChild(clone);
+  }
+
+  // Update Counters
+  if (gridId === 'studentImageSlotsGrid') {
+    document.getElementById('imgSlotCounter').innerText = `${filledCount} / 4 Uploaded`;
+  } else if (gridId === 'teacherImageSlotsGrid') {
+    document.getElementById('tImgSlotCounter').innerText = `${filledCount} / 4 Attached`;
+  }
 }
-function fmtDue(dateStr){
-  const d = new Date(dateStr+'T00:00:00');
-  return d.toLocaleDateString('en-US',{month:'short', day:'numeric'});
-}
-function showToast(msg){
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('show');
-  clearTimeout(window.__toastT);
-  window.__toastT = setTimeout(()=>t.classList.remove('show'), 2200);
-}
-function speak(text){
-  try{
-    if(!('speechSynthesis' in window)){ showToast('Audio is not supported on this device'); return; }
-    window.speechSynthesis.cancel();
-    const u = new SpeechSynthesisUtterance(text);
-    u.lang = 'en-US';
-    u.rate = 0.92;
-    window.speechSynthesis.speak(u);
-  }catch(e){}
-}
-function resizeImageToDataURL(file, maxW, cb){
+
+function handleStudentImageUpload(e, index, gridId, imageArray) {
+  const file = e.target.files[0];
+  if (!file) return;
+
   const reader = new FileReader();
-  reader.onload = function(e){
-    const img = new Image();
-    img.onload = function(){
-      const scale = Math.min(1, maxW / img.width);
-      const w = Math.round(img.width * scale);
-      const h = Math.round(img.height * scale);
-      const canvas = document.createElement('canvas');
-      canvas.width = w; canvas.height = h;
-      const ctx = canvas.getContext('2d');
-      ctx.drawImage(img, 0, 0, w, h);
-      cb(canvas.toDataURL('image/jpeg', 0.75));
-    };
-    img.onerror = function(){ cb(null); };
-    img.src = e.target.result;
+  reader.onload = function(evt) {
+    imageArray[index] = evt.target.result;
+    renderImageSlots(gridId, imageArray, handleStudentImageUpload);
   };
-  reader.onerror = function(){ cb(null); };
-  reader.readAsDataURL(file);
-}
-function readFileAsDataURL(file, cb){
-  const reader = new FileReader();
-  reader.onload = function(e){ cb(e.target.result); };
-  reader.onerror = function(){ cb(null); };
   reader.readAsDataURL(file);
 }
 
-/* =========================================================
-   STUDENT: DASHBOARD
-   ========================================================= */
-function renderStudentDashboard(){
-  const user = currentUser();
-  const hws = studentHomeworks(user);
-  const completed = hws.filter(hw => deriveStatus(hw, getProgress(user.id,hw.id))==='done').length;
-  const total = hws.length;
-  const pct = total? Math.round(completed/total*100):0;
-  const circumference = 2*Math.PI*42;
-  const offset = circumference - (pct/100)*circumference;
-
-  const statuses = hws.map(hw=>deriveStatus(hw, getProgress(user.id,hw.id)));
-  const inProgressCount = statuses.filter(s=>s==='in-progress').length;
-  const notStartedCount = statuses.filter(s=>s==='not-started').length;
-
-  const today = new Date('2026-09-22T00:00:00');
-  const upcoming = hws
-    .map(hw=>({hw, prog:getProgress(user.id,hw.id)}))
-    .filter(x=>deriveStatus(x.hw, x.prog)!=='done')
-    .sort((a,b)=> new Date(a.hw.due) - new Date(b.hw.due))
-    .slice(0,4);
-
-  const panelRow = `
-    <div class="panel-row">
-      <div class="mini-panel">
-        <div class="mp-icon" style="background:var(--teal-soft); color:var(--teal);">${ICONS.check}</div>
-        <div><div class="mp-n">${completed}</div><div class="mp-l">Completed</div></div>
-      </div>
-      <div class="mini-panel">
-        <div class="mp-icon" style="background:var(--amber-soft); color:var(--amber);">${ICONS.clock}</div>
-        <div><div class="mp-n">${inProgressCount}</div><div class="mp-l">In Progress</div></div>
-      </div>
-      <div class="mini-panel">
-        <div class="mp-icon" style="background:var(--coral-soft); color:var(--coral);">${ICONS.inbox}</div>
-        <div><div class="mp-n">${notStartedCount}</div><div class="mp-l">Not Started</div></div>
-      </div>
-    </div>
+// SENTENCES INPUT DYNAMIC GENERATION
+function addSentenceInput() {
+  const container = document.getElementById('sentenceInputsContainer');
+  const count = container.children.length + 1;
+  const inputGroup = document.createElement('div');
+  inputGroup.className = "flex items-center gap-2";
+  inputGroup.innerHTML = `
+    <span class="text-xs font-bold text-slate-400 w-4">${count}.</span>
+    <input type="text" class="student-sentence-input glass-input w-full p-2 rounded-xl text-xs" placeholder="Type sentence in English...">
   `;
-
-  const deadlinesPanel = upcoming.length ? `
-    <div class="deadline-panel">
-      <div class="dp-head">${ICONS.clock.replace('width="24" height="24"','width="16" height="16"')} Upcoming deadlines</div>
-      ${upcoming.map(x=>{
-        const days = Math.round((new Date(x.hw.due) - today) / 86400000);
-        const dueLabel = days<0 ? 'Overdue' : (days===0 ? 'Due today' : (days===1 ? 'Due tomorrow' : 'Due in '+days+' days'));
-        return `
-        <div class="deadline-row" onclick="navigate('detail','${x.hw.id}')" style="cursor:pointer;">
-          ${iconBadge(x.hw.icon)}
-          <div>
-            <div class="d-title">${x.hw.title}</div>
-            <div class="d-sub">${hwFigureFor(x.hw, user)}</div>
-          </div>
-          <div class="d-due">${dueLabel}</div>
-        </div>`;
-      }).join('')}
-    </div>
-  ` : '';
-
-  const cards = hws.map(hw=>{
-    const prog = getProgress(user.id, hw.id);
-    const status = deriveStatus(hw, prog);
-    const meta = statusMeta(status);
-    const pctVal = computePct(hw, prog);
-    const figure = hwFigureFor(hw, user);
-    return `
-    <div class="hw-card" onclick="navigate('detail','${hw.id}')">
-      <span class="status-tag ${meta.cls}"><span class="dot"></span>${meta.label}</span>
-      ${iconBadge(hw.icon)}
-      <div>
-        <h3>${hw.title}</h3>
-        <div class="hw-figure">${figure}</div>
-        <div class="hw-sub">${hw.sub}</div>
-      </div>
-      <div class="mini-bar"><div style="width:${pctVal}%; background:${status==='done'?'var(--teal)':'var(--indigo)'}"></div></div>
-      <div class="due">${ICONS.clock.replace('width="24" height="24"','width="13" height="13"')} Due ${fmtDue(hw.due)}</div>
-    </div>`;
-  }).join('');
-
-  return `
-    <div class="topbar">
-      <div>
-        <h1>Today's Homework</h1>
-        <div class="sub">${user.group} · ${completed} of ${total} tasks completed</div>
-      </div>
-      <span class="pill pill-group">${user.group}</span>
-    </div>
-    <div class="progress-hero">
-      <div class="ph-text">
-        <div class="greet">👋 Hello, ${user.name.split(' ')[0]}</div>
-        <h2>${completed===total && total>0 ? 'Everything\'s done — great work!' : 'Keep going, you\'re making progress.'}</h2>
-      </div>
-      <div class="ring-wrap">
-        <svg width="104" height="104" viewBox="0 0 104 104">
-          <circle cx="52" cy="52" r="42" stroke="rgba(255,255,255,.22)" stroke-width="9" fill="none"/>
-          <circle cx="52" cy="52" r="42" stroke="#E8A33D" stroke-width="9" fill="none" stroke-linecap="round"
-            stroke-dasharray="${circumference}" stroke-dashoffset="${offset}"/>
-        </svg>
-        <div class="ring-label"><div class="n">${pct}%</div><div class="d">${completed}/${total}</div></div>
-      </div>
-    </div>
-    ${panelRow}
-    ${deadlinesPanel}
-    <div class="hw-grid">${cards}</div>
-  `;
+  container.appendChild(inputGroup);
 }
 
-/* =========================================================
-   STUDENT: DETAIL PAGE
-   ========================================================= */
-function renderDetailPage(hwId){
-  const user = currentUser();
-  const hw = DB.homeworks.find(h=>h.id===hwId);
-  if(!hw) return `<p>Task not found.</p>`;
-  const prog = getProgress(user.id, hw.id);
-  const status = deriveStatus(hw, prog);
-  const pct = computePct(hw, prog);
-  const figure = hwFigureFor(hw, user);
+// AUDIO RECORDING & UPLOAD IMPLEMENTATION
+async function toggleAudioRecording() {
+  const statusText = document.getElementById('recordStatusText');
+  const icon = document.getElementById('recordIcon');
+  const btn = document.getElementById('recordAudioBtn');
 
-  const audioBlock = hw.refAudio ? `
-      <div class="detail-block">
-        <h4>Listen</h4>
-        <div class="audio-block">
-          ${ICONS.music.replace('width="24" height="24"','width="18" height="18"')}
-          <audio controls src="${hw.refAudio}"></audio>
-        </div>
-      </div>` : '';
+  if (!appState.isRecording) {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      appState.mediaRecorder = new MediaRecorder(stream);
+      appState.audioChunks = [];
 
-  function refOrIllustration(){
-    return hw.refImage
-      ? `<div class="ref-image"><img src="${hw.refImage}" alt="Reference"></div>`
-      : `<div class="ref-image">${refIllustration(hw.illustration)}</div>`;
-  }
+      appState.mediaRecorder.ondataavailable = event => {
+        appState.audioChunks.push(event.data);
+      };
 
-  function photoSubmissionBlock(){
-    const img = prog.submissionImage;
-    return `
-      <div class="detail-block">
-        <h4>Your photo</h4>
-        ${img ? `
-          <div class="submission-preview">
-            <img src="${img}" alt="Your submission">
-            <button class="rm-photo" onclick="removeSubmissionPhoto('${hw.id}')">×</button>
-          </div>
-        ` : `
-          <label class="upload-zone" for="submission-photo-input">
-            ${ICONS.upload}
-            <div class="uz-label">Tap to attach a photo of your work</div>
-            <input type="file" accept="image/*" id="submission-photo-input" onchange="handleSubmissionPhoto('${hw.id}', this)">
-          </label>
-        `}
-      </div>
-    `;
-  }
+      appState.mediaRecorder.onstop = () => {
+        const audioBlob = new Blob(appState.audioChunks, { type: 'audio/mp3' });
+        appState.studentMedia.audioBlob = audioBlob;
+        appState.studentMedia.audioUrl = URL.createObjectURL(audioBlob);
+        
+        const audioPlayer = document.getElementById('audioPlayer');
+        audioPlayer.src = appState.studentMedia.audioUrl;
+        document.getElementById('audioPreviewContainer').classList.remove('hidden');
+      };
 
-  let body = '';
+      appState.mediaRecorder.start();
+      appState.isRecording = true;
 
-  if(hw.type==='essential2' || hw.type==='tactics'){
-    body = `
-      <div class="detail-block">
-        <h4>What to do</h4>
-        <p>${hw.whatToDo}${hw.id==='hw1' && user.group==='Even-Day Group' ? ' For the Even-Day Group, this is a revision task: '+hw.figureEven+'.' : ''}</p>
-      </div>
-      ${audioBlock}
-      <div class="detail-block">
-        <h4>Example</h4>
-        ${refOrIllustration()}
-      </div>
-      <div class="detail-block">
-        <h4>Instructions</h4>
-        <ol>${hw.instructions.map(i=>`<li>${i}</li>`).join('')}</ol>
-      </div>
-      ${photoSubmissionBlock()}
-      <div class="detail-block">
-        <div class="complete-bar">
-          <div>
-            <div class="progress-pct">${pct}%</div>
-            <div style="font-size:12.5px;color:var(--ink-soft);">complete</div>
-          </div>
-          <button class="check-btn ${status==='done'?'done':''}" onclick="toggleSimpleDone('${hw.id}')">
-            ${ICONS.check.replace('width="24" height="24"','width="16" height="16"')}
-            ${status==='done' ? 'Marked as completed' : 'Mark as completed'}
-          </button>
-        </div>
-      </div>
-    `;
-  }
-  else if(hw.type==='reading-vocab'){
-    const learned = prog.wordsLearned || [];
-    body = `
-      <div class="detail-block">
-        <h4>What to do</h4>
-        <p>${hw.whatToDo} Tap each word once you've learned it.</p>
-      </div>
-      ${audioBlock}
-      <div class="detail-block">
-        <h4>Vocabulary (${learned.length}/${hw.words.length} learned)</h4>
-        <div class="mini-bar" style="margin-bottom:12px;"><div style="width:${pct}%; background:var(--teal);"></div></div>
-        ${hw.words.map(w=>{
-          const checked = learned.includes(w.en);
-          return `
-          <div class="word-row">
-            <button class="speaker-btn" onclick="speak('${w.en.replace(/'/g,"\\'")}')" title="Listen">${ICONS.speaker}</button>
-            <div class="word-check ${checked?'checked':''}" onclick="toggleWord('${hw.id}','${w.en}')">${ICONS.check}</div>
-            <div class="wtext">
-              <div class="w-en">${w.en} <span class="w-uz">— ${w.uz}</span></div>
-              <div class="w-ex">"${w.ex}"</div>
-            </div>
-          </div>`;
-        }).join('')}
-      </div>
-    `;
-  }
-  else if(hw.type==='sentences'){
-    const sentences = prog.sentences || [];
-    body = `
-      <div class="detail-block">
-        <h4>What to do</h4>
-        <p>${hw.whatToDo}</p>
-        <ul style="margin-top:10px;">${hw.instructions.map(i=>`<li>${i}</li>`).join('')}</ul>
-      </div>
-      ${audioBlock}
-      <div class="detail-block">
-        <div class="sent-progress-row">
-          <div class="sent-count">${sentences.length}/${hw.target}</div>
-          <div style="flex:1;">
-            <div class="mini-bar"><div style="width:${pct}%; background:${pct>=100?'var(--teal)':'var(--coral)'}"></div></div>
-          </div>
-        </div>
-        <div id="sentence-list">
-          ${sentences.map((s,i)=>`
-            <div class="sent-item">
-              <div class="num">${i+1}.</div>
-              <div class="txt">${s}</div>
-              <button class="rm" onclick="removeSentence('${hw.id}', ${i})">×</button>
-            </div>
-          `).join('') || `<p style="color:var(--ink-soft); font-size:14px; padding:10px 0;">No sentences yet — add your first one below.</p>`}
-        </div>
-        <div class="add-sent-row">
-          <input type="text" id="new-sentence-input" placeholder="Type a new sentence..." onkeydown="if(event.key==='Enter') addSentence('${hw.id}')">
-          <button onclick="addSentence('${hw.id}')">Add</button>
-        </div>
-      </div>
-    `;
-  }
-  else if(hw.type==='board'){
-    body = `
-      <div class="detail-block">
-        <h4>What to do</h4>
-        <p>${hw.whatToDo}</p>
-      </div>
-      ${audioBlock}
-      <div class="detail-block">
-        <h4>Board photo</h4>
-        ${refOrIllustration()}
-      </div>
-      ${photoSubmissionBlock()}
-      <div class="detail-block">
-        <div class="complete-bar">
-          <div>
-            <div class="progress-pct">${pct}%</div>
-            <div style="font-size:12.5px;color:var(--ink-soft);">complete</div>
-          </div>
-          <button class="check-btn ${status==='done'?'done':''}" onclick="toggleSimpleDone('${hw.id}')">
-            ${ICONS.check.replace('width="24" height="24"','width="16" height="16"')}
-            ${status==='done' ? "I've copied the board" : "I copied the board"}
-          </button>
-        </div>
-      </div>
-    `;
-  }
-  else if(hw.type==='translate'){
-    const translation = prog.translation || '';
-    body = `
-      <div class="detail-block">
-        <h4>Original text</h4>
-        <p>${hw.originalText}</p>
-      </div>
-      ${audioBlock}
-      ${hw.refImage ? `<div class="detail-block"><h4>Reference image</h4>${refOrIllustration()}</div>` : ''}
-      <div class="detail-block">
-        <h4>Your translation</h4>
-        <textarea class="translate-input" id="translation-input" placeholder="O'zbek tilida tarjima qiling...">${translation}</textarea>
-        <div style="display:flex; justify-content:flex-end; margin-top:14px;">
-          <button class="check-btn ${status==='done'?'done':''}" onclick="submitTranslation('${hw.id}')">
-            ${ICONS.check.replace('width="24" height="24"','width="16" height="16"')}
-            ${status==='done' ? 'Submitted' : 'Submit Translation'}
-          </button>
-        </div>
-      </div>
-      ${photoSubmissionBlock()}
-    `;
-  }
-  else {
-    body = `
-      <div class="detail-block">
-        <h4>What to do</h4>
-        <p>${hw.whatToDo || hw.sub}</p>
-      </div>
-      ${audioBlock}
-      ${hw.refImage ? `<div class="detail-block"><h4>Reference</h4>${refOrIllustration()}</div>` : ''}
-      ${photoSubmissionBlock()}
-      <div class="detail-block">
-        <div class="complete-bar">
-          <div>
-            <div class="progress-pct">${pct}%</div>
-            <div style="font-size:12.5px;color:var(--ink-soft);">complete</div>
-          </div>
-          <button class="check-btn ${status==='done'?'done':''}" onclick="toggleSimpleDone('${hw.id}')">
-            ${ICONS.check.replace('width="24" height="24"','width="16" height="16"')}
-            ${status==='done' ? 'Marked as completed' : 'Mark as completed'}
-          </button>
-        </div>
-      </div>
-    `;
-  }
-
-  return `
-    <button class="back-btn" onclick="navigate('dashboard')">← Back to homework</button>
-    <div class="detail-wrap">
-      <div class="detail-head">
-        ${iconBadge(hw.icon)}
-        <div>
-          <h1>${hw.title}</h1>
-          <div class="hw-figure">${figure}</div>
-        </div>
-      </div>
-      ${body}
-    </div>
-  `;
-}
-function handleSubmissionPhoto(hwId, inputEl){
-  const file = inputEl.files && inputEl.files[0];
-  if(!file) return;
-  const user = currentUser();
-  resizeImageToDataURL(file, 900, function(dataUrl){
-    if(!dataUrl){ showToast('Could not read that image'); return; }
-    setProgress(user.id, hwId, {submissionImage:dataUrl, reviewed:false});
-    showToast('Photo attached');
-    renderMain();
-  });
-}
-function removeSubmissionPhoto(hwId){
-  const user = currentUser();
-  setProgress(user.id, hwId, {submissionImage:null});
-  renderMain();
-}
-
-function toggleSimpleDone(hwId){
-  const user = currentUser();
-  const prog = getProgress(user.id, hwId);
-  const nowDone = prog.status!=='done';
-  setProgress(user.id, hwId, {status: nowDone?'done':'in-progress', pct: nowDone?100:50});
-  showToast(nowDone ? 'Marked as completed' : 'Marked as in progress');
-  renderMain();
-}
-function toggleWord(hwId, word){
-  const user = currentUser();
-  const prog = getProgress(user.id, hwId);
-  let learned = prog.wordsLearned ? [...prog.wordsLearned] : [];
-  if(learned.includes(word)) learned = learned.filter(w=>w!==word);
-  else learned.push(word);
-  const hw = DB.homeworks.find(h=>h.id===hwId);
-  const status = learned.length>=hw.words.length ? 'done' : (learned.length>0?'in-progress':'not-started');
-  setProgress(user.id, hwId, {wordsLearned:learned, status});
-  renderMain();
-}
-function addSentence(hwId){
-  const input = document.getElementById('new-sentence-input');
-  const val = input.value.trim();
-  if(!val) return;
-  const user = currentUser();
-  const prog = getProgress(user.id, hwId);
-  const sentences = prog.sentences ? [...prog.sentences, val] : [val];
-  const hw = DB.homeworks.find(h=>h.id===hwId);
-  const status = sentences.length>=hw.target ? 'done' : 'in-progress';
-  setProgress(user.id, hwId, {sentences, status});
-  renderMain();
-  setTimeout(()=>{ const i=document.getElementById('new-sentence-input'); if(i) i.focus(); }, 0);
-}
-function removeSentence(hwId, idx){
-  const user = currentUser();
-  const prog = getProgress(user.id, hwId);
-  const sentences = (prog.sentences||[]).filter((_,i)=>i!==idx);
-  const hw = DB.homeworks.find(h=>h.id===hwId);
-  const status = sentences.length>=hw.target ? 'done' : (sentences.length>0?'in-progress':'not-started');
-  setProgress(user.id, hwId, {sentences, status});
-  renderMain();
-}
-function submitTranslation(hwId){
-  const val = document.getElementById('translation-input').value.trim();
-  const user = currentUser();
-  const status = val.length>10 ? 'done' : 'not-started';
-  setProgress(user.id, hwId, {translation:val, status});
-  showToast(status==='done' ? 'Translation submitted' : 'Add more text before submitting');
-  renderMain();
-}
-
-/* =========================================================
-   STUDENT: PROGRESS PAGE
-   ========================================================= */
-function renderStudentProgress(){
-  const user = currentUser();
-  const hws = studentHomeworks(user);
-  const statuses = hws.map(hw=>deriveStatus(hw, getProgress(user.id,hw.id)));
-  const completed = statuses.filter(s=>s==='done').length;
-  const inProgress = statuses.filter(s=>s==='in-progress').length;
-  const notStarted = statuses.filter(s=>s==='not-started').length;
-
-  const rows = hws.map(hw=>{
-    const prog = getProgress(user.id, hw.id);
-    const status = deriveStatus(hw, prog);
-    const meta = statusMeta(status);
-    const pct = computePct(hw, prog);
-    let detail = meta.label;
-    if(hw.type==='sentences') detail = `${(prog.sentences||[]).length}/${hw.target}`;
-    if(hw.type==='reading-vocab') detail = `${(prog.wordsLearned||[]).length}/${hw.words.length} words`;
-    return `
-      <div class="progress-list-row">
-        <div style="display:flex; align-items:center; gap:14px;">
-          ${iconBadge(hw.icon)}
-          <div>
-            <div class="name">${hw.title}</div>
-            <div style="font-size:12.5px; color:var(--ink-soft);">${detail}</div>
-          </div>
-        </div>
-        <div style="display:flex; align-items:center; gap:14px;">
-          <div class="mini-bar" style="width:110px;"><div style="width:${pct}%; background:${status==='done'?'var(--teal)':'var(--indigo)'}"></div></div>
-          <span class="pill ${meta.cls}" style="background:transparent; padding:0;"><span class="dot" style="width:8px;height:8px;border-radius:50%; background:${status==='done'?'var(--teal)':status==='in-progress'?'var(--amber)':'var(--coral)'}"></span> ${meta.label}</span>
-        </div>
-      </div>
-    `;
-  }).join('');
-
-  return `
-    <div class="topbar">
-      <div><h1>Your Progress</h1><div class="sub">${user.group}</div></div>
-    </div>
-    <div class="stat-grid">
-      <div class="stat-card"><div class="n">${hws.length}</div><div class="l">Total Homework</div></div>
-      <div class="stat-card"><div class="n" style="color:var(--teal)">${completed}</div><div class="l">Completed</div></div>
-      <div class="stat-card"><div class="n" style="color:var(--amber)">${inProgress}</div><div class="l">In Progress</div></div>
-      <div class="stat-card"><div class="n" style="color:var(--coral)">${notStarted}</div><div class="l">Not Started</div></div>
-    </div>
-    ${rows}
-  `;
-}
-
-/* =========================================================
-   TEACHER: HOMEWORK MANAGEMENT
-   ========================================================= */
-function renderTeacherHome(){
-  const students = DB.users.filter(u=>u.role==='student');
-  const totalDone = students.reduce((acc,s)=>acc+studentHomeworks(s).filter(hw=>deriveStatus(hw,getProgress(s.id,hw.id))==='done').length,0);
-  const totalTasks = students.reduce((acc,s)=>acc+studentHomeworks(s).length,0);
-  const avgPct = totalTasks? Math.round(totalDone/totalTasks*100):0;
-  const pendingReview = students.reduce((acc,s)=>{
-    return acc + DB.homeworks.filter(hw=>{
-      const p = getProgress(s.id, hw.id);
-      return p.submissionImage && !p.reviewed;
-    }).length;
-  },0);
-
-  const overviewRow = `
-    <div class="panel-row">
-      <div class="mini-panel">
-        <div class="mp-icon" style="background:rgba(75,74,196,.12); color:var(--indigo);">${ICONS.people}</div>
-        <div><div class="mp-n">${students.length}</div><div class="mp-l">Students</div></div>
-      </div>
-      <div class="mini-panel">
-        <div class="mp-icon" style="background:var(--teal-soft); color:var(--teal);">${ICONS.chart}</div>
-        <div><div class="mp-n">${avgPct}%</div><div class="mp-l">Avg completion</div></div>
-      </div>
-      <div class="mini-panel">
-        <div class="mp-icon" style="background:var(--amber-soft); color:var(--amber);">${ICONS.inbox}</div>
-        <div><div class="mp-n">${pendingReview}</div><div class="mp-l">Photos to review</div></div>
-      </div>
-    </div>
-  `;
-
-  const rows = DB.homeworks.map(hw=>{
-    const groupChips = hw.groups.map(g=>`<span class="group-chip">${g}</span>`).join('');
-    return `
-    <div class="t-row">
-      <div style="display:flex; align-items:center; gap:12px;">
-        ${iconBadge(hw.icon)}
-        <div>
-          <div style="font-weight:800;">${hw.title}</div>
-          <div style="font-size:12.5px; color:var(--ink-soft);">${hw.figure}</div>
-        </div>
-      </div>
-      <div>${fmtDue(hw.due)}</div>
-      <div style="display:flex; flex-wrap:wrap;">${groupChips}</div>
-      <div style="font-size:13px; color:var(--ink-soft);">${hw.type.replace('-',' ')}</div>
-      <div style="text-align:right;">
-        <button class="icon-btn" title="Edit" onclick="openHwModal('${hw.id}')">${ICONS.edit}</button>
-        <button class="icon-btn" title="Delete" onclick="deleteHomework('${hw.id}')">${ICONS.trash}</button>
-      </div>
-    </div>`;
-  }).join('');
-
-  return `
-    <div class="topbar">
-      <div><h1>Homework</h1><div class="sub">${DB.homeworks.length} tasks · Manage what students see</div></div>
-      <button class="btn btn-outline" onclick="openHwModal()">${ICONS.plus.replace('width="24" height="24"','width="14" height="14"')} New homework</button>
-    </div>
-    ${overviewRow}
-    <div class="table-wrap">
-      <div class="t-row head"><div>Task</div><div>Due</div><div>Groups</div><div>Type</div><div></div></div>
-      ${rows}
-    </div>
-  `;
-}
-
-let __modalMedia = {refImage:null, refAudio:null};
-function openHwModal(hwId){
-  const hw = hwId ? DB.homeworks.find(h=>h.id===hwId) : null;
-  const groups = DB.groups;
-  __modalMedia = {refImage: hw?hw.refImage||null:null, refAudio: hw?hw.refAudio||null:null};
-  document.getElementById('modal-body').innerHTML = `
-    <h3>${hw? 'Edit homework':'Create homework'}</h3>
-    <div class="field"><label>Title</label><input id="m-title" value="${hw?hw.title:''}" placeholder="e.g. Grammar Practice"></div>
-    <div class="field"><label>Headline figure (shown big on the card)</label><input id="m-figure" value="${hw?hw.figure:''}" placeholder="e.g. 12 – 15 Units"></div>
-    <div class="field"><label>Short subtitle</label><input id="m-sub" value="${hw?hw.sub:''}" placeholder="e.g. 2 units per lesson"></div>
-    <div class="field"><label>What to do</label><textarea id="m-whatToDo">${hw?hw.whatToDo||'':''}</textarea></div>
-    <div class="field"><label>Due date</label><input id="m-due" type="date" value="${hw?hw.due:'2026-10-01'}"></div>
-    <div class="field">
-      <label>Reference photo (optional)</label>
-      <div class="modal-upload-row">
-        <label class="uf-btn" for="m-image-input">${ICONS.upload.replace('width="24" height="24"','width="14" height="14"')} Upload photo</label>
-        <input type="file" accept="image/*" id="m-image-input" onchange="handleModalImage(this)">
-        <span class="uf-status" id="m-image-status">${__modalMedia.refImage? 'Photo attached':''}</span>
-      </div>
-    </div>
-    <div class="field">
-      <label>Audio clip (optional — e.g. listening or pronunciation)</label>
-      <div class="modal-upload-row">
-        <label class="uf-btn" for="m-audio-input">${ICONS.music.replace('width="24" height="24"','width="14" height="14"')} Upload audio</label>
-        <input type="file" accept="audio/*" id="m-audio-input" onchange="handleModalAudio(this)">
-        <span class="uf-status" id="m-audio-status">${__modalMedia.refAudio? 'Audio attached':''}</span>
-      </div>
-    </div>
-    <div class="field">
-      <label>Assign to groups</label>
-      <div class="checkbox-grid" id="m-groups">
-        ${groups.map(g=>`<button type="button" class="chip-check ${hw && hw.groups.includes(g)?'on':''}" data-g="${g}" onclick="this.classList.toggle('on')">${g}</button>`).join('')}
-      </div>
-    </div>
-    <div class="modal-actions">
-      <button class="btn-ghost" onclick="closeModal()">Cancel</button>
-      <button class="btn btn-primary" style="flex:1;" onclick="saveHwModal('${hw?hw.id:''}')">${hw?'Save changes':'Create homework'}</button>
-    </div>
-  `;
-  document.getElementById('modal-bg').classList.add('active');
-}
-function handleModalImage(inputEl){
-  const file = inputEl.files && inputEl.files[0];
-  if(!file) return;
-  resizeImageToDataURL(file, 1000, function(dataUrl){
-    if(!dataUrl){ showToast('Could not read that image'); return; }
-    __modalMedia.refImage = dataUrl;
-    const el = document.getElementById('m-image-status');
-    if(el) el.textContent = 'Photo attached';
-  });
-}
-function handleModalAudio(inputEl){
-  const file = inputEl.files && inputEl.files[0];
-  if(!file) return;
-  if(file.size > 3*1024*1024){ showToast('Please choose an audio file under 3MB'); return; }
-  readFileAsDataURL(file, function(dataUrl){
-    if(!dataUrl){ showToast('Could not read that audio file'); return; }
-    __modalMedia.refAudio = dataUrl;
-    const el = document.getElementById('m-audio-status');
-    if(el) el.textContent = 'Audio attached';
-  });
-}
-function saveHwModal(hwId){
-  const title = document.getElementById('m-title').value.trim() || 'Untitled task';
-  const figure = document.getElementById('m-figure').value.trim();
-  const sub = document.getElementById('m-sub').value.trim();
-  const whatToDo = document.getElementById('m-whatToDo').value.trim();
-  const due = document.getElementById('m-due').value || '2026-10-01';
-  const groups = Array.from(document.querySelectorAll('#m-groups .chip-check.on')).map(b=>b.dataset.g);
-  const refImage = __modalMedia.refImage;
-  const refAudio = __modalMedia.refAudio;
-
-  if(hwId){
-    const hw = DB.homeworks.find(h=>h.id===hwId);
-    Object.assign(hw, {title, figure, sub, whatToDo, due, groups, refImage, refAudio});
+      statusText.innerText = "Stop Recording...";
+      icon.className = "fa-solid fa-stop text-red-500";
+      btn.classList.add('recording-pulse');
+    } catch (err) {
+      alert('Microphone access denied or not available.');
+    }
   } else {
-    const id = 'hw'+(Date.now());
-    DB.homeworks.push({
-      id, type:'custom', icon:'book', title, figure, sub, whatToDo, due,
-      groups: groups.length?groups:DB.groups, instructions:[], illustration:'essential2',
-      refImage, refAudio
-    });
+    appState.mediaRecorder.stop();
+    appState.isRecording = false;
+
+    statusText.innerText = "Start Voice Recording";
+    icon.className = "fa-solid fa-microphone text-rose-400";
+    btn.classList.remove('recording-pulse');
   }
-  saveDB();
-  closeModal();
-  showToast(hwId? 'Homework updated':'Homework created');
-  renderMain();
-}
-function deleteHomework(hwId){
-  document.getElementById('modal-body').innerHTML = `
-    <h3>Delete this homework?</h3>
-    <p style="color:var(--ink-soft); font-size:14.5px; line-height:1.6;">This removes it for every student and can't be undone.</p>
-    <div class="modal-actions">
-      <button class="btn-ghost" onclick="closeModal()">Cancel</button>
-      <button class="btn btn-primary" style="flex:1; background:var(--coral);" onclick="confirmDeleteHw('${hwId}')">Delete</button>
-    </div>
-  `;
-  document.getElementById('modal-bg').classList.add('active');
-}
-function confirmDeleteHw(hwId){
-  DB.homeworks = DB.homeworks.filter(h=>h.id!==hwId);
-  saveDB();
-  closeModal();
-  showToast('Homework deleted');
-  renderMain();
-}
-function closeModal(){ document.getElementById('modal-bg').classList.remove('active'); }
-
-/* =========================================================
-   TEACHER: GROUPS
-   ========================================================= */
-function renderTeacherGroups(){
-  const groupCards = DB.groups.map(g=>{
-    const members = DB.users.filter(u=>u.role==='student' && u.group===g);
-    return `
-      <div class="detail-block" style="margin-bottom:16px;">
-        <h4 style="margin-bottom:14px;">${g} <span style="font-weight:500; text-transform:none; letter-spacing:0; color:var(--ink-soft);">· ${members.length} students</span></h4>
-        ${members.map(m=>{
-          const hws = studentHomeworks(m);
-          const done = hws.filter(hw=>deriveStatus(hw, getProgress(m.id,hw.id))==='done').length;
-          return `<div class="progress-list-row">
-            <div style="display:flex; align-items:center; gap:12px;">
-              <div class="avatar" style="background:var(--indigo); color:#fff;">${m.name.split(' ').map(w=>w[0]).slice(0,2).join('')}</div>
-              <div class="name">${m.name}</div>
-            </div>
-            <div style="font-size:13px; color:var(--ink-soft); font-weight:700;">${done}/${hws.length} done</div>
-          </div>`;
-        }).join('') || `<p style="color:var(--ink-soft); font-size:14px;">No students in this group yet.</p>`}
-      </div>
-    `;
-  }).join('');
-
-  return `
-    <div class="topbar"><div><h1>Groups</h1><div class="sub">${DB.groups.length} groups · Even-Day and Odd-Day rotate the Essential 2 assignment</div></div></div>
-    ${groupCards}
-  `;
 }
 
-/* =========================================================
-   TEACHER: CLASS PROGRESS
-   ========================================================= */
-function renderTeacherProgress(){
-  const students = DB.users.filter(u=>u.role==='student');
-  const rows = students.map(s=>{
-    const hws = studentHomeworks(s);
-    const done = hws.filter(hw=>deriveStatus(hw, getProgress(s.id,hw.id))==='done').length;
-    const inProg = hws.filter(hw=>deriveStatus(hw, getProgress(s.id,hw.id))==='in-progress').length;
-    const pct = hws.length? Math.round(done/hws.length*100):0;
-    return `
-      <div class="progress-list-row">
-        <div style="display:flex; align-items:center; gap:12px;">
-          <div class="avatar" style="background:var(--indigo); color:#fff;">${s.name.split(' ').map(w=>w[0]).slice(0,2).join('')}</div>
-          <div>
-            <div class="name">${s.name}</div>
-            <div style="font-size:12px; color:var(--ink-soft);">${s.group}</div>
-          </div>
-        </div>
-        <div style="display:flex; align-items:center; gap:14px;">
-          <div style="font-size:12.5px; color:var(--ink-soft); font-weight:700;">${done} done · ${inProg} in progress</div>
-          <div class="mini-bar" style="width:120px;"><div style="width:${pct}%; background:var(--indigo);"></div></div>
-        </div>
-      </div>
-    `;
-  }).join('');
+function handleAudioFileUpload(e) {
+  const file = e.target.files[0];
+  if (!file) return;
 
-  const totalDone = students.reduce((acc,s)=>acc+studentHomeworks(s).filter(hw=>deriveStatus(hw,getProgress(s.id,hw.id))==='done').length,0);
-  const totalTasks = students.reduce((acc,s)=>acc+studentHomeworks(s).length,0);
+  const url = URL.createObjectURL(file);
+  appState.studentMedia.audioBlob = file;
+  appState.studentMedia.audioUrl = url;
 
-  return `
-    <div class="topbar"><div><h1>Class Progress</h1><div class="sub">Across all groups</div></div></div>
-    <div class="stat-grid">
-      <div class="stat-card"><div class="n">${students.length}</div><div class="l">Students</div></div>
-      <div class="stat-card"><div class="n">${DB.homeworks.length}</div><div class="l">Active Homework</div></div>
-      <div class="stat-card"><div class="n" style="color:var(--teal)">${totalDone}</div><div class="l">Tasks Completed</div></div>
-      <div class="stat-card"><div class="n">${totalTasks? Math.round(totalDone/totalTasks*100):0}%</div><div class="l">Overall Completion</div></div>
-    </div>
-    ${rows}
-  `;
+  const audioPlayer = document.getElementById('audioPlayer');
+  audioPlayer.src = url;
+  document.getElementById('audioPreviewContainer').classList.remove('hidden');
 }
 
-function attachDynamicHandlers(){ /* reserved for future use */ }
+function removeSubmittedAudio() {
+  appState.studentMedia.audioBlob = null;
+  appState.studentMedia.audioUrl = null;
+  document.getElementById('audioPreviewContainer').classList.add('hidden');
+}
 
-/* =========================================================
-   TEACHER: SUBMISSIONS (photo review panel)
-   ========================================================= */
-function renderTeacherSubmissions(){
-  const students = DB.users.filter(u=>u.role==='student');
-  const items = [];
-  students.forEach(s=>{
-    studentHomeworks(s).forEach(hw=>{
-      const p = getProgress(s.id, hw.id);
-      if(p.submissionImage){
-        items.push({student:s, hw, prog:p});
-      }
-    });
+// SUBMIT HOMEWORK FORM
+function submitStudentHomework() {
+  const hw = appState.homeworks.find(h => h.id === appState.activeHwId);
+  if (!hw) return;
+
+  // Gather Sentences
+  const sentenceInputs = document.querySelectorAll('.student-sentence-input');
+  const sentences = [];
+  sentenceInputs.forEach(inp => {
+    if (inp.value.trim()) sentences.push(inp.value.trim());
   });
-  items.sort((a,b)=> (a.prog.reviewed===b.prog.reviewed) ? 0 : (a.prog.reviewed?1:-1));
 
-  const cards = items.map(it=>`
-    <div class="submission-card">
-      <div class="sc-thumb" onclick="openLightbox('${it.prog.submissionImage.replace(/'/g,"\\'")}')">
-        <img src="${it.prog.submissionImage}" alt="Submission">
-      </div>
-      <div class="sc-info">
-        <div class="sc-name">${it.student.name}</div>
-        <div class="sc-task">${it.hw.title} · ${it.student.group}</div>
-      </div>
-      <span class="review-badge ${it.prog.reviewed?'done':''}" style="cursor:pointer;" onclick="toggleReviewed('${it.student.id}','${it.hw.id}')">
-        ${it.prog.reviewed? 'Reviewed ✓' : 'Needs review'}
-      </span>
-    </div>
-  `).join('');
+  const validImages = appState.studentMedia.images.filter(img => img !== null);
 
-  return `
-    <div class="topbar"><div><h1>Submissions</h1><div class="sub">${items.length} photo submissions across all students</div></div></div>
-    ${items.length ? cards : `
-      <div class="empty-state">
-        ${ICONS.empty}
-        <p>No photo submissions yet. Once students attach photos to their homework, they'll show up here.</p>
-      </div>
-    `}
-  `;
-}
-function toggleReviewed(studentId, hwId){
-  const p = getProgress(studentId, hwId);
-  setProgress(studentId, hwId, {reviewed: !p.reviewed});
-  renderMain();
-}
-function openLightbox(src){
-  document.getElementById('lightbox-img').src = src;
-  document.getElementById('lightbox-bg').classList.add('active');
-}
-function closeLightbox(){
-  document.getElementById('lightbox-bg').classList.remove('active');
-  document.getElementById('lightbox-img').src = '';
+  hw.status = 'submitted';
+  hw.submission = {
+    studentName: 'Nodira Alimova',
+    submittedAt: new Date().toISOString().split('T')[0],
+    images: validImages,
+    audio: appState.studentMedia.audioUrl || null,
+    sentences: sentences,
+    studentNotes: document.getElementById('studentComments').value,
+    grade: null,
+    feedback: null
+  };
+
+  saveToStorage();
+  closeStudentHwModal();
+  renderApp();
 }
 
-/* =========================================================
-   INIT
-   ========================================================= */
-loadDB();
-if(tryRestoreSession() && DB.users.find(u=>u.id===SESSION.userId)){
-  enterApp();
+// TEACHER CREATE/EDIT HOMEWORK
+function openCreateHomeworkModal() {
+  document.getElementById('teacherModalTitle').innerText = 'Create Homework Assignment';
+  document.getElementById('teacherHwForm').reset();
+  appState.teacherMedia.images = [null, null, null, null];
+  renderImageSlots('teacherImageSlotsGrid', appState.teacherMedia.images, handleTeacherImageUpload);
+  document.getElementById('teacherHwModal').classList.remove('hidden');
 }
-document.getElementById('login-password').addEventListener('keydown', e=>{ if(e.key==='Enter') handleLogin(); });
+
+function closeTeacherHwModal() {
+  document.getElementById('teacherHwModal').classList.add('hidden');
+}
+
+function handleTeacherImageUpload(e, index, gridId, imageArray) {
+  const file = e.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = function(evt) {
+    imageArray[index] = evt.target.result;
+    renderImageSlots(gridId, imageArray, handleTeacherImageUpload);
+  };
+  reader.readAsDataURL(file);
+}
+
+function handleTeacherAudioUpload(e) {
+  const file = e.target.files[0];
+  if (file) {
+    document.getElementById('tAudioFileName').innerText = file.name;
+    appState.teacherMedia.audioUrl = URL.createObjectURL(file);
+  }
+}
+
+function saveTeacherHomework(e) {
+  e.preventDefault();
+  const title = document.getElementById('tHwTitle').value;
+  const category = document.getElementById('tHwCategory').value;
+  const dueDate = document.getElementById('tHwDueDate').value;
+  const instructions = document.getElementById('tHwInstructions').value;
+  const vocabRaw = document.getElementById('tHwVocab').value;
+
+  const vocabList = vocabRaw ? vocabRaw.split(',').map(v => v.trim()).filter(Boolean) : [];
+  const validImages = appState.teacherMedia.images.filter(img => img !== null);
+
+  const newHw = {
+    id: 'hw-' + Date.now(),
+    title,
+    category,
+    dueDate,
+    instructions,
+    vocabList,
+    teacherImages: validImages,
+    teacherAudio: appState.teacherMedia.audioUrl || null,
+    status: 'pending'
+  };
+
+  appState.homeworks.unshift(newHw);
+  saveToStorage();
+  closeTeacherHwModal();
+  renderApp();
+}
+
+function deleteTeacherHomework(hwId) {
+  if (confirm('Are you sure you want to delete this homework?')) {
+    appState.homeworks = appState.homeworks.filter(h => h.id !== hwId);
+    saveToStorage();
+    renderApp();
+  }
+}
+
+// TEACHER GRADING MODAL
+function openGradeModal(hwId) {
+  const hw = appState.homeworks.find(h => h.id === hwId);
+  if (!hw || !hw.submission) return;
+
+  appState.activeHwId = hwId;
+  const sub = hw.submission;
+
+  document.getElementById('gradeStudentName').innerText = `Submission by ${sub.studentName}`;
+  document.getElementById('gradeHwTitle').innerText = `Task: ${hw.title}`;
+
+  // Images Grid
+  const imgGrid = document.getElementById('gradeImagesGrid');
+  imgGrid.innerHTML = '';
+  if (sub.images && sub.images.length > 0) {
+    sub.images.forEach(src => {
+      const img = document.createElement('img');
+      img.src = src;
+      img.className = "w-full h-16 object-cover rounded-xl border border-white/20 cursor-pointer hover:opacity-80";
+      img.onclick = () => openLightbox(src);
+      imgGrid.appendChild(img);
+    });
+  } else {
+    imgGrid.innerHTML = `<span class="text-[10px] text-slate-500 italic">No notebook photos uploaded.</span>`;
+  }
+
+  // Audio
+  const audioSec = document.getElementById('gradeAudioSection');
+  if (sub.audio) {
+    audioSec.classList.remove('hidden');
+    document.getElementById('gradeAudioPlayer').src = sub.audio;
+  } else {
+    audioSec.classList.add('hidden');
+  }
+
+  // Sentences
+  const sentSec = document.getElementById('gradeSentencesSection');
+  const sentList = document.getElementById('gradeSentencesList');
+  sentList.innerHTML = '';
+  if (sub.sentences && sub.sentences.length > 0) {
+    sentSec.classList.remove('hidden');
+    sub.sentences.forEach((s, idx) => {
+      const p = document.createElement('p');
+      p.className = "text-xs p-2 rounded-xl bg-slate-900 border border-white/5";
+      p.innerText = `${idx + 1}. ${s}`;
+      sentList.appendChild(p);
+    });
+  } else {
+    sentSec.classList.add('hidden');
+  }
+
+  document.getElementById('gradeStudentNote').innerText = sub.studentNotes || 'No comment provided.';
+  document.getElementById('gradeScoreInput').value = sub.grade || 95;
+  document.getElementById('gradeFeedbackInput').value = sub.feedback || 'Well done! Clear handwriting and accurate responses.';
+
+  document.getElementById('gradeSubmissionModal').classList.remove('hidden');
+}
+
+function closeGradeModal() {
+  document.getElementById('gradeSubmissionModal').classList.add('hidden');
+}
+
+function saveGradeSubmission(e) {
+  e.preventDefault();
+  const hw = appState.homeworks.find(h => h.id === appState.activeHwId);
+  if (!hw || !hw.submission) return;
+
+  const score = parseInt(document.getElementById('gradeScoreInput').value);
+  const feedback = document.getElementById('gradeFeedbackInput').value;
+  const status = document.getElementById('gradeStatusInput').value;
+
+  hw.submission.grade = score;
+  hw.submission.feedback = feedback;
+  hw.status = status;
+
+  saveToStorage();
+  closeGradeModal();
+  renderApp();
+}
+
+// LIGHTBOX FUNCTIONALITY
+function openLightbox(src) {
+  document.getElementById('lightboxImg').src = src;
+  document.getElementById('lightboxModal').classList.remove('hidden');
+}
+
+function closeLightbox() {
+  document.getElementById('lightboxModal').classList.add('hidden');
+}
+
+// MOBILE NAV SWITCHER
+function setMobileNav(tab) {
+  ['tasks', 'practice', 'analytics'].forEach(t => {
+    const btn = document.getElementById(`navBtn${t.charAt(0).toUpperCase() + t.slice(1)}`);
+    if (t === tab) {
+      btn.className = "flex flex-col items-center gap-1 text-blue-400 transition-all duration-200";
+    } else {
+      btn.className = "flex flex-col items-center gap-1 hover:text-white transition-all duration-200";
+    }
+  });
+}
 </script>
 </body>
 </html>
