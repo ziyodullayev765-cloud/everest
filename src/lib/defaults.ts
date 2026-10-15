@@ -6,21 +6,21 @@ import type { NavItem, Profile, SiteSettings } from "./types";
  * the real values from the admin dashboard.
  */
 export const DEFAULT_NAV: NavItem[] = [
-  { label: "Men haqimda", href: "/about", visible: true },
-  { label: "Loyihalar", href: "/projects", visible: true },
-  { label: "Yutuqlar", href: "/achievements", visible: true },
-  { label: "Ko‘nikmalar", href: "/skills", visible: true },
-  { label: "Tajriba", href: "/experience", visible: true },
-  { label: "Galereya", href: "/gallery", visible: true },
-  { label: "Aloqa", href: "/contact", visible: true },
+  { label: "Journey", href: "/gallery", visible: true },
+  { label: "Highlights", href: "/#highlights", visible: true },
+  { label: "Projects", href: "/projects", visible: true },
+  { label: "Experience", href: "/experience", visible: true },
+  { label: "Achievements", href: "/achievements", visible: true },
+  { label: "Skills", href: "/skills", visible: true },
+  { label: "Contact", href: "/#contact", visible: true },
 ];
 
 export const DEFAULT_PROFILE: Profile = {
   id: 1,
   full_name: "Behruz Ziyodullayev",
-  headline: "[Kasbiy unvoningiz — admin paneldan tahrirlang]",
-  short_intro: "[Qisqa tanishtiruv: o‘zingiz haqingizda 1–2 gap. Admin → Profil bo‘limidan tahrirlang.]",
-  bio: "[Biografiya: admin paneldan to‘ldiring.]",
+  headline: "[Your title — edit it in Admin → Profile]",
+  short_intro: "[A one or two sentence intro — edit it in Admin → Profile.]",
+  bio: "[Your bio — fill it in from the admin dashboard.]",
   story: "",
   background: "",
   learning_journey: "",
@@ -43,9 +43,10 @@ export const DEFAULT_SETTINGS: SiteSettings = {
   enable_particles: true,
   hero_eyebrow: "Portfolio",
   hero_title: "",
-  hero_description: "[Hero tavsifi: nima bilan shug‘ullanishingizni qisqacha yozing. Admin → Sozlamalar → Hero.]",
-  cta_primary_label: "Loyihalarimni ko’rish",
-  cta_secondary_label: "Men bilan bog’lanish",
+  ticker_items: [],
+  hero_description: "[Hero text: what you do, in one sentence. Admin → Settings → Hero.]",
+  cta_primary_label: "Explore Projects",
+  cta_secondary_label: "Start a Project",
   seo_title: "",
   seo_description: "",
   seo_keywords: [],
@@ -79,9 +80,9 @@ export function seoTitle(settings: { seo_title: string }, name: string) {
 }
 
 export function seoDescription(settings: { seo_description: string }, name: string) {
-  return settings.seo_description?.trim() || `${name} — shaxsiy portfolio: loyihalar, yutuqlar va tajriba.`;
+  return settings.seo_description?.trim() || `${name} — portfolio: projects, highlights and experience.`;
 }
 
 export function footerText(settings: { footer_text: string }, name: string) {
-  return settings.footer_text?.trim() || `© ${new Date().getFullYear()} ${name}. Barcha huquqlar himoyalangan.`;
+  return settings.footer_text?.trim() || `© ${new Date().getFullYear()} ${name}. All rights reserved.`;
 }

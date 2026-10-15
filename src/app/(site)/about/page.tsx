@@ -60,7 +60,7 @@ export default async function AboutPage() {
               />
             ) : (
               <div className="text-subtle absolute inset-0 grid place-items-center text-center text-sm">
-                <span>[Profil surati — admin paneldan yuklang]</span>
+                <span>[Profile photo — upload it in the admin dashboard]</span>
               </div>
             )}
             <div className="pointer-events-none absolute inset-0 rounded-[2rem] ring-1 ring-white/10 ring-inset" />

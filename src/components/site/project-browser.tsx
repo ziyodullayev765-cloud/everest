@@ -65,7 +65,7 @@ export function ProjectBrowser({ projects }: { projects: Project[] }) {
               className="border-line text-fg placeholder:text-subtle focus:border-accent/60 h-11 w-full rounded-full border bg-white/[0.03] pr-4 pl-10 text-sm focus:outline-none"
             />
           </label>
-          <div className="border-line flex rounded-full border p-1" role="group" aria-label="Ko‘rinish">
+          <div className="border-line flex rounded-full border p-1" role="group" aria-label="View">
             <button
               type="button"
               onClick={() => setView("grid")}

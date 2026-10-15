@@ -23,9 +23,9 @@ export function ThemeToggle() {
     <button
       type="button"
       onClick={toggle}
-      aria-label={light ? "Qorong‘i rejim" : "Yorug‘ rejim"}
-      title={light ? "Qorong‘i rejim" : "Yorug‘ rejim"}
-      className="grid size-10 place-items-center !p-0"
+      aria-label={light ? "Dark mode" : "Light mode"}
+      title={light ? "Dark mode" : "Light mode"}
+      className="ed-icon-btn"
     >
       {light ? <Moon className="size-4" aria-hidden /> : <Sun className="size-4" aria-hidden />}
     </button>

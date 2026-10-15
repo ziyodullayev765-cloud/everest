@@ -28,7 +28,7 @@ export async function generateMetadata(): Promise<Metadata> {
       title,
       description,
       url: "/",
-      locale: "uz_UZ",
+      locale: "en_US",
       images: [{ url: s.og_image_url || "/og", width: 1200, height: 630 }],
     },
     twitter: {
@@ -51,7 +51,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const settings = await getSettings();
   return (
     <html
-      lang="uz"
+      lang="en"
       className={`${GeistSans.variable} ${GeistMono.variable}`}
       style={{ ["--accent" as string]: settings.accent_color }}
       // The theme script adds the "light" class before hydration.

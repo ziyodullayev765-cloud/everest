@@ -42,6 +42,7 @@ export interface SiteSettings {
   hero_eyebrow: string;
   hero_title: string;
   hero_description: string;
+  ticker_items: string[];
   cta_primary_label: string;
   cta_secondary_label: string;
   seo_title: string;
@@ -139,6 +140,7 @@ export interface Experience extends Row {
   start_date: string | null;
   end_date: string | null;
   is_current: boolean;
+  period_label: string;
   description: string;
   highlights: string[];
   image_url: string | null;

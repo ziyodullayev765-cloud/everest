@@ -14,16 +14,36 @@ import { cn } from "@/lib/utils";
 interface Props {
   siteName: string;
   logoUrl: string | null;
+  availability: string;
   nav: NavItem[];
   resumeUrl: string | null;
 }
 
 function isActive(pathname: string, href: string) {
+  if (href.startsWith("/#") || href.startsWith("#")) return false;
   if (href === "/") return pathname === "/";
   return pathname === href || pathname.startsWith(`${href}/`);
 }
 
-export function Header({ siteName, nav, resumeUrl }: Props) {
+/** Status pill: a softly pulsing dot plus the availability text. */
+function Availability({ text, className }: { text: string; className?: string }) {
+  return (
+    <span
+      className={cn(
+        "border-line inline-flex items-center gap-2 rounded-full border px-2.5 py-1 text-[0.68rem] font-medium tracking-[0.06em] text-[var(--fg-secondary)] uppercase",
+        className,
+      )}
+    >
+      <span className="relative flex size-1.5">
+        <span className="absolute inline-flex size-full animate-ping rounded-full bg-emerald-400 opacity-60 motion-reduce:hidden" />
+        <span className="relative inline-flex size-1.5 rounded-full bg-emerald-400" />
+      </span>
+      {text}
+    </span>
+  );
+}
+
+export function Header({ siteName, logoUrl, availability, nav, resumeUrl }: Props) {
   const pathname = usePathname();
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
@@ -82,41 +102,43 @@ export function Header({ siteName, nav, resumeUrl }: Props) {
       >
         {copy.skipToContent}
       </a>
-      <header className="fixed inset-x-0 top-0 z-50">
-        <div
-          className={cn(
-            "border-b transition-colors duration-300",
-            scrolled ? "border-line bg-[rgba(var(--surface-rgb),0.92)]" : "border-transparent bg-transparent",
-          )}
-        >
-          {/* Desktop: centred row of pills, like an editorial index */}
-          <nav aria-label="Asosiy" className="ed-nav hidden flex-wrap items-center justify-center gap-2.5 px-4 py-4 lg:flex">
-            {[{ label: copy.home, href: "/", visible: true }, ...nav].map((item) => {
-              const active = isActive(pathname, item.href);
-              return (
-                <Link key={item.href} href={item.href} aria-current={active ? "page" : undefined}>
-                  {item.label}
-                </Link>
-              );
-            })}
-            {resumeUrl && (
-              <a href={resumeUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5">
-                <Download className="size-3.5" aria-hidden />
-                {copy.downloadCv}
-              </a>
-            )}
-            <span className="ml-2 flex items-center gap-2">
-              <ThemeToggle />
-              <SoundToggle />
-            </span>
-          </nav>
 
-          {/* Mobile: name + toggles */}
-          <div className="ed-nav flex items-center justify-between gap-3 px-4 py-3 lg:hidden">
-            <Link href="/" className="font-display min-w-0 truncate !border-0 !bg-transparent !px-0 text-sm tracking-[0.08em]">
-              {siteName}
-            </Link>
-            <div className="flex items-center gap-2">
+      <header className={cn("fixed inset-x-0 z-50 transition-[top] duration-300", scrolled ? "top-2" : "top-4")}>
+        <div className="mx-auto w-[min(1200px,calc(100%-1.5rem))]">
+          <div
+            className={cn(
+              "ed-glass flex h-14 items-center justify-between gap-3 rounded-full pr-2 pl-4 transition-shadow duration-300 sm:pl-5",
+              scrolled && "shadow-[0_12px_40px_-16px_rgba(0,0,0,0.6)]",
+            )}
+          >
+            <div className="flex min-w-0 items-center gap-3">
+              <Link href="/" className="flex min-w-0 items-center gap-2.5" aria-label={`${siteName} — ${copy.home}`}>
+                {logoUrl && (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={logoUrl} alt="" className="size-8 rounded-full object-cover" width={32} height={32} />
+                )}
+                <span className="font-display truncate text-[1.02rem] font-semibold tracking-[0.01em]">{siteName}</span>
+              </Link>
+              {availability && <Availability text={availability} className="hidden xl:inline-flex" />}
+            </div>
+
+            <nav aria-label={copy.menu} className="hidden lg:block">
+              <ul className="flex items-center gap-0.5">
+                {nav.map((item) => (
+                  <li key={item.href}>
+                    <Link
+                      href={item.href}
+                      className="ed-navlink"
+                      aria-current={isActive(pathname, item.href) ? "page" : undefined}
+                    >
+                      {item.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </nav>
+
+            <div className="flex shrink-0 items-center gap-1.5">
               <ThemeToggle />
               <SoundToggle />
               <button
@@ -126,7 +148,7 @@ export function Header({ siteName, nav, resumeUrl }: Props) {
                 aria-expanded={open}
                 aria-controls="mobile-menu"
                 aria-label={open ? copy.closeMenu : copy.menu}
-                className="grid size-10 place-items-center !p-0"
+                className="ed-icon-btn lg:hidden"
               >
                 {open ? <X className="size-4" aria-hidden /> : <Menu className="size-4" aria-hidden />}
               </button>
@@ -143,50 +165,43 @@ export function Header({ siteName, nav, resumeUrl }: Props) {
             role="dialog"
             aria-modal="true"
             aria-label={copy.menu}
-            initial={reduce ? { opacity: 1 } : { opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.3 }}
-            className="bg-bg/95 fixed inset-0 z-40 lg:hidden"
+            initial={reduce ? { opacity: 1 } : { opacity: 0, clipPath: "circle(0% at 100% 0%)" }}
+            animate={{ opacity: 1, clipPath: "circle(150% at 100% 0%)" }}
+            exit={reduce ? { opacity: 0 } : { opacity: 0, clipPath: "circle(0% at 100% 0%)" }}
+            transition={{ duration: 0.55, ease: [0.76, 0, 0.24, 1] }}
+            className="bg-bg fixed inset-0 z-40 lg:hidden"
           >
-            <nav aria-label="Mobil" className="container-x flex h-full flex-col justify-between pt-28 pb-10">
+            <nav aria-label="Mobile" className="container-x flex h-full flex-col justify-between pt-28 pb-10">
               <ul className="flex flex-col">
-                {[{ label: copy.home, href: "/", visible: true }, ...nav].map((item, i) => {
-                  const active = isActive(pathname, item.href);
-                  return (
-                    <motion.li
-                      key={item.href}
-                      initial={reduce ? false : { opacity: 0, y: 16 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.04 * i, duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-                      className="border-line border-b"
+                {[{ label: copy.home, href: "/", visible: true }, ...nav].map((item, i) => (
+                  <motion.li
+                    key={item.href}
+                    initial={reduce ? false : { opacity: 0, y: 18 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.12 + 0.045 * i, duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+                    className="border-line border-b"
+                  >
+                    <Link
+                      href={item.href}
+                      onClick={() => setOpen(false)}
+                      aria-current={isActive(pathname, item.href) ? "page" : undefined}
+                      className="font-display aria-[current=page]:text-gold flex items-center justify-between py-4 text-3xl"
                     >
-                      <Link
-                        href={item.href}
-                        aria-current={active ? "page" : undefined}
-                        className={cn(
-                          "font-display flex items-center justify-between py-4 text-2xl sm:text-3xl",
-                          active ? "text-accent" : "text-fg",
-                        )}
-                      >
-                        {item.label}
-                        <ArrowUpRight className="text-subtle size-5" aria-hidden />
-                      </Link>
-                    </motion.li>
-                  );
-                })}
+                      {item.label}
+                      <ArrowUpRight className="text-subtle size-5" aria-hidden />
+                    </Link>
+                  </motion.li>
+                ))}
               </ul>
-              {resumeUrl && (
-                <a
-                  href={resumeUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="ed-button ed-button--accent mt-8 justify-center"
-                >
-                  <Download className="size-4" aria-hidden />
-                  {copy.downloadCv}
-                </a>
-              )}
+              <div className="mt-8 flex flex-col gap-4">
+                {availability && <Availability text={availability} className="self-start" />}
+                {resumeUrl && (
+                  <a href={resumeUrl} target="_blank" rel="noopener noreferrer" className="ed-button ed-button--accent">
+                    <Download className="size-4" aria-hidden />
+                    {copy.downloadCv}
+                  </a>
+                )}
+              </div>
             </nav>
           </motion.div>
         )}

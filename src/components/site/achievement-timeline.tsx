@@ -45,7 +45,7 @@ export function AchievementTimeline({ items }: { items: Achievement[] }) {
   return (
     <div>
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex flex-wrap gap-2" role="group" aria-label="Kategoriya">
+        <div className="flex flex-wrap gap-2" role="group" aria-label="Category">
           <button type="button" className={chip(!filter)} aria-pressed={!filter} onClick={() => setFilter("")}>
             {copy.projects.all}
           </button>

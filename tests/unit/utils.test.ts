@@ -38,8 +38,8 @@ describe("URL safety", () => {
 
 describe("dates", () => {
   it("formats without timezone drift", () => {
-    expect(formatMonthYear("2024-01-01")).toBe("yanvar 2024");
-    expect(formatRange("2023-09-01", null, true)).toBe("sentabr 2023 — hozirgacha");
+    expect(formatMonthYear("2024-01-01")).toBe("Jan 2024");
+    expect(formatRange("2023-09-01", null, true)).toBe("Sep 2023 – Present");
     expect(formatRange(null, null, false)).toBe("");
   });
 });

@@ -66,27 +66,27 @@ export function slugify(input: string): string {
     .replace(/-+$/g, "");
 }
 
-const MONTHS_UZ = ["yanvar", "fevral", "mart", "aprel", "may", "iyun", "iyul", "avgust", "sentabr", "oktabr", "noyabr", "dekabr"];
+const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
-/** "2024-03-01" → "mart 2024". Parses date-only strings without timezone drift. */
+/** "2024-03-01" → "Mar 2024". Parses date-only strings without timezone drift. */
 export function formatMonthYear(date: string | null | undefined): string {
   if (!date) return "";
   const m = /^(\d{4})-(\d{2})/.exec(date);
   if (!m) return "";
-  return `${MONTHS_UZ[Number(m[2]) - 1]} ${m[1]}`;
+  return `${MONTHS[Number(m[2]) - 1]} ${m[1]}`;
 }
 
 export function formatDate(date: string | null | undefined): string {
   if (!date) return "";
   const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(date);
   if (!m) return "";
-  return `${Number(m[3])} ${MONTHS_UZ[Number(m[2]) - 1]} ${m[1]}`;
+  return `${Number(m[3])} ${MONTHS[Number(m[2]) - 1]} ${m[1]}`;
 }
 
 export function formatRange(start: string | null, end: string | null, current: boolean) {
   const s = formatMonthYear(start);
-  const e = current ? "hozirgacha" : formatMonthYear(end);
-  if (s && e) return `${s} — ${e}`;
+  const e = current ? "Present" : formatMonthYear(end);
+  if (s && e) return `${s} – ${e}`;
   return s || e;
 }
 
