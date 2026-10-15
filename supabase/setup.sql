@@ -632,6 +632,11 @@ alter table public.experience add column if not exists period_label text not nul
   check (char_length(period_label) <= 60);
 
 
+-- v5: the brief's bronze (#c5a059) as the default accent. Safe to run more than once.
+update public.site_settings set accent_color = '#c5a059' where accent_color = '#c4a574';
+alter table public.site_settings alter column accent_color set default '#c5a059';
+
+
 -- =============================================================================
 -- Initial singleton rows. Safe to run more than once (does not overwrite edits).
 --
