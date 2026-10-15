@@ -4,6 +4,17 @@ import { SmartImage } from "@/components/ui/smart-image";
 import type { Project } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
+const PALETTE = ["var(--accent)", "var(--c-pink)", "var(--c-cyan)", "var(--c-amber)", "var(--c-lime)"];
+
+/** Stable, colourful cover for projects without a thumbnail (picked from the title). */
+function placeholderGradient(title: string) {
+  let h = 0;
+  for (const ch of title) h = (h * 31 + ch.charCodeAt(0)) >>> 0;
+  const a = PALETTE[h % PALETTE.length];
+  const b = PALETTE[(h >> 3) % PALETTE.length] === a ? PALETTE[(h + 1) % PALETTE.length] : PALETTE[(h >> 3) % PALETTE.length];
+  return `radial-gradient(circle at 25% 20%, ${a}, transparent 55%), radial-gradient(circle at 80% 85%, ${b}, transparent 55%), #0d0b14`;
+}
+
 export function ProjectThumb({ project, className, priority }: { project: Project; className?: string; priority?: boolean }) {
   return (
     <div className={cn("bg-bg-elevated relative overflow-hidden", className)}>
@@ -18,8 +29,12 @@ export function ProjectThumb({ project, className, priority }: { project: Projec
         />
       ) : (
         <div className="absolute inset-0 grid place-items-center">
-          <div className="grid-backdrop absolute inset-0 opacity-60" />
-          <span className="relative text-5xl font-semibold tracking-tighter text-white/10">
+          <div
+            className="ease-out-expo absolute inset-0 opacity-70 transition-transform duration-[1.2s] group-hover:scale-110 group-hover:rotate-3"
+            style={{ background: placeholderGradient(project.title) }}
+          />
+          <div className="grid-backdrop absolute inset-0 opacity-40" />
+          <span className="font-display relative text-6xl tracking-tighter text-white/80 mix-blend-overlay">
             {project.title.slice(0, 2).toUpperCase()}
           </span>
         </div>
@@ -39,7 +54,7 @@ export function ProjectCard({
   featuredLabel?: string;
 }) {
   return (
-    <article className="group border-line ease-out-expo hover:border-line-strong relative flex h-full flex-col overflow-hidden rounded-[1.75rem] border bg-white/[0.02] transition-all duration-500 hover:-translate-y-1 hover:bg-white/[0.035] hover:shadow-[0_30px_80px_-30px_rgba(0,0,0,0.9)]">
+    <article className="border-rainbow group border-line ease-out-expo hover:border-line-strong relative flex h-full flex-col overflow-hidden rounded-[1.75rem] border bg-white/[0.02] transition-all duration-500 hover:-translate-y-1 hover:bg-white/[0.035] hover:shadow-[0_30px_80px_-30px_rgba(0,0,0,0.9)]">
       <ProjectThumb project={project} priority={priority} className="aspect-[16/10]" />
       <div className="flex flex-1 flex-col p-6">
         <div className="text-subtle mb-3 flex flex-wrap items-center gap-2 text-xs">
@@ -49,7 +64,11 @@ export function ProjectCard({
           )}
         </div>
         <h3 className="text-xl font-semibold tracking-tight">
-          <Link href={`/projects/${project.slug}`} className="after:absolute after:inset-0 after:content-['']">
+          <Link
+            href={`/projects/${project.slug}`}
+            data-cursor="Ko‘rish"
+            className="after:absolute after:inset-0 after:content-['']"
+          >
             {project.title}
           </Link>
         </h3>

@@ -407,7 +407,14 @@ export const SETTINGS_CONFIG: SingletonConfig = {
     {
       title: "General",
       fields: [
-        { name: "site_name", label: "Site name", type: "text", required: true, max: 120 },
+        {
+          name: "site_name",
+          label: "Site name (fallback)",
+          type: "text",
+          required: true,
+          max: 120,
+          help: "Your name is taken from Profile → Full name. This is only used if that is empty.",
+        },
         {
           name: "site_url",
           label: "Public site URL",
@@ -422,7 +429,7 @@ export const SETTINGS_CONFIG: SingletonConfig = {
       title: "Hero",
       fields: [
         { name: "hero_eyebrow", label: "Eyebrow text", type: "text", max: 120 },
-        { name: "hero_title", label: "Hero title", type: "text", max: 200 },
+        { name: "hero_title", label: "Hero title (optional)", type: "text", max: 200, help: "Leave empty to show your name." },
         { name: "hero_description", label: "Hero description", type: "textarea", max: 800, rows: 4, wide: true },
         { name: "cta_primary_label", label: "Primary button", type: "text", max: 60 },
         { name: "cta_secondary_label", label: "Secondary button", type: "text", max: 60 },
@@ -431,9 +438,23 @@ export const SETTINGS_CONFIG: SingletonConfig = {
     {
       title: "Appearance",
       fields: [
-        { name: "accent_color", label: "Accent colour", type: "color", help: "Emerald (#10b981) by default." },
+        {
+          name: "accent_color",
+          label: "Accent colour",
+          type: "color",
+          help: "Main colour of buttons and highlights (violet #8b5cf6 by default).",
+        },
         { name: "enable_3d", label: "Show interactive 3D centrepiece", type: "boolean" },
         { name: "enable_particles", label: "Show ambient particles", type: "boolean" },
+      ],
+    },
+    {
+      title: "Background music",
+      description:
+        "Visitors can turn music on with the speaker button. Upload an MP3 here; if empty, a soft generated ambient soundtrack plays instead. Only use music you have the rights to.",
+      fields: [
+        { name: "music_url", label: "Music file (MP3, M4A, OGG, WAV — max 15 MB)", type: "file", accept: "audio", wide: true },
+        { name: "music_title", label: "Track name (shown next to the button)", type: "text", max: 120, wide: true },
       ],
     },
     {
@@ -448,7 +469,13 @@ export const SETTINGS_CONFIG: SingletonConfig = {
     {
       title: "SEO & sharing",
       fields: [
-        { name: "seo_title", label: "Default page title", type: "text", max: 120 },
+        {
+          name: "seo_title",
+          label: "Default page title (optional)",
+          type: "text",
+          max: 120,
+          help: "Empty = “Your Name — Portfolio”.",
+        },
         { name: "seo_description", label: "Meta description", type: "textarea", max: 320, rows: 3, wide: true },
         { name: "seo_keywords", label: "Keywords", type: "tags", maxItems: 20, wide: true },
         { name: "og_image_url", label: "Social sharing image (1200×630)", type: "image", wide: true },
@@ -459,7 +486,15 @@ export const SETTINGS_CONFIG: SingletonConfig = {
       fields: [
         { name: "nav_items", label: "Header navigation", type: "links", maxItems: 12, wide: true },
         { name: "footer_links", label: "Footer links", type: "links", maxItems: 12, wide: true },
-        { name: "footer_text", label: "Footer text", type: "textarea", max: 400, rows: 2, wide: true },
+        {
+          name: "footer_text",
+          label: "Footer text (optional)",
+          type: "textarea",
+          max: 400,
+          rows: 2,
+          wide: true,
+          help: "Empty = “© year Your Name”.",
+        },
         { name: "show_resume", label: "Show “Download CV” button (when a CV is uploaded)", type: "boolean", wide: true },
       ],
     },

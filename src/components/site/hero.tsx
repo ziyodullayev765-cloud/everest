@@ -1,10 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { motion, useReducedMotion } from "motion/react";
-import { ArrowDown, ArrowRight, MapPin } from "lucide-react";
+import { motion, useReducedMotion, useScroll, useTransform } from "motion/react";
+import { ArrowDownRight, ArrowRight, MapPin, Sparkles } from "lucide-react";
 import { HeroVisual } from "@/components/three/hero-visual";
-import { buttonClass } from "@/components/ui/button";
+import { Magnetic } from "@/components/effects/magnetic";
+import { PlayfulText } from "./playful-text";
+import { isPlaceholder } from "@/lib/defaults";
 
 interface Props {
   eyebrow: string;
@@ -24,102 +26,113 @@ const ease = [0.16, 1, 0.3, 1] as const;
 
 export function Hero(p: Props) {
   const reduce = useReducedMotion();
-  const item = (i: number) =>
+  const { scrollY } = useScroll();
+  const textY = useTransform(scrollY, [0, 800], [0, -140]);
+  const visualY = useTransform(scrollY, [0, 800], [0, 160]);
+  const fade = useTransform(scrollY, [0, 600], [1, 0]);
+
+  const fadeIn = (i: number) =>
     reduce
       ? {}
       : {
-          initial: { opacity: 0, y: 28, filter: "blur(8px)" },
-          animate: { opacity: 1, y: 0, filter: "blur(0px)" },
-          transition: { duration: 1.1, delay: 0.15 + i * 0.09, ease },
+          initial: { opacity: 0, y: 24 },
+          animate: { opacity: 1, y: 0 },
+          transition: { duration: 1, delay: 0.5 + i * 0.1, ease },
         };
 
-  const words = p.title.split(/\s+/).filter(Boolean);
+  const [first, ...rest] = p.title.split(/\s+/);
+  const last = rest.join(" ");
+  const headline = isPlaceholder(p.headline) ? "" : p.headline;
+  const description = isPlaceholder(p.description) ? "" : p.description;
 
   return (
-    <section className="relative isolate flex min-h-[100svh] items-center overflow-hidden pt-28 pb-16 sm:pt-32">
-      <div className="container-x grid items-center gap-8 lg:grid-cols-[1.15fr_1fr] lg:gap-4">
-        <div className="relative z-10 order-2 lg:order-1">
-          {(p.availability || p.eyebrow) && (
-            <motion.div {...item(0)} className="mb-7 flex flex-wrap items-center gap-3">
-              {p.availability ? (
-                <span className="glass text-fg/90 inline-flex items-center gap-2 rounded-full px-3.5 py-1.5 text-xs font-medium">
-                  <span className="relative flex size-2">
-                    <span className="bg-accent absolute inline-flex size-full animate-ping rounded-full opacity-60 motion-reduce:hidden" />
-                    <span className="bg-accent relative inline-flex size-2 rounded-full" />
-                  </span>
-                  {p.availability}
-                </span>
-              ) : (
-                <span className="text-accent font-mono text-xs tracking-[0.25em] uppercase">{p.eyebrow}</span>
-              )}
-              {p.location && (
-                <span className="text-subtle inline-flex items-center gap-1.5 text-xs">
-                  <MapPin className="size-3.5" aria-hidden />
-                  {p.location}
-                </span>
-              )}
-            </motion.div>
-          )}
+    <section className="relative isolate flex min-h-[100svh] flex-col justify-end overflow-hidden pt-28 pb-10 sm:pb-14">
+      {/* 3D centrepiece behind the type */}
+      <motion.div
+        style={reduce ? undefined : { y: visualY }}
+        className="pointer-events-auto absolute top-[6%] right-[-25%] -z-10 w-[min(110vw,640px)] sm:right-[-8%] lg:top-[3%] lg:right-[1%] lg:w-[min(46vw,720px)]"
+        {...(reduce
+          ? {}
+          : { initial: { opacity: 0, scale: 0.85 }, animate: { opacity: 1, scale: 1 }, transition: { duration: 1.8, ease } })}
+      >
+        <HeroVisual accent={p.accent} enabled={p.enable3d} particles={p.particles} />
+      </motion.div>
 
-          <h1 className="text-[clamp(2.9rem,9vw,7.5rem)] leading-[0.92] font-semibold tracking-[-0.055em]">
-            {words.map((w, i) => (
-              <span key={`${w}-${i}`} className="inline-block overflow-hidden pb-[0.08em] align-bottom">
-                <motion.span
-                  className="text-gradient inline-block"
-                  {...(reduce
-                    ? {}
-                    : {
-                        initial: { y: "105%" },
-                        animate: { y: "0%" },
-                        transition: { duration: 1.2, delay: 0.1 + i * 0.12, ease },
-                      })}
-                >
-                  {w}
-                  {i < words.length - 1 ? " " : ""}
-                </motion.span>
+      <motion.div style={reduce ? undefined : { y: textY, opacity: fade }} className="container-x relative">
+        <motion.div {...fadeIn(0)} className="mb-6 flex flex-wrap items-center gap-3">
+          {p.availability ? (
+            <span className="inline-flex items-center gap-2 rounded-full bg-white/[0.06] px-3.5 py-1.5 text-xs font-medium ring-1 ring-white/10 backdrop-blur">
+              <span className="relative flex size-2">
+                <span className="bg-lime absolute inline-flex size-full animate-ping rounded-full opacity-70 motion-reduce:hidden" />
+                <span className="bg-lime relative inline-flex size-2 rounded-full" />
               </span>
-            ))}
-          </h1>
-
-          {p.headline && (
-            <motion.p {...item(2)} className="text-fg/90 mt-6 text-xl font-medium tracking-tight sm:text-2xl">
-              {p.headline}
-            </motion.p>
+              {p.availability}
+            </span>
+          ) : (
+            <span className="inline-flex items-center gap-2 font-mono text-xs tracking-[0.3em] text-white/60 uppercase">
+              <Sparkles className="text-amber size-3.5" aria-hidden />
+              {p.eyebrow || "Portfolio"}
+            </span>
           )}
-          {p.description && (
-            <motion.p {...item(3)} className="text-muted mt-4 max-w-xl text-base leading-relaxed sm:text-lg">
-              {p.description}
-            </motion.p>
+          {p.location && (
+            <span className="inline-flex items-center gap-1.5 text-xs text-white/50">
+              <MapPin className="size-3.5" aria-hidden />
+              {p.location}
+            </span>
           )}
+        </motion.div>
 
-          <motion.div {...item(4)} className="mt-10 flex flex-col gap-3 sm:flex-row">
-            <Link href="/projects" className={buttonClass("primary", "lg")}>
-              {p.primaryLabel}
-              <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" aria-hidden />
-            </Link>
-            <Link href="/contact" className={buttonClass("secondary", "lg")}>
-              {p.secondaryLabel}
-            </Link>
+        <h1 className="font-display text-[clamp(2.1rem,8.4vw,8.5rem)] leading-[0.92] tracking-[-0.04em] [overflow-wrap:anywhere] drop-shadow-[0_6px_30px_rgba(7,6,11,0.55)]">
+          <PlayfulText text={first ?? ""} className="block" />
+          {last && <PlayfulText text={last} className="text-rainbow block" delay={0.25} />}
+        </h1>
+
+        <div className="mt-8 grid gap-8 lg:mt-10 lg:grid-cols-[1fr_auto] lg:items-end">
+          <div className="max-w-xl">
+            {headline && (
+              <motion.p {...fadeIn(2)} className="text-xl font-medium tracking-tight sm:text-2xl">
+                {headline}
+              </motion.p>
+            )}
+            {description && (
+              <motion.p {...fadeIn(3)} className="mt-3 text-base leading-relaxed text-white/60 sm:text-lg">
+                {description}
+              </motion.p>
+            )}
+          </div>
+
+          <motion.div {...fadeIn(4)} className="flex flex-wrap items-center gap-3">
+            <Magnetic>
+              <Link
+                href="/projects"
+                className="bg-rainbow group inline-flex h-14 items-center gap-2 rounded-full px-7 text-base font-semibold text-white shadow-[0_12px_40px_-10px_var(--accent)] transition-transform hover:scale-[1.04]"
+              >
+                {p.primaryLabel}
+                <ArrowRight className="size-4 transition-transform group-hover:translate-x-1" aria-hidden />
+              </Link>
+            </Magnetic>
+            <Magnetic>
+              <Link
+                href="/contact"
+                className="inline-flex h-14 items-center gap-2 rounded-full bg-white/[0.04] px-7 text-base font-medium ring-1 ring-white/20 backdrop-blur transition hover:bg-white hover:text-black"
+              >
+                {p.secondaryLabel}
+              </Link>
+            </Magnetic>
           </motion.div>
         </div>
 
-        <motion.div
-          className="relative order-1 mx-auto w-full max-w-[min(78vw,420px)] lg:order-2 lg:max-w-none"
-          {...(reduce
-            ? {}
-            : { initial: { opacity: 0, scale: 0.92 }, animate: { opacity: 1, scale: 1 }, transition: { duration: 1.6, ease } })}
+        <motion.a
+          {...fadeIn(6)}
+          href="#highlights"
+          className="mt-12 hidden items-center gap-3 text-xs tracking-[0.3em] text-white/40 uppercase transition hover:text-white sm:inline-flex"
         >
-          <HeroVisual accent={p.accent} enabled={p.enable3d} particles={p.particles} />
-        </motion.div>
-      </div>
-
-      <a
-        href="#highlights"
-        className="text-subtle hover:text-fg absolute bottom-6 left-1/2 hidden -translate-x-1/2 items-center gap-2 rounded-full px-3 py-2 text-xs transition sm:flex"
-        aria-label="Pastga aylantirish"
-      >
-        <ArrowDown className="size-4 motion-safe:animate-bounce" aria-hidden />
-      </a>
+          <span className="grid size-9 place-items-center rounded-full ring-1 ring-white/20">
+            <ArrowDownRight className="size-4 motion-safe:animate-bounce" aria-hidden />
+          </span>
+          Pastga aylantiring
+        </motion.a>
+      </motion.div>
     </section>
   );
 }

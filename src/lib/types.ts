@@ -58,6 +58,8 @@ export interface SiteSettings {
   nav_items: NavItem[];
   footer_links: NavItem[];
   privacy_policy: string;
+  music_url: string | null;
+  music_title: string;
   updated_at?: string;
 }
 
@@ -150,7 +152,7 @@ export interface Media extends Row {
   file_name: string;
   mime_type: string;
   size_bytes: number;
-  kind: "image" | "document";
+  kind: "image" | "document" | "audio";
   width: number | null;
   height: number | null;
   alt_text: string;

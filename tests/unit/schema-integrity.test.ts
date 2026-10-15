@@ -1,19 +1,28 @@
-import { readFileSync } from "node:fs";
+import { readdirSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
 import { PROFILE_CONFIG, RESOURCES, resourceFields, SETTINGS_CONFIG, singletonFields } from "@/lib/cms/resources";
 
-const sql = readFileSync(path.resolve(__dirname, "../../supabase/migrations/20261015000000_init.sql"), "utf8");
+const migrationsDir = path.resolve(__dirname, "../../supabase/migrations");
+const sql = readdirSync(migrationsDir)
+  .filter((f) => f.endsWith(".sql"))
+  .sort()
+  .map((f) => readFileSync(path.join(migrationsDir, f), "utf8"))
+  .join("\n\n");
 
 function columnsOf(table: string): Set<string> {
   const m = new RegExp(`create table if not exists public\\.${table} \\(([\\s\\S]*?)\\n\\);`).exec(sql);
   if (!m) throw new Error(`table ${table} not found in migration`);
-  return new Set(
-    m[1]!
+  const added = Array.from(
+    sql.matchAll(new RegExp(`alter table public\\.${table} add column if not exists ([a-z0-9_]+)`, "g")),
+  ).map((x) => x[1]!);
+  return new Set([
+    ...added,
+    ...m[1]!
       .split("\n")
       .map((l) => /^\s+([a-z0-9_]+)\s+/.exec(l)?.[1])
       .filter((c): c is string => !!c && c !== "constraint"),
-  );
+  ]);
 }
 
 describe("CMS config ↔ database schema", () => {

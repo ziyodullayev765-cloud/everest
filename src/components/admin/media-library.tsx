@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useMemo, useRef, useState, useTransition } from "react";
 import { toast } from "sonner";
-import { Copy, ExternalLink, FileText, Images, RefreshCw, Search, Trash2 } from "lucide-react";
+import { Copy, ExternalLink, FileText, Images, RefreshCw, Search, Trash2, Music } from "lucide-react";
 import { deleteMedia, getMediaUsage, updateMediaMeta } from "@/app/admin/actions/media";
 import { Dropzone } from "./dropzone";
 import { Button, ConfirmDialog, EmptyBlock, Input, Modal, Select, StatusBadge, Switch, Textarea } from "./ui";
@@ -75,6 +75,11 @@ function Editor({ media, onSaved, onDeleted }: { media: Media; onSaved: (m: Medi
           {media.kind === "image" ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img src={media.url} alt={alt} className="absolute inset-0 size-full object-contain" />
+          ) : media.kind === "audio" ? (
+            <div className="grid w-full gap-3 p-4">
+              <Music className="text-subtle mx-auto size-12" aria-hidden />
+              <audio controls src={media.url} className="w-full" preload="none" />
+            </div>
           ) : (
             <FileText className="text-subtle size-14" aria-hidden />
           )}
@@ -119,7 +124,7 @@ function Editor({ media, onSaved, onDeleted }: { media: Media; onSaved: (m: Medi
             ref={replaceInput}
             type="file"
             className="sr-only"
-            accept={media.kind === "image" ? "image/*" : "application/pdf"}
+            accept={media.kind === "image" ? "image/*" : media.kind === "audio" ? "audio/*" : "application/pdf"}
             onChange={(e) => {
               const f = e.target.files?.[0];
               if (f) void replace(f);
@@ -247,6 +252,7 @@ export function MediaLibrary({ initial }: { initial: Media[] }) {
           <option value="">All files</option>
           <option value="image">Images</option>
           <option value="document">Documents</option>
+          <option value="audio">Audio</option>
         </Select>
         <Switch id="only-gallery" checked={onlyGallery} onChange={setOnlyGallery} label="Gallery only" />
       </div>

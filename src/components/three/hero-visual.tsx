@@ -10,23 +10,22 @@ export function StaticOrb({ className, pulse = false }: { className?: string; pu
   return (
     <div aria-hidden className={cn("relative grid aspect-square w-full place-items-center", className)}>
       <div
-        className="absolute inset-[18%] rounded-full opacity-50 blur-3xl"
-        style={{ background: "radial-gradient(circle, var(--accent), transparent 65%)" }}
-      />
-      <div
-        className={cn("absolute inset-[22%] rounded-full", pulse && "animate-float-slow")}
+        className="absolute inset-[14%] rounded-full opacity-60 blur-3xl"
         style={{
-          background:
-            "radial-gradient(circle at 32% 28%, rgba(255,255,255,0.45), rgba(255,255,255,0.06) 18%, #0c0d0e 48%, #050506 72%), radial-gradient(circle at 70% 80%, color-mix(in oklab, var(--accent) 60%, transparent), transparent 55%)",
-          boxShadow:
-            "inset -18px -24px 60px rgba(0,0,0,0.85), inset 10px 10px 40px rgba(255,255,255,0.06), 0 40px 120px -30px color-mix(in oklab, var(--accent) 50%, transparent)",
+          background: "conic-gradient(from 90deg, var(--accent), var(--c-pink), var(--c-amber), var(--c-cyan), var(--accent))",
         }}
       />
       <div
-        className="animate-spin-slow absolute inset-[8%] rounded-full border"
-        style={{ borderColor: "color-mix(in oklab, var(--accent) 55%, transparent)", transform: "rotateX(65deg)" }}
+        className={cn(
+          "animate-spin-slow absolute inset-[22%] rounded-[46%_54%_58%_42%/45%_42%_58%_55%]",
+          pulse && "animate-float-slow",
+        )}
+        style={{
+          background:
+            "radial-gradient(circle at 30% 25%, rgba(255,255,255,0.7), transparent 22%), conic-gradient(from 200deg, var(--accent), var(--c-pink), var(--c-amber), var(--c-cyan), var(--accent))",
+          boxShadow: "inset -20px -30px 60px rgba(0,0,0,0.45), 0 40px 120px -30px var(--accent)",
+        }}
       />
-      <div className="absolute inset-[2%] rounded-full border border-white/10" />
     </div>
   );
 }

@@ -6,6 +6,7 @@ import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { ArrowUpRight, Download, Menu, X } from "lucide-react";
 import { copy } from "@/lib/copy";
+import { SoundToggle } from "@/components/effects/sound";
 import type { NavItem } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
@@ -111,7 +112,7 @@ export function Header({ siteName, logoUrl, nav, resumeUrl }: Props) {
                 // eslint-disable-next-line @next/next/no-img-element
                 <img src={logoUrl} alt="" className="size-9 rounded-full object-cover" width={36} height={36} />
               ) : (
-                <span className="grid size-9 place-items-center rounded-full bg-gradient-to-br from-white/15 to-white/[0.03] text-[0.8rem] font-semibold tracking-tight ring-1 ring-white/10">
+                <span className="bg-rainbow font-display grid size-9 place-items-center rounded-full text-[0.7rem] text-white">
                   {initials(siteName)}
                 </span>
               )}
@@ -148,12 +149,13 @@ export function Header({ siteName, logoUrl, nav, resumeUrl }: Props) {
             </nav>
 
             <div className="flex items-center gap-2">
+              <SoundToggle />
               {resumeUrl && (
                 <a
                   href={resumeUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="bg-accent hidden h-10 items-center gap-2 rounded-full px-4 text-sm font-medium text-black transition hover:brightness-110 sm:inline-flex"
+                  className="bg-rainbow hidden h-10 items-center gap-2 rounded-full px-4 text-sm font-medium text-white transition hover:scale-105 sm:inline-flex"
                 >
                   <Download className="size-4" aria-hidden />
                   {copy.downloadCv}
@@ -221,7 +223,7 @@ export function Header({ siteName, logoUrl, nav, resumeUrl }: Props) {
                   href={resumeUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="bg-accent mt-8 inline-flex h-12 items-center justify-center gap-2 rounded-full text-base font-medium text-black"
+                  className="bg-rainbow mt-8 inline-flex h-12 items-center justify-center gap-2 rounded-full text-base font-medium text-white"
                 >
                   <Download className="size-4" aria-hidden />
                   {copy.downloadCv}

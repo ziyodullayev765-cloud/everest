@@ -31,7 +31,7 @@ export type FieldDef =
   | (Base & { type: "tags"; maxItems?: number; suggestions?: string[] })
   | (Base & { type: "list"; maxItems?: number })
   | (Base & { type: "image"; altField?: string })
-  | (Base & { type: "file"; accept: "document" | "image" | "any" })
+  | (Base & { type: "file"; accept: "document" | "image" | "audio" | "any" })
   | (Base & { type: "gallery"; maxItems?: number })
   | (Base & { type: "links"; maxItems?: number })
   | (Base & { type: "color" })

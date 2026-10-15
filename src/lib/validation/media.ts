@@ -12,8 +12,18 @@ export const IMAGE_TYPES = [
   "image/vnd.microsoft.icon",
 ] as const;
 export const DOCUMENT_TYPES = ["application/pdf"] as const;
-export const ALLOWED_TYPES: readonly string[] = [...IMAGE_TYPES, ...DOCUMENT_TYPES];
+export const AUDIO_TYPES = [
+  "audio/mpeg",
+  "audio/mp4",
+  "audio/ogg",
+  "audio/wav",
+  "audio/webm",
+  "audio/aac",
+  "audio/x-m4a",
+] as const;
+export const ALLOWED_TYPES: readonly string[] = [...IMAGE_TYPES, ...DOCUMENT_TYPES, ...AUDIO_TYPES];
 export const MAX_UPLOAD_BYTES = 10 * 1024 * 1024;
+export const MAX_AUDIO_BYTES = 15 * 1024 * 1024;
 
 const EXT: Record<string, string> = {
   "image/jpeg": "jpg",
@@ -24,24 +34,39 @@ const EXT: Record<string, string> = {
   "image/x-icon": "ico",
   "image/vnd.microsoft.icon": "ico",
   "application/pdf": "pdf",
+  "audio/mpeg": "mp3",
+  "audio/mp4": "m4a",
+  "audio/x-m4a": "m4a",
+  "audio/ogg": "ogg",
+  "audio/wav": "wav",
+  "audio/webm": "webm",
+  "audio/aac": "aac",
 };
 
-export function mediaKind(mime: string): "image" | "document" | null {
+export type MediaKind = "image" | "document" | "audio";
+
+export function mediaKind(mime: string): MediaKind | null {
   if ((IMAGE_TYPES as readonly string[]).includes(mime)) return "image";
   if ((DOCUMENT_TYPES as readonly string[]).includes(mime)) return "document";
+  if ((AUDIO_TYPES as readonly string[]).includes(mime)) return "audio";
   return null;
+}
+
+export function maxBytesFor(mime: string) {
+  return mediaKind(mime) === "audio" ? MAX_AUDIO_BYTES : MAX_UPLOAD_BYTES;
 }
 
 export function validateFile(
   file: { name: string; type: string; size: number },
-  accept: "image" | "document" | "any" = "any",
+  accept: MediaKind | "any" = "any",
 ): string | null {
   const kind = mediaKind(file.type);
-  if (!kind) return `“${file.name}”: unsupported file type. Use JPG, PNG, WebP, AVIF, GIF, ICO or PDF.`;
+  if (!kind) return `“${file.name}”: unsupported file type. Use JPG, PNG, WebP, AVIF, GIF, ICO, PDF or MP3/M4A/OGG/WAV.`;
   if (accept !== "any" && kind !== accept)
-    return `“${file.name}”: please choose ${accept === "image" ? "an image" : "a PDF document"}.`;
+    return `“${file.name}”: please choose ${accept === "image" ? "an image" : accept === "audio" ? "an audio file" : "a PDF document"}.`;
   if (file.size <= 0) return `“${file.name}” is empty.`;
-  if (file.size > MAX_UPLOAD_BYTES) return `“${file.name}” is larger than 10 MB.`;
+  const max = maxBytesFor(file.type);
+  if (file.size > max) return `“${file.name}” is larger than ${max / 1024 / 1024} MB.`;
   return null;
 }
 
@@ -56,17 +81,19 @@ export function buildStoragePath(fileName: string, mime: string, now = new Date(
   return `${kind}s/${yyyy}/${mm}/${base}-${suffix}.${ext}`;
 }
 
-export const uploadRequestSchema = z.object({
-  fileName: z.string().trim().min(1).max(255),
-  mimeType: z.string().refine((m) => ALLOWED_TYPES.includes(m), "Unsupported file type"),
-  size: z.number().int().positive().max(MAX_UPLOAD_BYTES, "File is larger than 10 MB"),
-});
+export const uploadRequestSchema = z
+  .object({
+    fileName: z.string().trim().min(1).max(255),
+    mimeType: z.string().refine((m) => ALLOWED_TYPES.includes(m), "Unsupported file type"),
+    size: z.number().int().positive(),
+  })
+  .refine((v) => v.size <= maxBytesFor(v.mimeType), { message: "File is too large", path: ["size"] });
 
 export const registerMediaSchema = z.object({
-  path: z.string().regex(/^(images|documents)\/\d{4}\/\d{2}\/[a-z0-9-]+\.[a-z0-9]+$/, "Invalid storage path"),
+  path: z.string().regex(/^(images|documents|audios)\/\d{4}\/\d{2}\/[a-z0-9-]+\.[a-z0-9]+$/, "Invalid storage path"),
   fileName: z.string().trim().min(1).max(255),
   mimeType: z.string().refine((m) => ALLOWED_TYPES.includes(m), "Unsupported file type"),
-  size: z.number().int().positive().max(MAX_UPLOAD_BYTES),
+  size: z.number().int().positive().max(MAX_AUDIO_BYTES),
   width: z.number().int().positive().max(20000).nullable().optional(),
   height: z.number().int().positive().max(20000).nullable().optional(),
   altText: z.string().trim().max(300).default(""),

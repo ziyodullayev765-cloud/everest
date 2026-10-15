@@ -19,7 +19,8 @@ interface Job {
 const ACCEPT_ATTR = {
   image: "image/jpeg,image/png,image/webp,image/avif,image/gif,image/x-icon,image/vnd.microsoft.icon",
   document: "application/pdf",
-  any: "image/jpeg,image/png,image/webp,image/avif,image/gif,image/x-icon,image/vnd.microsoft.icon,application/pdf",
+  audio: "audio/mpeg,audio/mp4,audio/x-m4a,audio/ogg,audio/wav,audio/webm,audio/aac,.mp3,.m4a",
+  any: "image/jpeg,image/png,image/webp,image/avif,image/gif,image/x-icon,image/vnd.microsoft.icon,application/pdf,audio/mpeg,audio/mp4,audio/x-m4a,audio/ogg,audio/wav,audio/webm,audio/aac",
 };
 
 export function Dropzone({
@@ -28,7 +29,7 @@ export function Dropzone({
   onUploaded,
   compact,
 }: {
-  accept?: "image" | "document" | "any";
+  accept?: "image" | "document" | "audio" | "any";
   multiple?: boolean;
   onUploaded: (media: Media) => void;
   compact?: boolean;
@@ -104,7 +105,13 @@ export function Dropzone({
         <FileUp className="text-accent size-6" aria-hidden />
         <span className="mt-3 text-sm font-medium">Drop files here or click to browse</span>
         <span className="text-subtle mt-1 text-xs">
-          {accept === "document" ? "PDF" : accept === "image" ? "JPG, PNG, WebP, AVIF, GIF, ICO" : "Images or PDF"} · max 10 MB
+          {accept === "document"
+            ? "PDF · max 10 MB"
+            : accept === "image"
+              ? "JPG, PNG, WebP, AVIF, GIF, ICO · max 10 MB"
+              : accept === "audio"
+                ? "MP3, M4A, OGG, WAV · max 15 MB"
+                : "Images, PDF (10 MB) or audio (15 MB)"}
         </span>
         <input
           ref={inputRef}

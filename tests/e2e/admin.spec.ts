@@ -11,6 +11,13 @@ const stamp = Date.now().toString(36);
 test.describe.configure({ mode: "serial" });
 test.skip(!ADMIN.email || !ADMIN.password, "Set E2E_ADMIN_EMAIL and E2E_ADMIN_PASSWORD to run admin tests");
 
+/** Public pages open with an intro overlay once per session; tests skip it. */
+const skipIntro = () => sessionStorage.setItem("portfolio-entered", "1");
+
+test.beforeEach(async ({ context }) => {
+  await context.addInitScript(skipIntro);
+});
+
 const STATE = path.join(tmpdir(), `admin-state-${stamp}.json`);
 
 async function login(page: Page, creds = ADMIN) {
@@ -108,6 +115,7 @@ test.describe("as admin", () => {
 
     // Drafts are invisible to visitors.
     const visitor = await context.browser()!.newContext();
+    await visitor.addInitScript(skipIntro);
     const vpage = await visitor.newPage();
     expect((await vpage.goto(`/projects/${slug}`))?.status()).toBe(404);
 
@@ -175,6 +183,7 @@ test.describe("as admin", () => {
     await expect(page.getByText("Saved.")).toBeVisible();
 
     const visitor = await context.browser()!.newContext();
+    await visitor.addInitScript(skipIntro);
     const vpage = await visitor.newPage();
     await vpage.goto("/gallery");
     const img = vpage.getByRole("img", { name: `Test gallery image ${stamp}` });
@@ -207,6 +216,7 @@ test.describe("as admin", () => {
     await expect(page.getByText("Saved.")).toBeVisible();
 
     const visitor = await context.browser()!.newContext();
+    await visitor.addInitScript(skipIntro);
     const vpage = await visitor.newPage();
     await vpage.goto("/");
     await expect(vpage.getByText(marker)).toBeVisible();
@@ -214,11 +224,43 @@ test.describe("as admin", () => {
 
     await field.fill(original);
     await page.getByRole("button", { name: "Save", exact: true }).click();
+    // An earlier "Saved." toast may still be on screen, so wait for the form itself to be clean.
+    await expect(page.getByText("Unsaved changes")).toHaveCount(0);
+    await page.reload();
+    await expect(field).toHaveValue(original);
+  });
+
+  test("renaming the profile updates the name everywhere on the public site", async ({ page, context }) => {
+    await page.goto("/admin/profile");
+    const field = page.getByLabel("Full name");
+    const original = await field.inputValue();
+    const renamed = `Testname ${stamp}`;
+    await field.fill(renamed);
+    await page.getByRole("button", { name: "Save", exact: true }).click();
     await expect(page.getByText("Saved.")).toBeVisible();
+
+    const visitor = await context.browser()!.newContext();
+    await visitor.addInitScript(skipIntro);
+    const vpage = await visitor.newPage();
+    await vpage.goto("/");
+    await expect(vpage.getByRole("heading", { level: 1 })).toContainText("Testname");
+    await expect(vpage).toHaveTitle(new RegExp(renamed));
+    await expect(vpage.locator("footer")).toContainText(renamed);
+    await vpage.goto("/about");
+    await expect(vpage).toHaveTitle(new RegExp(renamed));
+    await visitor.close();
+
+    await field.fill(original);
+    await page.getByRole("button", { name: "Save", exact: true }).click();
+    // An earlier "Saved." toast may still be on screen, so wait for the form itself to be clean.
+    await expect(page.getByText("Unsaved changes")).toHaveCount(0);
+    await page.reload();
+    await expect(field).toHaveValue(original);
   });
 
   test("contact form submission reaches the admin inbox", async ({ page, context }) => {
     const visitor = await context.browser()!.newContext();
+    await visitor.addInitScript(skipIntro);
     const vpage = await visitor.newPage();
     await vpage.goto("/contact");
     await vpage.getByLabel("Ismingiz").fill("E2E Visitor");
