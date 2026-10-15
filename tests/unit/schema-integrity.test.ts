@@ -36,3 +36,12 @@ describe("CMS config ↔ database schema", () => {
     for (const t of tables) expect(sql).toContain(`alter table public.${t}`);
   });
 });
+
+describe("supabase/setup.sql", () => {
+  it("is up to date with the migration and seed (run `npm run db:bundle`)", () => {
+    const setup = readFileSync(path.resolve(__dirname, "../../supabase/setup.sql"), "utf8");
+    const seed = readFileSync(path.resolve(__dirname, "../../supabase/seed.sql"), "utf8");
+    expect(setup).toContain(sql);
+    expect(setup).toContain(seed);
+  });
+});

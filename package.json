@@ -15,7 +15,8 @@
     "check": "npm run typecheck && npm run lint && npm test",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "brand:fetch": "node scripts/fetch-brand-assets.mjs"
+    "brand:fetch": "node scripts/fetch-brand-assets.mjs",
+    "db:bundle": "node scripts/bundle-sql.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.9.1",
