@@ -5,13 +5,14 @@ import { useRef } from "react";
 import { motion, useReducedMotion, useScroll, useSpring } from "motion/react";
 import { ArrowUpRight, Download } from "lucide-react";
 import { EdSection } from "@/components/site/ed-section";
-import { copy } from "@/lib/copy";
+import { useCopy } from "@/components/i18n/provider";
 import type { Experience as ExperienceRow } from "@/lib/types";
-import { formatRange } from "@/lib/utils";
+import { dateRange } from "@/lib/i18n/dictionaries";
 import { HomeHeading } from "./section-heading";
 
 /** Vertical timeline whose bronze line fills in as you scroll through it. */
 export function Experience({ items, resumeUrl }: { items: ExperienceRow[]; resumeUrl: string | null }) {
+  const copy = useCopy();
   const list = useRef<HTMLOListElement>(null);
   const reduce = useReducedMotion();
   const { scrollYProgress } = useScroll({ target: list, offset: ["start 75%", "end 55%"] });
@@ -19,11 +20,11 @@ export function Experience({ items, resumeUrl }: { items: ExperienceRow[]; resum
 
   if (!items.length) return null;
   return (
-    <EdSection id="experience" className="mx-auto w-[min(1200px,calc(100%-2rem))] py-24">
-      <HomeHeading eyebrow="Journey so far" title="Experience">
+    <EdSection id="experience" className="mx-auto w-[min(1200px,calc(100%-2rem))] py-14 sm:py-24">
+      <HomeHeading eyebrow={copy.homePage.journeySoFar} title={copy.homePage.experience}>
         <div className="flex flex-wrap gap-3">
           <Link href="/experience" className="ed-button">
-            Full timeline
+            {copy.homePage.fullTimeline}
             <ArrowUpRight className="size-4" aria-hidden />
           </Link>
           {resumeUrl && (
@@ -46,7 +47,7 @@ export function Experience({ items, resumeUrl }: { items: ExperienceRow[]; resum
           }}
         />
         {items.map((e) => {
-          const period = e.period_label?.trim() || formatRange(e.start_date, e.end_date, e.is_current);
+          const period = e.period_label?.trim() || dateRange(e.start_date, e.end_date, e.is_current, copy);
           return (
             <li key={e.id} className="relative pb-12 pl-8 last:pb-0 sm:pl-12">
               <span

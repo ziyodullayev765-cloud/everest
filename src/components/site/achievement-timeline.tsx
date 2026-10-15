@@ -4,11 +4,12 @@ import { useMemo, useState } from "react";
 import { ArrowDownUp } from "lucide-react";
 import { AchievementCard } from "./achievement-card";
 import { Reveal } from "@/components/ui/reveal";
-import { copy } from "@/lib/copy";
+import { useCopy } from "@/components/i18n/provider";
 import type { Achievement } from "@/lib/types";
 import { cn, unique } from "@/lib/utils";
 
 export function AchievementTimeline({ items }: { items: Achievement[] }) {
+  const copy = useCopy();
   const [filter, setFilter] = useState("");
   const [newestFirst, setNewestFirst] = useState(true);
 

@@ -2,17 +2,21 @@ import type { Metadata } from "next";
 import { Briefcase, GraduationCap } from "lucide-react";
 import { EmptyState, PageHeader } from "@/components/site/section-heading";
 import { Timeline } from "@/components/site/timeline-entry";
-import { copy } from "@/lib/copy";
+import { getCopy } from "@/lib/i18n/server";
 import { getEducation, getExperience } from "@/lib/data/public";
 import { educationToTimeline, experienceToTimeline } from "@/lib/timeline";
 
-export const metadata: Metadata = {
-  title: copy.experience.title,
-  description: copy.experience.lead,
-  alternates: { canonical: "/experience" },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const copy = await getCopy();
+  return {
+    title: copy.experience.title,
+    description: copy.experience.lead,
+    alternates: { canonical: "/experience" },
+  };
+}
 
 export default async function ExperiencePage() {
+  const copy = await getCopy();
   const [experience, education] = await Promise.all([getExperience(), getEducation()]);
   const empty = !experience.length && !education.length;
 

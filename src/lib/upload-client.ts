@@ -73,10 +73,15 @@ async function uploadToStorage(file: File, accept: "image" | "document" | "audio
 
 export async function uploadMedia(
   file: File,
-  opts: { accept?: "image" | "document" | "audio" | "any"; altText?: string; onProgress?: ProgressFn } = {},
+  opts: {
+    accept?: "image" | "document" | "audio" | "any";
+    altText?: string;
+    inGallery?: boolean;
+    onProgress?: ProgressFn;
+  } = {},
 ): Promise<Media> {
   const uploaded = await uploadToStorage(file, opts.accept ?? "any", opts.onProgress);
-  const res = await registerMedia({ ...uploaded, altText: opts.altText ?? "" });
+  const res = await registerMedia({ ...uploaded, altText: opts.altText ?? "", inGallery: opts.inGallery });
   if (!res.ok || !res.data) throw new Error(res.ok ? "Upload failed." : res.error);
   return res.data;
 }

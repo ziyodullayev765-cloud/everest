@@ -5,11 +5,13 @@ import { useMemo, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { ArrowUpRight, LayoutGrid, List, Search } from "lucide-react";
 import { ProjectCard, ProjectThumb } from "./project-card";
-import { copy } from "@/lib/copy";
+import { useCopy } from "@/components/i18n/provider";
 import type { Project } from "@/lib/types";
-import { cn, formatMonthYear, unique } from "@/lib/utils";
+import { cn, unique } from "@/lib/utils";
+import { monthYear } from "@/lib/i18n/dictionaries";
 
 export function ProjectBrowser({ projects }: { projects: Project[] }) {
+  const copy = useCopy();
   const [view, setView] = useState<"grid" | "list">("grid");
   const [category, setCategory] = useState<string>("");
   const [tag, setTag] = useState<string>("");
@@ -149,7 +151,7 @@ export function ProjectBrowser({ projects }: { projects: Project[] }) {
                 <ProjectThumb project={p} className="aspect-[4/3] rounded-xl" />
                 <div className="min-w-0">
                   <p className="text-subtle font-mono text-[0.7rem] tracking-[0.16em] uppercase">
-                    {[p.category, formatMonthYear(p.completed_on ?? p.started_on)].filter(Boolean).join(" · ")}
+                    {[p.category, monthYear(p.completed_on ?? p.started_on, copy)].filter(Boolean).join(" · ")}
                   </p>
                   <h3 className="group-hover:text-accent mt-1 truncate text-lg font-semibold tracking-tight transition sm:text-xl">
                     {p.title}

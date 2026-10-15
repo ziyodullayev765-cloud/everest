@@ -4,16 +4,20 @@ import { ContactForm } from "@/components/site/contact-form";
 import { PageHeader } from "@/components/site/section-heading";
 import { SocialIcon } from "@/components/site/social-icon";
 import { Reveal } from "@/components/ui/reveal";
-import { copy } from "@/lib/copy";
+import { getCopy } from "@/lib/i18n/server";
 import { getSettings, getSocialLinks } from "@/lib/data/public";
 
-export const metadata: Metadata = {
-  title: copy.contact.title,
-  description: copy.contact.lead,
-  alternates: { canonical: "/contact" },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const copy = await getCopy();
+  return {
+    title: copy.contact.title,
+    description: copy.contact.lead,
+    alternates: { canonical: "/contact" },
+  };
+}
 
 export default async function ContactPage() {
+  const copy = await getCopy();
   const [settings, social] = await Promise.all([getSettings(), getSocialLinks()]);
   const details = [
     settings.contact_email && { icon: Mail, label: settings.contact_email, href: `mailto:${settings.contact_email}` },

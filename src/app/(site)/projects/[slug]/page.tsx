@@ -7,9 +7,9 @@ import { ImageGallery } from "@/components/site/image-gallery";
 import { Reveal } from "@/components/ui/reveal";
 import { RichText } from "@/components/ui/rich-text";
 import { buttonClass } from "@/components/ui/button";
-import { copy } from "@/lib/copy";
+import { getCopy } from "@/lib/i18n/server";
 import { getProjectBySlug, getProjects } from "@/lib/data/public";
-import { formatRange } from "@/lib/utils";
+import { dateRange } from "@/lib/i18n/dictionaries";
 
 type Params = { params: Promise<{ slug: string }> };
 
@@ -42,11 +42,12 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
 }
 
 export default async function ProjectPage({ params }: Params) {
+  const copy = await getCopy();
   const { slug } = await params;
   const project = await getProjectBySlug(slug);
   if (!project) notFound();
 
-  const timeline = formatRange(project.started_on, project.completed_on, false);
+  const timeline = dateRange(project.started_on, project.completed_on, false, copy);
   const meta = [
     project.role && { label: copy.projects.role, value: project.role },
     project.category && { label: copy.projects.category, value: project.category },

@@ -1,10 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useRef } from "react";
-import { ArrowUpRight } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { ArrowLeft, ArrowRight, ArrowUpRight } from "lucide-react";
 import { SmartImage } from "@/components/ui/smart-image";
-import { copy } from "@/lib/copy";
+import { useCopy } from "@/components/i18n/provider";
 import type { Project } from "@/lib/types";
 import { unique } from "@/lib/utils";
 import { HomeHeading } from "./section-heading";
@@ -22,6 +22,8 @@ function ProjectCard({ project, index }: { project: Project; index: number }) {
   const tags = unique([...project.technologies, ...project.tags]).slice(0, 4);
   return (
     <Link
+      data-card
+      draggable={false}
       href={`/projects/${project.slug}`}
       className="group bronze-border border-line bg-surface hover:border-line-strong flex w-[82vw] max-w-[420px] shrink-0 snap-center flex-col overflow-hidden rounded-3xl border shadow-[var(--shadow)] transition-[transform,box-shadow,border-color] duration-300 hover:-translate-y-1.5 hover:shadow-[var(--shadow-hover)] sm:w-[380px] lg:w-[420px]"
     >
@@ -86,90 +88,140 @@ function ProjectCard({ project, index }: { project: Project; index: number }) {
 }
 
 /**
- * Featured projects. On wide screens the section pins while vertical scrolling
- * slides the row of cards sideways (sticky + transform, no scroll hijacking);
- * on small screens and under reduced motion it is a native swipeable row.
+ * Featured projects as a row you move yourself: drag it with the mouse,
+ * swipe on touch screens, use the arrow buttons or the keyboard. Cards snap
+ * into place; nothing moves on its own.
  */
-export function Projects({ projects }: { projects: Project[] }) {
-  const outer = useRef<HTMLDivElement>(null);
-  const track = useRef<HTMLDivElement>(null);
+export function Projects({ projects, labels }: { projects: Project[]; labels: { prev: string; next: string; hint: string } }) {
+  const copy = useCopy();
+  const row = useRef<HTMLDivElement>(null);
+  const [edges, setEdges] = useState({ start: true, end: false });
+
+  const updateEdges = () => {
+    const el = row.current;
+    if (!el) return;
+    setEdges({ start: el.scrollLeft < 8, end: el.scrollLeft + el.clientWidth >= el.scrollWidth - 8 });
+  };
 
   useEffect(() => {
-    const el = outer.current;
-    const row = track.current;
-    if (!el || !row) return;
-    const wide = window.matchMedia("(min-width: 1024px) and (prefers-reduced-motion: no-preference)");
-    let distance = 0;
-    let raf = 0;
-
-    const measure = () => {
-      if (!wide.matches) {
-        el.style.height = "";
-        row.style.transform = "";
-        distance = 0;
-        return;
+    const el = row.current;
+    if (!el) return;
+    updateEdges();
+    // Mouse drag-to-scroll (touch already swipes natively).
+    let down = false;
+    let moved = false;
+    let startX = 0;
+    let startLeft = 0;
+    const onDown = (e: PointerEvent) => {
+      if (e.pointerType !== "mouse" || e.button !== 0) return;
+      down = true;
+      moved = false;
+      startX = e.clientX;
+      startLeft = el.scrollLeft;
+    };
+    const onMove = (e: PointerEvent) => {
+      if (!down) return;
+      const dx = e.clientX - startX;
+      if (!moved && Math.abs(dx) > 5) {
+        moved = true;
+        el.dataset.dragging = "true";
       }
-      distance = Math.max(0, row.scrollWidth - window.innerWidth + 96);
-      el.style.height = `${window.innerHeight + distance}px`;
-      update();
+      if (moved) el.scrollLeft = startLeft - dx;
     };
-    const update = () => {
-      raf = 0;
-      if (!distance) return;
-      const top = el.getBoundingClientRect().top;
-      const progress = Math.min(1, Math.max(0, -top / distance));
-      row.style.transform = `translate3d(${-progress * distance}px, 0, 0)`;
+    const onUp = () => {
+      if (!down) return;
+      down = false;
+      if (moved) {
+        delete el.dataset.dragging;
+        // Settle on the nearest card.
+        const card = el.querySelector<HTMLElement>("[data-card]");
+        const step = card ? card.offsetWidth + 24 : el.clientWidth;
+        el.scrollTo({ left: Math.round(el.scrollLeft / step) * step, behavior: "smooth" });
+      }
     };
-    const onScroll = () => {
-      if (!raf && distance) raf = requestAnimationFrame(update);
+    // A drag should not also count as a click on the card underneath.
+    const onClick = (e: MouseEvent) => {
+      if (moved) {
+        e.preventDefault();
+        e.stopPropagation();
+        moved = false;
+      }
     };
-
-    measure();
-    const ro = new ResizeObserver(measure);
-    ro.observe(row);
-    window.addEventListener("resize", measure);
-    window.addEventListener("scroll", onScroll, { passive: true });
-    wide.addEventListener("change", measure);
+    el.addEventListener("pointerdown", onDown);
+    window.addEventListener("pointermove", onMove, { passive: true });
+    window.addEventListener("pointerup", onUp);
+    el.addEventListener("click", onClick, true);
+    el.addEventListener("scroll", updateEdges, { passive: true });
+    window.addEventListener("resize", updateEdges);
     return () => {
-      cancelAnimationFrame(raf);
-      ro.disconnect();
-      window.removeEventListener("resize", measure);
-      window.removeEventListener("scroll", onScroll);
-      wide.removeEventListener("change", measure);
+      el.removeEventListener("pointerdown", onDown);
+      window.removeEventListener("pointermove", onMove);
+      window.removeEventListener("pointerup", onUp);
+      el.removeEventListener("click", onClick, true);
+      el.removeEventListener("scroll", updateEdges);
+      window.removeEventListener("resize", updateEdges);
     };
   }, [projects.length]);
 
+  const go = (dir: 1 | -1) => {
+    const el = row.current;
+    if (!el) return;
+    const card = el.querySelector<HTMLElement>("[data-card]");
+    el.scrollBy({ left: dir * (card ? card.offsetWidth + 24 : el.clientWidth * 0.8), behavior: "smooth" });
+  };
+
   return (
-    <section id="projects" aria-labelledby="projects-title" className="scroll-mt-24">
-      <div ref={outer} className="relative">
-        <div className="lg:sticky lg:top-0 lg:flex lg:h-screen lg:flex-col lg:justify-center lg:overflow-hidden">
-          <div className="mx-auto w-[min(1200px,calc(100%-2rem))] pt-24 lg:pt-20">
-            <HomeHeading
-              id="projects-title"
-              eyebrow="Selected work"
-              title={copy.sections.featuredProjects}
-              lead={projects.length ? "Scroll to move through the work — click a card for the full story." : copy.projects.empty}
-            >
-              <Link href="/projects" className="ed-button">
-                {copy.sections.allProjects}
-                <ArrowUpRight className="size-4" aria-hidden />
-              </Link>
-            </HomeHeading>
+    <section id="projects" aria-labelledby="projects-title" className="scroll-mt-24 py-14 sm:py-20">
+      <div className="mx-auto w-[min(1200px,calc(100%-2rem))]">
+        <HomeHeading
+          id="projects-title"
+          eyebrow={copy.homePage.selectedWork}
+          title={copy.sections.featuredProjects}
+          lead={projects.length ? labels.hint : copy.projects.empty}
+        >
+          <div className="flex items-center gap-2">
+            {projects.length > 1 && (
+              <>
+                <button
+                  type="button"
+                  onClick={() => go(-1)}
+                  disabled={edges.start}
+                  aria-label={labels.prev}
+                  className="ed-icon-btn disabled:opacity-35"
+                >
+                  <ArrowLeft className="size-4" aria-hidden />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => go(1)}
+                  disabled={edges.end}
+                  aria-label={labels.next}
+                  className="ed-icon-btn disabled:opacity-35"
+                >
+                  <ArrowRight className="size-4" aria-hidden />
+                </button>
+              </>
+            )}
+            <Link href="/projects" className="ed-button ml-2">
+              {copy.sections.allProjects}
+              <ArrowUpRight className="size-4" aria-hidden />
+            </Link>
           </div>
-          {projects.length > 0 && (
-            <div className="mt-10 [scrollbar-width:none] overflow-x-auto lg:overflow-visible">
-              <div
-                ref={track}
-                className="flex w-max snap-x snap-mandatory gap-6 px-4 pb-8 will-change-transform sm:px-[max(1rem,calc((100vw-1200px)/2))]"
-              >
-                {projects.map((p, i) => (
-                  <ProjectCard key={p.id} project={p} index={i} />
-                ))}
-              </div>
-            </div>
-          )}
-        </div>
+        </HomeHeading>
       </div>
+      {projects.length > 0 && (
+        <div
+          ref={row}
+          role="region"
+          aria-label={copy.sections.featuredProjects}
+          tabIndex={0}
+          className="mt-10 flex snap-x snap-mandatory scroll-px-4 [scrollbar-width:none] gap-6 overflow-x-auto px-4 pb-6 data-[dragging=true]:cursor-grabbing data-[dragging=true]:snap-none data-[dragging=true]:select-none sm:scroll-px-[max(1rem,calc((100vw-1200px)/2))] sm:px-[max(1rem,calc((100vw-1200px)/2))] lg:cursor-grab [&::-webkit-scrollbar]:hidden"
+        >
+          {projects.map((p, i) => (
+            <ProjectCard key={p.id} project={p} index={i} />
+          ))}
+        </div>
+      )}
     </section>
   );
 }

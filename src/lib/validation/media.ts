@@ -97,6 +97,8 @@ export const registerMediaSchema = z.object({
   width: z.number().int().positive().max(20000).nullable().optional(),
   height: z.number().int().positive().max(20000).nullable().optional(),
   altText: z.string().trim().max(300).default(""),
+  /** Publish images straight into the public gallery (and the 3D dome). */
+  inGallery: z.boolean().optional(),
 });
 
 export const mediaMetaSchema = z.object({

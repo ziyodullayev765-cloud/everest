@@ -10,6 +10,7 @@ export function Footer({
   nav,
   social,
   email,
+  backToTop,
 }: {
   siteName: string;
   footerText: string;
@@ -17,6 +18,7 @@ export function Footer({
   nav: NavItem[];
   social: SocialLink[];
   email: string | null;
+  backToTop: string;
 }) {
   return (
     <footer className="border-line bg-bg relative z-[3] mt-16 border-t">
@@ -64,7 +66,7 @@ export function Footer({
             href="#main"
             className="text-muted hover:text-fg inline-flex items-center gap-2 text-[0.78rem] tracking-[0.04em] uppercase transition"
           >
-            <ArrowUp className="size-3.5" aria-hidden /> Back to top
+            <ArrowUp className="size-3.5" aria-hidden /> {backToTop}
           </a>
         </div>
       </div>

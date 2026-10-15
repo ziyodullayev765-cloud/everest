@@ -458,7 +458,7 @@ export const SETTINGS_CONFIG: SingletonConfig = {
           name: "accent_color",
           label: "Accent colour",
           type: "color",
-          help: "Main colour of buttons and highlights (bronze #c4a574 by default).",
+          help: "Main colour of buttons and highlights (bronze #c5a059 by default).",
         },
         { name: "enable_3d", label: "Let the 3D image dome drift on its own", type: "boolean" },
         { name: "enable_particles", label: "Ambient particles (unused by the current design)", type: "boolean" },

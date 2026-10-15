@@ -23,18 +23,25 @@ const ACCEPT_ATTR = {
   any: "image/jpeg,image/png,image/webp,image/avif,image/gif,image/x-icon,image/vnd.microsoft.icon,application/pdf,audio/mpeg,audio/mp4,audio/x-m4a,audio/ogg,audio/wav,audio/webm,audio/aac",
 };
 
+const MAX_FILES = 60;
+const CONCURRENCY = 4;
+
 export function Dropzone({
   accept = "any",
   multiple = true,
   onUploaded,
   compact,
+  galleryOption = false,
 }: {
   accept?: "image" | "document" | "audio" | "any";
   multiple?: boolean;
   onUploaded: (media: Media) => void;
   compact?: boolean;
+  /** Offer a "publish images to the gallery" switch (media library page). */
+  galleryOption?: boolean;
 }) {
   const inputId = useId();
+  const [toGallery, setToGallery] = useState(galleryOption);
   const inputRef = useRef<HTMLInputElement>(null);
   const [dragging, setDragging] = useState(false);
   const [jobs, setJobs] = useState<Job[]>([]);
@@ -43,26 +50,32 @@ export function Dropzone({
 
   const handleFiles = useCallback(
     async (files: FileList | File[]) => {
-      const list = Array.from(files).slice(0, multiple ? 20 : 1);
-      await Promise.all(
-        list.map(async (file) => {
-          const id = `${file.name}-${file.size}-${Math.random().toString(36).slice(2)}`;
-          const invalid = validateFile(file, accept);
-          setJobs((js) => [
-            ...js,
-            {
-              id,
-              name: file.name,
-              size: file.size,
-              progress: 0,
-              state: invalid ? "error" : "uploading",
-              error: invalid ?? undefined,
-            },
-          ]);
-          if (invalid) return;
+      const list = Array.from(files).slice(0, multiple ? MAX_FILES : 1);
+      const queue = list.map((file) => ({
+        file,
+        id: `${file.name}-${file.size}-${Math.random().toString(36).slice(2)}`,
+        invalid: validateFile(file, accept),
+      }));
+      setJobs((js) => [
+        ...js,
+        ...queue.map(({ file, id, invalid }) => ({
+          id,
+          name: file.name,
+          size: file.size,
+          progress: 0,
+          state: (invalid ? "error" : "uploading") as Job["state"],
+          error: invalid ?? undefined,
+        })),
+      ]);
+      const pending = queue.filter((q) => !q.invalid);
+      // A few at a time: large batches stay responsive and within rate limits.
+      const worker = async () => {
+        for (let next = pending.shift(); next; next = pending.shift()) {
+          const { file, id } = next;
           try {
             const media = await uploadMedia(file, {
               accept,
+              inGallery: galleryOption && toGallery,
               altText: file.name
                 .replace(/\.[^.]+$/, "")
                 .replace(/[-_]+/g, " ")
@@ -74,10 +87,11 @@ export function Dropzone({
           } catch (e) {
             update(id, { state: "error", error: e instanceof Error ? e.message : "Upload failed." });
           }
-        }),
-      );
+        }
+      };
+      await Promise.all(Array.from({ length: CONCURRENCY }, worker));
     },
-    [accept, multiple, onUploaded],
+    [accept, multiple, onUploaded, galleryOption, toGallery],
   );
 
   return (
@@ -103,7 +117,9 @@ export function Dropzone({
         )}
       >
         <FileUp className="text-accent size-6" aria-hidden />
-        <span className="mt-3 text-sm font-medium">Drop files here or click to browse</span>
+        <span className="mt-3 text-sm font-medium">
+          Drop files here or click to browse{multiple ? ` (up to ${MAX_FILES} at once)` : ""}
+        </span>
         <span className="text-subtle mt-1 text-xs">
           {accept === "document"
             ? "PDF · max 10 MB"
@@ -126,6 +142,18 @@ export function Dropzone({
           }}
         />
       </label>
+
+      {galleryOption && (
+        <label className="mt-3 flex items-center gap-2.5 text-sm">
+          <input
+            type="checkbox"
+            checked={toGallery}
+            onChange={(e) => setToGallery(e.target.checked)}
+            className="size-4 accent-[var(--accent)]"
+          />
+          Publish uploaded images to the public gallery (Journey page and the 3D dome)
+        </label>
+      )}
 
       {jobs.length > 0 && (
         <ul className="mt-4 grid gap-2" aria-live="polite">

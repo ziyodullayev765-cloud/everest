@@ -1,6 +1,6 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import { z } from "zod";
 import { requireAdmin, UnauthorizedError } from "@/lib/auth";
 import { buildSchema, flattenErrors } from "@/lib/cms/fields";
@@ -37,6 +37,7 @@ function fail(e: unknown): ActionResult<never> {
 function revalidateSite() {
   // The portfolio is small; refreshing every cached public page keeps it simple and correct.
   revalidatePath("/", "layout");
+  revalidateTag("content");
 }
 
 function crossFieldChecks(values: Record<string, unknown>): Record<string, string[]> {

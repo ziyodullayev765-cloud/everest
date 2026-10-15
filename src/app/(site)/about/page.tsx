@@ -8,11 +8,12 @@ import { SmartImage } from "@/components/ui/smart-image";
 import { RichText } from "@/components/ui/rich-text";
 import { Reveal } from "@/components/ui/reveal";
 import { buttonClass } from "@/components/ui/button";
-import { copy } from "@/lib/copy";
+import { getCopy } from "@/lib/i18n/server";
 import { getEducation, getExperience, getProfile, getSettings, getSkills } from "@/lib/data/public";
 import { educationToTimeline, experienceToTimeline } from "@/lib/timeline";
 
 export async function generateMetadata(): Promise<Metadata> {
+  const copy = await getCopy();
   const p = await getProfile();
   return {
     title: copy.about.title,
@@ -33,6 +34,7 @@ function Block({ title, text }: { title: string; text: string }) {
 }
 
 export default async function AboutPage() {
+  const copy = await getCopy();
   const [profile, settings, skills, education, experience] = await Promise.all([
     getProfile(),
     getSettings(),

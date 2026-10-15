@@ -5,7 +5,6 @@ import { Highlights } from "@/components/home/highlights";
 import { Projects } from "@/components/home/projects";
 import { Skills } from "@/components/home/skills";
 import type { DomeTileData } from "@/components/site/dome-gallery";
-import { HomeBackdrop } from "@/components/site/home-backdrop";
 import {
   getAchievements,
   getExperience,
@@ -18,11 +17,13 @@ import {
   getStats,
 } from "@/lib/data/public";
 import { isPlaceholder, ownerName } from "@/lib/defaults";
+import { getCopy } from "@/lib/i18n/server";
 import { unique } from "@/lib/utils";
 
 const FALLBACK_WORDS = ["Projects", "Highlights", "Experience", "Skills", "Journey", "Ideas", "Craft", "Contact"];
 
 export default async function HomePage() {
+  const copy = await getCopy();
   const [settings, profile, projects, achievements, skills, stats, experience, social, gallery] = await Promise.all([
     getSettings(),
     getProfile(),
@@ -70,16 +71,21 @@ export default async function HomePage() {
 
   return (
     <div className="relative">
-      <HomeBackdrop tiles={tiles} animate={settings.enable_3d} />
-      <div className="relative z-[2]">
+      <div className="relative">
         <Hero
           name={name}
           subtitle={subtitle}
           primaryLabel={settings.cta_primary_label}
           secondaryLabel={settings.cta_secondary_label}
+          scrollLabel={copy.homePage.scroll}
           ticker={ticker}
+          tiles={tiles}
+          animateDome={settings.enable_3d}
         />
-        <Projects projects={featured} />
+        <Projects
+          projects={featured}
+          labels={{ prev: copy.homePage.prev, next: copy.homePage.next, hint: copy.homePage.dragHint }}
+        />
         <Highlights items={highlights} stats={stats} />
         <Skills skills={skills} />
         <Experience items={experience} resumeUrl={resumeUrl} />

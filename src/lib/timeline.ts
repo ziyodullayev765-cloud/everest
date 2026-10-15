@@ -11,6 +11,7 @@ export function experienceToTimeline(e: Experience): TimelineItem {
     start: e.start_date,
     end: e.end_date,
     current: e.is_current,
+    periodLabel: e.period_label,
     description: e.description,
     highlights: e.highlights,
     image: e.image_url,

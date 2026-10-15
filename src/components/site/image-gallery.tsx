@@ -4,7 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { ChevronLeft, ChevronRight, Maximize2, X } from "lucide-react";
 import { SmartImage } from "@/components/ui/smart-image";
-import { copy } from "@/lib/copy";
+import { useCopy } from "@/components/i18n/provider";
 
 export interface GalleryItem {
   src: string;
@@ -17,6 +17,7 @@ export interface GalleryItem {
 
 /** Masonry grid + accessible full-screen lightbox (keyboard, swipe, focus return). */
 export function ImageGallery({ images }: { images: GalleryItem[] }) {
+  const copy = useCopy();
   const [index, setIndex] = useState<number | null>(null);
   const triggerRefs = useRef<(HTMLButtonElement | null)[]>([]);
   const closeRef = useRef<HTMLButtonElement>(null);
@@ -69,7 +70,7 @@ export function ImageGallery({ images }: { images: GalleryItem[] }) {
 
   return (
     <>
-      <ul className="columns-1 gap-4 sm:columns-2 lg:columns-3 [&>li]:mb-4">
+      <ul className="columns-2 gap-2.5 sm:columns-2 sm:gap-4 lg:columns-3 [&>li]:mb-2.5 sm:[&>li]:mb-4">
         {images.map((img, i) => (
           <li key={`${img.src}-${i}`} className="break-inside-avoid">
             <figure className="group border-line bg-bg-elevated relative overflow-hidden rounded-2xl border">

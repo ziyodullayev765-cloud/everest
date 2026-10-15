@@ -1,9 +1,10 @@
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { buttonClass } from "@/components/ui/button";
-import { copy } from "@/lib/copy";
+import { getCopy } from "@/lib/i18n/server";
 
-export function NotFoundContent() {
+export async function NotFoundContent() {
+  const copy = await getCopy();
   return (
     <section className="container-x flex min-h-[80svh] flex-col items-center justify-center pt-24 text-center">
       <p className="text-gradient text-[clamp(6rem,22vw,14rem)] leading-none font-semibold tracking-[-0.06em]">404</p>
