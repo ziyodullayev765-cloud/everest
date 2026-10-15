@@ -3,9 +3,10 @@
 import { useEffect } from "react";
 import { RotateCcw } from "lucide-react";
 import { buttonClass } from "@/components/ui/button";
-import { copy } from "@/lib/copy";
+import { useCopy } from "@/components/i18n/provider";
 
 export default function SiteError({ error, reset }: { error: Error & { digest?: string }; reset: () => void }) {
+  const copy = useCopy();
   useEffect(() => {
     console.error(error);
   }, [error]);

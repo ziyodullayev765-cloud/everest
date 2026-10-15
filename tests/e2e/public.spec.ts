@@ -20,6 +20,27 @@ test.describe("public site", () => {
     await expect(page).toHaveTitle(/ — Portfolio$/);
   });
 
+  test("interface language switches between English, Uzbek and Russian", async ({ page }) => {
+    await page.goto("/");
+    await expect(page.locator("html")).toHaveAttribute("lang", "en");
+    await page
+      .getByRole("button", { name: /^Language:/ })
+      .first()
+      .click();
+    await page.getByRole("option", { name: /Русский/ }).click();
+    await expect(page.locator("html")).toHaveAttribute("lang", "ru");
+    await expect(page.getByRole("heading", { name: "Избранные проекты" })).toBeVisible();
+    await page
+      .getByRole("button", { name: /^Язык:/ })
+      .first()
+      .click();
+    await page.getByRole("option", { name: /O‘zbekcha/ }).click();
+    await expect(page.getByRole("heading", { name: "Tanlangan loyihalar" })).toBeVisible();
+    // The choice is remembered.
+    await page.goto("/contact");
+    await expect(page.locator("html")).toHaveAttribute("lang", "uz");
+  });
+
   test("all public pages respond and have a single h1", async ({ page }) => {
     for (const path of ["/about", "/projects", "/achievements", "/skills", "/experience", "/gallery", "/contact", "/privacy"]) {
       const res = await page.goto(path);
@@ -31,7 +52,7 @@ test.describe("public site", () => {
   test("unknown routes show the custom 404", async ({ page }) => {
     const res = await page.goto("/does-not-exist");
     expect(res?.status()).toBe(404);
-    await expect(page.getByText("Page not found")).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Page not found" })).toBeVisible();
     const missingProject = await page.goto("/projects/no-such-project");
     expect(missingProject?.status()).toBe(404);
   });

@@ -8,14 +8,15 @@ import { AnimatePresence, motion } from "motion/react";
 import { AlertCircle, CheckCircle2, Loader2, Send } from "lucide-react";
 import { submitContact } from "@/app/(site)/contact/actions";
 import { buttonClass } from "@/components/ui/button";
-import { copy } from "@/lib/copy";
-import { contactSchema, type ContactInput } from "@/lib/validation/contact";
+import { useCopy } from "@/components/i18n/provider";
+import { makeContactSchema, type ContactInput } from "@/lib/validation/contact";
 import { cn } from "@/lib/utils";
 
 const input =
   "w-full rounded-2xl border border-line bg-white/[0.03] px-4 py-3.5 text-fg placeholder:text-subtle transition focus:border-accent/70 focus:bg-white/[0.05] focus:outline-none aria-[invalid=true]:border-red-400/70";
 
 export function ContactForm() {
+  const copy = useCopy();
   const [pending, startTransition] = useTransition();
   const [status, setStatus] = useState<{ type: "success" | "error"; text: string } | null>(null);
   const startedAt = useRef(Date.now());
@@ -28,7 +29,7 @@ export function ContactForm() {
     setError,
     formState: { errors },
   } = useForm<ContactInput>({
-    resolver: zodResolver(contactSchema),
+    resolver: zodResolver(makeContactSchema(copy.contact.validation)),
     defaultValues: { name: "", email: "", subject: "", message: "" },
   });
 

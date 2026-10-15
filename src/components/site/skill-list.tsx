@@ -1,8 +1,9 @@
 import type { Skill } from "@/lib/types";
-import { copy } from "@/lib/copy";
+import { getCopy } from "@/lib/i18n/server";
 
 /** Groups skills by category. Level bars only render when the admin set a level. */
-export function SkillGroups({ skills }: { skills: Skill[] }) {
+export async function SkillGroups({ skills }: { skills: Skill[] }) {
+  const copy = await getCopy();
   const groups = new Map<string, Skill[]>();
   for (const s of skills) {
     const key = s.category || copy.skills.other;

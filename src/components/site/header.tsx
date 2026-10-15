@@ -5,9 +5,10 @@ import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { ArrowUpRight, Download, Menu, X } from "lucide-react";
-import { copy } from "@/lib/copy";
+import { useCopy } from "@/components/i18n/provider";
 import { SoundToggle } from "@/components/effects/sound";
 import { ThemeToggle } from "@/components/effects/theme";
+import { LanguageSwitcher } from "@/components/i18n/language-switcher";
 import type { NavItem } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
@@ -44,6 +45,7 @@ function Availability({ text, className }: { text: string; className?: string })
 }
 
 export function Header({ siteName, logoUrl, availability, nav, resumeUrl }: Props) {
+  const copy = useCopy();
   const pathname = usePathname();
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
@@ -94,6 +96,14 @@ export function Header({ siteName, logoUrl, availability, nav, resumeUrl }: Prop
     };
   }, [open]);
 
+  const tools = (
+    <>
+      <LanguageSwitcher />
+      <ThemeToggle />
+      <SoundToggle />
+    </>
+  );
+
   return (
     <>
       <a
@@ -103,44 +113,39 @@ export function Header({ siteName, logoUrl, availability, nav, resumeUrl }: Prop
         {copy.skipToContent}
       </a>
 
-      <header className={cn("fixed inset-x-0 z-50 transition-[top] duration-300", scrolled ? "top-2" : "top-4")}>
-        <div className="mx-auto w-[min(1200px,calc(100%-1.5rem))]">
-          <div
-            className={cn(
-              "ed-glass flex h-14 items-center justify-between gap-3 rounded-full pr-2 pl-4 transition-shadow duration-300 sm:pl-5",
-              scrolled && "shadow-[0_12px_40px_-16px_rgba(0,0,0,0.6)]",
-            )}
-          >
-            <div className="flex min-w-0 items-center gap-3">
-              <Link href="/" className="flex min-w-0 items-center gap-2.5" aria-label={`${siteName} — ${copy.home}`}>
-                {logoUrl && (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img src={logoUrl} alt="" className="size-8 rounded-full object-cover" width={32} height={32} />
-                )}
-                <span className="font-display truncate text-[1.02rem] font-semibold tracking-[0.01em]">{siteName}</span>
+      <header className="fixed inset-x-0 top-0 z-50">
+        <div
+          className={cn(
+            "border-b transition-[background-color,border-color] duration-300",
+            scrolled ? "border-line bg-[rgba(var(--bg-rgb),0.86)]" : "border-transparent bg-transparent",
+          )}
+        >
+          {/* Desktop: a centred row of pills, like the reference */}
+          <nav aria-label={copy.menu} className="hidden items-center justify-center gap-2.5 px-4 py-4 lg:flex">
+            {[{ label: copy.home, href: "/", visible: true }, ...nav].map((item) => (
+              <Link
+                key={item.href}
+                href={item.href}
+                className="ed-pill"
+                aria-current={isActive(pathname, item.href) ? "page" : undefined}
+              >
+                {item.label}
               </Link>
-              {availability && <Availability text={availability} className="hidden xl:inline-flex" />}
-            </div>
+            ))}
+            <span className="ml-3 flex items-center gap-2">{tools}</span>
+          </nav>
 
-            <nav aria-label={copy.menu} className="hidden lg:block">
-              <ul className="flex items-center gap-0.5">
-                {nav.map((item) => (
-                  <li key={item.href}>
-                    <Link
-                      href={item.href}
-                      className="ed-navlink"
-                      aria-current={isActive(pathname, item.href) ? "page" : undefined}
-                    >
-                      {item.label}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </nav>
-
+          {/* Mobile / tablet: name, tools and the menu button */}
+          <div className="flex items-center justify-between gap-3 px-4 py-3 lg:hidden">
+            <Link href="/" className="flex min-w-0 items-center gap-2" aria-label={`${siteName} — ${copy.home}`}>
+              {logoUrl && (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={logoUrl} alt="" className="size-7 rounded-full object-cover" width={28} height={28} />
+              )}
+              <span className="truncate text-[0.82rem] font-extrabold tracking-[0.08em] uppercase">{siteName}</span>
+            </Link>
             <div className="flex shrink-0 items-center gap-1.5">
-              <ThemeToggle />
-              <SoundToggle />
+              {tools}
               <button
                 ref={toggleRef}
                 type="button"
@@ -148,7 +153,7 @@ export function Header({ siteName, logoUrl, availability, nav, resumeUrl }: Prop
                 aria-expanded={open}
                 aria-controls="mobile-menu"
                 aria-label={open ? copy.closeMenu : copy.menu}
-                className="ed-icon-btn lg:hidden"
+                className="ed-icon-btn"
               >
                 {open ? <X className="size-4" aria-hidden /> : <Menu className="size-4" aria-hidden />}
               </button>
@@ -171,7 +176,7 @@ export function Header({ siteName, logoUrl, availability, nav, resumeUrl }: Prop
             transition={{ duration: 0.55, ease: [0.76, 0, 0.24, 1] }}
             className="bg-bg fixed inset-0 z-40 lg:hidden"
           >
-            <nav aria-label="Mobile" className="container-x flex h-full flex-col justify-between pt-28 pb-10">
+            <nav aria-label={copy.menu} className="container-x flex h-full flex-col justify-between pt-28 pb-10">
               <ul className="flex flex-col">
                 {[{ label: copy.home, href: "/", visible: true }, ...nav].map((item, i) => (
                   <motion.li

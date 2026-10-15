@@ -2,16 +2,20 @@ import type { Metadata } from "next";
 import { SkillGroups } from "@/components/site/skill-list";
 import { EmptyState, PageHeader } from "@/components/site/section-heading";
 import { Reveal } from "@/components/ui/reveal";
-import { copy } from "@/lib/copy";
+import { getCopy } from "@/lib/i18n/server";
 import { getSkills } from "@/lib/data/public";
 
-export const metadata: Metadata = {
-  title: copy.skills.title,
-  description: copy.skills.lead,
-  alternates: { canonical: "/skills" },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const copy = await getCopy();
+  return {
+    title: copy.skills.title,
+    description: copy.skills.lead,
+    alternates: { canonical: "/skills" },
+  };
+}
 
 export default async function SkillsPage() {
+  const copy = await getCopy();
   const skills = await getSkills();
   return (
     <>

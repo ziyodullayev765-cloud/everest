@@ -2,6 +2,7 @@
 
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { cn } from "@/lib/utils";
+import { useCopy } from "@/components/i18n/provider";
 
 /**
  * Background music uploaded in Admin → Settings → Background music.
@@ -120,8 +121,9 @@ export function SoundProvider({ musicUrl, title, children }: { musicUrl: string 
 
 export function SoundToggle({ className }: { className?: string }) {
   const sound = useSound();
+  const copy = useCopy();
   if (!sound?.available) return null;
-  const label = sound.on ? "Pause music" : "Play music";
+  const label = sound.on ? copy.pauseMusic : copy.playMusic;
   return (
     <button
       type="button"

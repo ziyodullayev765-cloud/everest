@@ -148,8 +148,11 @@ export function DomeGallery({
   fit = 0.85,
   maxVerticalDeg = 0,
   offsetY = "10rem",
+  mobileFit = 1.35,
+  mobileOffsetY = "9rem",
   paused = false,
   autoSpin = true,
+  labels = { dome: "Photo dome — drag to rotate, click a photo to enlarge", close: "Close" },
 }: {
   tiles: DomeTileData[];
   segments?: number;
@@ -158,8 +161,12 @@ export function DomeGallery({
   /** How far the sphere may be tilted by vertical drags (0 = horizontal only). */
   maxVerticalDeg?: number;
   offsetY?: string;
+  /** Phones (< 640px wide) use a wider sphere so it still fills the screen. */
+  mobileFit?: number;
+  mobileOffsetY?: string;
   paused?: boolean;
   autoSpin?: boolean;
+  labels?: { dome: string; close: string };
 }) {
   const rootRef = useRef<HTMLDivElement>(null);
   const sphereRef = useRef<HTMLDivElement>(null);
@@ -180,20 +187,25 @@ export function DomeGallery({
     if (!root || !sphere) return;
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
+    let narrow = false;
     const fitRadius = () => {
       const w = Math.max(1, root.clientWidth);
       const h = Math.max(1, root.clientHeight);
-      const r = Math.round(Math.max(300, Math.min(w * fit, h * 1.35)));
+      narrow = w < 640;
+      const r = Math.round(Math.max(300, Math.min(w * (narrow ? mobileFit : fit), h * 1.35)));
       root.style.setProperty("--radius", `${r}px`);
       root.style.setProperty("--tile", `${(2 * Math.PI * r) / segments}px`);
     };
     fitRadius();
-    const ro = new ResizeObserver(fitRadius);
+    const ro = new ResizeObserver(() => {
+      fitRadius();
+      render();
+    });
     ro.observe(root);
 
     const rot = { x: 0, y: 0 };
     const render = () => {
-      sphere.style.transform = `translateY(${offsetY}) translateZ(calc(var(--radius) * -1)) rotateX(${rot.x}deg) rotateY(${rot.y}deg)`;
+      sphere.style.transform = `translateY(${narrow ? mobileOffsetY : offsetY}) translateZ(calc(var(--radius) * -1)) rotateX(${rot.x}deg) rotateY(${rot.y}deg)`;
     };
     render();
 
@@ -307,7 +319,7 @@ export function DomeGallery({
       window.removeEventListener("pointercancel", onUp);
       root.removeEventListener("click", onClick);
     };
-  }, [fit, segments, maxVerticalDeg, offsetY, autoSpin]);
+  }, [fit, mobileFit, segments, maxVerticalDeg, offsetY, mobileOffsetY, autoSpin]);
 
   const slotsRef = useRef(slots);
   slotsRef.current = slots;
@@ -322,7 +334,7 @@ export function DomeGallery({
 
   return (
     <>
-      <div ref={rootRef} className="dome" role="region" aria-label="Photo dome — drag to rotate, click a photo to enlarge">
+      <div ref={rootRef} className="dome" role="region" aria-label={labels.dome}>
         <div className="dome-stage">
           <div ref={sphereRef} className="dome-sphere">
             {slots.map(({ key, x, y, tile }, i) => (
@@ -392,7 +404,7 @@ export function DomeGallery({
                   <button
                     type="button"
                     onClick={close}
-                    aria-label="Close"
+                    aria-label={labels.close}
                     className="ed-icon-btn ed-glass absolute -top-3 -right-3"
                   >
                     <X className="size-4" aria-hidden />

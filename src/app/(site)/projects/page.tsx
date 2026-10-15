@@ -1,16 +1,20 @@
 import type { Metadata } from "next";
 import { PageHeader } from "@/components/site/section-heading";
 import { ProjectBrowser } from "@/components/site/project-browser";
-import { copy } from "@/lib/copy";
+import { getCopy } from "@/lib/i18n/server";
 import { getProjects } from "@/lib/data/public";
 
-export const metadata: Metadata = {
-  title: copy.projects.title,
-  description: copy.projects.lead,
-  alternates: { canonical: "/projects" },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const copy = await getCopy();
+  return {
+    title: copy.projects.title,
+    description: copy.projects.lead,
+    alternates: { canonical: "/projects" },
+  };
+}
 
 export default async function ProjectsPage() {
+  const copy = await getCopy();
   const projects = await getProjects();
   return (
     <>

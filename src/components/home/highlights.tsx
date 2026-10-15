@@ -2,30 +2,33 @@ import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 import { EdSection } from "@/components/site/ed-section";
 import { GlowCard } from "@/components/site/glow-card";
-import { copy } from "@/lib/copy";
+import { getCopy } from "@/lib/i18n/server";
 import type { Achievement, Stat } from "@/lib/types";
 import { HomeHeading } from "./section-heading";
 
 /** Key milestones (featured achievements) as large stat cards, plus any numeric stats. */
-export function Highlights({ items, stats }: { items: Achievement[]; stats: Stat[] }) {
+export async function Highlights({ items, stats }: { items: Achievement[]; stats: Stat[] }) {
+  const copy = await getCopy();
   if (!items.length && !stats.length) return null;
   return (
-    <EdSection id="highlights" className="mx-auto w-[min(1200px,calc(100%-2rem))] py-24">
-      <HomeHeading eyebrow="Milestones" title={copy.sections.recentAchievements}>
+    <EdSection id="highlights" className="mx-auto w-[min(1200px,calc(100%-2rem))] py-14 sm:py-24">
+      <HomeHeading eyebrow={copy.homePage.milestones} title={copy.sections.recentAchievements}>
         <Link href="/achievements" className="ed-button">
           {copy.sections.allAchievements}
           <ArrowUpRight className="size-4" aria-hidden />
         </Link>
       </HomeHeading>
       {items.length > 0 && (
-        <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="mt-8 grid grid-cols-2 gap-3 sm:mt-12 sm:gap-5 lg:grid-cols-4">
           {items.map((a, i) => (
-            <GlowCard key={a.id} className="flex min-h-56 flex-col justify-between p-7">
+            <GlowCard key={a.id} className="flex min-h-40 flex-col justify-between gap-6 p-4 sm:min-h-56 sm:p-7">
               <span className="text-gold font-mono text-xs">{String(i + 1).padStart(2, "0")}</span>
               <div>
-                <h3 className="text-[1.7rem] leading-tight">{a.title}</h3>
+                <h3 className="text-[1.15rem] leading-tight sm:text-[1.7rem]">{a.title}</h3>
                 {(a.description || a.organization) && (
-                  <p className="mt-3 text-sm leading-relaxed text-[var(--fg-secondary)]">{a.description || a.organization}</p>
+                  <p className="mt-2 text-xs leading-relaxed text-[var(--fg-secondary)] sm:mt-3 sm:text-sm">
+                    {a.description || a.organization}
+                  </p>
                 )}
               </div>
             </GlowCard>

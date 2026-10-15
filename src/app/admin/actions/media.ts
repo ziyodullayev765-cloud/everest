@@ -1,6 +1,6 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import { z } from "zod";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { requireAdmin, UnauthorizedError } from "@/lib/auth";
@@ -139,7 +139,10 @@ export async function registerMedia(input: z.input<typeof registerMediaSchema>):
       await supabase.storage.from(MEDIA_BUCKET).remove([d.path]);
       throw error;
     }
-    if (d.inGallery && kind === "image") revalidatePath("/", "layout");
+    if (d.inGallery && kind === "image") {
+      revalidatePath("/", "layout");
+      revalidateTag("content");
+    }
     return { ok: true, data: data as Media, message: "Uploaded." };
   } catch (e) {
     return fail(e);
@@ -155,6 +158,7 @@ export async function updateMediaMeta(id: string, input: z.input<typeof mediaMet
     const { error } = await supabase.from("media").update(parsed.data).eq("id", id);
     if (error) throw error;
     revalidatePath("/", "layout");
+    revalidateTag("content");
     return { ok: true, message: "Saved." };
   } catch (e) {
     return fail(e);
@@ -196,6 +200,7 @@ export async function deleteMedia(id: string, force = false): Promise<ActionResu
     const { error } = await supabase.from("media").delete().eq("id", id);
     if (error) throw error;
     revalidatePath("/", "layout");
+    revalidateTag("content");
     return { ok: true, message: "File deleted." };
   } catch (e) {
     return fail(e);
@@ -243,6 +248,7 @@ export async function replaceMedia(id: string, input: z.input<typeof registerMed
     await rewriteReferences(supabase, old.url as string, newUrl);
     await supabase.storage.from(MEDIA_BUCKET).remove([old.path as string]);
     revalidatePath("/", "layout");
+    revalidateTag("content");
     return { ok: true, data: data as Media, message: "File replaced everywhere it was used." };
   } catch (e) {
     return fail(e);

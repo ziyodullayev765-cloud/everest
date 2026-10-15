@@ -2,7 +2,8 @@ import { ExternalLink, MapPin } from "lucide-react";
 import { SmartImage } from "@/components/ui/smart-image";
 import { RichText } from "@/components/ui/rich-text";
 import { Reveal } from "@/components/ui/reveal";
-import { formatRange } from "@/lib/utils";
+import { dateRange } from "@/lib/i18n/dictionaries";
+import { getCopy } from "@/lib/i18n/server";
 
 export interface TimelineItem {
   id: string;
@@ -13,13 +14,16 @@ export interface TimelineItem {
   start: string | null;
   end: string | null;
   current: boolean;
+  /** Free text shown instead of the dates (e.g. "2026"). */
+  periodLabel?: string;
   description?: string;
   highlights?: string[];
   image?: string | null;
   url?: string | null;
 }
 
-export function Timeline({ items }: { items: TimelineItem[] }) {
+export async function Timeline({ items }: { items: TimelineItem[] }) {
+  const copy = await getCopy();
   return (
     <ol className="border-line relative border-l pl-6 sm:pl-8">
       {items.map((it, i) => (
@@ -30,7 +34,7 @@ export function Timeline({ items }: { items: TimelineItem[] }) {
           />
           <Reveal delay={Math.min(i, 4) * 0.05}>
             <p className="text-subtle font-mono text-xs tracking-[0.16em] uppercase">
-              {formatRange(it.start, it.end, it.current)}
+              {it.periodLabel?.trim() || dateRange(it.start, it.end, it.current, copy)}
               {it.meta && <span className="text-accent"> · {it.meta}</span>}
             </p>
             <div className="mt-2 flex items-start gap-4">

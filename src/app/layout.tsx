@@ -1,4 +1,5 @@
 import { themeInitScript } from "@/lib/theme-script";
+import { getLocale } from "@/lib/i18n/server";
 import type { Metadata, Viewport } from "next";
 import { GeistSans } from "geist/font/sans";
 import { GeistMono } from "geist/font/mono";
@@ -29,6 +30,7 @@ export async function generateMetadata(): Promise<Metadata> {
       description,
       url: "/",
       locale: "en_US",
+      alternateLocale: ["uz_UZ", "ru_RU"],
       images: [{ url: s.og_image_url || "/og", width: 1200, height: 630 }],
     },
     twitter: {
@@ -48,10 +50,10 @@ export const viewport: Viewport = {
 };
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
-  const settings = await getSettings();
+  const [settings, locale] = await Promise.all([getSettings(), getLocale()]);
   return (
     <html
-      lang="en"
+      lang={locale}
       className={`${GeistSans.variable} ${GeistMono.variable}`}
       style={{ ["--accent" as string]: settings.accent_color }}
       // The theme script adds the "light" class before hydration.

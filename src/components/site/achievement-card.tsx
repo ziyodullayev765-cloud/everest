@@ -1,9 +1,9 @@
 import { Award, ExternalLink, FileText, Flag, Medal, Sparkles, Trophy } from "lucide-react";
 import { SmartImage } from "@/components/ui/smart-image";
 import { RichText } from "@/components/ui/rich-text";
-import { copy } from "@/lib/copy";
+import { useCopy } from "@/components/i18n/provider";
 import type { Achievement } from "@/lib/types";
-import { formatDate } from "@/lib/utils";
+import { fullDate } from "@/lib/i18n/dictionaries";
 
 const KIND_ICON = { award: Trophy, competition: Medal, certificate: Award, milestone: Flag, other: Sparkles } as const;
 
@@ -13,6 +13,7 @@ export function KindIcon({ kind, className }: { kind: Achievement["kind"]; class
 }
 
 export function AchievementCard({ a, compact = false }: { a: Achievement; compact?: boolean }) {
+  const copy = useCopy();
   return (
     <article className="glass group hover:border-line-strong relative overflow-hidden rounded-3xl p-6 transition-colors duration-500 sm:p-7">
       <div className="flex items-start gap-4">
@@ -27,7 +28,7 @@ export function AchievementCard({ a, compact = false }: { a: Achievement; compac
             {a.achieved_on && (
               <>
                 <span aria-hidden>·</span>
-                <time dateTime={a.achieved_on}>{formatDate(a.achieved_on)}</time>
+                <time dateTime={a.achieved_on}>{fullDate(a.achieved_on, copy)}</time>
               </>
             )}
           </p>

@@ -2,11 +2,11 @@
 
 import { createHash } from "node:crypto";
 import { headers } from "next/headers";
-import { copy } from "@/lib/copy";
+import { getCopy } from "@/lib/i18n/server";
 import { isSupabaseConfigured } from "@/lib/env";
 import { clientIp, rateLimit } from "@/lib/rate-limit";
 import { createPublicClient } from "@/lib/supabase/server";
-import { contactSchema, MIN_FILL_MS } from "@/lib/validation/contact";
+import { makeContactSchema, MIN_FILL_MS } from "@/lib/validation/contact";
 import { flattenErrors } from "@/lib/cms/fields";
 import type { ActionResult } from "@/lib/types";
 
@@ -23,6 +23,7 @@ export async function submitContact(input: {
   website?: string;
   startedAt?: number;
 }): Promise<ActionResult> {
+  const copy = await getCopy();
   // Honeypot: real users never see or fill this field. Pretend success for bots.
   if (input.website) return { ok: true };
   // Time trap: humans need a few seconds to fill the form.
@@ -30,7 +31,7 @@ export async function submitContact(input: {
     return { ok: true };
   }
 
-  const parsed = contactSchema.safeParse({ ...input, subject: input.subject ?? "" });
+  const parsed = makeContactSchema(copy.contact.validation).safeParse({ ...input, subject: input.subject ?? "" });
   if (!parsed.success) return { ok: false, error: copy.contact.errorGeneric, fieldErrors: flattenErrors(parsed.error) };
 
   if (!isSupabaseConfigured) return { ok: false, error: copy.contact.errorConfig };

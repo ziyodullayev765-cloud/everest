@@ -152,7 +152,13 @@ come from the registry. `tests/unit/schema-integrity.test.ts` fails if a configu
 "Editorial bronze": deep charcoal (`#0D0D0D`) with warm grey cards (`#141414`), off-white text and metallic bronze /
 gold / copper accents (`#C5A059`, `#D4AF37`, `#8C6D46`). Titles use Playfair Display (serif, uppercase for section
 headings); body text uses Geist. Dark by default, with a light-theme toggle in the header (remembered per visitor,
-applied before first paint). The public UI is in English (`src/lib/copy.ts`).
+applied before first paint).
+
+**Languages:** the public interface is available in English, Uzbek and Russian (`src/lib/i18n/dictionaries.ts`).
+Visitors switch with the EN / UZ / RU menu in the header (stored in a `lang` cookie); on a first visit the browser's
+Accept-Language picks the language. Portfolio content itself (projects, achievements, …) is shown as entered in the
+admin. Because pages render per request for the language, published content is cached for 5 minutes in the Next.js
+data cache and cleared whenever anything is saved in the admin.
 
 Home page (`src/components/home/*`): hero over a draggable **3D image dome**, an editable ticker
 (Admin → Settings → Hero → "Ticker words"), a featured-project row that slides sideways as you scroll on wide screens

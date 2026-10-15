@@ -1,15 +1,16 @@
 import { ContactForm } from "@/components/site/contact-form";
 import { EdSection } from "@/components/site/ed-section";
 import { SocialIcon } from "@/components/site/social-icon";
-import { copy } from "@/lib/copy";
+import { getCopy } from "@/lib/i18n/server";
 import type { SocialLink } from "@/lib/types";
 import { HomeHeading } from "./section-heading";
 
 /** Project inquiry form with social links underneath. */
-export function Contact({ social, email }: { social: SocialLink[]; email: string | null }) {
+export async function Contact({ social, email }: { social: SocialLink[]; email: string | null }) {
+  const copy = await getCopy();
   return (
-    <EdSection id="contact" className="mx-auto w-[min(1200px,calc(100%-2rem))] py-24">
-      <HomeHeading eyebrow="Contact" title={copy.sections.contactTitle} lead={copy.sections.contactLead} center />
+    <EdSection id="contact" className="mx-auto w-[min(1200px,calc(100%-2rem))] py-14 sm:py-24">
+      <HomeHeading eyebrow={copy.homePage.contact} title={copy.sections.contactTitle} lead={copy.sections.contactLead} center />
       <div className="glow-card mx-auto mt-12 max-w-3xl p-6 sm:p-10">
         <ContactForm />
       </div>
