@@ -82,10 +82,7 @@ export default async function HomePage() {
           tiles={tiles}
           animateDome={settings.enable_3d}
         />
-        <Projects
-          projects={featured}
-          labels={{ prev: copy.homePage.prev, next: copy.homePage.next, hint: copy.homePage.dragHint }}
-        />
+        <Projects projects={featured} labels={{ hint: copy.homePage.dragHint }} />
         <Highlights items={highlights} stats={stats} />
         <Skills skills={skills} />
         <Experience items={experience} resumeUrl={resumeUrl} />
