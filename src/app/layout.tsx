@@ -53,8 +53,6 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       lang="uz"
       className={`${GeistSans.variable} ${GeistMono.variable}`}
       style={{ ["--accent" as string]: settings.accent_color }}
-      // The intro preloader marks returning visitors on <html> before hydration.
-      suppressHydrationWarning
     >
       <body className="font-sans">{children}</body>
     </html>

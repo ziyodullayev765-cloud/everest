@@ -1,6 +1,5 @@
 @import "tailwindcss";
 @import "@fontsource-variable/unbounded";
-@import "lenis/dist/lenis.css";
 
 /*
  * Design tokens. The accent colour is overridable at runtime from
@@ -105,11 +104,10 @@
     }
   }
 
+  /* Frosted look without backdrop-filter (which re-blurs the page behind on every frame). */
   .glass {
-    background: linear-gradient(180deg, rgba(255, 255, 255, 0.045), rgba(255, 255, 255, 0.015));
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.025)), rgba(12, 11, 18, 0.55);
     border: 1px solid var(--border);
-    backdrop-filter: blur(18px) saturate(140%);
-    -webkit-backdrop-filter: blur(18px) saturate(140%);
   }
 
   .hairline {
@@ -260,16 +258,19 @@
     var(--c-cyan) 70%,
     var(--accent) 100%
   );
-  background-size: 250% 100%;
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
-  animation: rainbow-shift 8s linear infinite;
+  /* Static on purpose: animating a background-clipped gradient repaints the
+     text every frame and was the main cause of jank. */
 }
 @utility bg-rainbow {
   background: linear-gradient(100deg, var(--accent), var(--c-pink), var(--c-amber), var(--c-cyan), var(--accent));
   background-size: 250% 100%;
-  animation: rainbow-shift 8s linear infinite;
+  /* Colours flow only while hovered. */
+  &:hover {
+    animation: rainbow-shift 3s linear infinite;
+  }
 }
 .border-rainbow {
   position: relative;
@@ -282,7 +283,6 @@
   border-radius: inherit;
   background: linear-gradient(120deg, var(--accent), var(--c-pink), var(--c-cyan), var(--accent));
   background-size: 250% 100%;
-  animation: rainbow-shift 6s linear infinite;
   -webkit-mask:
     linear-gradient(#000 0 0) content-box,
     linear-gradient(#000 0 0);
@@ -295,6 +295,7 @@
 .border-rainbow:hover::before,
 .border-rainbow:focus-within::before {
   opacity: 1;
+  animation: rainbow-shift 4s linear infinite;
 }
 @keyframes rainbow-shift {
   to {
@@ -345,15 +346,4 @@
 .font-display {
   font-family: var(--font-display);
   font-variation-settings: "wght" 700;
-}
-
-/* Custom cursor: hide the native one only while the custom cursor is active. */
-html.has-custom-cursor,
-html.has-custom-cursor * {
-  cursor: none !important;
-}
-html.has-custom-cursor input,
-html.has-custom-cursor textarea,
-html.has-custom-cursor [contenteditable="true"] {
-  cursor: text !important;
 }

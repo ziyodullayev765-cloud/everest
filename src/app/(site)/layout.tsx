@@ -2,10 +2,7 @@ import { Backdrop } from "@/components/site/backdrop";
 import { Footer } from "@/components/site/footer";
 import { Header } from "@/components/site/header";
 import { PreviewBanner } from "@/components/site/preview-banner";
-import { CustomCursor } from "@/components/effects/cursor";
-import { CursorTrail } from "@/components/effects/cursor-trail";
-import { Preloader } from "@/components/effects/preloader";
-import { SmoothScroll } from "@/components/effects/smooth-scroll";
+import { CursorTrail as WaterRipples } from "@/components/effects/cursor-trail";
 import { SoundProvider } from "@/components/effects/sound";
 import { MotionProvider } from "@/components/ui/motion-provider";
 import { getProfile, getSettings, getSocialLinks, isPreview } from "@/lib/data/public";
@@ -21,25 +18,21 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
   return (
     <MotionProvider>
       <SoundProvider musicUrl={settings.music_url} title={settings.music_title}>
-        <SmoothScroll>
-          <Preloader name={name} />
-          <Backdrop />
-          <CursorTrail />
-          <CustomCursor />
-          <Header siteName={name} logoUrl={settings.logo_url} nav={settings.nav_items} resumeUrl={resumeUrl} />
-          <main id="main" tabIndex={-1} className="overflow-x-clip outline-none">
-            {children}
-          </main>
-          <Footer
-            siteName={name}
-            footerText={footerText(settings, name)}
-            links={settings.footer_links}
-            nav={settings.nav_items}
-            social={social}
-            email={settings.contact_email}
-          />
-          {preview && <PreviewBanner />}
-        </SmoothScroll>
+        <Backdrop />
+        <WaterRipples />
+        <Header siteName={name} logoUrl={settings.logo_url} nav={settings.nav_items} resumeUrl={resumeUrl} />
+        <main id="main" tabIndex={-1} className="overflow-x-clip outline-none">
+          {children}
+        </main>
+        <Footer
+          siteName={name}
+          footerText={footerText(settings, name)}
+          links={settings.footer_links}
+          nav={settings.nav_items}
+          social={social}
+          email={settings.contact_email}
+        />
+        {preview && <PreviewBanner />}
       </SoundProvider>
     </MotionProvider>
   );

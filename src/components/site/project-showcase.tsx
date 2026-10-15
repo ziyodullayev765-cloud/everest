@@ -34,7 +34,7 @@ export function ProjectShowcase({ projects }: { projects: Project[] }) {
           <li key={p.id} className="border-b border-white/10">
             <Link
               href={`/projects/${p.slug}`}
-              data-cursor="Ko‘rish"
+
               onPointerEnter={(e) => e.pointerType === "mouse" && setHovered(i)}
               onPointerLeave={() => setHovered(null)}
               className="group relative flex items-center gap-4 py-7 sm:gap-8 sm:py-10"

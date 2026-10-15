@@ -61,7 +61,7 @@ export function Hero(p: Props) {
       <motion.div style={reduce ? undefined : { y: textY, opacity: fade }} className="container-x relative">
         <motion.div {...fadeIn(0)} className="mb-6 flex flex-wrap items-center gap-3">
           {p.availability ? (
-            <span className="inline-flex items-center gap-2 rounded-full bg-white/[0.06] px-3.5 py-1.5 text-xs font-medium ring-1 ring-white/10 backdrop-blur">
+            <span className="inline-flex items-center gap-2 rounded-full bg-white/[0.06] px-3.5 py-1.5 text-xs font-medium ring-1 ring-white/10">
               <span className="relative flex size-2">
                 <span className="bg-lime absolute inline-flex size-full animate-ping rounded-full opacity-70 motion-reduce:hidden" />
                 <span className="bg-lime relative inline-flex size-2 rounded-full" />
@@ -82,7 +82,7 @@ export function Hero(p: Props) {
           )}
         </motion.div>
 
-        <h1 className="font-display text-[clamp(2.1rem,8.4vw,8.5rem)] leading-[0.92] tracking-[-0.04em] [overflow-wrap:anywhere] drop-shadow-[0_6px_30px_rgba(7,6,11,0.55)]">
+        <h1 className="font-display text-[clamp(2.1rem,8.4vw,8.5rem)] leading-[0.92] tracking-[-0.04em] [overflow-wrap:anywhere]">
           <PlayfulText text={first ?? ""} className="block" />
           {last && <PlayfulText text={last} className="text-rainbow block" delay={0.25} />}
         </h1>
@@ -114,7 +114,7 @@ export function Hero(p: Props) {
             <Magnetic>
               <Link
                 href="/contact"
-                className="inline-flex h-14 items-center gap-2 rounded-full bg-white/[0.04] px-7 text-base font-medium ring-1 ring-white/20 backdrop-blur transition hover:bg-white hover:text-black"
+                className="inline-flex h-14 items-center gap-2 rounded-full bg-white/[0.04] px-7 text-base font-medium ring-1 ring-white/20 transition hover:bg-white hover:text-black"
               >
                 {p.secondaryLabel}
               </Link>

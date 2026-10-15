@@ -66,7 +66,7 @@ export function ProjectCard({
         <h3 className="text-xl font-semibold tracking-tight">
           <Link
             href={`/projects/${project.slug}`}
-            data-cursor="Ko‘rish"
+
             className="after:absolute after:inset-0 after:content-['']"
           >
             {project.title}
