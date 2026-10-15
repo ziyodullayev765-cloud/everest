@@ -3,6 +3,8 @@
  * Portfolio *content* (projects, achievements, …) comes from the database and
  * is shown as entered in the admin; these are only UI chrome strings.
  */
+import { LEGACY_NAV_HREFS } from "@/lib/defaults";
+
 export const LOCALES = ["en", "uz", "ru"] as const;
 export type Locale = (typeof LOCALES)[number];
 export const DEFAULT_LOCALE: Locale = "en";
@@ -33,12 +35,11 @@ const en = {
   nav: {
     "/": "Home",
     "/gallery": "Journey",
-    "/#highlights": "Highlights",
+    "/highlights": "Highlights",
     "/projects": "Projects",
     "/experience": "Experience",
     "/achievements": "Achievements",
     "/skills": "Skills",
-    "/#contact": "Contact",
     "/contact": "Contact",
     "/about": "About",
     "/privacy": "Privacy policy",
@@ -50,6 +51,8 @@ const en = {
   },
 
   homePage: {
+    highlightsLead: "The results I am proudest of, and the numbers behind them.",
+    nextPage: "Next page",
     scroll: "Scroll",
     selectedWork: "Selected work",
     dragHint: "Drag or swipe the cards — click one for the full story.",
@@ -221,12 +224,11 @@ const uz: Copy = {
   nav: {
     "/": "Bosh sahifa",
     "/gallery": "Yo‘l",
-    "/#highlights": "Yutuqlar",
+    "/highlights": "Yutuqlar",
     "/projects": "Loyihalar",
     "/experience": "Tajriba",
     "/achievements": "Mukofotlar",
     "/skills": "Ko‘nikmalar",
-    "/#contact": "Aloqa",
     "/contact": "Aloqa",
     "/about": "Men haqimda",
     "/privacy": "Maxfiylik siyosati",
@@ -238,6 +240,8 @@ const uz: Copy = {
   },
 
   homePage: {
+    highlightsLead: "Eng faxrlanadigan natijalarim va ularning ortidagi raqamlar.",
+    nextPage: "Keyingi sahifa",
     scroll: "Pastga",
     selectedWork: "Tanlangan ishlar",
     dragHint: "Kartalarni suring — batafsil ko‘rish uchun birini bosing.",
@@ -407,12 +411,11 @@ const ru: Copy = {
   nav: {
     "/": "Главная",
     "/gallery": "Путь",
-    "/#highlights": "Главное",
+    "/highlights": "Главное",
     "/projects": "Проекты",
     "/experience": "Опыт",
     "/achievements": "Достижения",
     "/skills": "Навыки",
-    "/#contact": "Контакты",
     "/contact": "Контакты",
     "/about": "Обо мне",
     "/privacy": "Конфиденциальность",
@@ -424,6 +427,8 @@ const ru: Copy = {
   },
 
   homePage: {
+    highlightsLead: "Результаты, которыми я горжусь больше всего, и цифры за ними.",
+    nextPage: "Следующая страница",
     scroll: "Вниз",
     selectedWork: "Избранные работы",
     dragHint: "Листайте карточки — нажмите на любую, чтобы узнать подробнее.",
@@ -579,8 +584,12 @@ export const DICTIONARIES: Record<Locale, Copy> = { en, uz, ru };
 
 /** "2024-03-01" → "Mar 2024" (in the given language). Date-only strings, no timezone drift. */
 /** Menu items: standard pages use the translated label, custom ones keep their own. */
+/** Translates standard menu labels and points old "/#section" links at their own pages. */
 export function localizeNav<T extends { href: string; label: string }>(items: T[], c: Copy): T[] {
-  return items.map((i) => (c.nav[i.href] ? { ...i, label: c.nav[i.href]! } : i));
+  return items.map((i) => {
+    const href = LEGACY_NAV_HREFS[i.href] ?? i.href;
+    return { ...i, href, label: c.nav[href] ?? i.label };
+  });
 }
 
 export function monthYear(date: string | null | undefined, c: Copy): string {

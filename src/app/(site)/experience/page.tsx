@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Briefcase, GraduationCap } from "lucide-react";
 import { EmptyState, PageHeader } from "@/components/site/section-heading";
 import { Timeline } from "@/components/site/timeline-entry";
+import { PageNext } from "@/components/site/page-next";
 import { getCopy } from "@/lib/i18n/server";
 import { getEducation, getExperience } from "@/lib/data/public";
 import { educationToTimeline, experienceToTimeline } from "@/lib/timeline";
@@ -23,14 +24,14 @@ export default async function ExperiencePage() {
   return (
     <>
       <PageHeader title={copy.experience.title} lead={copy.experience.lead} />
-      <div className="container-x">
+      <div className="mx-auto w-[min(1200px,calc(100%-2rem))]">
         {empty ? (
           <EmptyState>{copy.experience.empty}</EmptyState>
         ) : (
           <div className="grid gap-16 lg:grid-cols-2 lg:gap-12">
             {experience.length > 0 && (
               <section aria-labelledby="exp-h">
-                <h2 id="exp-h" className="mb-10 flex items-center gap-3 text-2xl font-semibold tracking-tight">
+                <h2 id="exp-h" className="font-display mb-10 flex items-center gap-3 text-[1.9rem] tracking-[-0.02em]">
                   <Briefcase className="text-accent size-5" aria-hidden />
                   {copy.experience.work}
                 </h2>
@@ -39,7 +40,7 @@ export default async function ExperiencePage() {
             )}
             {education.length > 0 && (
               <section aria-labelledby="edu-h">
-                <h2 id="edu-h" className="mb-10 flex items-center gap-3 text-2xl font-semibold tracking-tight">
+                <h2 id="edu-h" className="font-display mb-10 flex items-center gap-3 text-[1.9rem] tracking-[-0.02em]">
                   <GraduationCap className="text-accent size-5" aria-hidden />
                   {copy.experience.education}
                 </h2>
@@ -49,6 +50,7 @@ export default async function ExperiencePage() {
           </div>
         )}
       </div>
+      <PageNext current="/experience" />
     </>
   );
 }
