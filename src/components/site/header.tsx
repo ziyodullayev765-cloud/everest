@@ -7,6 +7,7 @@ import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { ArrowUpRight, Download, Menu, X } from "lucide-react";
 import { copy } from "@/lib/copy";
 import { SoundToggle } from "@/components/effects/sound";
+import { ThemeToggle } from "@/components/effects/theme";
 import type { NavItem } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
@@ -22,16 +23,7 @@ function isActive(pathname: string, href: string) {
   return pathname === href || pathname.startsWith(`${href}/`);
 }
 
-function initials(name: string) {
-  return name
-    .split(/\s+/)
-    .filter(Boolean)
-    .slice(0, 2)
-    .map((p) => p[0]!.toUpperCase())
-    .join("");
-}
-
-export function Header({ siteName, logoUrl, nav, resumeUrl }: Props) {
+export function Header({ siteName, nav, resumeUrl }: Props) {
   const pathname = usePathname();
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
@@ -90,77 +82,43 @@ export function Header({ siteName, logoUrl, nav, resumeUrl }: Props) {
       >
         {copy.skipToContent}
       </a>
-      <header
-        className={cn(
-          "ease-out-expo fixed inset-x-0 top-0 z-50 transition-all duration-500",
-          scrolled ? "py-2.5" : "py-4 sm:py-5",
-        )}
-      >
-        <div className="container-x">
-          <div
-            className={cn(
-              "ease-out-expo flex h-14 items-center justify-between gap-4 rounded-full pr-2 pl-2 transition-all duration-500 sm:pl-3",
-              scrolled ? "glass bg-bg/90 shadow-[0_8px_40px_-12px_rgba(0,0,0,0.8)]" : "border border-transparent",
+      <header className="fixed inset-x-0 top-0 z-50">
+        <div
+          className={cn(
+            "border-b transition-colors duration-300",
+            scrolled ? "border-line bg-[rgba(var(--surface-rgb),0.92)]" : "border-transparent bg-transparent",
+          )}
+        >
+          {/* Desktop: centred row of pills, like an editorial index */}
+          <nav aria-label="Asosiy" className="ed-nav hidden flex-wrap items-center justify-center gap-2.5 px-4 py-4 lg:flex">
+            {[{ label: copy.home, href: "/", visible: true }, ...nav].map((item) => {
+              const active = isActive(pathname, item.href);
+              return (
+                <Link key={item.href} href={item.href} aria-current={active ? "page" : undefined}>
+                  {item.label}
+                </Link>
+              );
+            })}
+            {resumeUrl && (
+              <a href={resumeUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5">
+                <Download className="size-3.5" aria-hidden />
+                {copy.downloadCv}
+              </a>
             )}
-          >
-            <Link
-              href="/"
-              className="flex min-w-0 items-center gap-3 rounded-full py-1 pr-2"
-              aria-label={`${siteName} — ${copy.home}`}
-            >
-              {logoUrl ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img src={logoUrl} alt="" className="size-9 rounded-full object-cover" width={36} height={36} />
-              ) : (
-                <span className="bg-rainbow font-display grid size-9 place-items-center rounded-full text-[0.7rem] text-white">
-                  {initials(siteName)}
-                </span>
-              )}
-              <span className="truncate text-[0.95rem] font-semibold tracking-tight">{siteName}</span>
-            </Link>
-
-            <nav aria-label="Asosiy" className="hidden lg:block">
-              <ul className="flex items-center gap-1">
-                {nav.map((item) => {
-                  const active = isActive(pathname, item.href);
-                  return (
-                    <li key={item.href}>
-                      <Link
-                        href={item.href}
-                        aria-current={active ? "page" : undefined}
-                        className={cn(
-                          "relative rounded-full px-3.5 py-2 text-sm transition-colors",
-                          active ? "text-fg" : "text-muted hover:text-fg",
-                        )}
-                      >
-                        {active && (
-                          <motion.span
-                            layoutId="nav-active"
-                            className="absolute inset-0 -z-10 rounded-full bg-white/[0.07] ring-1 ring-white/10"
-                            transition={{ type: "spring", bounce: 0.18, duration: 0.6 }}
-                          />
-                        )}
-                        {item.label}
-                      </Link>
-                    </li>
-                  );
-                })}
-              </ul>
-            </nav>
-
-            <div className="flex items-center gap-2">
+            <span className="ml-2 flex items-center gap-2">
+              <ThemeToggle />
               <SoundToggle />
-              {resumeUrl && (
-                <a
-                  href={resumeUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="bg-rainbow hidden h-10 items-center gap-2 rounded-full px-4 text-sm font-medium text-white transition hover:scale-105 sm:inline-flex"
-                >
-                  <Download className="size-4" aria-hidden />
-                  {copy.downloadCv}
-                </a>
-              )}
+            </span>
+          </nav>
+
+          {/* Mobile: name + toggles */}
+          <div className="ed-nav flex items-center justify-between gap-3 px-4 py-3 lg:hidden">
+            <Link href="/" className="font-display min-w-0 truncate !border-0 !bg-transparent !px-0 text-sm tracking-[0.08em]">
+              {siteName}
+            </Link>
+            <div className="flex items-center gap-2">
+              <ThemeToggle />
+              <SoundToggle />
               <button
                 ref={toggleRef}
                 type="button"
@@ -168,9 +126,9 @@ export function Header({ siteName, logoUrl, nav, resumeUrl }: Props) {
                 aria-expanded={open}
                 aria-controls="mobile-menu"
                 aria-label={open ? copy.closeMenu : copy.menu}
-                className="text-fg grid size-11 place-items-center rounded-full ring-1 ring-white/10 transition hover:bg-white/[0.06] lg:hidden"
+                className="grid size-10 place-items-center !p-0"
               >
-                {open ? <X className="size-5" aria-hidden /> : <Menu className="size-5" aria-hidden />}
+                {open ? <X className="size-4" aria-hidden /> : <Menu className="size-4" aria-hidden />}
               </button>
             </div>
           </div>
@@ -189,7 +147,7 @@ export function Header({ siteName, logoUrl, nav, resumeUrl }: Props) {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.3 }}
-            className="fixed inset-0 z-40 bg-black/80 backdrop-blur-2xl lg:hidden"
+            className="bg-bg/95 fixed inset-0 z-40 lg:hidden"
           >
             <nav aria-label="Mobil" className="container-x flex h-full flex-col justify-between pt-28 pb-10">
               <ul className="flex flex-col">
@@ -207,7 +165,7 @@ export function Header({ siteName, logoUrl, nav, resumeUrl }: Props) {
                         href={item.href}
                         aria-current={active ? "page" : undefined}
                         className={cn(
-                          "flex items-center justify-between py-4 text-2xl font-medium tracking-tight sm:text-3xl",
+                          "font-display flex items-center justify-between py-4 text-2xl sm:text-3xl",
                           active ? "text-accent" : "text-fg",
                         )}
                       >
@@ -223,7 +181,7 @@ export function Header({ siteName, logoUrl, nav, resumeUrl }: Props) {
                   href={resumeUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="bg-rainbow mt-8 inline-flex h-12 items-center justify-center gap-2 rounded-full text-base font-medium text-white"
+                  className="ed-button ed-button--accent mt-8 justify-center"
                 >
                   <Download className="size-4" aria-hidden />
                   {copy.downloadCv}
