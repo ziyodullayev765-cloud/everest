@@ -9,8 +9,7 @@ const base =
   "group relative inline-flex select-none items-center justify-center gap-2 whitespace-nowrap rounded-full font-medium uppercase tracking-[0.03em] transition-all duration-300 ease-out-expo focus-visible:outline-2 disabled:pointer-events-none disabled:opacity-50";
 
 const variants: Record<Variant, string> = {
-  primary:
-    "border border-accent bg-accent font-semibold text-[#0d0d0d] hover:border-[#b8956a] hover:bg-[#b8956a] active:scale-[0.98]",
+  primary: "border border-fg bg-fg font-semibold text-bg hover:opacity-85 active:scale-[0.98]",
   secondary: "border border-line bg-surface text-fg hover:border-line-strong hover:bg-surface-strong active:scale-[0.98]",
   ghost: "text-muted hover:text-fg hover:bg-white/[0.05]",
 };

@@ -1,6 +1,6 @@
 /**
  * Quiet atmosphere behind every page: two very faint glows (surface grey and
- * bronze) plus a whisper of film grain. Static — no blur filters, no motion.
+ * rose) plus a whisper of film grain. Static — no blur filters, no motion.
  */
 export function Backdrop() {
   return (
@@ -10,8 +10,8 @@ export function Backdrop() {
         style={{ background: "radial-gradient(closest-side, var(--bg-elevated), transparent)" }}
       />
       <div
-        className="absolute -right-[10%] -bottom-[20%] size-[70vw] opacity-[0.06]"
-        style={{ background: "radial-gradient(closest-side, var(--accent), transparent)" }}
+        className="absolute -right-[10%] -bottom-[20%] size-[70vw] opacity-[0.07]"
+        style={{ background: "radial-gradient(closest-side, var(--name-tint), transparent)" }}
       />
     </div>
   );

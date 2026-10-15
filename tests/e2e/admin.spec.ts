@@ -178,9 +178,12 @@ test.describe("as admin", () => {
     const visitor = await context.browser()!.newContext();
     const vpage = await visitor.newPage();
     await vpage.goto("/gallery");
-    // The grid below the dome lists every gallery photo.
-    const img = vpage.locator("section", { hasText: "Every moment" }).getByRole("img", { name: `Test gallery image ${stamp}` });
-    await expect(img).toBeVisible();
+    // Every gallery photo is placed on the dome's tiles.
+    const img = vpage
+      .locator(".dome")
+      .getByRole("img", { name: `Test gallery image ${stamp}` })
+      .first();
+    await expect(img).toBeAttached();
     await expect.poll(() => img.evaluate((el: HTMLImageElement) => el.naturalWidth), { timeout: 20_000 }).toBeGreaterThan(0);
 
     await dialog.getByRole("button", { name: "Delete" }).click();

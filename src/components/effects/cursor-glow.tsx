@@ -3,8 +3,7 @@
 import { useEffect, useRef } from "react";
 
 /**
- * A soft bronze light that drifts after the pointer on a damped spring — it
- * lags and settles like something moving through water. Transform-only, one
+ * A soft bronze light that follows the pointer on a stiff, damped spring. Transform-only, one
  * small layer, and the loop sleeps once it has caught up. Fine pointers only.
  */
 export function CursorGlow() {
@@ -17,9 +16,10 @@ export function CursorGlow() {
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (!fine || reduce) return;
 
-    // Critically-damped-ish spring: stiffness 100, damping 30, mass 1.
-    const K = 100;
-    const C = 30;
+    // Stiff, critically damped spring (c = 2·√k): follows the pointer closely
+    // with just a hint of softness, no visible lag.
+    const K = 900;
+    const C = 60;
     const target = { x: 0, y: 0 };
     const pos = { x: 0, y: 0 };
     const vel = { x: 0, y: 0 };
@@ -28,7 +28,7 @@ export function CursorGlow() {
     let started = false;
 
     const step = (t: number) => {
-      const dt = Math.min(0.032, (t - last) / 1000 || 0.016);
+      const dt = Math.min(0.02, (t - last) / 1000 || 0.016); // small steps keep the stiff spring stable
       last = t;
       for (const k of ["x", "y"] as const) {
         const a = K * (target[k] - pos[k]) - C * vel[k];
