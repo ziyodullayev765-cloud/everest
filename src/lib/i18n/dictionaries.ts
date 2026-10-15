@@ -67,8 +67,7 @@ const en = {
     galleryEyebrow: "Gallery",
     photos: "photos",
     everyMoment: "Every moment",
-    tapToOpen: "Tap any photo to open it.",
-    domeLabel: "Photo dome — drag to rotate, click a photo to enlarge",
+    domeLabel: "Photo dome — drag to rotate",
     close: "Close",
   },
 
@@ -256,8 +255,7 @@ const uz: Copy = {
     galleryEyebrow: "Galereya",
     photos: "ta surat",
     everyMoment: "Barcha lahzalar",
-    tapToOpen: "Kattalashtirish uchun suratni bosing.",
-    domeLabel: "Suratlar gumbazi — aylantirish uchun suring, kattalashtirish uchun bosing",
+    domeLabel: "Suratlar gumbazi — aylantirish uchun suring",
     close: "Yopish",
   },
 
@@ -443,8 +441,7 @@ const ru: Copy = {
     galleryEyebrow: "Галерея",
     photos: "фото",
     everyMoment: "Все моменты",
-    tapToOpen: "Нажмите на фото, чтобы открыть его.",
-    domeLabel: "Купол из фото — перетащите, чтобы вращать, нажмите, чтобы увеличить",
+    domeLabel: "Купол из фото — перетащите, чтобы вращать",
     close: "Закрыть",
   },
 

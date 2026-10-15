@@ -1,7 +1,7 @@
 import { readdirSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
-import { PROFILE_CONFIG, RESOURCES, resourceFields, SETTINGS_CONFIG, singletonFields } from "@/lib/cms/resources";
+import { MUSIC_CONFIG, PROFILE_CONFIG, RESOURCES, resourceFields, SETTINGS_CONFIG, singletonFields } from "@/lib/cms/resources";
 
 const migrationsDir = path.resolve(__dirname, "../../supabase/migrations");
 const sql = readdirSync(migrationsDir)
@@ -34,7 +34,7 @@ describe("CMS config ↔ database schema", () => {
       expect(cols).toContain("sort_order");
     });
   }
-  for (const s of [PROFILE_CONFIG, SETTINGS_CONFIG]) {
+  for (const s of [PROFILE_CONFIG, SETTINGS_CONFIG, MUSIC_CONFIG]) {
     it(`every ${s.key} field is a column of ${s.table}`, () => {
       const cols = columnsOf(s.table);
       for (const f of singletonFields(s)) expect(cols, `${s.table}.${f.name}`).toContain(f.name);

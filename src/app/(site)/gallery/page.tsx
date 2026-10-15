@@ -33,12 +33,7 @@ export default async function GalleryPage() {
       <section aria-label={copy.homePage.domeLabel} className="relative">
         {tiles.length > 0 ? (
           <div className="relative h-[clamp(520px,86svh,980px)]">
-            <DomeGallery
-              tiles={tiles}
-              fit={0.85}
-              maxVerticalDeg={35}
-              labels={{ dome: copy.homePage.domeLabel, close: copy.homePage.close }}
-            />
+            <DomeGallery tiles={tiles} fit={0.85} maxVerticalDeg={35} labels={{ dome: copy.homePage.domeLabel }} />
           </div>
         ) : (
           <div className="mx-auto w-[min(1200px,calc(100%-2rem))]">
@@ -49,11 +44,7 @@ export default async function GalleryPage() {
 
       {media.length > 0 && (
         <EdSection className="mx-auto w-[min(1200px,calc(100%-2rem))] py-24">
-          <HomeHeading
-            eyebrow={`${media.length} ${copy.homePage.photos}`}
-            title={copy.homePage.everyMoment}
-            lead={copy.homePage.tapToOpen}
-          />
+          <HomeHeading eyebrow={`${media.length} ${copy.homePage.photos}`} title={copy.homePage.everyMoment} />
           <div className="mt-12">
             <ImageGallery
               images={media.map((m) => ({

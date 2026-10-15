@@ -222,6 +222,27 @@ test.describe("as admin", () => {
     await expect(field).toHaveValue(original);
   });
 
+  test("music has its own admin page and saving it leaves other settings alone", async ({ page }) => {
+    await page.goto("/admin/settings");
+    const hero = await page.getByLabel("Hero description").inputValue();
+    await expect(page.getByText("Background music")).toHaveCount(0);
+
+    await page.goto("/admin/music");
+    const title = page.getByLabel("Track name (shown on the music button)");
+    const original = await title.inputValue();
+    await title.fill(`E2E track ${stamp}`);
+    await page.getByRole("button", { name: "Save", exact: true }).click();
+    await expect(page.getByText("Saved.")).toBeVisible();
+    await page.reload();
+    await expect(title).toHaveValue(`E2E track ${stamp}`);
+    await title.fill(original);
+    await page.getByRole("button", { name: "Save", exact: true }).click();
+    await expect(page.getByText("Unsaved changes")).toHaveCount(0);
+
+    await page.goto("/admin/settings");
+    await expect(page.getByLabel("Hero description")).toHaveValue(hero);
+  });
+
   test("renaming the profile updates the name everywhere on the public site", async ({ page, context }) => {
     await page.goto("/admin/profile");
     const field = page.getByLabel("Full name");

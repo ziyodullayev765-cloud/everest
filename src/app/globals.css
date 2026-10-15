@@ -92,7 +92,8 @@ html.light:has(.site-root) body {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
-    scroll-behavior: smooth;
+    /* Smooth scrolling comes from Lenis (components/effects/smooth-scroll);
+       CSS smooth scrolling on top of it would double the easing. */
     /* No rubber-band bounce past the top or bottom of the page. */
     overscroll-behavior-y: none;
   }
@@ -101,6 +102,21 @@ html.light:has(.site-root) body {
     overscroll-behavior-y: none;
     min-height: 100dvh;
     font-feature-settings: "ss01", "cv11";
+  }
+  /* Phones zoom in on any field whose text is under 16px; keep them at 16px. */
+  @media (max-width: 767px) {
+    input,
+    textarea,
+    select {
+      font-size: 16px !important;
+    }
+  }
+  /* Photos on the public site are view-only: no dragging them out, no
+     long-press "save image" sheet, no selecting them. */
+  .site-root img {
+    -webkit-user-drag: none;
+    -webkit-touch-callout: none;
+    user-select: none;
   }
   ::selection {
     background: color-mix(in oklab, var(--accent) 35%, transparent);
@@ -454,27 +470,14 @@ html.light:has(.site-root) body {
     -webkit-text-fill-color: transparent;
   }
 
-  /* Hero name: first name in light, wide-spaced sans capitals; surname in a
-     rose-terracotta display-serif italic. */
+  /* Hero name: one rose-terracotta display-serif italic for the whole name. */
   .ed-name {
     font-family: var(--font-display);
-    font-weight: 500;
-    letter-spacing: -0.02em;
-    line-height: 1.02;
-    text-transform: none;
-    color: var(--fg);
-  }
-  .ed-name-head {
-    font-family: var(--font-sans);
-    font-size: 0.5em;
-    font-weight: 300;
-    letter-spacing: 0.22em;
-    text-transform: uppercase;
-    margin-right: 0.35em;
-  }
-  .ed-name-tail {
     font-style: italic;
     font-weight: 400;
+    letter-spacing: -0.02em;
+    line-height: 1.05;
+    text-transform: none;
     color: var(--name-tint);
   }
   .ed-name-letter {
@@ -494,6 +497,34 @@ html.light:has(.site-root) body {
      "backwards" fill, so no transform is left behind once it has played. */
   .page-enter {
     animation: page-in 1100ms cubic-bezier(0.22, 1, 0.36, 1) backwards;
+  }
+
+  /* Floating music button, bottom-left, apart from the menu */
+  .music-dock {
+    position: fixed;
+    left: max(1rem, env(safe-area-inset-left));
+    bottom: max(1rem, env(safe-area-inset-bottom));
+    z-index: 45;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.65rem;
+    min-height: 2.6rem;
+    padding: 0.5rem 1rem;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    background: var(--surface);
+    box-shadow: var(--shadow);
+    color: var(--fg-secondary);
+    font-size: 0.75rem;
+    letter-spacing: 0.06em;
+    transition:
+      border-color 200ms ease,
+      color 200ms ease;
+  }
+  .music-dock:hover,
+  .music-dock[aria-pressed="true"] {
+    border-color: var(--border-strong);
+    color: var(--fg);
   }
 
   /* Inner page header */
@@ -808,9 +839,6 @@ html.light:has(.site-root) body {
     transform: translateZ(0);
     transition: transform 300ms ease;
   }
-  .dome-tile[data-has-image] {
-    cursor: zoom-in;
-  }
   .dome-photo,
   .dome-photo img {
     position: absolute;
@@ -838,9 +866,6 @@ html.light:has(.site-root) body {
   }
   .dome-tile:hover .dome-photo-css-grey {
     filter: none;
-  }
-  .dome-tile:hover {
-    transform: translateZ(14px);
   }
   /* Photos soften toward the rim of the dome, like a lens: a blur layer
      that is fully masked out over the centre. */

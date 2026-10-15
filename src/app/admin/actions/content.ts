@@ -4,7 +4,7 @@ import { revalidatePath, revalidateTag } from "next/cache";
 import { z } from "zod";
 import { requireAdmin, UnauthorizedError } from "@/lib/auth";
 import { buildSchema, flattenErrors } from "@/lib/cms/fields";
-import { getResource, PROFILE_CONFIG, resourceFields, SETTINGS_CONFIG, singletonFields } from "@/lib/cms/resources";
+import { getResource, getSingleton, resourceFields, singletonFields, type SingletonKey } from "@/lib/cms/resources";
 import { slugify } from "@/lib/utils";
 import type { ActionResult } from "@/lib/types";
 
@@ -163,9 +163,9 @@ export async function reorderResource(key: string, ids: string[]): Promise<Actio
   }
 }
 
-export async function saveSingleton(key: "profile" | "settings", input: Record<string, unknown>): Promise<ActionResult> {
+export async function saveSingleton(key: SingletonKey, input: Record<string, unknown>): Promise<ActionResult> {
   try {
-    const config = key === "profile" ? PROFILE_CONFIG : key === "settings" ? SETTINGS_CONFIG : null;
+    const config = getSingleton(key);
     if (!config) return { ok: false, error: "Unknown settings group." };
     const { supabase } = await requireAdmin();
 

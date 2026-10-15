@@ -367,8 +367,10 @@ export function resourceFields(r: ResourceConfig): FieldDef[] {
 // -----------------------------------------------------------------------------
 // Singletons
 // -----------------------------------------------------------------------------
+export type SingletonKey = "profile" | "settings" | "music";
+
 export interface SingletonConfig {
-  key: "profile" | "settings";
+  key: SingletonKey;
   table: "profiles" | "site_settings";
   label: string;
   sections: FieldSection[];
@@ -472,15 +474,6 @@ export const SETTINGS_CONFIG: SingletonConfig = {
       ],
     },
     {
-      title: "Background music",
-      description:
-        "Visitors can turn music on with the speaker button. Upload an MP3 here; if empty, a soft generated ambient soundtrack plays instead. Only use music you have the rights to.",
-      fields: [
-        { name: "music_url", label: "Music file (MP3, M4A, OGG, WAV — max 15 MB)", type: "file", accept: "audio", wide: true },
-        { name: "music_title", label: "Track name (shown next to the button)", type: "text", max: 120, wide: true },
-      ],
-    },
-    {
       title: "Contact details",
       fields: [
         { name: "contact_email", label: "Public email", type: "email" },
@@ -527,6 +520,29 @@ export const SETTINGS_CONFIG: SingletonConfig = {
     },
   ],
 };
+
+/** Background music has its own admin page; it is stored on the site settings row. */
+export const MUSIC_CONFIG: SingletonConfig = {
+  key: "music",
+  table: "site_settings",
+  label: "Music",
+  revalidate: ["/"],
+  sections: [
+    {
+      title: "Background music",
+      description:
+        "Visitors can switch the music on with the music button in the bottom-left corner of the site. Nothing plays until they press it, and the button only appears once a track is uploaded. Only use music you have the rights to.",
+      fields: [
+        { name: "music_url", label: "Music file (MP3, M4A, OGG, WAV — max 15 MB)", type: "file", accept: "audio", wide: true },
+        { name: "music_title", label: "Track name (shown on the music button)", type: "text", max: 120, wide: true },
+      ],
+    },
+  ],
+};
+
+export function getSingleton(key: string): SingletonConfig | null {
+  return key === "profile" ? PROFILE_CONFIG : key === "settings" ? SETTINGS_CONFIG : key === "music" ? MUSIC_CONFIG : null;
+}
 
 export function singletonFields(s: SingletonConfig): FieldDef[] {
   return s.sections.flatMap((sec) => sec.fields);
