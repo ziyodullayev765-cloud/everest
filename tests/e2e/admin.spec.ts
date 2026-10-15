@@ -115,7 +115,7 @@ test.describe("as admin", () => {
     const [preview] = await Promise.all([context.waitForEvent("page"), page.getByRole("link", { name: "Preview" }).click()]);
     await preview.waitForLoadState();
     await expect(preview.getByRole("heading", { level: 1, name: title })).toBeVisible();
-    await expect(preview.getByText("Ko‘rib chiqish rejimi")).toBeVisible();
+    await expect(preview.getByText("Preview mode")).toBeVisible();
     await preview.goto("/api/preview/exit");
     await preview.close();
 
@@ -252,12 +252,12 @@ test.describe("as admin", () => {
     const visitor = await context.browser()!.newContext();
     const vpage = await visitor.newPage();
     await vpage.goto("/contact");
-    await vpage.getByLabel("Ismingiz").fill("E2E Visitor");
-    await vpage.getByLabel("Elektron pochta").fill("visitor@example.com");
-    await vpage.getByLabel("Xabar").fill(`Hello from the end-to-end test ${stamp}`);
+    await vpage.getByLabel("Name", { exact: true }).fill("E2E Visitor");
+    await vpage.getByLabel("Email", { exact: true }).fill("visitor@example.com");
+    await vpage.getByLabel("Project scope / message").fill(`Hello from the end-to-end test ${stamp}`);
     await vpage.waitForTimeout(3200); // the form rejects submissions faster than a human could type
-    await vpage.getByRole("button", { name: "Yuborish" }).click();
-    await expect(vpage.getByText("Rahmat! Xabaringiz yuborildi")).toBeVisible();
+    await vpage.getByRole("button", { name: "Send message" }).click();
+    await expect(vpage.getByText("Thank you! Your message is on its way")).toBeVisible();
     await visitor.close();
 
     await page.goto("/admin/messages");

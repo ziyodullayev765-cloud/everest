@@ -4,7 +4,7 @@ test.describe("public site", () => {
   test("home opens straight away — no intro overlay", async ({ page }) => {
     await page.goto("/");
     await expect(page.getByRole("dialog")).toHaveCount(0);
-    await expect(page.getByRole("link", { name: "Loyihalarimni ko’rish" })).toBeVisible();
+    await expect(page.getByRole("link", { name: "Explore Projects" })).toBeVisible();
   });
 
   test("home page renders hero, CTAs and navigation", async ({ page }) => {
@@ -13,8 +13,8 @@ test.describe("public site", () => {
     const h1 = page.getByRole("heading", { level: 1 });
     await expect(h1).not.toBeEmpty();
     // Hero buttons jump to the sections on the same page.
-    await expect(page.getByRole("link", { name: "Loyihalarimni ko’rish" })).toHaveAttribute("href", "#projects");
-    await expect(page.getByRole("link", { name: "Men bilan bog’lanish" }).first()).toHaveAttribute("href", "#contact");
+    await expect(page.getByRole("link", { name: "Explore Projects" })).toHaveAttribute("href", "#projects");
+    await expect(page.getByRole("link", { name: "Start a Project" }).first()).toHaveAttribute("href", "#contact");
     await expect(page.locator("#projects")).toBeAttached();
     await expect(page.locator("#contact form")).toBeAttached();
     await expect(page).toHaveTitle(/ — Portfolio$/);
@@ -31,7 +31,7 @@ test.describe("public site", () => {
   test("unknown routes show the custom 404", async ({ page }) => {
     const res = await page.goto("/does-not-exist");
     expect(res?.status()).toBe(404);
-    await expect(page.getByText("Sahifa topilmadi")).toBeVisible();
+    await expect(page.getByText("Page not found")).toBeVisible();
     const missingProject = await page.goto("/projects/no-such-project");
     expect(missingProject?.status()).toBe(404);
   });
@@ -59,19 +59,19 @@ test.describe("public site", () => {
 
   test("contact form validates on the client", async ({ page }) => {
     await page.goto("/contact");
-    await page.getByRole("button", { name: "Yuborish" }).click();
-    await expect(page.getByText("Ismingizni kiriting")).toBeVisible();
-    await expect(page.getByText("To‘g‘ri elektron pochta")).toBeVisible();
+    await page.getByRole("button", { name: "Send message" }).click();
+    await expect(page.getByText("Please enter your name")).toBeVisible();
+    await expect(page.getByText("Please enter a valid email")).toBeVisible();
   });
 
   test("mobile navigation opens, traps focus and closes with Escape", async ({ page }) => {
     await page.setViewportSize({ width: 375, height: 812 });
     await page.goto("/");
-    const toggle = page.getByRole("button", { name: "Menyu" });
+    const toggle = page.getByRole("button", { name: "Menu", exact: true });
     await toggle.click();
-    const dialog = page.getByRole("dialog", { name: "Menyu" });
+    const dialog = page.getByRole("dialog", { name: "Menu" });
     await expect(dialog).toBeVisible();
-    await expect(dialog.getByRole("link", { name: "Loyihalar" })).toBeVisible();
+    await expect(dialog.getByRole("link", { name: "Projects" })).toBeVisible();
     await page.keyboard.press("Escape");
     await expect(dialog).toBeHidden();
   });

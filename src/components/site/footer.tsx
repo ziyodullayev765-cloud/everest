@@ -64,7 +64,7 @@ export function Footer({
             href="#main"
             className="text-muted hover:text-fg inline-flex items-center gap-2 text-[0.78rem] tracking-[0.04em] uppercase transition"
           >
-            <ArrowUp className="size-3.5" aria-hidden /> Yuqoriga
+            <ArrowUp className="size-3.5" aria-hidden /> Back to top
           </a>
         </div>
       </div>

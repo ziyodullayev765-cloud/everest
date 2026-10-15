@@ -149,15 +149,22 @@ come from the registry. `tests/unit/schema-integrity.test.ts` fails if a configu
 
 ### Design, 3D & performance
 
-Editorial monochrome look with a muted bronze accent (Mona Sans headings, Hubot Sans body), dark by default with a
-light-theme toggle in the header (remembered per visitor, applied before first paint).
+"Editorial bronze": deep charcoal (`#0D0D0D`) with warm grey cards (`#141414`), off-white text and metallic bronze /
+gold / copper accents (`#C5A059`, `#D4AF37`, `#8C6D46`). Titles use Playfair Display (serif, uppercase for section
+headings); body text uses Geist. Dark by default, with a light-theme toggle in the header (remembered per visitor,
+applied before first paint). The public UI is in English (`src/lib/copy.ts`).
 
-The home page background is a sphere of image tiles (`src/components/site/dome-gallery.tsx`) built with **CSS 3D
-transforms — no WebGL**. Tiles come from published gallery images, project covers/galleries, achievement images and
-the profile photo; with no images it shows labelled tiles. Drag to spin it (with inertia); it drifts slowly when
-"Let the 3D image dome drift" is on, pauses off screen and once scrolled past, and is static under
-`prefers-reduced-motion`. A soft bronze light follows the pointer on a damped spring (fine pointers only).
-Everything animates with transforms/opacity only — no animated blur or backdrop filters.
+Home page (`src/components/home/*`): hero over a draggable **3D image dome**, an editable ticker
+(Admin → Settings → Hero → "Ticker words"), a featured-project row that slides sideways as you scroll on wide screens
+(swipeable on phones), highlight cards, skills grouped by category, an experience timeline whose line fills as you
+scroll (each entry can show free text such as "2026" via "Period text"), and the contact form.
+
+The dome (`src/components/site/dome-gallery.tsx`) is built with **CSS 3D transforms — no WebGL**: tiles come from
+published gallery images, project covers/galleries, achievement images and the profile photo (labelled tiles when
+there are none). Drag to spin it; it drifts on its own when "Let the 3D image dome drift" is on, pauses off screen and
+once scrolled past, and is static under `prefers-reduced-motion`. A soft bronze light follows the pointer on a damped
+spring. Effects animate transforms/opacity only; there are no backdrop or animated blur filters, and hover-only
+effects (like the running bronze card border) exist only while hovered.
 
 ---
 

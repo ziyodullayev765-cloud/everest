@@ -6,7 +6,7 @@ import { CursorGlow } from "@/components/effects/cursor-glow";
 import { SoundProvider } from "@/components/effects/sound";
 import { MotionProvider } from "@/components/ui/motion-provider";
 import { getProfile, getSettings, getSocialLinks, isPreview } from "@/lib/data/public";
-import { footerText, ownerName } from "@/lib/defaults";
+import { footerText, isPlaceholder, ownerName } from "@/lib/defaults";
 
 export const revalidate = 300;
 
@@ -21,7 +21,13 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
         <div className="site-root relative isolate min-h-dvh">
           <Backdrop />
           <CursorGlow />
-          <Header siteName={name} logoUrl={settings.logo_url} nav={settings.nav_items} resumeUrl={resumeUrl} />
+          <Header
+            siteName={name}
+            logoUrl={settings.logo_url}
+            availability={isPlaceholder(profile.availability) ? "" : profile.availability}
+            nav={settings.nav_items}
+            resumeUrl={resumeUrl}
+          />
           <main id="main" tabIndex={-1} className="relative z-[2] overflow-x-clip outline-none">
             {children}
           </main>

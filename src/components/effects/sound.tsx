@@ -121,7 +121,7 @@ export function SoundProvider({ musicUrl, title, children }: { musicUrl: string 
 export function SoundToggle({ className }: { className?: string }) {
   const sound = useSound();
   if (!sound?.available) return null;
-  const label = sound.on ? "Musiqani o‘chirish" : "Musiqani yoqish";
+  const label = sound.on ? "Pause music" : "Play music";
   return (
     <button
       type="button"
@@ -129,10 +129,7 @@ export function SoundToggle({ className }: { className?: string }) {
       aria-pressed={sound.on}
       aria-label={sound.title ? `${label}: ${sound.title}` : label}
       title={sound.title || label}
-      className={cn(
-        "group grid size-11 place-items-center rounded-full ring-1 ring-white/15 transition hover:ring-white/40",
-        className,
-      )}
+      className={cn("ed-icon-btn group", className)}
     >
       <span aria-hidden className="flex h-4 items-end gap-[3px]">
         {[0, 1, 2, 3].map((i) => (
