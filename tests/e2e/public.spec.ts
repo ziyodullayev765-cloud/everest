@@ -12,8 +12,11 @@ test.describe("public site", () => {
     // The name comes from the CMS profile (admin tests may rename it concurrently).
     const h1 = page.getByRole("heading", { level: 1 });
     await expect(h1).not.toBeEmpty();
-    await expect(page.getByRole("link", { name: "Loyihalarimni ko’rish" })).toHaveAttribute("href", "/projects");
-    await expect(page.getByRole("link", { name: "Men bilan bog’lanish" }).first()).toHaveAttribute("href", "/contact");
+    // Hero buttons jump to the sections on the same page.
+    await expect(page.getByRole("link", { name: "Loyihalarimni ko’rish" })).toHaveAttribute("href", "#projects");
+    await expect(page.getByRole("link", { name: "Men bilan bog’lanish" }).first()).toHaveAttribute("href", "#contact");
+    await expect(page.locator("#projects")).toBeAttached();
+    await expect(page.locator("#contact form")).toBeAttached();
     await expect(page).toHaveTitle(/ — Portfolio$/);
   });
 

@@ -1,3 +1,4 @@
+import { themeInitScript } from "@/lib/theme-script";
 import type { Metadata, Viewport } from "next";
 import { GeistSans } from "geist/font/sans";
 import { GeistMono } from "geist/font/mono";
@@ -40,7 +41,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export const viewport: Viewport = {
-  themeColor: "#07060b",
+  themeColor: "#0d0d0d",
   colorScheme: "dark",
   width: "device-width",
   initialScale: 1,
@@ -53,7 +54,12 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       lang="uz"
       className={`${GeistSans.variable} ${GeistMono.variable}`}
       style={{ ["--accent" as string]: settings.accent_color }}
+      // The theme script adds the "light" class before hydration.
+      suppressHydrationWarning
     >
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
+      </head>
       <body className="font-sans">{children}</body>
     </html>
   );

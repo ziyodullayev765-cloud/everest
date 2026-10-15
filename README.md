@@ -1,10 +1,10 @@
 # Shahruz Ziyodullayev — Portfolio + Admin CMS
 
-A full-stack personal portfolio with an interactive 3D hero and a secure admin dashboard. Every piece of public
+A full-stack personal portfolio with an interactive 3D image dome and a secure admin dashboard. Every piece of public
 content — profile, projects, achievements, skills, education, experience, gallery, statistics, social links, SEO,
 navigation, footer, colours and the privacy policy — is edited from `/admin`, with no code changes.
 
-- **Stack:** Next.js 15 (App Router, TypeScript) · Tailwind CSS 4 · Motion · React Three Fiber / drei · Supabase
+- **Stack:** Next.js 15 (App Router, TypeScript) · Tailwind CSS 4 · Motion · CSS 3D · Supabase
   (Postgres, Auth, Storage) · React Hook Form + Zod · Recharts · Lucide
 - **Public UI language:** Uzbek (Latin). Interface strings live in `src/lib/copy.ts`; the admin panel is in English.
 
@@ -33,19 +33,19 @@ navigation, footer, colours and the privacy policy — is edited from `/admin`, 
 
 ### Public website
 
-| Page                  | What it shows                                                                                                                                                                                  |
-| --------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `/`                   | Hero with name, editable title/intro, interactive 3D sculpture, CTAs “Loyihalarimni ko’rish” / “Men bilan bog’lanish”, statistics, featured projects, recent achievements, skills, contact CTA |
-| `/about`              | Photo, biography, personal story, background, learning journey, goals, interests, skills, experience & education summaries, CV download                                                        |
-| `/projects`           | Grid **and** list views, category chips, tag/technology filter, live search                                                                                                                    |
-| `/projects/[slug]`    | Shareable detail page: description, role, timeline, technologies, live/source links, image gallery with lightbox, per-project SEO + JSON-LD                                                    |
-| `/achievements`       | Year-grouped timeline, category/type filter, newest/oldest sort, certificate & verification links                                                                                              |
-| `/skills`             | Skills grouped by category; level bars appear **only** when you enter a level                                                                                                                  |
-| `/experience`         | Work and education timelines                                                                                                                                                                   |
-| `/gallery`            | Masonry grid + full-screen lightbox (keyboard, swipe, focus return), captions, categories, alt text                                                                                            |
-| `/contact`            | Validated form (client **and** server), honeypot + timing trap, rate limiting, contact details, social links                                                                                   |
-| `/privacy`, `/resume` | Editable privacy policy; `/resume` is a stable link that redirects to the current CV                                                                                                           |
-| Extras                | Custom 404, error boundary, `sitemap.xml`, `robots.txt`, canonical URLs, Open Graph/Twitter cards, draft-preview banner                                                                        |
+| Page                  | What it shows                                                                                                                                                                                     |
+| --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `/`                   | Draggable 3D dome of your images, scrambling name, CTAs “Loyihalarimni ko’rish” / “Men bilan bog’lanish”, ticker, featured-project rail, highlights, statistics, skills, experience, contact form |
+| `/about`              | Photo, biography, personal story, background, learning journey, goals, interests, skills, experience & education summaries, CV download                                                           |
+| `/projects`           | Grid **and** list views, category chips, tag/technology filter, live search                                                                                                                       |
+| `/projects/[slug]`    | Shareable detail page: description, role, timeline, technologies, live/source links, image gallery with lightbox, per-project SEO + JSON-LD                                                       |
+| `/achievements`       | Year-grouped timeline, category/type filter, newest/oldest sort, certificate & verification links                                                                                                 |
+| `/skills`             | Skills grouped by category; level bars appear **only** when you enter a level                                                                                                                     |
+| `/experience`         | Work and education timelines                                                                                                                                                                      |
+| `/gallery`            | Masonry grid + full-screen lightbox (keyboard, swipe, focus return), captions, categories, alt text                                                                                               |
+| `/contact`            | Validated form (client **and** server), honeypot + timing trap, rate limiting, contact details, social links                                                                                      |
+| `/privacy`, `/resume` | Editable privacy policy; `/resume` is a stable link that redirects to the current CV                                                                                                              |
+| Extras                | Custom 404, error boundary, `sitemap.xml`, `robots.txt`, canonical URLs, Open Graph/Twitter cards, draft-preview banner                                                                           |
 
 Only **published** content is shown to visitors.
 
@@ -59,7 +59,7 @@ Only **published** content is shown to visitors.
   delete with confirmation, and validated forms with loading/empty/success/error states.
 - **Draft → preview → publish:** new items are drafts. “Save draft” never publishes. **Preview** opens the real page
   with drafts visible (admin-only draft mode); publishing is an explicit choice.
-- **Profile & About**, **Site settings** (name, logo, favicon, accent colour, 3D/particles toggles, hero text, CTA
+- **Profile & About**, **Site settings** (name, logo, favicon, accent colour, dome-drift toggle, hero text, CTA
   labels, contact details, SEO title/description/keywords/sharing image, header & footer navigation, footer text,
   CV toggle, privacy policy).
 - **Media library:** drag-and-drop multi-upload with per-file progress, type/size validation, previews, alt text,
@@ -93,7 +93,6 @@ Only **published** content is shown to visitors.
 │   │   ├── sitemap.ts, robots.ts, not-found.tsx, global-error.tsx, layout.tsx
 │   ├── components/
 │   │   ├── site/                  # Header, footer, hero, cards, timeline, gallery, contact form…
-│   │   ├── three/                 # R3F scene + lazy wrapper with static fallback
 │   │   ├── admin/                 # Shell, generic form/list, field renderer, media picker, dropzone, charts…
 │   │   └── ui/                    # Rich text, smart image, reveal, buttons
 │   └── lib/
@@ -148,14 +147,17 @@ come from the registry. `tests/unit/schema-integrity.test.ts` fails if a configu
 - **Login hardening:** generic error messages, per-IP and per-email attempt limits (on top of Supabase’s own),
   re-authentication before password change, open-redirect-safe `next` parameter.
 
-### 3D & performance
+### Design, 3D & performance
 
-The hero sculpture (`src/components/three/hero-scene.tsx`) is a liquid graphite core with a faceted wire shell,
-orbit rings, procedural studio lighting (no HDR download) and optional particles. It is **lazy-loaded** (not in the
-initial JS), renders continuously only while on screen, follows the pointer with damped parallax, scales to the
-viewport, drops detail/resolution on small or low-memory devices (and under `PerformanceMonitor` pressure), is static
-under `prefers-reduced-motion`, and falls back to a pure-CSS orb when WebGL is unavailable, Save-Data is on, or 3D is
-disabled in settings. All Motion animations respect reduced motion.
+Editorial monochrome look with a muted bronze accent (Mona Sans headings, Hubot Sans body), dark by default with a
+light-theme toggle in the header (remembered per visitor, applied before first paint).
+
+The home page background is a sphere of image tiles (`src/components/site/dome-gallery.tsx`) built with **CSS 3D
+transforms — no WebGL**. Tiles come from published gallery images, project covers/galleries, achievement images and
+the profile photo; with no images it shows labelled tiles. Drag to spin it (with inertia); it drifts slowly when
+"Let the 3D image dome drift" is on, pauses off screen and once scrolled past, and is static under
+`prefers-reduced-motion`. A soft bronze light follows the pointer on a damped spring (fine pointers only).
+Everything animates with transforms/opacity only — no animated blur or backdrop filters.
 
 ---
 
@@ -289,7 +291,7 @@ Two pieces of artwork were generated with Higgsfield (Soul Cinema model) for thi
 | File                             | Used for                                                                                  |
 | -------------------------------- | ----------------------------------------------------------------------------------------- |
 | `public/brand/og-background.jpg` | Background of the default social-sharing card served at `/og` (name + title drawn on top) |
-| `public/brand/ambient.jpg`       | Texture blended into the home-page “Keling, gaplashamiz” colour block                    |
+| `public/brand/ambient.jpg`       | Texture blended into the home-page “Keling, gaplashamiz” colour block                     |
 
 Download/optimise them with `npm run brand:fetch` (source URLs are in `scripts/fetch-brand-assets.mjs`), then commit
 the two JPGs. Both are optional: without them `/og` uses a gradient and the section uses its CSS glow. The default

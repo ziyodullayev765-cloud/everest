@@ -38,7 +38,7 @@ export const DEFAULT_SETTINGS: SiteSettings = {
   site_name: "Portfolio",
   logo_url: null,
   favicon_url: null,
-  accent_color: "#8b5cf6",
+  accent_color: "#c4a574",
   enable_3d: true,
   enable_particles: true,
   hero_eyebrow: "Portfolio",

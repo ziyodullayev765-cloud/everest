@@ -1,227 +1,273 @@
-import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, ArrowUpRight } from "lucide-react";
-import { Hero } from "@/components/site/hero";
-import { AchievementCard } from "@/components/site/achievement-card";
-import { CountUp } from "@/components/site/count-up";
-import { Marquee } from "@/components/site/marquee";
-import { ProjectShowcase } from "@/components/site/project-showcase";
-import { ScrollRevealText } from "@/components/site/scroll-reveal-text";
-import { SectionHeading } from "@/components/site/section-heading";
-import { Magnetic } from "@/components/effects/magnetic";
-import { Reveal } from "@/components/ui/reveal";
+import { ArrowUpRight } from "lucide-react";
+import { ContactForm } from "@/components/site/contact-form";
+import { EdMarquee } from "@/components/site/ed-marquee";
+import { EdSection } from "@/components/site/ed-section";
+import { GlowCard } from "@/components/site/glow-card";
+import { HomeBackdrop } from "@/components/site/home-backdrop";
+import { ScrambleText } from "@/components/site/scramble-text";
+import type { DomeTileData } from "@/components/site/dome-gallery";
 import { copy } from "@/lib/copy";
-import { brandAssetUrl } from "@/lib/brand-assets";
-import { getAchievements, getProfile, getProjects, getSettings, getSkills, getStats } from "@/lib/data/public";
+import {
+  getAchievements,
+  getExperience,
+  getGallery,
+  getProfile,
+  getProjects,
+  getSettings,
+  getSkills,
+  getSocialLinks,
+  getStats,
+} from "@/lib/data/public";
 import { isPlaceholder, ownerName } from "@/lib/defaults";
-import { unique } from "@/lib/utils";
+import { formatRange, unique } from "@/lib/utils";
 
-/** Bright solid blocks for the stat cards (black type on colour). */
-const STAT_COLORS = ["var(--c-lime)", "var(--c-pink)", "var(--c-cyan)", "var(--c-amber)", "var(--accent)"];
-const STAT_TILT = ["hover:-rotate-2", "hover:rotate-2", "hover:-rotate-1", "hover:rotate-1"];
+const FALLBACK_WORDS = ["Loyihalar", "Yutuqlar", "Ko‘nikmalar", "Tajriba", "Galereya", "Ijod", "G‘oyalar", "Aloqa"];
+const SECTION = "mb-[clamp(4rem,12vh,8rem)]";
 
 export default async function HomePage() {
-  const [settings, profile, projects, achievements, skills, stats] = await Promise.all([
+  const [settings, profile, projects, achievements, skills, stats, experience, social, gallery] = await Promise.all([
     getSettings(),
     getProfile(),
     getProjects(),
     getAchievements(),
     getSkills(),
     getStats(),
+    getExperience(),
+    getSocialLinks(),
+    getGallery(),
   ]);
 
   const name = ownerName(profile, settings);
-  const featuredProjects = (projects.some((p) => p.featured) ? projects.filter((p) => p.featured) : projects).slice(0, 5);
-  const highlightAchievements = (
-    achievements.some((a) => a.featured) ? achievements.filter((a) => a.featured) : achievements
-  ).slice(0, 4);
-  const intro = [profile.short_intro, profile.bio].find((t) => t && !isPlaceholder(t)) ?? "";
-  const ambient = brandAssetUrl("ambient.jpg");
+  const featured = projects.some((p) => p.featured) ? projects.filter((p) => p.featured) : projects;
+  const highlights = (achievements.some((a) => a.featured) ? achievements.filter((a) => a.featured) : achievements).slice(0, 6);
+  const subtitle = [settings.hero_description, profile.short_intro, profile.headline].find((t) => t && !isPlaceholder(t)) ?? "";
 
-  const tickerWords = unique([
+  // Dome tiles: every image in the CMS, otherwise labelled placeholder tiles.
+  const images: DomeTileData[] = [
+    ...gallery.map((m) => ({ src: m.url, alt: m.alt_text, label: m.caption })),
+    ...projects.flatMap((p) => [
+      ...(p.thumbnail_url ? [{ src: p.thumbnail_url, alt: p.thumbnail_alt || p.title, label: p.title }] : []),
+      ...p.gallery.map((g) => ({ src: g.url, alt: g.alt || p.title, label: p.title })),
+    ]),
+    ...achievements.filter((a) => a.image_url).map((a) => ({ src: a.image_url, alt: a.image_alt || a.title, label: a.title })),
+    ...(profile.avatar_url ? [{ src: profile.avatar_url, alt: profile.avatar_alt || name, label: name }] : []),
+  ];
+  const words = unique([...skills.map((s) => s.name), ...projects.map((p) => p.title), ...profile.interests]);
+  const tiles: DomeTileData[] = images.length
+    ? images
+    : (words.length >= 4 ? words : FALLBACK_WORDS).map((w) => ({ src: null, alt: "", label: w }));
+
+  const ticker = unique([
+    ...(profile.headline && !isPlaceholder(profile.headline) ? [profile.headline] : []),
     ...skills.map((s) => s.name),
     ...profile.interests,
-    ...projects.flatMap((p) => p.technologies),
+    ...achievements.slice(0, 4).map((a) => a.title),
   ]).slice(0, 14);
-  const ticker = tickerWords.length >= 3 ? tickerWords : ["Ijod", "Loyihalar", "Yutuqlar", "Kelajak", "G‘oyalar"];
+
+  const skillGroups = Object.entries(
+    skills.reduce<Record<string, string[]>>((acc, s) => {
+      const key = s.category || copy.skills.other;
+      (acc[key] ??= []).push(s.name);
+      return acc;
+    }, {}),
+  ).slice(0, 6);
 
   return (
-    <>
-      <Hero
-        eyebrow={settings.hero_eyebrow}
-        title={settings.hero_title || name}
-        headline={profile.headline}
-        description={settings.hero_description || profile.short_intro}
-        availability={profile.availability}
-        location={profile.location}
-        primaryLabel={settings.cta_primary_label}
-        secondaryLabel={settings.cta_secondary_label}
-        accent={settings.accent_color}
-        enable3d={settings.enable_3d}
-        particles={settings.enable_particles}
-      />
+    <div className="relative">
+      <HomeBackdrop tiles={tiles} animate={settings.enable_3d} />
 
-      <div id="highlights" className="scroll-mt-24" />
-
-      {/* Colourful ticker band */}
-      <section aria-label="Yo‘nalishlar" className="relative my-8 overflow-x-clip py-6">
-        <div className="bg-rainbow -mx-[5%] -rotate-2 py-1">
-          <div className="bg-bg">
-            <Marquee items={ticker} duration={40} />
-          </div>
-        </div>
-      </section>
-
-      {intro && (
-        <section className="container-x mt-24 sm:mt-36">
-          <p className="mb-8 inline-flex items-center gap-2 rounded-full bg-white/[0.05] px-3 py-1 font-mono text-xs tracking-[0.2em] text-white/70 uppercase ring-1 ring-white/10">
-            <span className="bg-rainbow size-1.5 rounded-full" aria-hidden />
-            {copy.about.title}
-          </p>
-          <ScrollRevealText
-            text={intro}
-            className="font-display max-w-5xl text-[clamp(1.6rem,4.2vw,3.6rem)] leading-[1.15] tracking-[-0.02em]"
-          />
-          <Reveal className="mt-10">
-            <Link href="/about" className="group inline-flex items-center gap-3 text-lg font-medium">
-              <span className="border-b border-white/30 pb-1 transition group-hover:border-white">Ko‘proq bilish</span>
-              <span className="bg-rainbow grid size-10 place-items-center rounded-full text-white transition-transform group-hover:rotate-[-45deg]">
-                <ArrowRight className="size-4" aria-hidden />
-              </span>
-            </Link>
-          </Reveal>
-        </section>
-      )}
-
-      {stats.length > 0 && (
-        <section aria-label="Statistika" className="container-x mt-24 sm:mt-32">
-          <div className={`grid grid-cols-2 gap-3 sm:gap-4 ${stats.length % 3 === 0 ? "lg:grid-cols-3" : "lg:grid-cols-4"}`}>
-            {stats.map((s, i) => (
-              <Reveal key={s.id} delay={i * 0.08}>
-                <div
-                  className={`relative flex h-full min-h-44 flex-col justify-between overflow-hidden rounded-[1.75rem] p-6 text-black transition-transform duration-500 ease-out hover:-translate-y-2 hover:scale-[1.03] sm:min-h-56 sm:p-8 ${STAT_TILT[i % STAT_TILT.length]}`}
-                  style={{ background: STAT_COLORS[i % STAT_COLORS.length] }}
-                >
-                  <CountUp value={s.value} className="font-display block text-[clamp(2.6rem,6vw,5rem)] leading-none" />
-                  <div>
-                    <p className="mt-4 text-sm font-semibold sm:text-base">{s.label}</p>
-                    {s.description && <p className="mt-1 text-xs text-black/60">{s.description}</p>}
-                  </div>
-                </div>
-              </Reveal>
-            ))}
-          </div>
-        </section>
-      )}
-
-      {featuredProjects.length > 0 && (
-        <section className="container-x mt-28 sm:mt-40" aria-labelledby="featured-projects">
-          <SectionHeading
-            eyebrow={copy.projects.featured}
-            title={copy.sections.featuredProjects}
-            lead={copy.sections.featuredProjectsLead}
-          >
-            <Link
-              href="/projects"
-              className="group inline-flex items-center gap-2 self-start rounded-full px-5 py-3 ring-1 ring-white/20 transition hover:bg-white hover:text-black md:self-auto"
-            >
-              {copy.sections.allProjects}
-              <ArrowUpRight className="size-4 transition-transform group-hover:rotate-45" aria-hidden />
-            </Link>
-          </SectionHeading>
-          <div className="mt-12">
-            <ProjectShowcase projects={featuredProjects} />
-          </div>
-        </section>
-      )}
-
-      {highlightAchievements.length > 0 && (
-        <section className="container-x mt-28 sm:mt-40" aria-labelledby="recent-achievements">
-          <SectionHeading eyebrow={copy.achievements.title} title={copy.sections.recentAchievements}>
-            <Link
-              href="/achievements"
-              className="group inline-flex items-center gap-2 self-start rounded-full px-5 py-3 ring-1 ring-white/20 transition hover:bg-white hover:text-black md:self-auto"
-            >
-              {copy.sections.allAchievements}
-              <ArrowUpRight className="size-4 transition-transform group-hover:rotate-45" aria-hidden />
-            </Link>
-          </SectionHeading>
-          <div className="mt-12 grid gap-4 md:grid-cols-2">
-            {highlightAchievements.map((a, i) => (
-              <Reveal key={a.id} delay={i * 0.06}>
-                <AchievementCard a={a} compact />
-              </Reveal>
-            ))}
-          </div>
-        </section>
-      )}
-
-      {skills.length > 0 && (
-        <section
-          className="mx-2 mt-28 overflow-hidden rounded-[2.5rem] py-16 text-black sm:mx-4 sm:mt-40 sm:py-24"
-          style={{ background: "var(--accent)" }}
-          aria-label={copy.sections.skills}
-        >
-          <div className="container-x [&_.text-rainbow]:!bg-none [&_.text-rainbow]:!text-black [&_h2]:text-black [&_p]:text-black/70">
-            <SectionHeading eyebrow={copy.sections.skills} title="Men nima qila olaman">
-              <Link
-                href="/skills"
-                className="group inline-flex items-center gap-2 self-start rounded-full bg-black px-5 py-3 text-white transition hover:scale-105 md:self-auto"
-              >
-                {copy.sections.allSkills}
-                <ArrowUpRight className="size-4 transition-transform group-hover:rotate-45" aria-hidden />
-              </Link>
-            </SectionHeading>
-          </div>
-          <div className="mt-10 space-y-2">
-            <Marquee items={skills.slice(0, 10).map((s) => s.name)} duration={32} tone="dark" />
-            {skills.length > 3 && <Marquee items={skills.slice(3, 14).map((s) => s.name)} duration={38} reverse tone="dark" />}
-          </div>
-        </section>
-      )}
-
-      {/* Giant contact CTA */}
-      <section className="container-x mt-28 sm:mt-44">
-        <Reveal>
-          <div
-            className="relative overflow-hidden rounded-[2.5rem] px-6 py-20 text-center text-black sm:px-12 sm:py-28"
-            style={{ background: "linear-gradient(120deg, var(--c-amber), var(--c-pink) 50%, var(--accent))" }}
-          >
-            {ambient && (
-              <Image
-                src={ambient}
-                alt=""
-                fill
-                sizes="(max-width: 1280px) 100vw, 1280px"
-                className="pointer-events-none object-cover object-bottom opacity-25 mix-blend-multiply"
-              />
+      <div className="relative z-[2] mx-auto w-[min(1120px,calc(100%-2rem))]">
+        {/* The name sits over the lower part of the dome; the dome stays draggable above it. */}
+        <header className="pointer-events-none flex flex-col items-center pt-[64svh] text-center">
+          <div className="pointer-events-auto max-w-3xl">
+            <ScrambleText as="h1" text={name} className="ed-heading text-[clamp(2.4rem,8vw,5rem)] leading-[1.1]" />
+            {subtitle && (
+              <p className="mt-5 text-[clamp(1rem,2.2vw,1.25rem)] leading-[1.7] text-[var(--fg-secondary)]">{subtitle}</p>
             )}
-            <p className="relative font-mono text-xs tracking-[0.3em] text-black/70 uppercase">{copy.sections.contactLead}</p>
-            <h2 className="font-display relative mx-auto mt-6 max-w-5xl text-[clamp(2.6rem,9vw,8rem)] leading-[0.9] tracking-[-0.04em]">
-              Keling, <span className="italic">gaplashamiz</span>
-            </h2>
-            <div className="relative mt-12 flex flex-col items-center justify-center gap-4 sm:flex-row">
-              <Magnetic strength={0.5}>
-                <Link
-                  href="/contact"
+            <div className="mt-8 flex flex-wrap justify-center gap-3.5">
+              <Link href="#projects" className="ed-button">
+                {settings.cta_primary_label}
+              </Link>
+              <Link href="#contact" className="ed-button">
+                {settings.cta_secondary_label}
+              </Link>
+            </div>
+          </div>
+        </header>
 
-                  className="grid size-40 place-items-center rounded-full bg-black text-center text-base font-semibold text-white shadow-[0_20px_60px_-15px_rgba(0,0,0,0.6)] transition-transform hover:scale-110 sm:size-48 sm:text-lg"
-                >
-                  <span className="px-4">{settings.cta_secondary_label}</span>
-                </Link>
-              </Magnetic>
-              {settings.contact_email && (
-                <a
-                  href={`mailto:${settings.contact_email}`}
-                  className="text-lg font-medium text-black underline decoration-black/30 underline-offset-8 transition hover:decoration-black"
-                >
-                  {settings.contact_email}
+        <div className="my-8">
+          <EdMarquee items={ticker.length >= 3 ? ticker : FALLBACK_WORDS} />
+        </div>
+
+        <EdSection id="projects" className={SECTION}>
+          <div className="flex flex-wrap items-end justify-between gap-4">
+            <div>
+              <h2 className="text-[clamp(2rem,5vw,2.8rem)]">{copy.sections.featuredProjects}</h2>
+              <p className="mt-1 text-sm text-[var(--fg-secondary)]">
+                {featured.length ? "Gorizontal suring va ishlarni ko‘ring" : copy.projects.empty}
+              </p>
+            </div>
+            <Link href="/projects" className="ed-button">
+              {copy.sections.allProjects}
+            </Link>
+          </div>
+          {featured.length > 0 && (
+            <div className="mt-6 flex snap-x snap-mandatory [scrollbar-width:none] gap-6 overflow-x-auto pt-2 pb-6">
+              {featured.map((p, i) => {
+                const year = (p.completed_on ?? p.started_on)?.slice(0, 4);
+                return (
+                  <Link
+                    key={p.id}
+                    href={`/projects/${p.slug}`}
+                    className="group border-line bg-surface hover:border-line-strong flex h-[340px] w-[300px] shrink-0 snap-center flex-col justify-between rounded-2xl border p-6 shadow-[var(--shadow)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[var(--shadow-hover)] sm:w-[360px] md:w-[400px]"
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <span className="font-mono text-xs font-semibold opacity-60">{String(i + 1).padStart(2, "0")}</span>
+                        {p.category && (
+                          <span className="border-accent/25 bg-accent/10 text-accent rounded-full border px-2 py-0.5 text-[0.7rem] font-medium tracking-wider uppercase">
+                            {p.category}
+                          </span>
+                        )}
+                      </div>
+                      <span className="bg-accent inline-flex scale-95 items-center gap-1 rounded-full px-3 py-1 text-xs font-semibold text-[#0d0d0d] opacity-0 transition-all duration-200 group-hover:scale-100 group-hover:opacity-100">
+                        Ko‘rish <ArrowUpRight className="size-3" aria-hidden />
+                      </span>
+                    </div>
+                    <div className="my-auto space-y-2">
+                      <h3 className="group-hover:text-accent text-xl font-bold normal-case transition-colors">{p.title}</h3>
+                      {p.summary && (
+                        <p className="line-clamp-3 text-sm leading-relaxed text-[var(--fg-secondary)]">{p.summary}</p>
+                      )}
+                    </div>
+                    <div className="border-line flex items-center justify-between border-t pt-4">
+                      <div className="flex flex-wrap gap-1.5">
+                        {unique([...p.technologies, ...p.tags])
+                          .slice(0, 3)
+                          .map((t) => (
+                            <span
+                              key={t}
+                              className="border-line rounded-md border bg-[rgba(var(--surface-rgb),0.35)] px-2 py-0.5 text-[0.7rem] text-[var(--fg-secondary)]"
+                            >
+                              {t}
+                            </span>
+                          ))}
+                      </div>
+                      {year && <span className="text-muted ml-2 shrink-0 font-mono text-xs">{year}</span>}
+                    </div>
+                  </Link>
+                );
+              })}
+            </div>
+          )}
+        </EdSection>
+
+        {highlights.length > 0 && (
+          <EdSection id="highlights" className={SECTION}>
+            <h2 className="ed-title">Yutuqlar va bosqichlar</h2>
+            <div className="grid gap-6 md:grid-cols-3">
+              {highlights.map((a) => (
+                <GlowCard key={a.id} className="p-6">
+                  <h3 className="text-[1.4rem] normal-case">{a.title}</h3>
+                  <p className="mt-3 text-[0.95rem] leading-relaxed text-[var(--fg-secondary)]">
+                    {a.description || [a.organization, a.achieved_on?.slice(0, 4)].filter(Boolean).join(" · ")}
+                  </p>
+                </GlowCard>
+              ))}
+            </div>
+            <div className="mt-8 flex justify-center">
+              <Link href="/achievements" className="ed-button">
+                {copy.sections.allAchievements}
+              </Link>
+            </div>
+          </EdSection>
+        )}
+
+        {stats.length > 0 && (
+          <EdSection id="stats" className={SECTION} label="Statistika">
+            <div className="flex flex-wrap justify-center gap-x-16 gap-y-8">
+              {stats.map((s) => (
+                <div key={s.id} className="text-center">
+                  <span className="font-display block text-[2.5rem] font-bold">{s.value}</span>
+                  <span className="text-sm text-[var(--fg-secondary)]">{s.label}</span>
+                </div>
+              ))}
+            </div>
+          </EdSection>
+        )}
+
+        {skillGroups.length > 0 && (
+          <EdSection id="skills" className={SECTION}>
+            <h2 className="ed-title">Ko‘nikmalar va imkoniyatlar</h2>
+            <p className="ed-intro">{copy.skills.lead}</p>
+            <div className="grid gap-6 md:grid-cols-3">
+              {skillGroups.map(([group, names]) => (
+                <GlowCard key={group} className="p-6">
+                  <h3 className="text-accent text-[1.2rem]">{group}</h3>
+                  <ul className="mt-4 flex flex-col gap-2">
+                    {names.map((n) => (
+                      <li key={n} className="text-[var(--fg-secondary)]">
+                        {n}
+                      </li>
+                    ))}
+                  </ul>
+                </GlowCard>
+              ))}
+            </div>
+          </EdSection>
+        )}
+
+        {experience.length > 0 && (
+          <EdSection id="experience" className={SECTION}>
+            <h2 className="ed-title">Tajriba</h2>
+            <div className="mb-8 flex flex-col gap-4">
+              {experience.slice(0, 3).map((e) => (
+                <GlowCard key={e.id} className="p-6">
+                  <div className="flex flex-wrap items-baseline justify-between gap-2">
+                    <h3 className="text-[1.4rem] normal-case">{e.organization}</h3>
+                    <span className="text-muted text-[0.8rem]">{formatRange(e.start_date, e.end_date, e.is_current)}</span>
+                  </div>
+                  <p className="mt-2 text-[var(--fg-secondary)]">{e.role}</p>
+                </GlowCard>
+              ))}
+            </div>
+            <div className="flex flex-wrap justify-center gap-4">
+              <Link href="/experience" className="ed-button">
+                To‘liq tajriba
+              </Link>
+              {settings.show_resume && profile.resume_url && (
+                <a href={profile.resume_url} target="_blank" rel="noopener noreferrer" className="ed-button">
+                  {copy.downloadCv}
                 </a>
               )}
             </div>
+          </EdSection>
+        )}
+
+        <EdSection id="contact" className="mb-16">
+          <h2 className="ed-title">Loyiha boshlaymiz</h2>
+          <p className="ed-intro">{copy.sections.contactLead}</p>
+          <div className="mx-auto max-w-2xl">
+            <ContactForm />
           </div>
-        </Reveal>
-      </section>
-    </>
+          {social.length > 0 && (
+            <div className="mt-10 flex flex-wrap justify-center gap-6">
+              {social.map((s) => (
+                <a
+                  key={s.id}
+                  href={s.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:text-fg text-[var(--fg-secondary)] transition-colors"
+                >
+                  {s.label || s.platform}
+                </a>
+              ))}
+            </div>
+          )}
+        </EdSection>
+      </div>
+    </div>
   );
 }
