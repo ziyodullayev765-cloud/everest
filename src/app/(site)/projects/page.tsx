@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { PageHeader } from "@/components/site/section-heading";
 import { ProjectBrowser } from "@/components/site/project-browser";
+import { PageNext } from "@/components/site/page-next";
 import { getCopy } from "@/lib/i18n/server";
 import { getProjects } from "@/lib/data/public";
 
@@ -19,9 +20,10 @@ export default async function ProjectsPage() {
   return (
     <>
       <PageHeader eyebrow={`${projects.length}`} title={copy.projects.title} lead={copy.projects.lead} />
-      <section className="container-x">
+      <section className="mx-auto w-[min(1200px,calc(100%-2rem))]">
         <ProjectBrowser projects={projects} />
       </section>
+      <PageNext current="/projects" />
     </>
   );
 }

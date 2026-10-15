@@ -1,68 +1,53 @@
-import { Reveal } from "@/components/ui/reveal";
-import { cn } from "@/lib/utils";
+import Link from "next/link";
+import type { ReactNode } from "react";
+import { getCopy } from "@/lib/i18n/server";
 
-export function SectionHeading({
+/**
+ * Editorial header for every inner page: a breadcrumb back home, an eyebrow,
+ * a large display-serif title whose last word turns to silver italic (the same
+ * voice as the name on the home page), the intro, and a hairline to close it.
+ */
+export async function PageHeader({
   eyebrow,
   title,
   lead,
-  className,
-  as: Tag = "h2",
   children,
 }: {
   eyebrow?: string;
   title: string;
   lead?: string;
-  className?: string;
-  as?: "h1" | "h2";
-  children?: React.ReactNode;
+  children?: ReactNode;
 }) {
-  return (
-    <Reveal className={cn("flex flex-col gap-6 md:flex-row md:items-end md:justify-between", className)}>
-      <div className="max-w-4xl">
-        {eyebrow && (
-          <p className="mb-5 inline-flex items-center gap-2 rounded-full bg-white/[0.05] px-3 py-1 font-mono text-xs tracking-[0.2em] text-white/70 uppercase ring-1 ring-white/10">
-            <span className="bg-rainbow size-1.5 rounded-full" aria-hidden />
-            {eyebrow}
-          </p>
-        )}
-        <Tag
-          className={cn(
-            "font-display tracking-[-0.03em]",
-            Tag === "h1" ? "text-[clamp(2.6rem,9vw,7.5rem)] leading-[0.92]" : "text-[clamp(2.1rem,6vw,4.6rem)] leading-[0.95]",
-          )}
-        >
-          <TitleWithAccent title={title} />
-        </Tag>
-        {lead && <p className="mt-6 max-w-xl text-base leading-relaxed text-white/60 sm:text-lg">{lead}</p>}
-      </div>
-      {children}
-    </Reveal>
-  );
-}
-
-/** Last word of a heading gets the animated rainbow treatment. */
-function TitleWithAccent({ title }: { title: string }) {
+  const copy = await getCopy();
   const words = title.trim().split(/\s+/);
-  if (words.length < 2) return <span className="text-rainbow">{title}</span>;
-  const last = words.pop();
+  const last = words.length > 1 ? words.pop() : null;
   return (
-    <>
-      {words.join(" ")} <span className="text-rainbow">{last}</span>
-    </>
-  );
-}
-
-export function PageHeader(props: { eyebrow?: string; title: string; lead?: string; children?: React.ReactNode }) {
-  return (
-    <header className="container-x pt-32 pb-12 sm:pt-40 sm:pb-16">
-      <SectionHeading as="h1" {...props} />
+    <header className="mx-auto w-[min(1200px,calc(100%-2rem))] pt-28 pb-10 sm:pt-40 sm:pb-14">
+      <nav aria-label="Breadcrumb" className="page-crumbs">
+        <Link href="/">{copy.nav["/"]}</Link>
+        <span aria-hidden>/</span>
+        <span aria-current="page">{title}</span>
+      </nav>
+      {eyebrow && <p className="ed-eyebrow mt-8">{eyebrow}</p>}
+      <h1 className="page-title">
+        {words.join(" ")}
+        {last && (
+          <>
+            {" "}
+            <em>{last}</em>
+          </>
+        )}
+      </h1>
+      {lead && <p className="ed-intro page-lead">{lead}</p>}
+      {children && <div className="mt-8">{children}</div>}
+      <div className="hairline mt-10 sm:mt-14" aria-hidden />
     </header>
   );
 }
 
-export function EmptyState({ children }: { children: React.ReactNode }) {
+export function EmptyState({ children }: { children: ReactNode }) {
   return (
-    <div className="glass flex min-h-48 items-center justify-center rounded-3xl border-dashed p-10 text-center text-white/60">
+    <div className="border-line-strong flex min-h-48 items-center justify-center rounded-3xl border border-dashed p-10 text-center text-[var(--fg-secondary)]">
       <p>{children}</p>
     </div>
   );

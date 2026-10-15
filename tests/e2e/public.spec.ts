@@ -41,8 +41,25 @@ test.describe("public site", () => {
     await expect(page.locator("html")).toHaveAttribute("lang", "uz");
   });
 
+  test("every menu item opens its own page, never a home-page anchor", async ({ page }) => {
+    await page.goto("/");
+    const hrefs = await page.locator("header nav a").evaluateAll((as) => as.map((a) => a.getAttribute("href") ?? ""));
+    expect(hrefs.length).toBeGreaterThan(3);
+    for (const href of hrefs) expect(href, href).not.toContain("#");
+  });
+
   test("all public pages respond and have a single h1", async ({ page }) => {
-    for (const path of ["/about", "/projects", "/achievements", "/skills", "/experience", "/gallery", "/contact", "/privacy"]) {
+    for (const path of [
+      "/about",
+      "/projects",
+      "/highlights",
+      "/achievements",
+      "/skills",
+      "/experience",
+      "/gallery",
+      "/contact",
+      "/privacy",
+    ]) {
       const res = await page.goto(path);
       expect(res?.status(), path).toBe(200);
       await expect(page.locator("h1"), path).toHaveCount(1);

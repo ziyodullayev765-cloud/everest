@@ -21,6 +21,7 @@ function Editor({ media, onSaved, onDeleted }: { media: Media; onSaved: (m: Medi
   const [usage, setUsage] = useState<string[] | null>(null);
   const [confirm, setConfirm] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const [checking, setChecking] = useState(false);
   const [replacing, setReplacing] = useState<number | null>(null);
   const replaceInput = useRef<HTMLInputElement>(null);
 
@@ -36,23 +37,37 @@ function Editor({ media, onSaved, onDeleted }: { media: Media; onSaved: (m: Medi
       onSaved({ ...media, ...values });
     });
 
+  // Looking up where the file is used takes a round trip; show it on the
+  // button so the click never looks ignored, and open the dialog either way.
   const askDelete = async () => {
-    const res = await getMediaUsage(media.id);
-    setUsage(res.ok ? (res.data ?? []) : []);
-    setConfirm(true);
+    setChecking(true);
+    try {
+      const res = await getMediaUsage(media.id);
+      setUsage(res.ok ? (res.data ?? []) : []);
+    } catch {
+      setUsage([]);
+    } finally {
+      setChecking(false);
+      setConfirm(true);
+    }
   };
 
   const doDelete = async () => {
     setDeleting(true);
-    const res = await deleteMedia(media.id, true);
-    setDeleting(false);
-    if (!res.ok) {
-      toast.error(res.error);
-      return;
+    try {
+      const res = await deleteMedia(media.id, true);
+      if (!res.ok) {
+        toast.error(res.error);
+        return;
+      }
+      toast.success(res.message);
+      setConfirm(false);
+      onDeleted(media.id);
+    } catch {
+      toast.error("Could not delete the file. Check your connection and try again.");
+    } finally {
+      setDeleting(false);
     }
-    toast.success(res.message);
-    setConfirm(false);
-    onDeleted(media.id);
   };
 
   const replace = async (file: File) => {
@@ -183,7 +198,7 @@ function Editor({ media, onSaved, onDeleted }: { media: Media; onSaved: (m: Medi
           </div>
         )}
         <div className="flex justify-between gap-2 pt-2">
-          <Button variant="danger" onClick={askDelete}>
+          <Button variant="danger" onClick={askDelete} loading={checking}>
             <Trash2 className="size-4" aria-hidden /> Delete
           </Button>
           <Button variant="primary" onClick={save} loading={saving}>

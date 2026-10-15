@@ -218,29 +218,46 @@ export function DomeGallery({
     let moved = false;
     let lastMove = { x: 0, y: 0, t: 0 };
     const clampX = (v: number) => Math.max(-maxVerticalDeg, Math.min(maxVerticalDeg, v));
-    let scrollingUntil = 0;
-    const onScroll = () => {
-      scrollingUntil = performance.now() + 220;
+    // Past the vertical limit a drag meets growing resistance (at most a few
+    // degrees of give) and eases back on release, instead of hitting a wall.
+    const soft = (v: number) => {
+      const c = clampX(v);
+      const over = v - c;
+      return c + (over === 0 ? 0 : Math.sign(over) * 4 * (1 - Math.exp(-Math.abs(over) / 12)));
     };
 
     const tick = (t: number) => {
       const dt = last ? Math.min(48, t - last) : 16;
       last = t;
       if (!dragging) {
+        let changed = false;
+        // Settle back inside the vertical limit after an over-drag.
+        const target = clampX(rot.x);
+        if (rot.x !== target) {
+          const d = target - rot.x;
+          rot.x = Math.abs(d) < 0.02 ? target : rot.x + d * (1 - Math.pow(0.8, dt / 16));
+          inertia.x = 0;
+          changed = true;
+        }
         if (Math.abs(inertia.x) + Math.abs(inertia.y) > 0.002) {
           rot.y += inertia.y * dt;
-          rot.x = clampX(rot.x + inertia.x * dt);
+          const nx = rot.x + inertia.x * dt;
+          rot.x = clampX(nx);
+          if (rot.x !== nx) inertia.x = 0;
           const k = Math.pow(0.94, dt / 16);
           inertia = { x: inertia.x * k, y: inertia.y * k };
-          render();
-        } else if (autoSpin && !reduce && !openRef.current && t > scrollingUntil) {
-          // The idle spin rests while the page is being scrolled: moving all the
-          // 3D tiles and scrolling in the same frame is what makes pages stutter.
+          changed = true;
+        } else if (autoSpin && !reduce && !openRef.current) {
           rot.y += (AUTO_SPIN_DEG_PER_S * dt) / 1000;
-          render();
+          changed = true;
         }
+        if (changed) render();
       }
-      const keepGoing = visible && !pausedRef.current && !document.hidden && (!reduce || dragging || Math.abs(inertia.y) > 0.002);
+      const keepGoing =
+        visible &&
+        !pausedRef.current &&
+        !document.hidden &&
+        (!reduce || dragging || Math.abs(inertia.y) > 0.002 || rot.x !== clampX(rot.x));
       raf = keepGoing ? requestAnimationFrame(tick) : 0;
       if (!raf) last = 0;
     };
@@ -267,7 +284,7 @@ export function DomeGallery({
       }
       if (!moved) return;
       rot.y = start.ry + dx / 20;
-      rot.x = clampX(start.rx - dy / 20);
+      rot.x = soft(start.rx - dy / 20);
       const now = performance.now();
       const span = Math.max(8, now - lastMove.t);
       inertia = { y: (e.clientX - lastMove.x) / 20 / span, x: -(e.clientY - lastMove.y) / 20 / span };
@@ -292,7 +309,6 @@ export function DomeGallery({
 
     root.addEventListener("pointerdown", onDown);
     window.addEventListener("pointermove", onMove, { passive: true });
-    window.addEventListener("scroll", onScroll, { passive: true });
     window.addEventListener("pointerup", onUp);
     window.addEventListener("pointercancel", onUp);
     root.addEventListener("click", onClick);
@@ -314,7 +330,6 @@ export function DomeGallery({
       document.removeEventListener("visibilitychange", onVis);
       root.removeEventListener("pointerdown", onDown);
       window.removeEventListener("pointermove", onMove);
-      window.removeEventListener("scroll", onScroll);
       window.removeEventListener("pointerup", onUp);
       window.removeEventListener("pointercancel", onUp);
       root.removeEventListener("click", onClick);
@@ -361,6 +376,7 @@ export function DomeGallery({
             ))}
           </div>
         </div>
+        <div className="dome-blur" />
         <div className="dome-vignette" />
         <div className="dome-edge top-0 rotate-180" />
         <div className="dome-edge bottom-0" />

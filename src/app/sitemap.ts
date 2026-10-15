@@ -8,7 +8,18 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const [settings, projects] = await Promise.all([getSettings(), getProjects()]);
   const base = (settings.site_url || env.siteUrl).replace(/\/+$/, "");
   const now = new Date();
-  const pages = ["", "/about", "/projects", "/achievements", "/skills", "/experience", "/gallery", "/contact", "/privacy"];
+  const pages = [
+    "",
+    "/about",
+    "/projects",
+    "/highlights",
+    "/achievements",
+    "/skills",
+    "/experience",
+    "/gallery",
+    "/contact",
+    "/privacy",
+  ];
   return [
     ...pages.map((p) => ({
       url: `${base}${p}`,

@@ -2,8 +2,9 @@ import type { Metadata } from "next";
 import { DomeGallery, type DomeTileData } from "@/components/site/dome-gallery";
 import { EdSection } from "@/components/site/ed-section";
 import { ImageGallery } from "@/components/site/image-gallery";
-import { EmptyState } from "@/components/site/section-heading";
+import { EmptyState, PageHeader } from "@/components/site/section-heading";
 import { HomeHeading } from "@/components/home/section-heading";
+import { PageNext } from "@/components/site/page-next";
 import { getCopy } from "@/lib/i18n/server";
 import { getGallery } from "@/lib/data/public";
 
@@ -28,16 +29,10 @@ export default async function GalleryPage() {
 
   return (
     <>
-      <section aria-labelledby="journey-title" className="relative">
-        <header className="mx-auto w-[min(1200px,calc(100%-2rem))] pt-32 sm:pt-36">
-          <p className="ed-eyebrow">{copy.homePage.galleryEyebrow}</p>
-          <h1 id="journey-title" className="ed-title text-[clamp(2.6rem,7vw,4.5rem)]">
-            {copy.gallery.title}
-          </h1>
-          <p className="ed-intro">{copy.gallery.lead}</p>
-        </header>
+      <PageHeader eyebrow={copy.homePage.galleryEyebrow} title={copy.gallery.title} lead={copy.gallery.lead} />
+      <section aria-label={copy.homePage.domeLabel} className="relative">
         {tiles.length > 0 ? (
-          <div className="border-line relative mt-8 h-[clamp(520px,86svh,980px)] border-t">
+          <div className="relative h-[clamp(520px,86svh,980px)]">
             <DomeGallery
               tiles={tiles}
               fit={0.85}
@@ -46,7 +41,7 @@ export default async function GalleryPage() {
             />
           </div>
         ) : (
-          <div className="mx-auto mt-10 w-[min(1200px,calc(100%-2rem))]">
+          <div className="mx-auto w-[min(1200px,calc(100%-2rem))]">
             <EmptyState>{copy.gallery.empty}</EmptyState>
           </div>
         )}
@@ -73,6 +68,7 @@ export default async function GalleryPage() {
           </div>
         </EdSection>
       )}
+      <PageNext current="/gallery" />
     </>
   );
 }

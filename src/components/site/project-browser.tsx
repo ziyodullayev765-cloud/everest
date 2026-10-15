@@ -33,7 +33,7 @@ export function ProjectBrowser({ projects }: { projects: Project[] }) {
   const chip = (active: boolean) =>
     cn(
       "h-9 rounded-full px-4 text-sm transition-colors",
-      active ? "bg-fg text-black" : "border border-line text-muted hover:border-line-strong hover:text-fg",
+      active ? "bg-fg text-bg" : "border border-line text-muted hover:border-line-strong hover:text-fg",
     );
 
   return (
@@ -75,7 +75,7 @@ export function ProjectBrowser({ projects }: { projects: Project[] }) {
               aria-label={copy.projects.grid}
               className={cn(
                 "grid size-9 place-items-center rounded-full transition",
-                view === "grid" ? "text-fg bg-white/10" : "text-subtle hover:text-fg",
+                view === "grid" ? "text-fg bg-[color-mix(in_oklab,var(--fg)_10%,transparent)]" : "text-subtle hover:text-fg",
               )}
             >
               <LayoutGrid className="size-4" aria-hidden />
@@ -87,7 +87,7 @@ export function ProjectBrowser({ projects }: { projects: Project[] }) {
               aria-label={copy.projects.list}
               className={cn(
                 "grid size-9 place-items-center rounded-full transition",
-                view === "list" ? "text-fg bg-white/10" : "text-subtle hover:text-fg",
+                view === "list" ? "text-fg bg-[color-mix(in_oklab,var(--fg)_10%,transparent)]" : "text-subtle hover:text-fg",
               )}
             >
               <List className="size-4" aria-hidden />
@@ -106,7 +106,7 @@ export function ProjectBrowser({ projects }: { projects: Project[] }) {
               aria-pressed={tag === t}
               className={cn(
                 "rounded-full px-3 py-1 text-xs transition",
-                tag === t ? "bg-accent text-black" : "text-subtle hover:text-fg bg-white/[0.04]",
+                tag === t ? "bg-fg text-bg" : "text-subtle hover:text-fg bg-[color-mix(in_oklab,var(--fg)_5%,transparent)]",
               )}
             >
               #{t}

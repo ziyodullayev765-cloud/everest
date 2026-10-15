@@ -10,10 +10,14 @@ export async function SkillGroups({ skills }: { skills: Skill[] }) {
     groups.set(key, [...(groups.get(key) ?? []), s]);
   }
   return (
-    <div className="grid gap-5 md:grid-cols-2">
+    <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
       {Array.from(groups.entries()).map(([category, items]) => (
-        <section key={category} className="glass rounded-3xl p-6 sm:p-7" aria-labelledby={`skills-${category}`}>
-          <h3 id={`skills-${category}`} className="text-accent font-mono text-xs tracking-[0.2em] uppercase">
+        <section
+          key={category}
+          className="bronze-border border-line bg-surface rounded-3xl border p-7 shadow-[var(--shadow)] transition-transform duration-300 hover:-translate-y-1"
+          aria-labelledby={`skills-${category}`}
+        >
+          <h3 id={`skills-${category}`} className="text-[1.35rem]">
             {category}
           </h3>
           <ul className="mt-5 grid gap-4">
@@ -27,7 +31,7 @@ export async function SkillGroups({ skills }: { skills: Skill[] }) {
                 </div>
                 {s.level !== null && (
                   <div
-                    className="mt-2 h-1 overflow-hidden rounded-full bg-white/[0.06]"
+                    className="mt-2 h-1 overflow-hidden rounded-full bg-[color-mix(in_oklab,var(--fg)_8%,transparent)]"
                     role="meter"
                     aria-valuemin={0}
                     aria-valuemax={100}

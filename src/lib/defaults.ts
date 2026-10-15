@@ -7,13 +7,22 @@ import type { NavItem, Profile, SiteSettings } from "./types";
  */
 export const DEFAULT_NAV: NavItem[] = [
   { label: "Journey", href: "/gallery", visible: true },
-  { label: "Highlights", href: "/#highlights", visible: true },
+  { label: "Highlights", href: "/highlights", visible: true },
   { label: "Projects", href: "/projects", visible: true },
   { label: "Experience", href: "/experience", visible: true },
   { label: "Achievements", href: "/achievements", visible: true },
   { label: "Skills", href: "/skills", visible: true },
-  { label: "Contact", href: "/#contact", visible: true },
+  { label: "Contact", href: "/contact", visible: true },
 ];
+
+/** Old menu links that pointed at home-page sections, mapped to their own pages. */
+export const LEGACY_NAV_HREFS: Record<string, string> = {
+  "/#highlights": "/highlights",
+  "/#projects": "/projects",
+  "/#skills": "/skills",
+  "/#experience": "/experience",
+  "/#contact": "/contact",
+};
 
 export const DEFAULT_PROFILE: Profile = {
   id: 1,

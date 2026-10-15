@@ -91,9 +91,12 @@ html.light:has(.site-root) body {
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
     scroll-behavior: smooth;
+    /* No rubber-band bounce past the top or bottom of the page. */
+    overscroll-behavior-y: none;
   }
   body {
     background: var(--bg);
+    overscroll-behavior-y: none;
     min-height: 100dvh;
     font-feature-settings: "ss01", "cv11";
   }
@@ -118,6 +121,7 @@ html.light:has(.site-root) body {
     *::before,
     *::after {
       animation-duration: 0.01ms !important;
+      animation-delay: 0ms !important;
       animation-iteration-count: 1 !important;
       transition-duration: 0.01ms !important;
     }
@@ -397,16 +401,17 @@ html.light:has(.site-root) body {
     background: color-mix(in oklab, var(--accent) 12%, transparent);
     transform: translateY(-1px);
   }
+  /* Primary button: solid ink (light on dark, dark on light), not bronze. */
   .ed-button--accent {
-    background: linear-gradient(135deg, var(--gold), var(--accent) 55%, var(--copper));
-    border-color: transparent;
-    color: #0d0d0d;
+    background: var(--fg);
+    border-color: var(--fg);
+    color: var(--bg);
     font-weight: 600;
   }
   .ed-button--accent:hover {
-    background: linear-gradient(135deg, var(--gold), var(--accent) 55%, var(--copper));
-    filter: brightness(1.08);
-    color: #0d0d0d;
+    background: color-mix(in oklab, var(--fg) 86%, var(--bg));
+    border-color: color-mix(in oklab, var(--fg) 86%, var(--bg));
+    color: var(--bg);
   }
 
   /* Section heading pieces */
@@ -447,17 +452,25 @@ html.light:has(.site-root) body {
     -webkit-text-fill-color: transparent;
   }
 
-  /* Hero name: heavy, wide-tracked sans melting from ink into bronze */
+  /* Hero name: the display serif in ink, surname in a quieter silver italic.
+     Letters rise out of a soft blur one after another. */
   .ed-name {
-    font-family: var(--font-sans);
-    font-weight: 800;
-    letter-spacing: 0.06em;
-    line-height: 1;
-    text-transform: uppercase;
-    background: linear-gradient(180deg, var(--fg) 0%, var(--fg) 42%, var(--copper) 100%);
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
+    font-family: var(--font-display);
+    font-weight: 500;
+    letter-spacing: -0.02em;
+    line-height: 1.02;
+    text-transform: none;
+    color: var(--fg);
+  }
+  .ed-name-tail {
+    font-style: italic;
+    font-weight: 400;
+    color: color-mix(in oklab, var(--fg) 62%, var(--bg));
+  }
+  .ed-name-letter {
+    display: inline-block;
+    animation: name-in 900ms cubic-bezier(0.16, 1, 0.3, 1) both;
+    animation-delay: calc(250ms + var(--i) * 45ms);
   }
   .dome-hero-fade {
     position: absolute;
@@ -465,6 +478,77 @@ html.light:has(.site-root) body {
     height: 46%;
     pointer-events: none;
     background: linear-gradient(to bottom, rgba(var(--bg-rgb), 0) 0%, rgba(var(--bg-rgb), 0.82) 55%, var(--bg) 100%);
+  }
+
+  /* Inner page header */
+  .page-crumbs {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-size: 0.72rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--fg-muted, var(--fg-secondary));
+  }
+  .page-crumbs a {
+    color: var(--fg-secondary);
+    transition: color 200ms ease;
+  }
+  .page-crumbs a:hover {
+    color: var(--fg);
+  }
+  .page-crumbs [aria-current] {
+    color: var(--fg);
+  }
+  .page-title {
+    margin-top: 1rem;
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: clamp(2.8rem, 9vw, 7.2rem);
+    line-height: 0.98;
+    letter-spacing: -0.03em;
+    text-transform: none;
+    color: var(--fg);
+    animation: name-in 1s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+  .page-title em {
+    font-weight: 400;
+    color: color-mix(in oklab, var(--fg) 62%, var(--bg));
+  }
+  .page-lead {
+    margin-top: 1.5rem;
+    animation: name-in 1s 120ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+
+  /* "Next page" link at the foot of each menu page */
+  .page-next {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    border-top: 1px solid var(--border);
+    padding: 2.5rem 0 1rem;
+  }
+  .page-next-title {
+    display: inline-flex;
+    align-items: center;
+    gap: 1rem;
+    font-family: var(--font-display);
+    font-size: clamp(2.2rem, 7vw, 5.5rem);
+    line-height: 1;
+    letter-spacing: -0.03em;
+    color: color-mix(in oklab, var(--fg) 62%, var(--bg));
+    transition: color 300ms ease;
+  }
+  .page-next:hover .page-next-title {
+    color: var(--fg);
+  }
+  .page-next-arrow {
+    width: 0.6em;
+    height: 0.6em;
+    transition: transform 300ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .page-next:hover .page-next-arrow {
+    transform: translateX(0.25em);
   }
 
   /* Reveal once on scroll */
@@ -742,6 +826,22 @@ html.light:has(.site-root) body {
   .dome-tile:hover {
     transform: translateZ(14px);
   }
+  /* Photos soften toward the rim of the dome, like a lens: a blur layer
+     that is fully masked out over the centre. */
+  .dome-blur {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    -webkit-backdrop-filter: blur(4px);
+    backdrop-filter: blur(4px);
+    -webkit-mask-image: radial-gradient(ellipse 72% 68% at 50% 46%, transparent 55%, #000 92%);
+    mask-image: radial-gradient(ellipse 72% 68% at 50% 46%, transparent 55%, #000 92%);
+  }
+  @media (prefers-reduced-transparency: reduce) {
+    .dome-blur {
+      display: none;
+    }
+  }
   .dome-vignette {
     position: absolute;
     inset: 0;
@@ -762,6 +862,18 @@ html.light:has(.site-root) body {
   syntax: "<angle>";
   initial-value: 0deg;
   inherits: false;
+}
+@keyframes name-in {
+  from {
+    opacity: 0;
+    transform: translateY(0.35em);
+    filter: blur(10px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+    filter: blur(0);
+  }
 }
 @keyframes border-spin {
   to {

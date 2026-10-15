@@ -73,7 +73,7 @@ export function CursorGlow() {
       <div
         ref={ref}
         className="absolute top-0 left-0 size-[300px] rounded-full opacity-0 transition-opacity duration-500"
-        style={{ background: "radial-gradient(circle, color-mix(in oklab, var(--accent) 22%, transparent) 0%, transparent 70%)" }}
+        style={{ background: "radial-gradient(circle, color-mix(in oklab, var(--accent) 8%, transparent) 0%, transparent 70%)" }}
       />
     </div>
   );

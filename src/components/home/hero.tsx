@@ -2,7 +2,7 @@ import Link from "next/link";
 import { ArrowDown, ArrowRight } from "lucide-react";
 import type { DomeTileData } from "@/components/site/dome-gallery";
 import { EdMarquee } from "@/components/site/ed-marquee";
-import { ScrambleText } from "@/components/site/scramble-text";
+import { NameReveal } from "@/components/site/name-reveal";
 import { DomeHero } from "./dome-hero";
 
 /**
@@ -34,11 +34,7 @@ export function Hero({
       <div className="relative h-[84svh] min-h-[540px] overflow-hidden sm:h-[100svh] sm:min-h-[560px]">
         <DomeHero tiles={tiles} animate={animateDome} />
         <div className="pointer-events-none absolute inset-x-0 bottom-0 flex flex-col items-center px-4 pb-[7svh] text-center">
-          <ScrambleText
-            as="h1"
-            text={name}
-            className="ed-name pointer-events-auto text-[clamp(1.55rem,6.2vw,5.4rem)] whitespace-nowrap"
-          />
+          <NameReveal text={name} className="ed-name pointer-events-auto text-[clamp(2rem,7.4vw,6.6rem)] whitespace-nowrap" />
           {subtitle && (
             <p className="pointer-events-auto mx-auto mt-4 max-w-[46rem] text-[clamp(0.95rem,1.7vw,1.25rem)] leading-[1.65] text-[var(--fg-secondary)]">
               {subtitle}
