@@ -100,8 +100,15 @@ export const RESOURCES: Record<string, ResourceConfig> = {
       {
         title: "Media",
         fields: [
-          { name: "thumbnail_url", label: "Thumbnail", type: "image", altField: "thumbnail_alt", wide: true },
-          { name: "thumbnail_alt", label: "Thumbnail alt text", type: "text", max: 300, wide: true },
+          {
+            name: "thumbnail_url",
+            label: "Card image",
+            type: "image",
+            altField: "thumbnail_alt",
+            wide: true,
+            help: "Shown on the project's card on the home page and in the projects list. Without it, the first gallery image is used.",
+          },
+          { name: "thumbnail_alt", label: "Card image alt text", type: "text", max: 300, wide: true },
           { name: "gallery", label: "Gallery images", type: "gallery", maxItems: 30, wide: true },
         ],
       },

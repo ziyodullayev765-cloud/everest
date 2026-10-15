@@ -29,6 +29,7 @@
   --fg-secondary: #d1d1d1;
   --fg-muted: #9a9a9a;
   --fg-subtle: #7a7a7a;
+  --name-tint: #d9a08f;
   --shadow: 0 2px 10px rgba(0, 0, 0, 0.45);
   --shadow-hover: 0 24px 48px -12px rgba(0, 0, 0, 0.7);
   color-scheme: dark;
@@ -48,6 +49,7 @@ html.light .site-root {
   --fg-secondary: #3d3d3d;
   --fg-muted: #6f6f6f;
   --fg-subtle: #8a8a8a;
+  --name-tint: #9a4e3c;
   --shadow: 0 2px 10px rgba(20, 20, 20, 0.06);
   --shadow-hover: 0 24px 48px -12px rgba(20, 20, 20, 0.18);
   /* Pages written with white-on-dark utilities flip automatically. */
@@ -452,8 +454,8 @@ html.light:has(.site-root) body {
     -webkit-text-fill-color: transparent;
   }
 
-  /* Hero name: the display serif in ink, surname in a quieter silver italic.
-     Letters rise out of a soft blur one after another. */
+  /* Hero name: first name in light, wide-spaced sans capitals; surname in a
+     rose-terracotta display-serif italic. */
   .ed-name {
     font-family: var(--font-display);
     font-weight: 500;
@@ -462,15 +464,23 @@ html.light:has(.site-root) body {
     text-transform: none;
     color: var(--fg);
   }
+  .ed-name-head {
+    font-family: var(--font-sans);
+    font-size: 0.5em;
+    font-weight: 300;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    margin-right: 0.35em;
+  }
   .ed-name-tail {
     font-style: italic;
     font-weight: 400;
-    color: color-mix(in oklab, var(--fg) 62%, var(--bg));
+    color: var(--name-tint);
   }
   .ed-name-letter {
     display: inline-block;
-    animation: name-in 900ms cubic-bezier(0.16, 1, 0.3, 1) both;
-    animation-delay: calc(250ms + var(--i) * 45ms);
+    animation: name-in 1300ms cubic-bezier(0.22, 1, 0.36, 1) both;
+    animation-delay: calc(350ms + var(--i) * 60ms);
   }
   .dome-hero-fade {
     position: absolute;
@@ -478,6 +488,12 @@ html.light:has(.site-root) body {
     height: 46%;
     pointer-events: none;
     background: linear-gradient(to bottom, rgba(var(--bg-rgb), 0) 0%, rgba(var(--bg-rgb), 0.82) 55%, var(--bg) 100%);
+  }
+
+  /* Every route change: the new page fades and rises in slowly. Only
+     "backwards" fill, so no transform is left behind once it has played. */
+  .page-enter {
+    animation: page-in 1100ms cubic-bezier(0.22, 1, 0.36, 1) backwards;
   }
 
   /* Inner page header */
@@ -509,7 +525,7 @@ html.light:has(.site-root) body {
     letter-spacing: -0.03em;
     text-transform: none;
     color: var(--fg);
-    animation: name-in 1s cubic-bezier(0.16, 1, 0.3, 1) both;
+    animation: name-in 1.4s cubic-bezier(0.22, 1, 0.36, 1) both;
   }
   .page-title em {
     font-weight: 400;
@@ -517,7 +533,7 @@ html.light:has(.site-root) body {
   }
   .page-lead {
     margin-top: 1.5rem;
-    animation: name-in 1s 120ms cubic-bezier(0.16, 1, 0.3, 1) both;
+    animation: name-in 1.4s 250ms cubic-bezier(0.22, 1, 0.36, 1) both;
   }
 
   /* "Next page" link at the foot of each menu page */
@@ -556,8 +572,8 @@ html.light:has(.site-root) body {
     opacity: 0;
     transform: translateY(24px);
     transition:
-      opacity 800ms cubic-bezier(0.16, 1, 0.3, 1),
-      transform 800ms cubic-bezier(0.16, 1, 0.3, 1);
+      opacity 1200ms cubic-bezier(0.22, 1, 0.36, 1),
+      transform 1200ms cubic-bezier(0.22, 1, 0.36, 1);
     scroll-margin-top: 110px;
   }
   .ed-section[data-visible="true"] {
@@ -862,6 +878,12 @@ html.light:has(.site-root) body {
   syntax: "<angle>";
   initial-value: 0deg;
   inherits: false;
+}
+@keyframes page-in {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
 }
 @keyframes name-in {
   from {
