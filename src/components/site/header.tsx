@@ -140,7 +140,7 @@ export function Header({ siteName, logoUrl, availability, nav, resumeUrl }: Prop
                 // eslint-disable-next-line @next/next/no-img-element
                 <img src={logoUrl} alt="" className="size-7 rounded-full object-cover" width={28} height={28} />
               )}
-              <span className="truncate text-[0.82rem] font-extrabold tracking-[0.08em] uppercase">{siteName}</span>
+              <span className="font-display truncate text-[0.98rem] text-[var(--name-tint)] italic">{siteName}</span>
             </Link>
             <div className="flex shrink-0 items-center gap-1.5">
               {tools}

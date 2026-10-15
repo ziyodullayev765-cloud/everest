@@ -98,6 +98,8 @@ const en = {
   },
 
   projects: {
+    nextProject: "Next project",
+    eyebrow: "Portfolio",
     title: "Projects",
     lead: "Things I have built and contributed to.",
     search: "Search projects",
@@ -286,6 +288,8 @@ const uz: Copy = {
   },
 
   projects: {
+    nextProject: "Keyingi loyiha",
+    eyebrow: "Portfolio",
     title: "Loyihalar",
     lead: "Men yaratgan va ishtirok etgan loyihalar.",
     search: "Loyihalarni qidirish",
@@ -472,6 +476,8 @@ const ru: Copy = {
   },
 
   projects: {
+    nextProject: "Следующий проект",
+    eyebrow: "Портфолио",
     title: "Проекты",
     lead: "То, что я создал и в чём участвовал.",
     search: "Поиск проектов",

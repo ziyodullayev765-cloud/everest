@@ -19,7 +19,7 @@ export default async function ProjectsPage() {
   const projects = await getProjects();
   return (
     <>
-      <PageHeader eyebrow={`${projects.length}`} title={copy.projects.title} lead={copy.projects.lead} />
+      <PageHeader eyebrow={copy.projects.eyebrow} title={copy.projects.title} lead={copy.projects.lead} />
       <section className="mx-auto w-[min(1200px,calc(100%-2rem))]">
         <ProjectBrowser projects={projects} />
       </section>

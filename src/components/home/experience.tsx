@@ -57,7 +57,7 @@ export function Experience({ items, resumeUrl }: { items: ExperienceRow[]; resum
               <div className="flex flex-col gap-2 sm:flex-row sm:items-baseline sm:justify-between sm:gap-6">
                 <h3 className="text-[clamp(1.4rem,3vw,1.9rem)]">
                   {e.organization}
-                  {e.role && <span className="text-gold"> — {e.role}</span>}
+                  {e.role && <span className="text-[var(--fg-muted)] italic"> — {e.role}</span>}
                 </h3>
                 {period && <span className="text-muted shrink-0 font-mono text-xs tracking-[0.08em] uppercase">{period}</span>}
               </div>

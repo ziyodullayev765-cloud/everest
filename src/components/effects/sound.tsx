@@ -146,7 +146,7 @@ export function MusicDock() {
           />
         ))}
       </span>
-      <span className="max-w-[9rem] truncate sm:max-w-[14rem]">{sound.title || label}</span>
+      <span className="hidden max-w-[14rem] truncate sm:inline">{sound.title || label}</span>
     </button>
   );
 }

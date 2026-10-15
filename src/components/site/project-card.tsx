@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { ArrowUpRight } from "lucide-react";
 import { SmartImage } from "@/components/ui/smart-image";
 import type { Project } from "@/lib/types";
 import { cn } from "@/lib/utils";
@@ -60,7 +59,9 @@ export function ProjectCard({
         <div className="text-subtle mb-3 flex flex-wrap items-center gap-2 text-xs">
           {project.category && <span className="font-mono tracking-[0.16em] uppercase">{project.category}</span>}
           {project.featured && featuredLabel && (
-            <span className="bg-accent/15 text-accent rounded-full px-2 py-0.5 text-[0.7rem] font-medium">{featuredLabel}</span>
+            <span className="border-line rounded-full border px-2 py-0.5 text-[0.7rem] font-medium text-[var(--fg-secondary)]">
+              {featuredLabel}
+            </span>
           )}
         </div>
         <h3 className="text-xl font-semibold tracking-tight">
@@ -74,16 +75,13 @@ export function ProjectCard({
         </h3>
         {project.summary && <p className="text-muted mt-2 line-clamp-3 text-[0.95rem] leading-relaxed">{project.summary}</p>}
         <div className="mt-auto flex items-end justify-between gap-4 pt-6">
-          <ul className="flex flex-wrap gap-1.5" aria-label="Texnologiyalar">
+          <ul className="flex flex-wrap gap-1.5" aria-label="Technologies">
             {project.technologies.slice(0, 4).map((t) => (
               <li key={t} className="border-line text-muted rounded-full border px-2.5 py-1 text-xs">
                 {t}
               </li>
             ))}
           </ul>
-          <span className="border-line text-muted group-hover:border-accent group-hover:bg-accent grid size-10 shrink-0 place-items-center rounded-full border transition-all duration-500 group-hover:text-black">
-            <ArrowUpRight className="size-4" aria-hidden />
-          </span>
         </div>
       </div>
     </article>
