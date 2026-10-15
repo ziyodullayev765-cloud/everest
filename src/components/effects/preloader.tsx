@@ -52,7 +52,9 @@ export function Preloader({ name }: { name: string }) {
   };
 
   const ready = count >= 100;
-  const letters = name.split("");
+  // Words never break mid-word; letters animate in sequence across words.
+  const words = name.split(/\s+/).filter(Boolean);
+  const offsets = words.map((_, w) => words.slice(0, w).join("").length + w);
 
   return (
     <>
@@ -88,17 +90,21 @@ export function Preloader({ name }: { name: string }) {
               />
             </div>
 
-            <p className="font-display relative text-center text-[clamp(2rem,8vw,6rem)] leading-none tracking-tight">
-              {letters.map((ch, i) => (
-                <motion.span
-                  key={i}
-                  className="text-rainbow inline-block"
-                  initial={reduce ? false : { y: "110%", opacity: 0 }}
-                  animate={{ y: 0, opacity: 1 }}
-                  transition={{ delay: 0.05 * i, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-                >
-                  {ch === " " ? " " : ch}
-                </motion.span>
+            <p className="font-display relative text-center text-[clamp(1.8rem,6.5vw,5.5rem)] leading-[1.05] tracking-tight">
+              {words.map((word, w) => (
+                <span key={w} className="mx-[0.15em] inline-block whitespace-nowrap">
+                  {word.split("").map((ch, i) => (
+                    <motion.span
+                      key={i}
+                      className="text-rainbow inline-block"
+                      initial={reduce ? false : { y: "110%", opacity: 0 }}
+                      animate={{ y: 0, opacity: 1 }}
+                      transition={{ delay: 0.05 * (offsets[w]! + i), duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+                    >
+                      {ch}
+                    </motion.span>
+                  ))}
+                </span>
               ))}
             </p>
 

@@ -346,14 +346,3 @@
   font-family: var(--font-display);
   font-variation-settings: "wght" 700;
 }
-
-/* Custom cursor: hide the native one only while the custom cursor is active. */
-html.has-custom-cursor,
-html.has-custom-cursor * {
-  cursor: none !important;
-}
-html.has-custom-cursor input,
-html.has-custom-cursor textarea,
-html.has-custom-cursor [contenteditable="true"] {
-  cursor: text !important;
-}
