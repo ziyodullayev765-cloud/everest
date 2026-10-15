@@ -160,7 +160,7 @@ test.describe("as admin", () => {
     const file = path.join(dir, `gallery-photo-${stamp}.png`);
     makePng(file);
 
-    await page.goto("/admin/media");
+    await page.goto("/admin/media", { waitUntil: "networkidle" }); // file input must be hydrated
     await page.locator('input[type="file"]').first().setInputFiles(file);
     const card = page.getByRole("button", { name: new RegExp(`gallery-photo-${stamp}`) });
     await expect(card).toBeVisible({ timeout: 20_000 });
@@ -169,17 +169,19 @@ test.describe("as admin", () => {
     const dialog = page.getByRole("dialog", { name: "Media details" });
     await dialog.getByLabel("Alt text").fill(`Test gallery image ${stamp}`);
     await dialog.getByLabel("Caption").fill("Uploaded by E2E");
-    await dialog.getByRole("switch", { name: "Show in public gallery" }).click();
-    await dialog.getByLabel("Gallery status").selectOption("published");
+    // Uploads from the media library are published to the gallery by default.
+    await expect(dialog.getByRole("switch", { name: "Show in public gallery" })).toHaveAttribute("aria-checked", "true");
+    await expect(dialog.getByLabel("Gallery status")).toHaveValue("published");
     await dialog.getByRole("button", { name: "Save details" }).click();
     await expect(page.getByText("Saved.")).toBeVisible();
 
     const visitor = await context.browser()!.newContext();
     const vpage = await visitor.newPage();
     await vpage.goto("/gallery");
-    const img = vpage.getByRole("img", { name: `Test gallery image ${stamp}` });
+    // The grid below the dome lists every gallery photo.
+    const img = vpage.locator("section", { hasText: "Every moment" }).getByRole("img", { name: `Test gallery image ${stamp}` });
     await expect(img).toBeVisible();
-    expect(await img.evaluate((el: HTMLImageElement) => el.naturalWidth)).toBeGreaterThan(0);
+    await expect.poll(() => img.evaluate((el: HTMLImageElement) => el.naturalWidth), { timeout: 20_000 }).toBeGreaterThan(0);
 
     await dialog.getByRole("button", { name: "Delete" }).click();
     await page.getByRole("dialog", { name: "Delete this file?" }).getByRole("button", { name: "Delete" }).click();
@@ -192,7 +194,7 @@ test.describe("as admin", () => {
   test("rejects disallowed file types", async ({ page }) => {
     const file = path.join(tmpdir(), `evil-${stamp}.svg`);
     writeFileSync(file, '<svg xmlns="http://www.w3.org/2000/svg"><script>alert(1)</script></svg>');
-    await page.goto("/admin/media");
+    await page.goto("/admin/media", { waitUntil: "networkidle" }); // file input must be hydrated
     await page.locator('input[type="file"]').first().setInputFiles(file);
     await expect(page.getByText(/unsupported file type/)).toBeVisible();
   });

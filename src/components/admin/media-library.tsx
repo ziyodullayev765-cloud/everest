@@ -236,6 +236,7 @@ export function MediaLibrary({ initial }: { initial: Media[] }) {
   return (
     <div className="grid gap-6">
       <Dropzone
+        galleryOption
         onUploaded={(m) => {
           setItems((list) => [m, ...list]);
           router.refresh();

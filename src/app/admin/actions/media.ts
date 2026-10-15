@@ -131,6 +131,7 @@ export async function registerMedia(input: z.input<typeof registerMediaSchema>):
         width: d.width ?? null,
         height: d.height ?? null,
         alt_text: d.altText,
+        ...(d.inGallery && kind === "image" ? { in_gallery: true, status: "published" } : {}),
       })
       .select("*")
       .single();
@@ -138,6 +139,7 @@ export async function registerMedia(input: z.input<typeof registerMediaSchema>):
       await supabase.storage.from(MEDIA_BUCKET).remove([d.path]);
       throw error;
     }
+    if (d.inGallery && kind === "image") revalidatePath("/", "layout");
     return { ok: true, data: data as Media, message: "Uploaded." };
   } catch (e) {
     return fail(e);

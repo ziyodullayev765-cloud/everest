@@ -92,7 +92,7 @@ export const copy = {
 
   gallery: {
     title: "Journey",
-    lead: "Photos, design work and moments along the way.",
+    lead: "The experiences, people, projects and milestones that have shaped my journey as an engineer and founder.",
     empty: "The gallery is empty for now.",
     close: "Close",
     prev: "Previous",

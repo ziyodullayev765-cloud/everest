@@ -5,7 +5,6 @@ import { Highlights } from "@/components/home/highlights";
 import { Projects } from "@/components/home/projects";
 import { Skills } from "@/components/home/skills";
 import type { DomeTileData } from "@/components/site/dome-gallery";
-import { HomeBackdrop } from "@/components/site/home-backdrop";
 import {
   getAchievements,
   getExperience,
@@ -70,14 +69,15 @@ export default async function HomePage() {
 
   return (
     <div className="relative">
-      <HomeBackdrop tiles={tiles} animate={settings.enable_3d} />
-      <div className="relative z-[2]">
+      <div className="relative">
         <Hero
           name={name}
           subtitle={subtitle}
           primaryLabel={settings.cta_primary_label}
           secondaryLabel={settings.cta_secondary_label}
           ticker={ticker}
+          tiles={tiles}
+          animateDome={settings.enable_3d}
         />
         <Projects projects={featured} />
         <Highlights items={highlights} stats={stats} />

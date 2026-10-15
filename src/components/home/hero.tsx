@@ -1,11 +1,13 @@
 import Link from "next/link";
 import { ArrowDown, ArrowRight } from "lucide-react";
+import { DomeGallery, type DomeTileData } from "@/components/site/dome-gallery";
 import { EdMarquee } from "@/components/site/ed-marquee";
 import { ScrambleText } from "@/components/site/scramble-text";
 
 /**
- * Name, subtitle and calls to action, laid over the lower part of the 3D dome
- * (the dome itself lives in HomeBackdrop so it can stay fixed behind the page).
+ * The 3D photo dome fills the top of the first screen; the name, subtitle and
+ * calls to action sit beneath it, and the whole hero scrolls away normally
+ * (no full-screen overlays on top of the 3D layers, so scrolling stays smooth).
  */
 export function Hero({
   name,
@@ -13,17 +15,23 @@ export function Hero({
   primaryLabel,
   secondaryLabel,
   ticker,
+  tiles,
+  animateDome,
 }: {
   name: string;
   subtitle: string;
   primaryLabel: string;
   secondaryLabel: string;
   ticker: string[];
+  tiles: DomeTileData[];
+  animateDome: boolean;
 }) {
   return (
-    <section aria-labelledby="hero-title" className="relative">
-      {/* Leaves the top of the first screen to the draggable dome. */}
-      <div className="pointer-events-none flex flex-col items-center px-4 pt-[50svh] text-center">
+    <section aria-label="Introduction" className="relative">
+      <div className="absolute inset-x-0 top-0 h-[48svh] min-h-[340px] sm:h-[62svh] sm:min-h-[380px]">
+        <DomeGallery tiles={tiles} paused={!animateDome} />
+      </div>
+      <div className="pointer-events-none relative flex flex-col items-center px-4 pt-[max(42svh,300px)] sm:pt-[max(56svh,350px)] text-center">
         <div className="pointer-events-auto max-w-4xl">
           <ScrambleText as="h1" text={name} className="ed-heading text-[clamp(2.4rem,7.2vw,5.5rem)] leading-[1.04]" />
           {subtitle && (
@@ -49,7 +57,7 @@ export function Hero({
           </a>
         </div>
       </div>
-      <div className="mt-12">
+      <div className="pointer-events-auto mt-12">
         <EdMarquee items={ticker} />
       </div>
     </section>

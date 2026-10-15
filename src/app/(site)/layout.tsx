@@ -1,4 +1,3 @@
-import { Backdrop } from "@/components/site/backdrop";
 import { Footer } from "@/components/site/footer";
 import { Header } from "@/components/site/header";
 import { PreviewBanner } from "@/components/site/preview-banner";
@@ -19,7 +18,6 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
     <MotionProvider>
       <SoundProvider musicUrl={settings.music_url} title={settings.music_title}>
         <div className="site-root relative isolate min-h-dvh">
-          <Backdrop />
           <CursorGlow />
           <Header
             siteName={name}
