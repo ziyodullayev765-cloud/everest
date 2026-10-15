@@ -127,7 +127,9 @@ function Blob({ accent, animate, lowPower }: Pick<HeroSceneProps, "accent" | "an
     if (mesh.current && animate) mesh.current.rotation.z += d * 0.08;
   });
 
-  const detail = lowPower ? 40 : 96;
+  // The surface is displaced per vertex in the shader; 36 subdivisions keep it
+  // smooth while staying light enough for laptops and phones.
+  const detail = lowPower ? 18 : 36;
 
   return (
     <group ref={group} scale={scale}>
@@ -172,7 +174,7 @@ function Satellites({ animate }: { animate: boolean }) {
 }
 
 export default function HeroScene({ accent, particles, animate, active, lowPower }: HeroSceneProps) {
-  const [dpr, setDpr] = useState<number>(lowPower ? 1 : 1.5);
+  const [dpr, setDpr] = useState<number>(lowPower ? 1 : 1.25);
 
   return (
     <Canvas
@@ -183,7 +185,7 @@ export default function HeroScene({ accent, particles, animate, active, lowPower
       style={{ background: "transparent" }}
       aria-hidden
     >
-      <PerformanceMonitor onDecline={() => setDpr(1)} onIncline={() => setDpr(lowPower ? 1 : 1.75)} />
+      <PerformanceMonitor onDecline={() => setDpr(1)} onIncline={() => setDpr(lowPower ? 1 : 1.5)} />
       <ambientLight intensity={0.6} />
       <directionalLight position={[3, 4, 5]} intensity={2} />
       <Blob accent={accent} animate={animate} lowPower={lowPower} />
@@ -198,7 +200,7 @@ export default function HeroScene({ accent, particles, animate, active, lowPower
           color="#ffffff"
         />
       )}
-      <Environment resolution={lowPower ? 64 : 128} frames={1}>
+      <Environment resolution={64} frames={1}>
         <Lightformer form="rect" intensity={3} position={[0, 4, -2]} scale={[8, 1.4, 1]} color="#ffffff" />
         <Lightformer form="ring" intensity={4} position={[4, 1, 2]} scale={2.4} color={accent} />
         <Lightformer

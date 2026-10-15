@@ -289,7 +289,7 @@ Two pieces of artwork were generated with Higgsfield (Soul Cinema model) for thi
 | File                             | Used for                                                                                  |
 | -------------------------------- | ----------------------------------------------------------------------------------------- |
 | `public/brand/og-background.jpg` | Background of the default social-sharing card served at `/og` (name + title drawn on top) |
-| `public/brand/ambient.jpg`       | Emerald aurora behind the home-page “Keling, birga ishlaymiz” section                     |
+| `public/brand/ambient.jpg`       | Texture blended into the home-page “Keling, gaplashamiz” colour block                    |
 
 Download/optimise them with `npm run brand:fetch` (source URLs are in `scripts/fetch-brand-assets.mjs`), then commit
 the two JPGs. Both are optional: without them `/og` uses a gradient and the section uses its CSS glow. The default

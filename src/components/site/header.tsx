@@ -100,7 +100,7 @@ export function Header({ siteName, logoUrl, nav, resumeUrl }: Props) {
           <div
             className={cn(
               "ease-out-expo flex h-14 items-center justify-between gap-4 rounded-full pr-2 pl-2 transition-all duration-500 sm:pl-3",
-              scrolled ? "glass bg-bg/75 shadow-[0_8px_40px_-12px_rgba(0,0,0,0.8)]" : "border border-transparent",
+              scrolled ? "glass bg-bg/90 shadow-[0_8px_40px_-12px_rgba(0,0,0,0.8)]" : "border border-transparent",
             )}
           >
             <Link

@@ -16,12 +16,9 @@ import { getAchievements, getProfile, getProjects, getSettings, getSkills, getSt
 import { isPlaceholder, ownerName } from "@/lib/defaults";
 import { unique } from "@/lib/utils";
 
-const CARD_GRADIENTS = [
-  "from-[var(--accent)]/30 to-transparent",
-  "from-[var(--c-pink)]/30 to-transparent",
-  "from-[var(--c-cyan)]/30 to-transparent",
-  "from-[var(--c-amber)]/30 to-transparent",
-];
+/** Bright solid blocks for the stat cards (black type on colour). */
+const STAT_COLORS = ["var(--c-lime)", "var(--c-pink)", "var(--c-cyan)", "var(--c-amber)", "var(--accent)"];
+const STAT_TILT = ["hover:-rotate-2", "hover:rotate-2", "hover:-rotate-1", "hover:rotate-1"];
 
 export default async function HomePage() {
   const [settings, profile, projects, achievements, skills, stats] = await Promise.all([
@@ -102,11 +99,14 @@ export default async function HomePage() {
             {stats.map((s, i) => (
               <Reveal key={s.id} delay={i * 0.08}>
                 <div
-                  className={`border-rainbow group relative h-full overflow-hidden rounded-[1.75rem] bg-gradient-to-br ${CARD_GRADIENTS[i % CARD_GRADIENTS.length]} p-6 ring-1 ring-white/10 transition-transform duration-500 hover:-translate-y-1.5 sm:p-8`}
+                  className={`relative flex h-full min-h-44 flex-col justify-between overflow-hidden rounded-[1.75rem] p-6 text-black transition-transform duration-500 ease-out hover:-translate-y-2 hover:scale-[1.03] sm:min-h-56 sm:p-8 ${STAT_TILT[i % STAT_TILT.length]}`}
+                  style={{ background: STAT_COLORS[i % STAT_COLORS.length] }}
                 >
-                  <CountUp value={s.value} className="font-display block text-[clamp(2.4rem,6vw,4.5rem)] leading-none" />
-                  <p className="mt-4 text-sm text-white/80 sm:text-base">{s.label}</p>
-                  {s.description && <p className="mt-1 text-xs text-white/50">{s.description}</p>}
+                  <CountUp value={s.value} className="font-display block text-[clamp(2.6rem,6vw,5rem)] leading-none" />
+                  <div>
+                    <p className="mt-4 text-sm font-semibold sm:text-base">{s.label}</p>
+                    {s.description && <p className="mt-1 text-xs text-black/60">{s.description}</p>}
+                  </div>
                 </div>
               </Reveal>
             ))}
@@ -157,12 +157,16 @@ export default async function HomePage() {
       )}
 
       {skills.length > 0 && (
-        <section className="mt-28 sm:mt-40" aria-label={copy.sections.skills}>
-          <div className="container-x">
+        <section
+          className="mx-2 mt-28 overflow-hidden rounded-[2.5rem] py-16 text-black sm:mx-4 sm:mt-40 sm:py-24"
+          style={{ background: "var(--accent)" }}
+          aria-label={copy.sections.skills}
+        >
+          <div className="container-x [&_.text-rainbow]:!bg-none [&_.text-rainbow]:!text-black [&_h2]:text-black [&_p]:text-black/70">
             <SectionHeading eyebrow={copy.sections.skills} title="Men nima qila olaman">
               <Link
                 href="/skills"
-                className="group inline-flex items-center gap-2 self-start rounded-full px-5 py-3 ring-1 ring-white/20 transition hover:bg-white hover:text-black md:self-auto"
+                className="group inline-flex items-center gap-2 self-start rounded-full bg-black px-5 py-3 text-white transition hover:scale-105 md:self-auto"
               >
                 {copy.sections.allSkills}
                 <ArrowUpRight className="size-4 transition-transform group-hover:rotate-45" aria-hidden />
@@ -170,8 +174,8 @@ export default async function HomePage() {
             </SectionHeading>
           </div>
           <div className="mt-10 space-y-2">
-            <Marquee items={skills.slice(0, 10).map((s) => s.name)} duration={32} />
-            {skills.length > 3 && <Marquee items={skills.slice(3, 14).map((s) => s.name)} duration={38} reverse />}
+            <Marquee items={skills.slice(0, 10).map((s) => s.name)} duration={32} tone="dark" />
+            {skills.length > 3 && <Marquee items={skills.slice(3, 14).map((s) => s.name)} duration={38} reverse tone="dark" />}
           </div>
         </section>
       )}
@@ -179,37 +183,29 @@ export default async function HomePage() {
       {/* Giant contact CTA */}
       <section className="container-x mt-28 sm:mt-44">
         <Reveal>
-          <div className="relative overflow-hidden rounded-[2.5rem] px-6 py-20 text-center ring-1 ring-white/10 sm:px-12 sm:py-28">
-            {ambient ? (
+          <div
+            className="relative overflow-hidden rounded-[2.5rem] px-6 py-20 text-center text-black sm:px-12 sm:py-28"
+            style={{ background: "linear-gradient(120deg, var(--c-amber), var(--c-pink) 50%, var(--accent))" }}
+          >
+            {ambient && (
               <Image
                 src={ambient}
                 alt=""
                 fill
                 sizes="(max-width: 1280px) 100vw, 1280px"
-                className="pointer-events-none object-cover object-bottom opacity-70"
+                className="pointer-events-none object-cover object-bottom opacity-25 mix-blend-multiply"
               />
-            ) : (
-              <div aria-hidden className="pointer-events-none absolute inset-0">
-                <div
-                  className="animate-aurora-a absolute -top-1/2 left-0 size-[120%] rounded-full opacity-40 blur-[100px]"
-                  style={{ background: "radial-gradient(circle, var(--accent), transparent 60%)" }}
-                />
-                <div
-                  className="animate-aurora-b absolute right-0 -bottom-1/2 size-[100%] rounded-full opacity-30 blur-[100px]"
-                  style={{ background: "radial-gradient(circle, var(--c-pink), transparent 60%)" }}
-                />
-              </div>
             )}
-            <p className="relative font-mono text-xs tracking-[0.3em] text-white/60 uppercase">{copy.sections.contactLead}</p>
+            <p className="relative font-mono text-xs tracking-[0.3em] text-black/70 uppercase">{copy.sections.contactLead}</p>
             <h2 className="font-display relative mx-auto mt-6 max-w-5xl text-[clamp(2.6rem,9vw,8rem)] leading-[0.9] tracking-[-0.04em]">
-              Keling, <span className="text-rainbow">gaplashamiz</span>
+              Keling, <span className="italic">gaplashamiz</span>
             </h2>
             <div className="relative mt-12 flex flex-col items-center justify-center gap-4 sm:flex-row">
               <Magnetic strength={0.5}>
                 <Link
                   href="/contact"
-                  data-cursor="Yozish"
-                  className="grid size-40 place-items-center rounded-full bg-white text-center text-base font-semibold text-black shadow-[0_20px_60px_-15px_rgba(255,255,255,0.6)] transition-transform hover:scale-110 sm:size-48 sm:text-lg"
+
+                  className="grid size-40 place-items-center rounded-full bg-black text-center text-base font-semibold text-white shadow-[0_20px_60px_-15px_rgba(0,0,0,0.6)] transition-transform hover:scale-110 sm:size-48 sm:text-lg"
                 >
                   <span className="px-4">{settings.cta_secondary_label}</span>
                 </Link>
@@ -217,7 +213,7 @@ export default async function HomePage() {
               {settings.contact_email && (
                 <a
                   href={`mailto:${settings.contact_email}`}
-                  className="text-lg text-white/80 underline decoration-white/30 underline-offset-8 transition hover:text-white hover:decoration-white"
+                  className="text-lg font-medium text-black underline decoration-black/30 underline-offset-8 transition hover:decoration-black"
                 >
                   {settings.contact_email}
                 </a>
