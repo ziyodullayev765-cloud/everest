@@ -1,0 +1,237 @@
+@import "tailwindcss";
+
+/*
+ * Design tokens. The accent colour is overridable at runtime from
+ * Admin → Settings → Appearance (written to --accent on <html>).
+ */
+:root {
+  --accent: #10b981;
+  --bg: #050506;
+  --bg-elevated: #0b0c0e;
+  --surface: rgba(255, 255, 255, 0.035);
+  --surface-strong: rgba(255, 255, 255, 0.06);
+  --border: rgba(255, 255, 255, 0.08);
+  --border-strong: rgba(255, 255, 255, 0.14);
+  --fg: #f5f5f4;
+  --fg-muted: #a1a1aa;
+  --fg-subtle: #8b8b94;
+  color-scheme: dark;
+}
+
+@theme inline {
+  --color-accent: var(--accent);
+  --color-bg: var(--bg);
+  --color-bg-elevated: var(--bg-elevated);
+  --color-surface: var(--surface);
+  --color-surface-strong: var(--surface-strong);
+  --color-line: var(--border);
+  --color-line-strong: var(--border-strong);
+  --color-fg: var(--fg);
+  --color-muted: var(--fg-muted);
+  --color-subtle: var(--fg-subtle);
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@layer base {
+  html {
+    background: var(--bg);
+    color: var(--fg);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    scroll-behavior: smooth;
+  }
+  body {
+    background: var(--bg);
+    min-height: 100dvh;
+    font-feature-settings: "ss01", "cv11";
+  }
+  ::selection {
+    background: color-mix(in oklab, var(--accent) 35%, transparent);
+    color: #fff;
+  }
+  :focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+    border-radius: 6px;
+  }
+  button,
+  [role="button"] {
+    cursor: pointer;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
+
+@layer components {
+  .container-x {
+    width: 100%;
+    max-width: 80rem;
+    margin-inline: auto;
+    padding-inline: 1rem;
+  }
+  @media (min-width: 640px) {
+    .container-x {
+      padding-inline: 1.5rem;
+    }
+  }
+  @media (min-width: 1024px) {
+    .container-x {
+      padding-inline: 2rem;
+    }
+  }
+
+  .glass {
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.045), rgba(255, 255, 255, 0.015));
+    border: 1px solid var(--border);
+    backdrop-filter: blur(18px) saturate(140%);
+    -webkit-backdrop-filter: blur(18px) saturate(140%);
+  }
+
+  .hairline {
+    background: linear-gradient(90deg, transparent, var(--border-strong), transparent);
+    height: 1px;
+  }
+
+  .text-gradient {
+    background: linear-gradient(180deg, #ffffff 0%, #ffffff 40%, rgba(255, 255, 255, 0.55) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .accent-glow {
+    box-shadow:
+      0 0 0 1px color-mix(in oklab, var(--accent) 45%, transparent),
+      0 10px 40px -10px color-mix(in oklab, var(--accent) 55%, transparent);
+  }
+
+  .grid-backdrop {
+    background-image:
+      linear-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px);
+    background-size: 64px 64px;
+    mask-image: radial-gradient(ellipse 70% 60% at 50% 30%, #000 30%, transparent 75%);
+  }
+
+  .noise::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.035;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+  }
+
+  /* Rendered long-form text from the admin's markdown fields */
+  .prose-rich {
+    color: var(--fg-muted);
+    line-height: 1.75;
+    font-size: 1.0625rem;
+  }
+  .prose-rich > * + * {
+    margin-top: 1.1em;
+  }
+  .prose-rich h2,
+  .prose-rich h3 {
+    color: var(--fg);
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    margin-top: 2em;
+  }
+  .prose-rich h2 {
+    font-size: 1.4rem;
+  }
+  .prose-rich h3 {
+    font-size: 1.15rem;
+  }
+  .prose-rich strong {
+    color: var(--fg);
+    font-weight: 600;
+  }
+  .prose-rich a {
+    color: var(--accent);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    text-decoration-color: color-mix(in oklab, var(--accent) 40%, transparent);
+  }
+  .prose-rich ul {
+    list-style: none;
+    padding-left: 0;
+  }
+  .prose-rich ul li {
+    position: relative;
+    padding-left: 1.25em;
+  }
+  .prose-rich ul li + li {
+    margin-top: 0.4em;
+  }
+  .prose-rich ul li::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0.72em;
+    width: 0.4em;
+    height: 0.4em;
+    border-radius: 999px;
+    background: var(--accent);
+  }
+  .prose-rich ol {
+    list-style: decimal;
+    padding-left: 1.25em;
+  }
+  .prose-rich code {
+    font-family: var(--font-mono);
+    font-size: 0.9em;
+    background: var(--surface-strong);
+    padding: 0.1em 0.35em;
+    border-radius: 6px;
+    color: var(--fg);
+  }
+}
+
+@keyframes float-slow {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  50% {
+    transform: translate3d(0, -14px, 0) scale(1.02);
+  }
+}
+@keyframes spin-slow {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@keyframes shimmer {
+  from {
+    background-position: -200% 0;
+  }
+  to {
+    background-position: 200% 0;
+  }
+}
+.animate-float-slow {
+  animation: float-slow 9s ease-in-out infinite;
+}
+.animate-spin-slow {
+  animation: spin-slow 40s linear infinite;
+}
+.skeleton {
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.03));
+  background-size: 200% 100%;
+  animation: shimmer 1.6s linear infinite;
+}
