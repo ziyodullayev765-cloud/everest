@@ -1,12 +1,30 @@
 import { expect, test } from "@playwright/test";
 
+test.describe("intro preloader", () => {
+  test("first visit shows the intro and entering without sound reveals the site", async ({ page }) => {
+    await page.goto("/");
+    const intro = page.getByRole("dialog", { name: "Saytga kirish" });
+    await expect(intro).toBeVisible();
+    await intro.getByRole("button", { name: "Ovozsiz" }).click();
+    await expect(intro).toBeHidden();
+    await page.reload();
+    await expect(page.getByRole("dialog", { name: "Saytga kirish" })).toHaveCount(0);
+  });
+});
+
 test.describe("public site", () => {
+  test.beforeEach(async ({ page }) => {
+    await page.addInitScript(() => sessionStorage.setItem("portfolio-entered", "1"));
+  });
+
   test("home page renders hero, CTAs and navigation", async ({ page }) => {
     await page.goto("/");
-    await expect(page.getByRole("heading", { level: 1 })).toContainText("Shahruz");
+    // The name comes from the CMS profile (admin tests may rename it concurrently).
+    const h1 = page.getByRole("heading", { level: 1 });
+    await expect(h1).not.toBeEmpty();
     await expect(page.getByRole("link", { name: "Loyihalarimni ko’rish" })).toHaveAttribute("href", "/projects");
     await expect(page.getByRole("link", { name: "Men bilan bog’lanish" }).first()).toHaveAttribute("href", "/contact");
-    await expect(page).toHaveTitle(/Shahruz Ziyodullayev/);
+    await expect(page).toHaveTitle(/ — Portfolio$/);
   });
 
   test("all public pages respond and have a single h1", async ({ page }) => {

@@ -1,13 +1,20 @@
 @import "tailwindcss";
+@import "@fontsource-variable/unbounded";
+@import "lenis/dist/lenis.css";
 
 /*
  * Design tokens. The accent colour is overridable at runtime from
  * Admin → Settings → Appearance (written to --accent on <html>).
  */
 :root {
-  --accent: #10b981;
-  --bg: #050506;
-  --bg-elevated: #0b0c0e;
+  --accent: #8b5cf6;
+  /* Colourful companion palette used by gradients, the cursor trail and 3D */
+  --c-cyan: #22d3ee;
+  --c-pink: #f472b6;
+  --c-amber: #fbbf24;
+  --c-lime: #a3e635;
+  --bg: #07060b;
+  --bg-elevated: #0e0c15;
   --surface: rgba(255, 255, 255, 0.035);
   --surface-strong: rgba(255, 255, 255, 0.06);
   --border: rgba(255, 255, 255, 0.08);
@@ -31,6 +38,11 @@
   --color-subtle: var(--fg-subtle);
   --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+  --font-display: "Unbounded Variable", var(--font-geist-sans), ui-sans-serif, sans-serif;
+  --color-cyan: var(--c-cyan);
+  --color-pink: var(--c-pink);
+  --color-amber: var(--c-amber);
+  --color-lime: var(--c-lime);
   --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
@@ -234,4 +246,114 @@
   background: linear-gradient(90deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.03));
   background-size: 200% 100%;
   animation: shimmer 1.6s linear infinite;
+}
+
+/* ---------------------------------------------------------------------------
+ * v2 — colourful, playful layer
+ * ------------------------------------------------------------------------- */
+@utility text-rainbow {
+  background: linear-gradient(
+    100deg,
+    var(--accent) 0%,
+    var(--c-pink) 25%,
+    var(--c-amber) 45%,
+    var(--c-cyan) 70%,
+    var(--accent) 100%
+  );
+  background-size: 250% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: rainbow-shift 8s linear infinite;
+}
+@utility bg-rainbow {
+  background: linear-gradient(100deg, var(--accent), var(--c-pink), var(--c-amber), var(--c-cyan), var(--accent));
+  background-size: 250% 100%;
+  animation: rainbow-shift 8s linear infinite;
+}
+.border-rainbow {
+  position: relative;
+}
+.border-rainbow::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  padding: 1px;
+  border-radius: inherit;
+  background: linear-gradient(120deg, var(--accent), var(--c-pink), var(--c-cyan), var(--accent));
+  background-size: 250% 100%;
+  animation: rainbow-shift 6s linear infinite;
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.4s;
+}
+.border-rainbow:hover::before,
+.border-rainbow:focus-within::before {
+  opacity: 1;
+}
+@keyframes rainbow-shift {
+  to {
+    background-position: 250% 0;
+  }
+}
+@keyframes marquee {
+  to {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+@keyframes aurora-a {
+  0%,
+  100% {
+    transform: translate3d(-10%, -6%, 0) scale(1);
+  }
+  50% {
+    transform: translate3d(12%, 8%, 0) scale(1.15);
+  }
+}
+@keyframes aurora-b {
+  0%,
+  100% {
+    transform: translate3d(8%, 10%, 0) scale(1.1);
+  }
+  50% {
+    transform: translate3d(-14%, -4%, 0) scale(0.95);
+  }
+}
+@keyframes eq {
+  0%,
+  100% {
+    transform: scaleY(0.25);
+  }
+  50% {
+    transform: scaleY(1);
+  }
+}
+.animate-marquee {
+  animation: marquee var(--marquee-duration, 30s) linear infinite;
+}
+.animate-aurora-a {
+  animation: aurora-a 22s ease-in-out infinite;
+}
+.animate-aurora-b {
+  animation: aurora-b 28s ease-in-out infinite;
+}
+.font-display {
+  font-family: var(--font-display);
+  font-variation-settings: "wght" 700;
+}
+
+/* Custom cursor: hide the native one only while the custom cursor is active. */
+html.has-custom-cursor,
+html.has-custom-cursor * {
+  cursor: none !important;
+}
+html.has-custom-cursor input,
+html.has-custom-cursor textarea,
+html.has-custom-cursor [contenteditable="true"] {
+  cursor: text !important;
 }

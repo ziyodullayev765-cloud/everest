@@ -52,7 +52,7 @@ export default async function AboutPage() {
             {profile.avatar_url ? (
               <SmartImage
                 src={profile.avatar_url}
-                alt={profile.avatar_alt || profile.full_name}
+                alt={profile.avatar_alt || `${profile.full_name} portreti`}
                 fill
                 priority
                 sizes="(max-width: 1024px) 100vw, 420px"

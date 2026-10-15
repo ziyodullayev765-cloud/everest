@@ -13,7 +13,7 @@ const uuid = z.string().uuid();
 /** Every column that may hold a media URL. Used for usage checks, replacement and cleanup. */
 const URL_COLUMNS: { table: string; columns: string[] }[] = [
   { table: "profiles", columns: ["avatar_url", "resume_url"] },
-  { table: "site_settings", columns: ["logo_url", "favicon_url", "og_image_url"] },
+  { table: "site_settings", columns: ["logo_url", "favicon_url", "og_image_url", "music_url"] },
   { table: "projects", columns: ["thumbnail_url"] },
   { table: "achievements", columns: ["image_url", "certificate_url"] },
   { table: "education", columns: ["image_url"] },
@@ -67,7 +67,7 @@ async function rewriteReferences(db: SupabaseClient, from: string, to: string | 
   }
 }
 
-export async function listMedia(kind?: "image" | "document"): Promise<ActionResult<Media[]>> {
+export async function listMedia(kind?: "image" | "document" | "audio"): Promise<ActionResult<Media[]>> {
   try {
     const { supabase } = await requireAdmin();
     let q = supabase.from("media").select("*").order("created_at", { ascending: false }).limit(500);

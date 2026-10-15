@@ -9,11 +9,11 @@
 insert into public.profiles (id, full_name, headline, short_intro, bio, avatar_alt)
 values (
   1,
-  'Shahruz Ziyodullayev',
+  'Behruz Ziyodullayev',
   '[Kasbiy unvoningiz — admin paneldan tahrirlang]',
   '[Qisqa tanishtiruv: o‘zingiz haqingizda 1–2 gap. Admin → Profil bo‘limidan tahrirlang.]',
   '[Biografiya: admin paneldan to‘ldiring.]',
-  'Shahruz Ziyodullayev portreti'
+  ''
 )
 on conflict (id) do nothing;
 
@@ -23,13 +23,13 @@ insert into public.site_settings (
 )
 values (
   1,
-  'Shahruz Ziyodullayev',
+  'Behruz Ziyodullayev',
   'Portfolio',
-  'Shahruz Ziyodullayev',
+  '',
   '[Hero tavsifi: nima bilan shug‘ullanishingizni qisqacha yozing. Admin → Sozlamalar → Hero.]',
-  'Shahruz Ziyodullayev — Portfolio',
-  'Shahruz Ziyodullayevning shaxsiy portfoliosi: loyihalar, yutuqlar va tajriba.',
-  '© Shahruz Ziyodullayev. Barcha huquqlar himoyalangan.',
+  '',
+  '',
+  '',
   '[
     {"label":"Men haqimda","href":"/about","visible":true},
     {"label":"Loyihalar","href":"/projects","visible":true},

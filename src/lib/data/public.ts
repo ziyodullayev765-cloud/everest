@@ -94,6 +94,8 @@ export const getSettings = cache(async (): Promise<SiteSettings> => {
     s.nav_items = sanitizeLinks(s.nav_items);
     s.footer_links = sanitizeLinks(s.footer_links);
     if (!/^#[0-9a-f]{6}$/i.test(s.accent_color)) s.accent_color = DEFAULT_SETTINGS.accent_color;
+    if (!isSafeHref(s.music_url)) s.music_url = null;
+    s.music_title ??= "";
     return s;
   } catch (err) {
     throw loadError("site_settings", err);

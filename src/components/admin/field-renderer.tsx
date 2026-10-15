@@ -2,7 +2,7 @@
 
 import { useEffect, useState, type ReactNode } from "react";
 import { Controller, useFormContext, useWatch } from "react-hook-form";
-import { ArrowDown, ArrowUp, FileText, ImagePlus, Link2, Plus, Trash2, Wand2, X } from "lucide-react";
+import { ArrowDown, ArrowUp, FileText, ImagePlus, Link2, Music, Plus, Trash2, Wand2, X } from "lucide-react";
 import { MediaPicker } from "./media-picker";
 import { Button, Input, Select, Switch, Textarea, btnClass, inputClass } from "./ui";
 import type { FieldDef } from "@/lib/cms/fields";
@@ -130,7 +130,7 @@ function MediaField({
 }: {
   value: string;
   onChange: (v: string) => void;
-  kind: "image" | "document" | "any";
+  kind: "image" | "document" | "audio" | "any";
   id: string;
   invalid?: boolean;
 }) {
@@ -145,6 +145,8 @@ function MediaField({
             isImage ? (
               // eslint-disable-next-line @next/next/no-img-element
               <img src={value} alt="" className="size-full object-cover" />
+            ) : kind === "audio" || /\.(mp3|m4a|ogg|wav|aac|webm)(\?|$)/i.test(value) ? (
+              <Music className="text-subtle size-7" aria-hidden />
             ) : (
               <FileText className="text-subtle size-7" aria-hidden />
             )

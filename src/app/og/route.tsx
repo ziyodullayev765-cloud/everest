@@ -1,7 +1,7 @@
 import { ImageResponse } from "next/og";
 import { getProfile, getSettings } from "@/lib/data/public";
 import { brandAssetDataUrl } from "@/lib/brand-assets";
-import { isPlaceholder } from "@/lib/defaults";
+import { isPlaceholder, ownerName } from "@/lib/defaults";
 
 export const runtime = "nodejs";
 export const revalidate = 3600;
@@ -65,7 +65,7 @@ export async function GET() {
           PORTFOLIO
         </div>
         <div style={{ marginTop: 26, fontSize: 78, fontWeight: 700, lineHeight: 1.02, letterSpacing: -3 }}>
-          {profile.full_name}
+          {ownerName(profile, settings)}
         </div>
         {headline && <div style={{ marginTop: 22, fontSize: 32, color: "#a1a1aa" }}>{headline}</div>}
       </div>

@@ -19,7 +19,7 @@ export function MediaPicker({
   open: boolean;
   onClose: () => void;
   onSelect: (items: Media[]) => void;
-  kind?: "image" | "document";
+  kind?: "image" | "document" | "audio";
   multiple?: boolean;
 }) {
   const [tab, setTab] = useState<"library" | "upload">("library");
@@ -54,7 +54,15 @@ export function MediaPicker({
     <Modal
       open={open}
       onClose={onClose}
-      title={kind === "document" ? "Choose a document" : kind === "image" ? "Choose an image" : "Choose a file"}
+      title={
+        kind === "document"
+          ? "Choose a document"
+          : kind === "image"
+            ? "Choose an image"
+            : kind === "audio"
+              ? "Choose audio"
+              : "Choose a file"
+      }
       wide
     >
       <div className="border-line mb-4 flex gap-1 rounded-xl border p-1 text-sm" role="tablist">

@@ -18,25 +18,37 @@ export function SectionHeading({
 }) {
   return (
     <Reveal className={cn("flex flex-col gap-6 md:flex-row md:items-end md:justify-between", className)}>
-      <div className="max-w-2xl">
+      <div className="max-w-4xl">
         {eyebrow && (
-          <p className="text-accent mb-4 inline-flex items-center gap-2 font-mono text-xs tracking-[0.22em] uppercase">
-            <span className="bg-accent h-px w-6" aria-hidden />
+          <p className="mb-5 inline-flex items-center gap-2 rounded-full bg-white/[0.05] px-3 py-1 font-mono text-xs tracking-[0.2em] text-white/70 uppercase ring-1 ring-white/10">
+            <span className="bg-rainbow size-1.5 rounded-full" aria-hidden />
             {eyebrow}
           </p>
         )}
         <Tag
           className={cn(
-            "text-gradient font-semibold tracking-[-0.035em]",
-            Tag === "h1" ? "text-4xl leading-[1.02] sm:text-6xl lg:text-7xl" : "text-3xl leading-[1.05] sm:text-5xl",
+            "font-display tracking-[-0.03em]",
+            Tag === "h1" ? "text-[clamp(2.6rem,9vw,7.5rem)] leading-[0.92]" : "text-[clamp(2.1rem,6vw,4.6rem)] leading-[0.95]",
           )}
         >
-          {title}
+          <TitleWithAccent title={title} />
         </Tag>
-        {lead && <p className="text-muted mt-5 max-w-xl text-base leading-relaxed sm:text-lg">{lead}</p>}
+        {lead && <p className="mt-6 max-w-xl text-base leading-relaxed text-white/60 sm:text-lg">{lead}</p>}
       </div>
       {children}
     </Reveal>
+  );
+}
+
+/** Last word of a heading gets the animated rainbow treatment. */
+function TitleWithAccent({ title }: { title: string }) {
+  const words = title.trim().split(/\s+/);
+  if (words.length < 2) return <span className="text-rainbow">{title}</span>;
+  const last = words.pop();
+  return (
+    <>
+      {words.join(" ")} <span className="text-rainbow">{last}</span>
+    </>
   );
 }
 
@@ -50,7 +62,7 @@ export function PageHeader(props: { eyebrow?: string; title: string; lead?: stri
 
 export function EmptyState({ children }: { children: React.ReactNode }) {
   return (
-    <div className="glass text-muted flex min-h-48 items-center justify-center rounded-3xl p-10 text-center">
+    <div className="glass flex min-h-48 items-center justify-center rounded-3xl border-dashed p-10 text-center text-white/60">
       <p>{children}</p>
     </div>
   );
