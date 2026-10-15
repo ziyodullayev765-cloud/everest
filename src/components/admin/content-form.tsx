@@ -11,9 +11,9 @@ import { deleteResource, saveResource, saveSingleton } from "@/app/admin/actions
 import { FieldRenderer } from "./field-renderer";
 import { Button, ConfirmDialog, StatusBadge, btnClass } from "./ui";
 import { buildSchema, defaultValues, toFormValues } from "@/lib/cms/fields";
-import { getResource, PROFILE_CONFIG, resourceFields, SETTINGS_CONFIG, singletonFields } from "@/lib/cms/resources";
+import { getResource, getSingleton, resourceFields, singletonFields, type SingletonKey } from "@/lib/cms/resources";
 
-type Mode = { type: "resource"; key: string; id: string | null } | { type: "singleton"; key: "profile" | "settings" };
+type Mode = { type: "resource"; key: string; id: string | null } | { type: "singleton"; key: SingletonKey };
 
 export function ContentForm({ mode, initial }: { mode: Mode; initial: Record<string, unknown> | null }) {
   const router = useRouter();
@@ -22,7 +22,7 @@ export function ContentForm({ mode, initial }: { mode: Mode; initial: Record<str
   const [confirmOpen, setConfirmOpen] = useState(false);
 
   const resource = mode.type === "resource" ? getResource(mode.key) : null;
-  const singleton = mode.type === "singleton" ? (mode.key === "profile" ? PROFILE_CONFIG : SETTINGS_CONFIG) : null;
+  const singleton = mode.type === "singleton" ? getSingleton(mode.key) : null;
   const sections = resource?.sections ?? singleton?.sections ?? [];
   const fields = useMemo(
     () => (resource ? resourceFields(resource) : singleton ? singletonFields(singleton) : []),

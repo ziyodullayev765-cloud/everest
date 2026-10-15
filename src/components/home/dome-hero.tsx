@@ -53,7 +53,7 @@ export function DomeHero({ tiles, animate }: { tiles: DomeTileData[]; animate: b
         paused={gone || !animate}
         offsetY="5rem"
         mobileOffsetY="10rem"
-        labels={{ dome: copy.homePage.domeLabel, close: copy.homePage.close }}
+        labels={{ dome: copy.homePage.domeLabel }}
       />
       <div className="dome-hero-fade" aria-hidden />
     </div>

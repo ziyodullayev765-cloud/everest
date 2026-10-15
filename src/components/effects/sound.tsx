@@ -5,8 +5,8 @@ import { cn } from "@/lib/utils";
 import { useCopy } from "@/components/i18n/provider";
 
 /**
- * Background music uploaded in Admin → Settings → Background music.
- * Nothing plays until the visitor presses the header toggle (browsers block
+ * Background music uploaded in Admin → Music.
+ * Nothing plays until the visitor presses the music button (browsers block
  * autoplay with sound anyway); the choice is remembered for later visits and
  * resumed on the visitor's first interaction. Without a track the toggle is
  * not shown at all.
@@ -119,7 +119,11 @@ export function SoundProvider({ musicUrl, title, children }: { musicUrl: string 
   return <SoundContext.Provider value={api}>{children}</SoundContext.Provider>;
 }
 
-export function SoundToggle({ className }: { className?: string }) {
+/**
+ * The music player sits on its own in the bottom-left corner, apart from the
+ * menu: equaliser bars plus the track name. Hidden until a track is uploaded.
+ */
+export function MusicDock() {
   const sound = useSound();
   const copy = useCopy();
   if (!sound?.available) return null;
@@ -131,17 +135,18 @@ export function SoundToggle({ className }: { className?: string }) {
       aria-pressed={sound.on}
       aria-label={sound.title ? `${label}: ${sound.title}` : label}
       title={sound.title || label}
-      className={cn("ed-icon-btn group", className)}
+      className="music-dock"
     >
       <span aria-hidden className="flex h-4 items-end gap-[3px]">
         {[0, 1, 2, 3].map((i) => (
           <span
             key={i}
-            className={cn("bg-rainbow w-[3px] origin-bottom rounded-full", sound.on ? "h-4" : "h-1.5")}
+            className={cn("w-[3px] origin-bottom rounded-full bg-[var(--fg)]", sound.on ? "h-4" : "h-1.5")}
             style={sound.on ? { animation: `eq ${0.7 + i * 0.17}s ease-in-out ${i * 0.1}s infinite` } : undefined}
           />
         ))}
       </span>
+      <span className="max-w-[9rem] truncate sm:max-w-[14rem]">{sound.title || label}</span>
     </button>
   );
 }

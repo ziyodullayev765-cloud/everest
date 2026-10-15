@@ -47,6 +47,10 @@ export const viewport: Viewport = {
   colorScheme: "dark",
   width: "device-width",
   initialScale: 1,
+  // No zooming the page (the owner's choice): typing into a field no longer
+  // zooms in on phones, and photos can't be pinched up to full size.
+  maximumScale: 1,
+  userScalable: false,
 };
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {

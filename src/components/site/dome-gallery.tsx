@@ -1,9 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { createPortal } from "react-dom";
-import { AnimatePresence, motion } from "motion/react";
-import { X } from "lucide-react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { env } from "@/lib/env";
 
 export interface DomeTileData {
@@ -138,8 +135,8 @@ function layout(pool: DomeTileData[], segments: number): Slot[] {
 
 /**
  * A sphere of photo tiles (CSS 3D, no WebGL). Images are greyscale until
- * hovered, the sphere spins slowly by itself, can be dragged (with inertia)
- * and a click opens the photo large. It stops animating when off screen,
+ * hovered, the sphere spins slowly by itself and can be dragged (with
+ * inertia). View-only: photos don't open or enlarge on click. It stops animating when off screen,
  * when the tab is hidden or when `paused`, and is still under reduced motion.
  */
 export function DomeGallery({
@@ -152,7 +149,7 @@ export function DomeGallery({
   mobileOffsetY = "9rem",
   paused = false,
   autoSpin = true,
-  labels = { dome: "Photo dome — drag to rotate, click a photo to enlarge", close: "Close" },
+  labels = { dome: "Photo dome — drag to rotate" },
 }: {
   tiles: DomeTileData[];
   segments?: number;
@@ -166,17 +163,12 @@ export function DomeGallery({
   mobileOffsetY?: string;
   paused?: boolean;
   autoSpin?: boolean;
-  labels?: { dome: string; close: string };
+  labels?: { dome: string };
 }) {
   const rootRef = useRef<HTMLDivElement>(null);
   const sphereRef = useRef<HTMLDivElement>(null);
   const pausedRef = useRef(paused);
   pausedRef.current = paused;
-  const [open, setOpen] = useState<DomeTileData | null>(null);
-  const openRef = useRef(false);
-  openRef.current = !!open;
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => setMounted(true), []);
 
   const slots = useMemo(() => layout(tiles, segments), [tiles, segments]);
   const unit = 360 / segments / 2;
@@ -247,7 +239,7 @@ export function DomeGallery({
           const k = Math.pow(0.94, dt / 16);
           inertia = { x: inertia.x * k, y: inertia.y * k };
           changed = true;
-        } else if (autoSpin && !reduce && !openRef.current) {
+        } else if (autoSpin && !reduce) {
           rot.y += (AUTO_SPIN_DEG_PER_S * dt) / 1000;
           changed = true;
         }
@@ -298,20 +290,10 @@ export function DomeGallery({
       inertia = { x: Math.max(-0.5, Math.min(0.5, inertia.x)), y: Math.max(-0.5, Math.min(0.5, inertia.y)) };
       wake();
     };
-    // A tap (no drag) on a photo opens it.
-    const onClick = (e: MouseEvent) => {
-      if (moved) return;
-      const el = (e.target as HTMLElement).closest<HTMLElement>("[data-tile]");
-      const idx = el ? Number(el.dataset.tile) : NaN;
-      const tile = Number.isFinite(idx) ? slotsRef.current[idx]?.tile : undefined;
-      if (tile?.src) setOpen(tile);
-    };
-
     root.addEventListener("pointerdown", onDown);
     window.addEventListener("pointermove", onMove, { passive: true });
     window.addEventListener("pointerup", onUp);
     window.addEventListener("pointercancel", onUp);
-    root.addEventListener("click", onClick);
     const io = new IntersectionObserver(([entry]) => {
       visible = entry?.isIntersecting ?? true;
       wake();
@@ -332,20 +314,8 @@ export function DomeGallery({
       window.removeEventListener("pointermove", onMove);
       window.removeEventListener("pointerup", onUp);
       window.removeEventListener("pointercancel", onUp);
-      root.removeEventListener("click", onClick);
     };
   }, [fit, mobileFit, segments, maxVerticalDeg, offsetY, mobileOffsetY, autoSpin]);
-
-  const slotsRef = useRef(slots);
-  slotsRef.current = slots;
-
-  const close = useCallback(() => setOpen(null), []);
-  useEffect(() => {
-    if (!open) return;
-    const onKey = (e: KeyboardEvent) => e.key === "Escape" && close();
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [open, close]);
 
   return (
     <>
@@ -381,56 +351,6 @@ export function DomeGallery({
         <div className="dome-edge top-0 rotate-180" />
         <div className="dome-edge bottom-0" />
       </div>
-
-      {mounted &&
-        createPortal(
-          <AnimatePresence>
-            {open?.src && (
-              <motion.div
-                key="dome-viewer"
-                role="dialog"
-                aria-modal="true"
-                aria-label={open.alt || open.label || "Photo"}
-                className="fixed inset-0 z-[90] grid place-items-center bg-[rgba(var(--bg-rgb),0.88)] p-6"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.25 }}
-                onClick={close}
-              >
-                <motion.figure
-                  className="relative max-h-[85vh] max-w-[min(92vw,1100px)]"
-                  initial={{ scale: 0.86, y: 12 }}
-                  animate={{ scale: 1, y: 0 }}
-                  exit={{ scale: 0.9, opacity: 0 }}
-                  transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={thumb(open.src, 1200)}
-                    alt={open.alt}
-                    className="max-h-[80vh] w-auto rounded-[28px] object-contain shadow-[var(--shadow-hover)]"
-                  />
-                  {(open.label || open.alt) && (
-                    <figcaption className="mt-3 text-center text-sm text-[var(--fg-secondary)]">
-                      {open.label || open.alt}
-                    </figcaption>
-                  )}
-                  <button
-                    type="button"
-                    onClick={close}
-                    aria-label={labels.close}
-                    className="ed-icon-btn ed-glass absolute -top-3 -right-3"
-                  >
-                    <X className="size-4" aria-hidden />
-                  </button>
-                </motion.figure>
-              </motion.div>
-            )}
-          </AnimatePresence>,
-          document.body,
-        )}
     </>
   );
 }

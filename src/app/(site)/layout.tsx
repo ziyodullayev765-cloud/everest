@@ -2,6 +2,9 @@ import { Footer } from "@/components/site/footer";
 import { Header } from "@/components/site/header";
 import { PreviewBanner } from "@/components/site/preview-banner";
 import { CursorGlow } from "@/components/effects/cursor-glow";
+import { MusicDock } from "@/components/effects/sound";
+import { MediaGuard } from "@/components/effects/media-guard";
+import { SmoothScroll } from "@/components/effects/smooth-scroll";
 import { SoundProvider } from "@/components/effects/sound";
 import { MotionProvider } from "@/components/ui/motion-provider";
 import { getProfile, getSettings, getSocialLinks, isPreview } from "@/lib/data/public";
@@ -29,6 +32,9 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
         <SoundProvider musicUrl={settings.music_url} title={settings.music_title}>
           <div className="site-root relative isolate min-h-dvh">
             <CursorGlow />
+            <MusicDock />
+            <MediaGuard />
+            <SmoothScroll />
             <Header
               siteName={name}
               logoUrl={settings.logo_url}

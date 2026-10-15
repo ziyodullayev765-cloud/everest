@@ -6,7 +6,6 @@ import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { ArrowUpRight, Download, Menu, X } from "lucide-react";
 import { useCopy } from "@/components/i18n/provider";
-import { SoundToggle } from "@/components/effects/sound";
 import { ThemeToggle } from "@/components/effects/theme";
 import { LanguageSwitcher } from "@/components/i18n/language-switcher";
 import type { NavItem } from "@/lib/types";
@@ -100,7 +99,6 @@ export function Header({ siteName, logoUrl, availability, nav, resumeUrl }: Prop
     <>
       <LanguageSwitcher />
       <ThemeToggle />
-      <SoundToggle />
     </>
   );
 

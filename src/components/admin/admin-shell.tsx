@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import {
+  Music,
   Award,
   BarChart3,
   Briefcase,
@@ -44,6 +45,7 @@ const NAV = [
     group: "Library",
     items: [
       { href: "/admin/media", label: "Media", icon: Images },
+      { href: "/admin/music", label: "Music", icon: Music },
       { href: "/admin/messages", label: "Messages", icon: Inbox, badge: true },
     ],
   },
