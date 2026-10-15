@@ -17,7 +17,7 @@ export async function generateMetadata(): Promise<Metadata> {
     applicationName: s.site_name,
     authors: [{ name: s.site_name }],
     alternates: { canonical: "/" },
-    icons: s.favicon_url ? { icon: s.favicon_url } : undefined,
+    icons: s.favicon_url ? { icon: s.favicon_url } : { icon: "/brand-icon?size=64", apple: "/brand-icon?size=180" },
     openGraph: {
       type: "website",
       siteName: s.site_name,
@@ -25,13 +25,13 @@ export async function generateMetadata(): Promise<Metadata> {
       description: s.seo_description || undefined,
       url: "/",
       locale: "uz_UZ",
-      images: s.og_image_url ? [{ url: s.og_image_url, width: 1200, height: 630 }] : undefined,
+      images: [{ url: s.og_image_url || "/og", width: 1200, height: 630 }],
     },
     twitter: {
-      card: s.og_image_url ? "summary_large_image" : "summary",
+      card: "summary_large_image",
       title,
       description: s.seo_description || undefined,
-      images: s.og_image_url ? [s.og_image_url] : undefined,
+      images: [s.og_image_url || "/og"],
     },
   };
 }

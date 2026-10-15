@@ -35,7 +35,7 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
       title,
       description,
       url: `/projects/${p.slug}`,
-      images: p.thumbnail_url ? [{ url: p.thumbnail_url, alt: p.thumbnail_alt || p.title }] : undefined,
+      images: p.thumbnail_url ? [{ url: p.thumbnail_url, alt: p.thumbnail_alt || p.title }] : ["/og"],
     },
     twitter: { card: p.thumbnail_url ? "summary_large_image" : "summary", title, description },
   };

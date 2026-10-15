@@ -14,7 +14,8 @@
     "db:test": "psql \"$DATABASE_URL\" -v ON_ERROR_STOP=1 -f supabase/tests/rls_test.sql",
     "check": "npm run typecheck && npm run lint && npm test",
     "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "format:check": "prettier --check .",
+    "brand:fetch": "node scripts/fetch-brand-assets.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.9.1",

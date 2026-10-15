@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, ArrowUpRight } from "lucide-react";
 import { Hero } from "@/components/site/hero";
@@ -8,6 +9,7 @@ import { SectionHeading } from "@/components/site/section-heading";
 import { Reveal } from "@/components/ui/reveal";
 import { buttonClass } from "@/components/ui/button";
 import { copy } from "@/lib/copy";
+import { brandAssetUrl } from "@/lib/brand-assets";
 import { getAchievements, getProfile, getProjects, getSettings, getSkills, getStats } from "@/lib/data/public";
 
 export default async function HomePage() {
@@ -24,6 +26,7 @@ export default async function HomePage() {
   const highlightAchievements = (
     achievements.some((a) => a.featured) ? achievements.filter((a) => a.featured) : achievements
   ).slice(0, 4);
+  const ambient = brandAssetUrl("ambient.jpg");
   const highlightSkills = (skills.some((s) => s.featured) ? skills.filter((s) => s.featured) : skills).slice(0, 18);
 
   return (
@@ -113,6 +116,15 @@ export default async function HomePage() {
       <section className="container-x mt-28 sm:mt-40">
         <Reveal>
           <div className="border-line relative overflow-hidden rounded-[2.5rem] border bg-gradient-to-b from-white/[0.05] to-white/[0.01] px-6 py-16 text-center sm:px-12 sm:py-24">
+            {ambient && (
+              <Image
+                src={ambient}
+                alt=""
+                fill
+                sizes="(max-width: 1280px) 100vw, 1280px"
+                className="pointer-events-none object-cover object-bottom opacity-60"
+              />
+            )}
             <div
               aria-hidden
               className="pointer-events-none absolute top-0 left-1/2 h-72 w-[42rem] max-w-full -translate-x-1/2 -translate-y-1/2 rounded-full opacity-30 blur-[100px]"

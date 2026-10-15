@@ -23,8 +23,9 @@ navigation, footer, colours and the privacy policy — is edited from `/admin`, 
 6. [Deployment](#deployment)
 7. [Using the admin dashboard](#using-the-admin-dashboard)
 8. [Testing](#testing)
-9. [Maintenance](#maintenance)
-10. [Known limitations](#known-limitations)
+9. [Brand artwork (Higgsfield)](#brand-artwork-higgsfield)
+10. [Maintenance](#maintenance)
+11. [Known limitations](#known-limitations)
 
 ---
 
@@ -280,6 +281,20 @@ forwards `X-Forwarded-For` so rate limiting sees real client IPs.
 | End-to-end (19 tests)    | `npm run test:e2e`               | Against a running app. Public: pages, 404s, sitemap/robots, security headers, admin gate, form validation, mobile menu (focus/Escape), no horizontal overflow at 320 px. With `E2E_ADMIN_EMAIL/PASSWORD` (+ optional `E2E_USER_EMAIL/PASSWORD` for a non-admin): wrong-password and non-admin refusal, draft hidden → preview → publish → visible → unpublish → delete, validation errors, upload → gallery → delete (incl. storage cleanup), SVG rejection, settings reflected on the site, contact → inbox, sign-out. |
 
 ---
+
+## Brand artwork (Higgsfield)
+
+Two pieces of artwork were generated with Higgsfield (Soul Cinema model) for this site:
+
+| File                             | Used for                                                                                  |
+| -------------------------------- | ----------------------------------------------------------------------------------------- |
+| `public/brand/og-background.jpg` | Background of the default social-sharing card served at `/og` (name + title drawn on top) |
+| `public/brand/ambient.jpg`       | Emerald aurora behind the home-page “Keling, birga ishlaymiz” section                     |
+
+Download/optimise them with `npm run brand:fetch` (source URLs are in `scripts/fetch-brand-assets.mjs`), then commit
+the two JPGs. Both are optional: without them `/og` uses a gradient and the section uses its CSS glow. The default
+favicon/touch icon is an “SZ” monogram rendered by `/brand-icon`. A favicon or sharing image uploaded in
+_Admin → Settings_ always takes precedence over these defaults.
 
 ## Maintenance
 

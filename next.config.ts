@@ -34,6 +34,8 @@ const securityHeaders = [
 
 const nextConfig: NextConfig = {
   poweredByHeader: false,
+  // Generated brand artwork is read from disk at render time (OG image, ambient background).
+  outputFileTracingIncludes: { "/**": ["./public/brand/**/*"] },
   reactStrictMode: true,
   images: {
     formats: ["image/avif", "image/webp"],
