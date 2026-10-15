@@ -31,7 +31,7 @@ export function Hero({
       <div className="absolute inset-x-0 top-0 h-[48svh] min-h-[340px] sm:h-[62svh] sm:min-h-[380px]">
         <DomeGallery tiles={tiles} paused={!animateDome} />
       </div>
-      <div className="pointer-events-none relative flex flex-col items-center px-4 pt-[max(42svh,300px)] sm:pt-[max(56svh,350px)] text-center">
+      <div className="pointer-events-none relative flex flex-col items-center px-4 pt-[max(42svh,300px)] text-center sm:pt-[max(56svh,350px)]">
         <div className="pointer-events-auto max-w-4xl">
           <ScrambleText as="h1" text={name} className="ed-heading text-[clamp(2.4rem,7.2vw,5.5rem)] leading-[1.04]" />
           {subtitle && (
