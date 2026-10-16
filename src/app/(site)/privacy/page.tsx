@@ -15,8 +15,12 @@ export default async function PrivacyPage() {
   return (
     <>
       <PageHeader title={copy.privacy.title} />
-      <section className="container-x max-w-3xl">
-        {settings.privacy_policy ? <RichText text={settings.privacy_policy} /> : <EmptyState>{copy.privacy.empty}</EmptyState>}
+      <section className="mx-auto w-[min(760px,calc(100%-2rem))]">
+        {settings.privacy_policy ? (
+          <RichText text={settings.privacy_policy} className="privacy-text" />
+        ) : (
+          <EmptyState>{copy.privacy.empty}</EmptyState>
+        )}
       </section>
     </>
   );

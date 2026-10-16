@@ -30,6 +30,7 @@ export const TRANSLATABLE: Record<string, TranslatableField[]> = {
     { name: "contact_note", label: "Note on the contact page", type: "textarea", max: 600 },
     { name: "footer_text", label: "Footer text", type: "textarea", max: 400 },
     { name: "seo_description", label: "Default page description", type: "textarea", max: 320 },
+    { name: "privacy_policy", label: "Privacy policy", type: "markdown", max: 30000 },
   ],
   profiles: [
     { name: "headline", label: "Professional title", type: "text", max: 160 },

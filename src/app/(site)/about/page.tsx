@@ -11,20 +11,30 @@ import { buttonClass } from "@/components/ui/button";
 import { getCopy } from "@/lib/i18n/server";
 import { getEducation, getExperience, getProfile, getSettings, getSkills } from "@/lib/data/public";
 import { educationToTimeline, experienceToTimeline } from "@/lib/timeline";
+import { isPlaceholder } from "@/lib/defaults";
 
 export async function generateMetadata(): Promise<Metadata> {
   const copy = await getCopy();
   const p = await getProfile();
   return {
     title: copy.about.title,
-    description: p.short_intro.startsWith("[") ? undefined : p.short_intro,
+    description: isPlaceholder(p.short_intro) ? undefined : p.short_intro,
     alternates: { canonical: "/about" },
     openGraph: p.avatar_url ? { images: [{ url: p.avatar_url, alt: p.avatar_alt }] } : undefined,
   };
 }
 
+function initials(name: string) {
+  return name
+    .trim()
+    .split(/\s+/)
+    .slice(0, 2)
+    .map((w) => w[0]?.toUpperCase() ?? "")
+    .join("");
+}
+
 function Block({ title, text }: { title: string; text: string }) {
-  if (!text.trim()) return null;
+  if (!text.trim() || isPlaceholder(text)) return null;
   return (
     <Reveal className="border-line grid gap-4 border-t pt-10 md:grid-cols-[220px_1fr] md:gap-10">
       <h2 className="text-accent font-mono text-xs tracking-[0.2em] uppercase">{title}</h2>
@@ -61,8 +71,18 @@ export default async function AboutPage() {
                 className="object-cover"
               />
             ) : (
-              <div className="text-subtle absolute inset-0 grid place-items-center text-center text-sm">
-                <span>[Profile photo — upload it in the admin dashboard]</span>
+              // No photo yet: a quiet monogram instead of an empty frame.
+              <div
+                aria-hidden
+                className="absolute inset-0 grid place-items-center"
+                style={{
+                  background:
+                    "radial-gradient(90% 70% at 30% 20%, color-mix(in oklab, var(--name-tint) 22%, transparent), transparent 60%), var(--surface)",
+                }}
+              >
+                <span className="font-display text-[clamp(5rem,14vw,9rem)] leading-none text-[var(--name-tint)] italic">
+                  {initials(profile.full_name)}
+                </span>
               </div>
             )}
             <div className="pointer-events-none absolute inset-0 rounded-[2rem] ring-1 ring-white/10 ring-inset" />
@@ -84,7 +104,7 @@ export default async function AboutPage() {
         </Reveal>
 
         <div className="grid gap-10">
-          {profile.short_intro && (
+          {profile.short_intro && !isPlaceholder(profile.short_intro) && (
             <Reveal>
               <p className="text-fg text-2xl leading-snug tracking-tight sm:text-3xl">{profile.short_intro}</p>
             </Reveal>
