@@ -701,6 +701,10 @@ alter table public.stats add constraint stats_translations_chk
   check (jsonb_typeof(translations) = 'object' and pg_column_size(translations) < 200000);
 
 
+-- Optional soft click sounds on buttons and links (Admin → Settings → Appearance).
+alter table public.site_settings add column if not exists ui_sounds boolean not null default false;
+
+
 -- =============================================================================
 -- Initial singleton rows. Safe to run more than once (does not overwrite edits).
 --

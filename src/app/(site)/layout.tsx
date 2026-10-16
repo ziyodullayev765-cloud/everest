@@ -5,6 +5,9 @@ import { CursorGlow } from "@/components/effects/cursor-glow";
 import { MusicDock } from "@/components/effects/sound";
 import { MediaGuard } from "@/components/effects/media-guard";
 import { SmoothScroll } from "@/components/effects/smooth-scroll";
+import { MotionEffects } from "@/components/effects/motion-effects";
+import { UiSounds } from "@/components/effects/ui-sounds";
+import { QuickViewProvider } from "@/components/site/project-quick-view";
 import { SoundProvider } from "@/components/effects/sound";
 import { MotionProvider } from "@/components/ui/motion-provider";
 import { getProfile, getSettings, getSocialLinks, isPreview } from "@/lib/data/public";
@@ -35,6 +38,8 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
             <MusicDock />
             <MediaGuard />
             <SmoothScroll />
+            <MotionEffects />
+            <UiSounds enabled={settings.ui_sounds} />
             <Header
               siteName={name}
               logoUrl={settings.logo_url}
@@ -42,9 +47,11 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
               nav={nav}
               resumeUrl={resumeUrl}
             />
-            <main id="main" tabIndex={-1} className="relative z-[2] overflow-x-clip outline-none">
-              {children}
-            </main>
+            <QuickViewProvider>
+              <main id="main" tabIndex={-1} className="relative z-[2] overflow-x-clip outline-none">
+                {children}
+              </main>
+            </QuickViewProvider>
             <Footer
               siteName={name}
               footerText={footerText(settings, name, copy.rights)}
