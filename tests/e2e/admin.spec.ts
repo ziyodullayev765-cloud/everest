@@ -15,8 +15,8 @@ const STATE = path.join(tmpdir(), `admin-state-${stamp}.json`);
 
 async function login(page: Page, creds = ADMIN) {
   await page.goto("/admin/login");
-  await page.getByLabel("Email").fill(creds.email);
-  await page.getByLabel("Password").fill(creds.password);
+  await page.getByLabel("Email", { exact: true }).fill(creds.email);
+  await page.getByLabel("Password", { exact: true }).fill(creds.password);
   await page.getByRole("button", { name: "Sign in" }).click();
 }
 
@@ -100,9 +100,9 @@ test.describe("as admin", () => {
 
     await page.goto("/admin/projects/new");
     await page.getByRole("textbox", { name: "Title", exact: true }).fill(title);
-    await expect(page.getByLabel("URL slug")).toHaveValue(slug);
-    await page.getByLabel("Short summary").fill("Created by the end-to-end test.");
-    await page.getByLabel("Full description").fill("## Heading\n\n- point one\n- **point two**");
+    await expect(page.getByLabel("URL slug", { exact: true })).toHaveValue(slug);
+    await page.getByLabel("Short summary", { exact: true }).fill("Created by the end-to-end test.");
+    await page.getByLabel("Full description", { exact: true }).fill("## Heading\n\n- point one\n- **point two**");
     await page.getByRole("button", { name: "Save draft" }).click();
     await expect(page).toHaveURL(/\/admin\/projects\/[0-9a-f-]{36}$/);
 
@@ -149,7 +149,7 @@ test.describe("as admin", () => {
     await page.getByRole("button", { name: "Save draft" }).click();
     await expect(page.getByText("Name is required")).toBeVisible();
     await page.getByRole("textbox", { name: "Name", exact: true }).fill(`Skill ${stamp}`);
-    await page.getByLabel("Level (0–100, optional)").fill("150");
+    await page.getByLabel("Level (0–100, optional)", { exact: true }).fill("150");
     await page.getByRole("button", { name: "Save draft" }).click();
     await expect(page.getByText("Maximum 100")).toBeVisible();
   });
@@ -167,11 +167,11 @@ test.describe("as admin", () => {
 
     await card.click();
     const dialog = page.getByRole("dialog", { name: "Media details" });
-    await dialog.getByLabel("Alt text").fill(`Test gallery image ${stamp}`);
-    await dialog.getByLabel("Caption").fill("Uploaded by E2E");
+    await dialog.getByLabel("Alt text", { exact: true }).fill(`Test gallery image ${stamp}`);
+    await dialog.getByLabel("Caption", { exact: true }).fill("Uploaded by E2E");
     // Uploads from the media library are published to the gallery by default.
     await expect(dialog.getByRole("switch", { name: "Show in public gallery" })).toHaveAttribute("aria-checked", "true");
-    await expect(dialog.getByLabel("Gallery status")).toHaveValue("published");
+    await expect(dialog.getByLabel("Gallery status", { exact: true })).toHaveValue("published");
     await dialog.getByRole("button", { name: "Save details" }).click();
     await expect(page.getByText("Saved.")).toBeVisible();
 
@@ -204,7 +204,7 @@ test.describe("as admin", () => {
 
   test("settings changes appear on the public site", async ({ page, context }) => {
     await page.goto("/admin/settings");
-    const field = page.getByLabel("Hero description");
+    const field = page.getByLabel("Hero description", { exact: true });
     const original = await field.inputValue();
     const marker = `E2E hero description ${stamp}`;
     await field.fill(marker);
@@ -225,13 +225,39 @@ test.describe("as admin", () => {
     await expect(field).toHaveValue(original);
   });
 
+  test("Uzbek translations show to visitors who chose Uzbek", async ({ page, context }) => {
+    await page.goto("/admin/settings");
+    const uz = page.getByLabel("Hero description · O‘zbekcha", { exact: true });
+    await uz.fill(`E2E o‘zbekcha tavsif ${stamp}`);
+    await page.getByRole("button", { name: "Save", exact: true }).click();
+    await expect(page.getByText("Saved.")).toBeVisible();
+
+    const visitor = await context.browser()!.newContext();
+    await visitor.addCookies([{ name: "lang", value: "uz", url: new URL(page.url()).origin }]);
+    const vpage = await visitor.newPage();
+    await vpage.goto("/");
+    await expect(vpage.getByText(`E2E o‘zbekcha tavsif ${stamp}`)).toBeVisible();
+    await visitor.close();
+
+    // English visitors still get the main text.
+    const en = await context.browser()!.newContext();
+    const epage = await en.newPage();
+    await epage.goto("/");
+    await expect(epage.getByText(`E2E o‘zbekcha tavsif ${stamp}`)).toHaveCount(0);
+    await en.close();
+
+    await uz.fill("");
+    await page.getByRole("button", { name: "Save", exact: true }).click();
+    await expect(page.getByText("Unsaved changes")).toHaveCount(0);
+  });
+
   test("music has its own admin page and saving it leaves other settings alone", async ({ page }) => {
     await page.goto("/admin/settings");
-    const hero = await page.getByLabel("Hero description").inputValue();
+    const hero = await page.getByLabel("Hero description", { exact: true }).inputValue();
     await expect(page.getByText("Background music")).toHaveCount(0);
 
     await page.goto("/admin/music");
-    const title = page.getByLabel("Track name (shown on the music button)");
+    const title = page.getByLabel("Track name (shown on the music button)", { exact: true });
     const original = await title.inputValue();
     await title.fill(`E2E track ${stamp}`);
     await page.getByRole("button", { name: "Save", exact: true }).click();
@@ -243,12 +269,12 @@ test.describe("as admin", () => {
     await expect(page.getByText("Unsaved changes")).toHaveCount(0);
 
     await page.goto("/admin/settings");
-    await expect(page.getByLabel("Hero description")).toHaveValue(hero);
+    await expect(page.getByLabel("Hero description", { exact: true })).toHaveValue(hero);
   });
 
   test("renaming the profile updates the name everywhere on the public site", async ({ page, context }) => {
     await page.goto("/admin/profile");
-    const field = page.getByLabel("Full name");
+    const field = page.getByRole("textbox", { name: "Full name", exact: true });
     await expect(field).not.toHaveValue(""); // wait for the form to hydrate
     const original = await field.inputValue();
     const renamed = `Testname ${stamp}`;
@@ -280,7 +306,7 @@ test.describe("as admin", () => {
     await vpage.goto("/contact");
     await vpage.getByLabel("Name", { exact: true }).fill("E2E Visitor");
     await vpage.getByLabel("Email", { exact: true }).fill("visitor@example.com");
-    await vpage.getByLabel("Project scope / message").fill(`Hello from the end-to-end test ${stamp}`);
+    await vpage.getByLabel("Project scope / message", { exact: true }).fill(`Hello from the end-to-end test ${stamp}`);
     await vpage.waitForTimeout(3200); // the form rejects submissions faster than a human could type
     await vpage.getByRole("button", { name: "Send message" }).click();
     await expect(vpage.getByText("Thank you! Your message is on its way")).toBeVisible();

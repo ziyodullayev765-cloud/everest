@@ -16,11 +16,16 @@ import {
   getSocialLinks,
   getStats,
 } from "@/lib/data/public";
-import { isPlaceholder, ownerName } from "@/lib/defaults";
+import { DEFAULT_SETTINGS, isPlaceholder, ownerName } from "@/lib/defaults";
 import { getCopy } from "@/lib/i18n/server";
 import { unique } from "@/lib/utils";
 
 const FALLBACK_WORDS = ["Projects", "Highlights", "Experience", "Skills", "Journey", "Ideas", "Craft", "Contact"];
+
+/** A button label left at its built-in default follows the interface language. */
+function uiLabel(value: string, builtIn: string, translated: string) {
+  return !value.trim() || value.trim() === builtIn ? translated : value;
+}
 
 export default async function HomePage() {
   const copy = await getCopy();
@@ -75,8 +80,8 @@ export default async function HomePage() {
         <Hero
           name={name}
           subtitle={subtitle}
-          primaryLabel={settings.cta_primary_label}
-          secondaryLabel={settings.cta_secondary_label}
+          primaryLabel={uiLabel(settings.cta_primary_label, DEFAULT_SETTINGS.cta_primary_label, copy.homePage.ctaPrimary)}
+          secondaryLabel={uiLabel(settings.cta_secondary_label, DEFAULT_SETTINGS.cta_secondary_label, copy.homePage.ctaSecondary)}
           scrollLabel={copy.homePage.scroll}
           ticker={ticker}
           tiles={tiles}

@@ -30,7 +30,7 @@ export default async function GalleryPage() {
       <section aria-label={copy.homePage.domeLabel} className="relative">
         {tiles.length > 0 ? (
           <div className="relative h-[clamp(520px,86svh,980px)]">
-            <DomeGallery tiles={tiles} fit={0.85} maxVerticalDeg={0} labels={{ dome: copy.homePage.domeLabel }} />
+            <DomeGallery tiles={tiles} fit={0.85} labels={{ dome: copy.homePage.domeLabel }} />
           </div>
         ) : (
           <div className="mx-auto w-[min(1200px,calc(100%-2rem))]">

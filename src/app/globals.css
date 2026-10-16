@@ -796,14 +796,11 @@ html.light:has(.site-root) body {
     position: absolute;
     inset: 0;
     overflow: hidden;
-    touch-action: pan-y;
+    /* Decorative only: the pointer passes through (no drag, hover or click). */
+    pointer-events: none;
     user-select: none;
     -webkit-user-select: none;
     contain: layout paint size;
-    cursor: grab;
-  }
-  .dome[data-dragging="true"] {
-    cursor: grabbing;
   }
   .dome-stage {
     position: absolute;
@@ -853,19 +850,8 @@ html.light:has(.site-root) body {
   .dome-photo-grey {
     animation: fade-in 500ms ease;
   }
-  .dome-photo-color {
-    opacity: 0;
-    transition: opacity 350ms ease;
-  }
-  .dome-tile:hover .dome-photo-color {
-    opacity: 1;
-  }
   .dome-photo-css-grey {
     filter: grayscale(1);
-    transition: filter 350ms ease;
-  }
-  .dome-tile:hover .dome-photo-css-grey {
-    filter: none;
   }
   /* Photos soften toward the rim of the dome, like a lens: a blur layer
      that is fully masked out over the centre. */

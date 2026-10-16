@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { isSafeHref } from "@/lib/utils";
+import { CONTENT_LOCALES, TRANSLATABLE } from "@/lib/i18n/content";
 
 /**
  * Declarative field definitions. One definition drives three things:
@@ -35,7 +36,9 @@ export type FieldDef =
   | (Base & { type: "gallery"; maxItems?: number })
   | (Base & { type: "links"; maxItems?: number })
   | (Base & { type: "color" })
-  | (Base & { type: "status" });
+  | (Base & { type: "status" })
+  /** Uzbek / Russian copies of this table's translatable columns (lib/i18n/content.ts). */
+  | (Base & { type: "translations"; table: string });
 
 export interface FieldSection {
   title: string;
@@ -147,6 +150,35 @@ export function fieldSchema(f: FieldDef): z.ZodTypeAny {
         .string()
         .regex(/^#[0-9a-fA-F]{6}$/, "Use a hex colour like #10b981")
         .transform((v) => v.toLowerCase());
+    case "translations": {
+      // Every value optional; empty strings and empty lists are dropped so the
+      // stored JSON only holds what was actually translated.
+      const one: Record<string, z.ZodTypeAny> = {};
+      for (const t of TRANSLATABLE[f.table] ?? []) {
+        const max = t.max ?? 6000;
+        one[t.name] =
+          t.type === "list"
+            ? stringArray(30, max).optional()
+            : z
+                .preprocess(
+                  (v) => (typeof v === "string" ? v.trim() : ""),
+                  z.string().max(max, `${t.label}: at most ${max} characters`),
+                )
+                .optional();
+      }
+      const perLocale = z
+        .object(one)
+        .partial()
+        .default({})
+        .transform((o) =>
+          Object.fromEntries(
+            Object.entries(o).filter(([, v]) => (Array.isArray(v) ? v.length > 0 : typeof v === "string" && v !== "")),
+          ),
+        );
+      const shape: Record<string, z.ZodTypeAny> = {};
+      for (const l of CONTENT_LOCALES) shape[l.code] = perLocale;
+      return z.preprocess((v) => (v && typeof v === "object" ? v : {}), z.object(shape));
+    }
   }
 }
 
@@ -154,6 +186,12 @@ export function buildSchema(fields: FieldDef[]) {
   const shape: Record<string, z.ZodTypeAny> = {};
   for (const f of fields) shape[f.name] = fieldSchema(f);
   return z.object(shape);
+}
+
+/** Every translatable key present (as "" or []), so the form starts clean and stays controlled. */
+function emptyTranslations(table: string): Record<string, Record<string, string | string[]>> {
+  const one = Object.fromEntries((TRANSLATABLE[table] ?? []).map((t) => [t.name, t.type === "list" ? [] : ""]));
+  return Object.fromEntries(CONTENT_LOCALES.map((l) => [l.code, { ...one }]));
 }
 
 /** Initial form values for a new record. */
@@ -182,6 +220,9 @@ export function defaultValues(fields: FieldDef[]): Record<string, unknown> {
       case "color":
         out[f.name] = "#10b981";
         break;
+      case "translations":
+        out[f.name] = emptyTranslations(f.table);
+        break;
       default:
         out[f.name] = "";
     }
@@ -195,6 +236,17 @@ export function toFormValues(fields: FieldDef[], row: Record<string, unknown>) {
   for (const f of fields) {
     const v = row[f.name];
     if (v === null || v === undefined) continue;
+    if (f.type === "translations") {
+      const t = (typeof v === "object" ? v : {}) as Record<string, Record<string, unknown> | undefined>;
+      const empty = emptyTranslations(f.table);
+      base[f.name] = Object.fromEntries(
+        CONTENT_LOCALES.map((l) => [
+          l.code,
+          Object.fromEntries(Object.entries(empty[l.code]!).map(([k, blank]) => [k, t[l.code]?.[k] ?? blank])),
+        ]),
+      );
+      continue;
+    }
     base[f.name] = v;
   }
   return base;

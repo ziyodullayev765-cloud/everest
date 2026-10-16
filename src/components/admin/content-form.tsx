@@ -67,7 +67,9 @@ export function ContentForm({ mode, initial }: { mode: Mode; initial: Record<str
         return;
       }
       toast.success(res.message ?? "Saved.");
-      reset(values);
+      // Reset to what is in the inputs (not the validated output, which drops
+      // empty translations) so the form reads as clean after saving.
+      reset(methods.getValues());
       setSavedStatus(values.status as string | undefined);
       if (mode.type === "resource" && !mode.id && res.data && "id" in res.data) {
         router.replace(`/admin/${mode.key}/${(res.data as { id: string }).id}`);

@@ -88,10 +88,19 @@ export function seoTitle(settings: { seo_title: string }, name: string) {
   return settings.seo_title?.trim() || `${name} — Portfolio`;
 }
 
-export function seoDescription(settings: { seo_description: string }, name: string) {
-  return settings.seo_description?.trim() || `${name} — portfolio: projects, highlights and experience.`;
+/** Page description for search engines and link previews: the SEO text, else the hero text, else a generic line. */
+export function seoDescription(
+  settings: { seo_description: string; hero_description?: string },
+  name: string,
+  profile?: { short_intro?: string },
+) {
+  const candidates = [settings.seo_description, settings.hero_description, profile?.short_intro];
+  return (
+    candidates.map((c) => c?.trim()).find((c) => c && !isPlaceholder(c)) ||
+    `${name} — portfolio: projects, highlights and experience.`
+  );
 }
 
-export function footerText(settings: { footer_text: string }, name: string) {
-  return settings.footer_text?.trim() || `© ${new Date().getFullYear()} ${name}. All rights reserved.`;
+export function footerText(settings: { footer_text: string }, name: string, rights = "All rights reserved.") {
+  return settings.footer_text?.trim() || `© ${new Date().getFullYear()} ${name}. ${rights}`;
 }
