@@ -30,6 +30,7 @@ const en = {
   playMusic: "Play music",
   pauseMusic: "Pause music",
   backToTop: "Back to top",
+  rights: "All rights reserved.",
 
   /** Labels for the standard pages; custom menu items keep the text entered in the admin. */
   nav: {
@@ -51,6 +52,8 @@ const en = {
   },
 
   homePage: {
+    ctaPrimary: "Explore Projects",
+    ctaSecondary: "Start a Project",
     highlightsLead: "The results I am proudest of, and the numbers behind them.",
     nextPage: "Next page",
     scroll: "Scroll",
@@ -67,7 +70,7 @@ const en = {
     galleryEyebrow: "Gallery",
     photos: "photos",
     everyMoment: "Every moment",
-    domeLabel: "Photo dome — drag to rotate",
+    domeLabel: "Photo dome",
     close: "Close",
   },
 
@@ -221,6 +224,7 @@ const uz: Copy = {
   playMusic: "Musiqani yoqish",
   pauseMusic: "Musiqani to‘xtatish",
   backToTop: "Yuqoriga",
+  rights: "Barcha huquqlar himoyalangan.",
 
   nav: {
     "/": "Bosh sahifa",
@@ -241,6 +245,8 @@ const uz: Copy = {
   },
 
   homePage: {
+    ctaPrimary: "Loyihalarni ko‘rish",
+    ctaSecondary: "Loyiha boshlash",
     highlightsLead: "Eng faxrlanadigan natijalarim va ularning ortidagi raqamlar.",
     nextPage: "Keyingi sahifa",
     scroll: "Pastga",
@@ -257,7 +263,7 @@ const uz: Copy = {
     galleryEyebrow: "Galereya",
     photos: "ta surat",
     everyMoment: "Barcha lahzalar",
-    domeLabel: "Suratlar gumbazi — aylantirish uchun suring",
+    domeLabel: "Suratlar gumbazi",
     close: "Yopish",
   },
 
@@ -409,6 +415,7 @@ const ru: Copy = {
   playMusic: "Включить музыку",
   pauseMusic: "Выключить музыку",
   backToTop: "Наверх",
+  rights: "Все права защищены.",
 
   nav: {
     "/": "Главная",
@@ -429,6 +436,8 @@ const ru: Copy = {
   },
 
   homePage: {
+    ctaPrimary: "Смотреть проекты",
+    ctaSecondary: "Начать проект",
     highlightsLead: "Результаты, которыми я горжусь больше всего, и цифры за ними.",
     nextPage: "Следующая страница",
     scroll: "Вниз",
@@ -445,7 +454,7 @@ const ru: Copy = {
     galleryEyebrow: "Галерея",
     photos: "фото",
     everyMoment: "Все моменты",
-    domeLabel: "Купол из фото — перетащите, чтобы вращать",
+    domeLabel: "Купол из фото",
     close: "Закрыть",
   },
 

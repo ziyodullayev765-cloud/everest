@@ -6,6 +6,8 @@ import { isSupabaseConfigured } from "@/lib/env";
 import { createPublicClient, createSessionClient } from "@/lib/supabase/server";
 import { DEFAULT_PROFILE, DEFAULT_SETTINGS } from "@/lib/defaults";
 import { isSafeHref } from "@/lib/utils";
+import { localizeRow } from "@/lib/i18n/content";
+import { getLocale } from "@/lib/i18n/server";
 import type {
   Achievement,
   Education,
@@ -28,6 +30,9 @@ import type {
  *
  * Preview mode (enabled only by a verified admin via /api/preview): uses the
  * admin's session so drafts can be reviewed before publishing.
+ *
+ * Text is returned in the visitor's language where the admin has filled in
+ * a translation (see lib/i18n/content.ts); otherwise the default text.
  *
  * Errors: when Supabase is configured, read failures THROW. During ISR
  * revalidation Next.js then keeps serving the last good page instead of
@@ -70,7 +75,8 @@ async function list<T>(table: string, build: (q: Query) => Query): Promise<T[]> 
     if (!reader.preview) q = q.eq("status", "published");
     const { data, error } = (await build(q)) as { data: T[] | null; error: unknown };
     if (error) throw error;
-    return data ?? [];
+    const locale = await getLocale();
+    return (data ?? []).map((row) => localizeRow(row as object, table, locale) as T);
   } catch (err) {
     throw loadError(table, err);
   }
@@ -90,7 +96,7 @@ export const getSettings = cache(async (): Promise<SiteSettings> => {
     const { data, error } = await reader.db.from("site_settings").select("*").eq("id", 1).maybeSingle();
     if (error) throw error;
     if (!data) return DEFAULT_SETTINGS;
-    const s = { ...DEFAULT_SETTINGS, ...data } as SiteSettings;
+    const s = localizeRow({ ...DEFAULT_SETTINGS, ...data } as SiteSettings, "site_settings", await getLocale());
     s.nav_items = sanitizeLinks(s.nav_items);
     s.footer_links = sanitizeLinks(s.footer_links);
     if (!/^#[0-9a-f]{6}$/i.test(s.accent_color)) s.accent_color = DEFAULT_SETTINGS.accent_color;
@@ -108,7 +114,7 @@ export const getProfile = cache(async (): Promise<Profile> => {
   try {
     const { data, error } = await reader.db.from("profiles").select("*").eq("id", 1).maybeSingle();
     if (error) throw error;
-    return data ? ({ ...DEFAULT_PROFILE, ...data } as Profile) : DEFAULT_PROFILE;
+    return data ? localizeRow({ ...DEFAULT_PROFILE, ...data } as Profile, "profiles", await getLocale()) : DEFAULT_PROFILE;
   } catch (err) {
     throw loadError("profiles", err);
   }
@@ -126,7 +132,7 @@ export const getProjectBySlug = cache(async (slug: string): Promise<Project | nu
     if (!reader.preview) q = q.eq("status", "published");
     const { data, error } = await q.maybeSingle();
     if (error) throw error;
-    return (data as Project) ?? null;
+    return data ? localizeRow(data as Project, "projects", await getLocale()) : null;
   } catch (err) {
     throw loadError("projects", err);
   }

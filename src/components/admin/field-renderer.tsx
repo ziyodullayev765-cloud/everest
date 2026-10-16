@@ -6,6 +6,7 @@ import { ArrowDown, ArrowUp, FileText, ImagePlus, Link2, Music, Plus, Trash2, Wa
 import { MediaPicker } from "./media-picker";
 import { Button, Input, Select, Switch, Textarea, btnClass, inputClass } from "./ui";
 import type { FieldDef } from "@/lib/cms/fields";
+import { CONTENT_LOCALES, TRANSLATABLE } from "@/lib/i18n/content";
 import type { GalleryImage, NavItem } from "@/lib/types";
 import { cn, slugify } from "@/lib/utils";
 
@@ -339,6 +340,82 @@ function LinksField({ value, onChange }: { value: NavItem[]; onChange: (v: NavIt
   );
 }
 
+/**
+ * Uzbek / Russian copies of a record's text. One tab per language; each input
+ * shows the main (default-language) text as its placeholder. Anything left
+ * empty falls back to the main text on the site.
+ */
+function TranslationsField({ name, table }: { name: string; table: string }) {
+  const { register, control } = useFormContext();
+  const [tab, setTab] = useState<string>(CONTENT_LOCALES[0].code);
+  const fields = TRANSLATABLE[table] ?? [];
+  const originals = useWatch({ name: fields.map((f) => f.name) }) as unknown[];
+  return (
+    <div className="border-line rounded-xl border bg-white/[0.02] p-3 sm:p-4">
+      <div className="border-line mb-4 flex gap-1 rounded-xl border p-1 text-sm" role="tablist">
+        {CONTENT_LOCALES.map((l) => (
+          <button
+            key={l.code}
+            type="button"
+            role="tab"
+            aria-selected={tab === l.code}
+            onClick={() => setTab(l.code)}
+            className={cn(
+              "flex-1 rounded-lg px-3 py-1.5 transition",
+              tab === l.code ? "text-fg bg-white/10" : "text-muted hover:text-fg",
+            )}
+          >
+            {l.label}
+          </button>
+        ))}
+      </div>
+      {CONTENT_LOCALES.map((l) => (
+        <div key={l.code} hidden={tab !== l.code} className="grid gap-4">
+          {fields.map((f, i) => {
+            const path = `${name}.${l.code}.${f.name}`;
+            const id = `f-${name}-${l.code}-${f.name}`;
+            const original = originals[i];
+            const placeholder = Array.isArray(original) ? original.join("\n") : typeof original === "string" ? original : "";
+            return (
+              <div key={f.name}>
+                <label htmlFor={id} className="text-fg/90 mb-1.5 block text-sm font-medium">
+                  {f.label} <span className="text-subtle font-normal">· {l.label}</span>
+                </label>
+                {f.type === "text" ? (
+                  <Input id={id} {...register(path)} placeholder={placeholder} />
+                ) : f.type === "list" ? (
+                  <Controller
+                    control={control}
+                    name={path}
+                    render={({ field: c }) => (
+                      <Textarea
+                        id={id}
+                        rows={3}
+                        placeholder={placeholder}
+                        value={((c.value as string[] | undefined) ?? []).join("\n")}
+                        onChange={(e) => c.onChange(e.target.value.split("\n"))}
+                        onBlur={() => c.onChange(((c.value as string[] | undefined) ?? []).map((s) => s.trim()).filter(Boolean))}
+                      />
+                    )}
+                  />
+                ) : (
+                  <Textarea
+                    id={id}
+                    {...register(path)}
+                    rows={f.type === "markdown" ? 6 : 3}
+                    placeholder={placeholder}
+                    className={f.type === "markdown" ? "font-mono text-[0.82rem]" : undefined}
+                  />
+                )}
+              </div>
+            );
+          })}
+        </div>
+      ))}
+    </div>
+  );
+}
+
 export function FieldRenderer({ field, isNew }: { field: FieldDef; isNew: boolean }) {
   const {
     register,
@@ -503,6 +580,15 @@ export function FieldRenderer({ field, isNew }: { field: FieldDef; isNew: boolea
               />
             )}
           />
+        </FieldShell>
+      );
+    case "translations":
+      return (
+        <FieldShell
+          field={field}
+          error={errors[field.name] ? "Some translations are too long — check each language tab." : undefined}
+        >
+          <TranslationsField name={field.name} table={field.table} />
         </FieldShell>
       );
     case "list":

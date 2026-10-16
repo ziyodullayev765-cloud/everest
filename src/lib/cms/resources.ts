@@ -1,4 +1,5 @@
 import type { FieldDef, FieldSection } from "./fields";
+import { TRANSLATABLE } from "@/lib/i18n/content";
 
 export interface ListColumn {
   name: string;
@@ -360,9 +361,24 @@ export function getResource(key: string): ResourceConfig | null {
   return Object.prototype.hasOwnProperty.call(RESOURCES, key) ? RESOURCES[key] : null;
 }
 
+/** "Translations" form section for any table with translatable columns. */
+function translationsSection(table: string): FieldSection[] {
+  if (!TRANSLATABLE[table]) return [];
+  return [
+    {
+      title: "Translations",
+      description:
+        "Uzbek and Russian versions of the text above, shown to visitors who pick that language. Leave a field empty to show the main text instead.",
+      fields: [{ name: "translations", label: "O‘zbekcha / Русский", type: "translations", table, wide: true }],
+    },
+  ];
+}
+
 export function resourceFields(r: ResourceConfig): FieldDef[] {
   return r.sections.flatMap((s) => s.fields);
 }
+
+for (const r of Object.values(RESOURCES)) r.sections.push(...translationsSection(r.table));
 
 // -----------------------------------------------------------------------------
 // Singletons
@@ -539,6 +555,9 @@ export const MUSIC_CONFIG: SingletonConfig = {
     },
   ],
 };
+
+PROFILE_CONFIG.sections.push(...translationsSection("profiles"));
+SETTINGS_CONFIG.sections.push(...translationsSection("site_settings"));
 
 export function getSingleton(key: string): SingletonConfig | null {
   return key === "profile" ? PROFILE_CONFIG : key === "settings" ? SETTINGS_CONFIG : key === "music" ? MUSIC_CONFIG : null;

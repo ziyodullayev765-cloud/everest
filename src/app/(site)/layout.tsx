@@ -47,7 +47,7 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
             </main>
             <Footer
               siteName={name}
-              footerText={footerText(settings, name)}
+              footerText={footerText(settings, name, copy.rights)}
               links={localizeNav(settings.footer_links, copy)}
               nav={nav}
               social={social}

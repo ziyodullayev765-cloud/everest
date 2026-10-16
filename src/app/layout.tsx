@@ -8,12 +8,14 @@ import { ownerName, seoDescription, seoTitle } from "@/lib/defaults";
 import { env } from "@/lib/env";
 import "./globals.css";
 
+const OG_LOCALE = { en: "en_US", uz: "uz_UZ", ru: "ru_RU" } as const;
+
 export async function generateMetadata(): Promise<Metadata> {
-  const [s, profile] = await Promise.all([getSettings(), getProfile()]);
+  const [s, profile, locale] = await Promise.all([getSettings(), getProfile(), getLocale()]);
   const base = s.site_url || env.siteUrl;
   const name = ownerName(profile, s);
   const title = seoTitle(s, name);
-  const description = seoDescription(s, name);
+  const description = seoDescription(s, name, profile);
   return {
     metadataBase: new URL(base),
     title: { default: title, template: `%s — ${name}` },
@@ -29,8 +31,8 @@ export async function generateMetadata(): Promise<Metadata> {
       title,
       description,
       url: "/",
-      locale: "en_US",
-      alternateLocale: ["uz_UZ", "ru_RU"],
+      locale: OG_LOCALE[locale],
+      alternateLocale: Object.values(OG_LOCALE).filter((l) => l !== OG_LOCALE[locale]),
       images: [{ url: s.og_image_url || "/og", width: 1200, height: 630 }],
     },
     twitter: {

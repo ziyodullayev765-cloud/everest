@@ -63,15 +63,13 @@ function toGrey(url: string): Promise<string> {
 }
 
 /**
- * A tile photo: the greyscale copy by default, the colour version fading in on
- * hover (only loaded the first time it is hovered). Images from other hosts,
- * which a canvas may not read, fall back to a CSS greyscale filter.
+ * A tile photo as a greyscale copy. Images from other hosts, which a canvas
+ * may not read, fall back to a CSS greyscale filter.
  */
 function TileImage({ src, alt }: { src: string; alt: string }) {
   const url = thumb(src, 256);
   const [grey, setGrey] = useState<string | null>(null);
   const [fallback, setFallback] = useState(false);
-  const [color, setColor] = useState(false);
   useEffect(() => {
     let alive = true;
     toGrey(url).then(
@@ -83,17 +81,13 @@ function TileImage({ src, alt }: { src: string; alt: string }) {
     };
   }, [url]);
   return (
-    <span className="dome-photo" onPointerEnter={() => setColor(true)}>
+    <span className="dome-photo">
       {fallback ? (
         // eslint-disable-next-line @next/next/no-img-element
         <img src={url} alt={alt} className="dome-photo-css-grey" decoding="async" draggable={false} />
       ) : (
-        <>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          {grey && <img src={grey} alt={alt} className="dome-photo-grey" draggable={false} />}
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          {color && <img src={url} alt="" aria-hidden className="dome-photo-color" decoding="async" draggable={false} />}
-        </>
+        // eslint-disable-next-line @next/next/no-img-element
+        grey && <img src={grey} alt={alt} className="dome-photo-grey" draggable={false} />
       )}
     </span>
   );
@@ -134,29 +128,28 @@ function layout(pool: DomeTileData[], segments: number): Slot[] {
 }
 
 /**
- * A sphere of photo tiles (CSS 3D, no WebGL). Images are greyscale until
- * hovered, the sphere spins slowly by itself and can be dragged (with
- * inertia). View-only: photos don't open or enlarge on click. It stops animating when off screen,
- * when the tab is hidden or when `paused`, and is still under reduced motion.
+ * A sphere of greyscale photo tiles (CSS 3D, no WebGL) that turns slowly by
+ * itself, forever. Purely decorative: it ignores the pointer entirely (no
+ * dragging, hovering or clicking), so page scrolling passes straight through.
+ * It rests while off screen, while the tab is hidden or when `paused`, and
+ * stands still under reduced motion.
  */
 export function DomeGallery({
   tiles,
   segments = 34,
   fit = 0.85,
-  maxVerticalDeg = 0,
   offsetY = "10rem",
   mobileFit = 1.35,
   mobileOffsetY = "9rem",
   paused = false,
   autoSpin = true,
-  labels = { dome: "Photo dome — drag to rotate" },
+  labels = { dome: "Photo dome" },
 }: {
   tiles: DomeTileData[];
   segments?: number;
   /** Radius as a fraction of the container width (capped by its height). */
   fit?: number;
   /** How far the sphere may be tilted by vertical drags (0 = horizontal only). */
-  maxVerticalDeg?: number;
   offsetY?: string;
   /** Phones (< 640px wide) use a wider sphere so it still fills the screen. */
   mobileFit?: number;
@@ -204,96 +197,25 @@ export function DomeGallery({
     let raf = 0;
     let last = 0;
     let visible = true;
-    let dragging = false;
-    let inertia = { x: 0, y: 0 };
-    let start = { px: 0, py: 0, rx: 0, ry: 0 };
-    let moved = false;
-    let lastMove = { x: 0, y: 0, t: 0 };
-    const clampX = (v: number) => Math.max(-maxVerticalDeg, Math.min(maxVerticalDeg, v));
-    // Past the vertical limit a drag meets growing resistance (at most a few
-    // degrees of give) and eases back on release, instead of hitting a wall.
-    const soft = (v: number) => {
-      const c = clampX(v);
-      const over = v - c;
-      return c + (over === 0 ? 0 : Math.sign(over) * 4 * (1 - Math.exp(-Math.abs(over) / 12)));
-    };
 
+    // The dome only turns by itself, endlessly; it can't be dragged or grabbed.
+    // (Visitors who ask their system for reduced motion get it standing still.)
+    const spin = autoSpin && !reduce;
     const tick = (t: number) => {
       const dt = last ? Math.min(48, t - last) : 16;
       last = t;
-      if (!dragging) {
-        let changed = false;
-        // Settle back inside the vertical limit after an over-drag.
-        const target = clampX(rot.x);
-        if (rot.x !== target) {
-          const d = target - rot.x;
-          rot.x = Math.abs(d) < 0.02 ? target : rot.x + d * (1 - Math.pow(0.8, dt / 16));
-          inertia.x = 0;
-          changed = true;
-        }
-        if (Math.abs(inertia.x) + Math.abs(inertia.y) > 0.002) {
-          rot.y += inertia.y * dt;
-          const nx = rot.x + inertia.x * dt;
-          rot.x = clampX(nx);
-          if (rot.x !== nx) inertia.x = 0;
-          const k = Math.pow(0.94, dt / 16);
-          inertia = { x: inertia.x * k, y: inertia.y * k };
-          changed = true;
-        } else if (autoSpin && !reduce) {
-          rot.y += (AUTO_SPIN_DEG_PER_S * dt) / 1000;
-          changed = true;
-        }
-        if (changed) render();
+      if (spin) {
+        rot.y = (rot.y + (AUTO_SPIN_DEG_PER_S * dt) / 1000) % 360;
+        render();
       }
-      const keepGoing =
-        visible &&
-        !pausedRef.current &&
-        !document.hidden &&
-        (!reduce || dragging || Math.abs(inertia.y) > 0.002 || rot.x !== clampX(rot.x));
+      const keepGoing = spin && visible && !pausedRef.current && !document.hidden;
       raf = keepGoing ? requestAnimationFrame(tick) : 0;
       if (!raf) last = 0;
     };
     const wake = () => {
-      if (!raf && visible && !pausedRef.current && !document.hidden) raf = requestAnimationFrame(tick);
+      if (!raf && spin && visible && !pausedRef.current && !document.hidden) raf = requestAnimationFrame(tick);
     };
 
-    const onDown = (e: PointerEvent) => {
-      if (e.pointerType === "mouse" && e.button !== 0) return;
-      dragging = true;
-      moved = false;
-      inertia = { x: 0, y: 0 };
-      start = { px: e.clientX, py: e.clientY, rx: rot.x, ry: rot.y };
-      lastMove = { x: e.clientX, y: e.clientY, t: performance.now() };
-    };
-    const onMove = (e: PointerEvent) => {
-      if (!dragging) return;
-      const dx = e.clientX - start.px;
-      const dy = e.clientY - start.py;
-      if (!moved && dx * dx + dy * dy > 16) {
-        moved = true;
-        root.dataset.dragging = "true";
-        root.setPointerCapture?.(e.pointerId);
-      }
-      if (!moved) return;
-      rot.y = start.ry + dx / 20;
-      rot.x = soft(start.rx - dy / 20);
-      const now = performance.now();
-      const span = Math.max(8, now - lastMove.t);
-      inertia = { y: (e.clientX - lastMove.x) / 20 / span, x: -(e.clientY - lastMove.y) / 20 / span };
-      lastMove = { x: e.clientX, y: e.clientY, t: now };
-      render();
-    };
-    const onUp = () => {
-      if (!dragging) return;
-      dragging = false;
-      root.dataset.dragging = "false";
-      inertia = { x: Math.max(-0.5, Math.min(0.5, inertia.x)), y: Math.max(-0.5, Math.min(0.5, inertia.y)) };
-      wake();
-    };
-    root.addEventListener("pointerdown", onDown);
-    window.addEventListener("pointermove", onMove, { passive: true });
-    window.addEventListener("pointerup", onUp);
-    window.addEventListener("pointercancel", onUp);
     const io = new IntersectionObserver(([entry]) => {
       visible = entry?.isIntersecting ?? true;
       wake();
@@ -310,12 +232,8 @@ export function DomeGallery({
       ro.disconnect();
       io.disconnect();
       document.removeEventListener("visibilitychange", onVis);
-      root.removeEventListener("pointerdown", onDown);
-      window.removeEventListener("pointermove", onMove);
-      window.removeEventListener("pointerup", onUp);
-      window.removeEventListener("pointercancel", onUp);
     };
-  }, [fit, mobileFit, segments, maxVerticalDeg, offsetY, mobileOffsetY, autoSpin]);
+  }, [fit, mobileFit, segments, offsetY, mobileOffsetY, autoSpin]);
 
   return (
     <>
