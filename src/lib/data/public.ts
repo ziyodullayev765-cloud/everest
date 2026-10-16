@@ -13,6 +13,7 @@ import type {
   Education,
   Experience,
   Media,
+  Post,
   NavItem,
   Profile,
   Project,
@@ -20,6 +21,7 @@ import type {
   Skill,
   SocialLink,
   Stat,
+  Testimonial,
 } from "@/lib/types";
 
 /**
@@ -172,4 +174,31 @@ export const getGallery = cache(() =>
       .order("sort_order", { ascending: true })
       .order("created_at", { ascending: false }),
   ),
+);
+
+export const getPosts = cache(() =>
+  list<Post>("posts", (q) =>
+    q
+      .order("featured", { ascending: false })
+      .order("published_at", { ascending: false, nullsFirst: false })
+      .order("created_at", { ascending: false }),
+  ),
+);
+
+export const getPostBySlug = cache(async (slug: string): Promise<Post | null> => {
+  const reader = await getReader();
+  if (!reader || !/^[a-z0-9-]{1,120}$/.test(slug)) return null;
+  try {
+    let q = reader.db.from("posts").select("*").eq("slug", slug);
+    if (!reader.preview) q = q.eq("status", "published");
+    const { data, error } = await q.maybeSingle();
+    if (error) throw error;
+    return data ? localizeRow(data as Post, "posts", await getLocale()) : null;
+  } catch (err) {
+    throw loadError("posts", err);
+  }
+});
+
+export const getTestimonials = cache(() =>
+  list<Testimonial>("testimonials", (q) => q.order("sort_order", { ascending: true }).order("created_at", { ascending: false })),
 );

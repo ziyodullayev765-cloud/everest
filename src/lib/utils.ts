@@ -124,3 +124,13 @@ export function isSafeHref(href: string | null | undefined): href is string {
 export function unique<T>(items: T[]): T[] {
   return Array.from(new Set(items));
 }
+
+/** "Behruz Ziyodullayev" → "BZ". */
+export function initials(name: string) {
+  return name
+    .trim()
+    .split(/\s+/)
+    .slice(0, 2)
+    .map((w) => w[0]?.toUpperCase() ?? "")
+    .join("");
+}

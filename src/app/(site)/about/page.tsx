@@ -1,3 +1,4 @@
+import { initials } from "@/lib/utils";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight, Download, MapPin } from "lucide-react";
@@ -24,15 +25,6 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-function initials(name: string) {
-  return name
-    .trim()
-    .split(/\s+/)
-    .slice(0, 2)
-    .map((w) => w[0]?.toUpperCase() ?? "")
-    .join("");
-}
-
 function Block({ title, text }: { title: string; text: string }) {
   if (!text.trim() || isPlaceholder(text)) return null;
   return (
@@ -52,7 +44,7 @@ export default async function AboutPage() {
     getEducation(),
     getExperience(),
   ]);
-  const resume = settings.show_resume ? profile.resume_url : null;
+  const resume = settings.show_resume ? "/resume" : null;
 
   return (
     <>

@@ -3,8 +3,9 @@
 import { useRouter } from "next/navigation";
 import { useMemo, useState, useTransition } from "react";
 import { toast } from "sonner";
-import { Archive, ArchiveRestore, Mail, MailOpen, Reply, Search, Trash2 } from "lucide-react";
+import { Archive, ArchiveRestore, Mail, MailOpen, Search, Trash2 } from "lucide-react";
 import { deleteMessage, setMessageStatus } from "@/app/admin/actions/messages";
+import { QuickReply } from "./quick-reply";
 import { ConfirmDialog, EmptyBlock, Input, Select, btnClass } from "./ui";
 import type { ContactMessage, MessageStatus } from "@/lib/types";
 import { cn, formatDateTime } from "@/lib/utils";
@@ -102,13 +103,8 @@ export function MessagesInbox({ initial }: { initial: ContactMessage[] }) {
                 {expanded && (
                   <div className="border-line border-t px-4 pt-3 pb-4 sm:pl-11">
                     <p className="text-fg/90 text-sm leading-relaxed break-words whitespace-pre-wrap">{m.message}</p>
+                    <QuickReply message={m} onReplied={() => m.status === "new" && setStatus(m, "read", true)} />
                     <div className="mt-4 flex flex-wrap gap-2">
-                      <a
-                        href={`mailto:${m.email}?subject=${encodeURIComponent(`Re: ${m.subject || "Your message"}`)}`}
-                        className={btnClass("primary", "sm")}
-                      >
-                        <Reply className="size-3.5" aria-hidden /> Reply by email
-                      </a>
                       {m.status !== "new" && (
                         <button
                           type="button"

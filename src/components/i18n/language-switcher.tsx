@@ -3,7 +3,8 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState, useTransition } from "react";
 import { Check, Globe } from "lucide-react";
-import { LOCALES, LOCALE_COOKIE, LOCALE_LABELS, LOCALE_SHORT, type Locale } from "@/lib/i18n/dictionaries";
+import { storeLocale } from "@/lib/client/prefs";
+import { LOCALES, LOCALE_LABELS, LOCALE_SHORT, type Locale } from "@/lib/i18n/dictionaries";
 import { cn } from "@/lib/utils";
 import { useCopy, useLocale } from "./provider";
 
@@ -32,8 +33,7 @@ export function LanguageSwitcher({ className }: { className?: string }) {
   const choose = (l: Locale) => {
     setOpen(false);
     if (l === locale) return;
-    document.cookie = `${LOCALE_COOKIE}=${l}; path=/; max-age=31536000; samesite=lax`;
-    document.documentElement.lang = l;
+    storeLocale(l);
     start(() => router.refresh());
   };
 

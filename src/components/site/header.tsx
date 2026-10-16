@@ -8,6 +8,7 @@ import { ArrowUpRight, Download, Menu, X } from "lucide-react";
 import { useCopy } from "@/components/i18n/provider";
 import { ThemeToggle } from "@/components/effects/theme";
 import { LanguageSwitcher } from "@/components/i18n/language-switcher";
+import { PaletteButton } from "./palette-triggers";
 import type { NavItem } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
@@ -97,6 +98,7 @@ export function Header({ siteName, logoUrl, availability, nav, resumeUrl }: Prop
 
   const tools = (
     <>
+      <PaletteButton />
       <LanguageSwitcher />
       <ThemeToggle />
     </>

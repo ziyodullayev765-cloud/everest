@@ -93,6 +93,35 @@ export interface Project extends Row {
   published_at: string | null;
   seo_title: string;
   seo_description: string;
+  problem: string;
+  solution: string;
+  architecture: string;
+  results: string;
+  /** "value | label" lines. */
+  metrics: string[];
+}
+
+export interface Post extends Row {
+  slug: string;
+  title: string;
+  excerpt: string;
+  body: string;
+  cover_url: string | null;
+  cover_alt: string;
+  tags: string[];
+  featured: boolean;
+  published_at: string | null;
+  seo_title: string;
+  seo_description: string;
+}
+
+export interface Testimonial extends Row {
+  quote: string;
+  name: string;
+  role: string;
+  organization: string;
+  avatar_url: string | null;
+  url: string | null;
 }
 
 export type AchievementKind = "award" | "competition" | "certificate" | "milestone" | "other";

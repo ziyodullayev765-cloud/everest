@@ -6,6 +6,7 @@ import { GeistMono } from "geist/font/mono";
 import { getProfile, getSettings } from "@/lib/data/public";
 import { ownerName, seoDescription, seoTitle } from "@/lib/defaults";
 import { env } from "@/lib/env";
+import { SiteAnalytics } from "@/components/effects/analytics";
 import "./globals.css";
 
 const OG_LOCALE = { en: "en_US", uz: "uz_UZ", ru: "ru_RU" } as const;
@@ -68,7 +69,10 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
       </head>
-      <body className="font-sans">{children}</body>
+      <body className="font-sans">
+        {children}
+        <SiteAnalytics />
+      </body>
     </html>
   );
 }

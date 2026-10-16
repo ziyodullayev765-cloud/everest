@@ -16,6 +16,8 @@ const ENTITY_LABEL: Record<string, string> = {
   media: "Media",
   social_links: "Social link",
   stats: "Statistic",
+  posts: "Post",
+  testimonials: "Testimonial",
   profiles: "Profile",
   site_settings: "Settings",
 };

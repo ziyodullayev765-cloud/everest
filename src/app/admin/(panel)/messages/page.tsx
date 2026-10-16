@@ -12,11 +12,29 @@ export default async function MessagesAdmin() {
     .select("id, name, email, subject, message, status, created_at")
     .order("created_at", { ascending: false })
     .limit(500);
+  const msgs = (data ?? []) as ContactMessage[];
+  const now = Date.now();
+  const within = (days: number) => msgs.filter((m) => now - new Date(m.created_at).getTime() < days * 86_400_000).length;
+  const senders = new Set(msgs.map((m) => m.email.toLowerCase())).size;
+  const stats = [
+    { label: "Unread", value: msgs.filter((m) => m.status === "new").length },
+    { label: "Last 7 days", value: within(7) },
+    { label: "Last 30 days", value: within(30) },
+    { label: "Unique senders", value: senders },
+  ];
   return (
     <>
       <PageTitle title="Messages" description="Submissions from the contact form. Opening a message marks it as read." />
+      <div className="mb-4 grid grid-cols-2 gap-3 lg:grid-cols-4">
+        {stats.map((s) => (
+          <div key={s.label} className="border-line rounded-2xl border bg-white/[0.025] p-4">
+            <p className="text-muted text-xs">{s.label}</p>
+            <p className="mt-2 text-2xl font-semibold tabular-nums">{s.value}</p>
+          </div>
+        ))}
+      </div>
       <PushToggle publicKey={vapidPublicKey} configured={isPushConfigured()} />
-      <MessagesInbox initial={(data ?? []) as ContactMessage[]} />
+      <MessagesInbox initial={msgs} />
     </>
   );
 }

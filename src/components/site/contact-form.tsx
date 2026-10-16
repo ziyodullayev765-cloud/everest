@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useRef, useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
+import { trackEvent } from "@/lib/client/track";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { AnimatePresence, motion } from "motion/react";
 import { AlertCircle, CheckCircle2, Loader2, Send } from "lucide-react";
@@ -38,6 +39,7 @@ export function ContactForm() {
     startTransition(async () => {
       const res = await submitContact({ ...values, website: honeypot.current?.value ?? "", startedAt: startedAt.current });
       if (res.ok) {
+        trackEvent("Contact message sent");
         setStatus({ type: "success", text: res.message ?? copy.contact.success });
         reset();
         startedAt.current = Date.now();

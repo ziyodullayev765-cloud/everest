@@ -50,6 +50,20 @@ export const TRANSLATABLE: Record<string, TranslatableField[]> = {
     { name: "role", label: "Your role", type: "text", max: 160 },
     { name: "category", label: "Category", type: "text", max: 80 },
     { name: "description", label: "Full description", type: "markdown", max: 20000 },
+    { name: "problem", label: "Problem", type: "markdown", max: 6000 },
+    { name: "solution", label: "Solution", type: "markdown", max: 6000 },
+    { name: "architecture", label: "Architecture", type: "markdown", max: 6000 },
+    { name: "results", label: "Results", type: "markdown", max: 6000 },
+    { name: "metrics", label: "Metrics (value | label)", type: "list", max: 80 },
+  ],
+  posts: [
+    { name: "title", label: "Title", type: "text", max: 200 },
+    { name: "excerpt", label: "Excerpt", type: "textarea", max: 400 },
+    { name: "body", label: "Article", type: "markdown", max: 50000 },
+  ],
+  testimonials: [
+    { name: "quote", label: "Quote", type: "textarea", max: 800 },
+    { name: "role", label: "Role", type: "text", max: 160 },
   ],
   achievements: [
     { name: "title", label: "Title", type: "text", max: 200 },

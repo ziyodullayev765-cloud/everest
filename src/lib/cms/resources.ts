@@ -114,6 +114,49 @@ export const RESOURCES: Record<string, ResourceConfig> = {
         ],
       },
       {
+        title: "Case study",
+        description:
+          "Optional. Filled-in steps appear on the project page as an interactive Problem → Solution → Architecture → Results story.",
+        fields: [
+          {
+            name: "problem",
+            label: "Problem",
+            type: "markdown",
+            max: 6000,
+            rows: 4,
+            wide: true,
+            help: "What was wrong or missing?",
+          },
+          { name: "solution", label: "Solution", type: "markdown", max: 6000, rows: 4, wide: true, help: "What did you build?" },
+          {
+            name: "architecture",
+            label: "Architecture",
+            type: "markdown",
+            max: 6000,
+            rows: 4,
+            wide: true,
+            help: "How is it built? Stack, data flow, important decisions.",
+          },
+          {
+            name: "results",
+            label: "Results",
+            type: "markdown",
+            max: 6000,
+            rows: 4,
+            wide: true,
+            help: "What changed after launch?",
+          },
+          {
+            name: "metrics",
+            label: "Key numbers (one per line: value | label)",
+            type: "list",
+            maxItems: 8,
+            wide: true,
+            help: "e.g. 1200 | monthly users. Only real numbers.",
+          },
+        ],
+      },
+      {
         title: "Links",
         fields: [
           { name: "live_url", label: "Live demo URL", type: "url" },
@@ -353,6 +396,96 @@ export const RESOURCES: Record<string, ResourceConfig> = {
       statusSection(),
     ],
   },
+  posts: {
+    key: "posts",
+    table: "posts",
+    label: "Blog",
+    singular: "Post",
+    description: "Short technical articles: what you built, learned and how.",
+    titleField: "title",
+    subtitleField: "excerpt",
+    imageField: "cover_url",
+    searchFields: ["title", "excerpt", "body", "tags"],
+    columns: [
+      { name: "tags", label: "Tags", kind: "tags" },
+      { name: "published_at", label: "Published", kind: "date" },
+    ],
+    publicPath: (r) => (r.slug ? `/blog/${r.slug}` : null),
+    revalidate: ["/", "/blog", "/blog/[slug]"],
+    sections: [
+      {
+        title: "Article",
+        fields: [
+          { name: "title", label: "Title", type: "text", required: true, max: 200, wide: true },
+          { name: "slug", label: "URL slug", type: "slug", from: "title", help: "Used in the URL: /blog/your-slug" },
+          { name: "tags", label: "Tags", type: "tags", maxItems: 12 },
+          {
+            name: "excerpt",
+            label: "Excerpt",
+            type: "textarea",
+            max: 400,
+            rows: 3,
+            wide: true,
+            help: "One or two sentences shown in the list.",
+          },
+          {
+            name: "body",
+            label: "Article text",
+            type: "markdown",
+            max: 50000,
+            rows: 18,
+            wide: true,
+            help: "Supports **bold**, *italic*, [links](https://…), ## headings, - lists and `code`.",
+          },
+        ],
+      },
+      {
+        title: "Cover",
+        fields: [
+          { name: "cover_url", label: "Cover image", type: "image", altField: "cover_alt", wide: true },
+          { name: "cover_alt", label: "Cover alt text", type: "text", max: 300, wide: true },
+        ],
+      },
+      {
+        title: "SEO",
+        description: "Optional. Falls back to the title and excerpt.",
+        fields: [
+          { name: "seo_title", label: "SEO title", type: "text", max: 120 },
+          { name: "seo_description", label: "SEO description", type: "textarea", max: 320, rows: 3 },
+        ],
+      },
+      statusSection([{ name: "featured", label: "Pin to the top", type: "boolean" }]),
+    ],
+  },
+
+  testimonials: {
+    key: "testimonials",
+    table: "testimonials",
+    label: "Testimonials",
+    singular: "Testimonial",
+    description: "Words from mentors, teammates or clients. Only publish real quotes, with permission.",
+    titleField: "name",
+    subtitleField: "quote",
+    imageField: "avatar_url",
+    searchFields: ["name", "quote", "role", "organization"],
+    columns: [{ name: "organization", label: "Organization" }],
+    publicPath: () => "/",
+    revalidate: ["/", "/about"],
+    sections: [
+      {
+        title: "Testimonial",
+        fields: [
+          { name: "quote", label: "Quote", type: "textarea", required: true, max: 800, rows: 5, wide: true },
+          { name: "name", label: "Person", type: "text", required: true, max: 120 },
+          { name: "role", label: "Role", type: "text", max: 160, placeholder: "e.g. Teacher" },
+          { name: "organization", label: "Organization", type: "text", max: 160 },
+          { name: "url", label: "Profile link (optional)", type: "url" },
+          { name: "avatar_url", label: "Photo (optional)", type: "image", wide: true },
+        ],
+      },
+      statusSection(),
+    ],
+  },
 };
 
 export type ResourceKey = keyof typeof RESOURCES;
@@ -535,7 +668,12 @@ export const SETTINGS_CONFIG: SingletonConfig = {
           wide: true,
           help: "Empty = “© year Your Name”.",
         },
-        { name: "show_resume", label: "Show “Download CV” button (when a CV is uploaded)", type: "boolean", wide: true },
+        {
+          name: "show_resume",
+          label: "Show “Download CV” button (your uploaded PDF, or one generated automatically from the site)",
+          type: "boolean",
+          wide: true,
+        },
       ],
     },
     {

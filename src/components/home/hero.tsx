@@ -51,11 +51,11 @@ export function Hero({
       </div>
 
       <div id="start" className="flex scroll-mt-28 flex-wrap justify-center gap-3 px-4 pt-14 pb-12">
-        <Link href="#projects" className="ed-button ed-button--accent group">
+        <Link href="#projects" className="ed-button ed-button--accent group" data-track="Hero: projects">
           {primaryLabel}
           <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" aria-hidden />
         </Link>
-        <Link href="#contact" className="ed-button">
+        <Link href="#contact" className="ed-button" data-track="Hero: contact">
           {secondaryLabel}
         </Link>
       </div>
