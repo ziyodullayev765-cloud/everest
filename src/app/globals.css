@@ -228,6 +228,24 @@ html.light:has(.site-root) body {
   .prose-rich h3 {
     font-size: 1.15rem;
   }
+  /* Privacy policy: calmer serif section heads with a hairline above each */
+  .privacy-text h2 {
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: clamp(1.4rem, 3vw, 1.75rem);
+    text-transform: none;
+    border-top: 1px solid var(--border);
+    padding-top: 1.6em;
+    margin-top: 2.2em;
+  }
+  .privacy-text h3 {
+    text-transform: none;
+  }
+  .privacy-text > p:first-child {
+    color: var(--fg-secondary);
+    font-size: 0.85rem;
+    letter-spacing: 0.04em;
+  }
   .prose-rich strong {
     color: var(--fg);
     font-weight: 600;
