@@ -2,6 +2,8 @@
 
 import { createHash } from "node:crypto";
 import { headers } from "next/headers";
+import { after } from "next/server";
+import { sendPushToAdmins } from "@/lib/push";
 import { getCopy } from "@/lib/i18n/server";
 import { isSupabaseConfigured } from "@/lib/env";
 import { clientIp, rateLimit } from "@/lib/rate-limit";
@@ -55,6 +57,16 @@ export async function submitContact(input: {
       console.error("[contact] rpc error:", error.code, error.message);
       return { ok: false, error: copy.contact.errorGeneric };
     }
+    // Notify the admin's devices once the visitor already has their answer.
+    const { name, subject, message } = parsed.data;
+    after(() =>
+      sendPushToAdmins({
+        title: `New message from ${name}`,
+        body: (subject?.trim() || message).replace(/\s+/g, " ").slice(0, 140),
+        url: "/admin/messages",
+        tag: "contact",
+      }).catch((err) => console.error("[contact] push failed:", err)),
+    );
     return { ok: true, message: copy.contact.success };
   } catch (err) {
     console.error("[contact] failed:", err);

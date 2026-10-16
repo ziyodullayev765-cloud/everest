@@ -1,0 +1,14 @@
+{
+  "name": "Portfolio Admin",
+  "short_name": "Admin",
+  "description": "Manage the portfolio and get notified about new messages.",
+  "start_url": "/admin",
+  "scope": "/admin/",
+  "display": "standalone",
+  "background_color": "#0d0d0d",
+  "theme_color": "#0d0d0d",
+  "icons": [
+    { "src": "/brand-icon?size=192", "sizes": "192x192", "type": "image/png" },
+    { "src": "/brand-icon?size=512", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}
