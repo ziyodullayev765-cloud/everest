@@ -487,6 +487,14 @@ export const SETTINGS_CONFIG: SingletonConfig = {
         },
         { name: "enable_3d", label: "Let the 3D image dome drift on its own", type: "boolean" },
         { name: "enable_particles", label: "Ambient particles (unused by the current design)", type: "boolean" },
+        {
+          name: "github_username",
+          label: "GitHub username (activity graph)",
+          type: "text",
+          max: 39,
+          placeholder: "e.g. ziyodullayev765-cloud",
+          help: "Shows your public GitHub activity on the home page. Leave empty to hide it.",
+        },
       ],
     },
     {

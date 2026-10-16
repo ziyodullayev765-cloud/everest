@@ -1,5 +1,5 @@
 import Link from "next/link";
-import type { ReactNode } from "react";
+import { Fragment, type CSSProperties, type ReactNode } from "react";
 import { getCopy } from "@/lib/i18n/server";
 
 /**
@@ -29,14 +29,19 @@ export async function PageHeader({
         <span aria-current="page">{title}</span>
       </nav>
       {eyebrow && <p className="ed-eyebrow mt-8">{eyebrow}</p>}
-      <h1 className="page-title">
-        {words.join(" ")}
-        {last && (
-          <>
-            {" "}
-            <em>{last}</em>
-          </>
-        )}
+      <h1 className="page-title" aria-label={title}>
+        <span aria-hidden>
+          {[...words, ...(last ? [last] : [])].map((w, i, all) => (
+            <Fragment key={i}>
+              {i > 0 && " "}
+              <span className="reveal-line">
+                <span className="reveal-word" style={{ "--i": i } as CSSProperties}>
+                  {last && i === all.length - 1 ? <em>{w}</em> : w}
+                </span>
+              </span>
+            </Fragment>
+          ))}
+        </span>
       </h1>
       {lead && <p className="ed-intro page-lead">{lead}</p>}
       {children && <div className="mt-8">{children}</div>}

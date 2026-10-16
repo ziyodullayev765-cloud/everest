@@ -52,6 +52,12 @@ const en = {
   },
 
   homePage: {
+    githubEyebrow: "Activity",
+    githubTitle: "Code, week after week",
+    githubTotal: "contributions in the last year",
+    githubOpen: "Open GitHub",
+    githubLess: "Less",
+    githubMore: "More",
     ctaPrimary: "Explore Projects",
     ctaSecondary: "Start a Project",
     highlightsLead: "The results I am proudest of, and the numbers behind them.",
@@ -245,6 +251,12 @@ const uz: Copy = {
   },
 
   homePage: {
+    githubEyebrow: "Faollik",
+    githubTitle: "Har hafta kod yozaman",
+    githubTotal: "ta hissa — so‘nggi bir yilda",
+    githubOpen: "GitHub’ni ochish",
+    githubLess: "Kam",
+    githubMore: "Ko‘p",
     ctaPrimary: "Loyihalarni ko‘rish",
     ctaSecondary: "Loyiha boshlash",
     highlightsLead: "Eng faxrlanadigan natijalarim va ularning ortidagi raqamlar.",
@@ -436,6 +448,12 @@ const ru: Copy = {
   },
 
   homePage: {
+    githubEyebrow: "Активность",
+    githubTitle: "Код — неделя за неделей",
+    githubTotal: "вкладов за последний год",
+    githubOpen: "Открыть GitHub",
+    githubLess: "Меньше",
+    githubMore: "Больше",
     ctaPrimary: "Смотреть проекты",
     ctaSecondary: "Начать проект",
     highlightsLead: "Результаты, которыми я горжусь больше всего, и цифры за ними.",

@@ -7,6 +7,7 @@ import { useCopy } from "@/components/i18n/provider";
 import type { Project } from "@/lib/types";
 import { unique } from "@/lib/utils";
 import { HomeHeading } from "./section-heading";
+import { useRevealOnce } from "@/components/site/ed-section";
 
 function badgeFor(p: Project) {
   const role = p.role.toLowerCase();
@@ -32,15 +33,17 @@ function ProjectCard({ project, index }: { project: Project; index: number }) {
       href={`/projects/${project.slug}`}
       className="group bronze-border border-line bg-surface hover:border-line-strong flex w-[82vw] max-w-[420px] shrink-0 snap-center flex-col overflow-hidden rounded-3xl border shadow-[var(--shadow)] transition-[transform,box-shadow,border-color] duration-300 hover:-translate-y-1.5 hover:shadow-[var(--shadow-hover)] sm:w-[380px] lg:w-[420px]"
     >
-      <div className="relative aspect-[16/10] overflow-hidden">
+      <div className="reveal-img relative aspect-[16/10] overflow-hidden">
         {image ? (
-          <SmartImage
-            src={image.src}
-            alt={image.alt}
-            fill
-            sizes="420px"
-            className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.06]"
-          />
+          <div data-parallax className="absolute inset-[-8%_0]">
+            <SmartImage
+              src={image.src}
+              alt={image.alt}
+              fill
+              sizes="420px"
+              className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.06]"
+            />
+          </div>
         ) : (
           <div
             aria-hidden
@@ -94,6 +97,8 @@ function ProjectCard({ project, index }: { project: Project; index: number }) {
 export function Projects({ projects, labels }: { projects: Project[]; labels: { hint: string } }) {
   const copy = useCopy();
   const row = useRef<HTMLDivElement>(null);
+  const section = useRef<HTMLElement>(null);
+  useRevealOnce(section);
 
   useEffect(() => {
     const el = row.current;
@@ -151,7 +156,7 @@ export function Projects({ projects, labels }: { projects: Project[]; labels: { 
   }, [projects.length]);
 
   return (
-    <section id="projects" aria-labelledby="projects-title" className="scroll-mt-24 py-14 sm:py-20">
+    <section ref={section} id="projects" aria-labelledby="projects-title" className="ed-section scroll-mt-24 py-14 sm:py-20">
       <div className="mx-auto w-[min(1200px,calc(100%-2rem))]">
         <HomeHeading
           id="projects-title"
@@ -170,6 +175,7 @@ export function Projects({ projects, labels }: { projects: Project[]; labels: { 
           role="region"
           aria-label={copy.sections.featuredProjects}
           tabIndex={0}
+          data-stagger
           className="mt-10 flex snap-x snap-mandatory scroll-px-4 [scrollbar-width:none] gap-6 overflow-x-auto px-4 pb-6 data-[dragging=true]:cursor-grabbing data-[dragging=true]:snap-none data-[dragging=true]:select-none sm:scroll-px-[max(1rem,calc((100vw-1200px)/2))] sm:px-[max(1rem,calc((100vw-1200px)/2))] lg:cursor-grab [&::-webkit-scrollbar]:hidden"
         >
           {projects.map((p, i) => (

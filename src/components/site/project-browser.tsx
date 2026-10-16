@@ -12,7 +12,8 @@ import { monthYear } from "@/lib/i18n/dictionaries";
 
 export function ProjectBrowser({ projects }: { projects: Project[] }) {
   const copy = useCopy();
-  const [view, setView] = useState<"grid" | "list">("grid");
+  const [view, setView] = useState<"grid" | "list">("list");
+  const [active, setActive] = useState(0);
   const [category, setCategory] = useState<string>("");
   const [tag, setTag] = useState<string>("");
   const [query, setQuery] = useState("");
@@ -35,6 +36,8 @@ export function ProjectBrowser({ projects }: { projects: Project[] }) {
       "h-9 rounded-full px-4 text-sm transition-colors",
       active ? "bg-fg text-bg" : "border border-line text-muted hover:border-line-strong hover:text-fg",
     );
+
+  const current = active < filtered.length ? active : 0;
 
   return (
     <div>
@@ -141,31 +144,48 @@ export function ProjectBrowser({ projects }: { projects: Project[] }) {
           </AnimatePresence>
         </motion.ul>
       ) : (
-        <ul className="divide-line border-line mt-10 divide-y border-y">
-          {filtered.map((p) => (
-            <li key={p.id}>
-              <Link
-                href={`/projects/${p.slug}`}
-                className="group grid grid-cols-[88px_1fr_auto] items-center gap-4 py-5 sm:grid-cols-[140px_1fr_auto] sm:gap-6"
-              >
-                <ProjectThumb project={p} className="aspect-[4/3] rounded-xl" />
-                <div className="min-w-0">
-                  <p className="text-subtle font-mono text-[0.7rem] tracking-[0.16em] uppercase">
-                    {[p.category, monthYear(p.completed_on ?? p.started_on, copy)].filter(Boolean).join(" · ")}
-                  </p>
-                  <h3 className="group-hover:text-accent mt-1 truncate text-lg font-semibold tracking-tight transition sm:text-xl">
-                    {p.title}
-                  </h3>
-                  {p.summary && <p className="text-muted mt-1 line-clamp-1 text-sm">{p.summary}</p>}
+        <div className="mt-10 grid gap-10 lg:grid-cols-[minmax(0,1fr)_400px]">
+          <ul className="border-line border-t">
+            {filtered.map((p, i) => (
+              <li key={p.id} className="border-line border-b">
+                <Link
+                  href={`/projects/${p.slug}`}
+                  onMouseEnter={() => setActive(i)}
+                  onFocus={() => setActive(i)}
+                  data-active={current === i || undefined}
+                  className="project-row group grid grid-cols-[auto_1fr_auto] items-center gap-4 py-6 sm:gap-8 sm:py-8"
+                >
+                  <span className="text-subtle w-8 font-mono text-xs">{String(i + 1).padStart(2, "0")}</span>
+                  <span className="min-w-0">
+                    <span className="project-row-title font-display block truncate text-[clamp(1.7rem,4.5vw,3.4rem)] leading-[1.05] normal-case">
+                      {p.title}
+                    </span>
+                    <span className="text-muted mt-2 block truncate text-sm">
+                      {[p.category, monthYear(p.completed_on ?? p.started_on, copy)].filter(Boolean).join(" · ")}
+                    </span>
+                  </span>
+                  <span className="relative block w-20 shrink-0 overflow-hidden rounded-xl lg:hidden">
+                    <ProjectThumb project={p} className="aspect-[4/3]" />
+                  </span>
+                  <ArrowUpRight className="project-row-arrow text-subtle hidden size-6 lg:block" aria-hidden />
+                </Link>
+              </li>
+            ))}
+          </ul>
+          {/* Desktop: the hovered project's cover, cross-fading in a sticky frame. */}
+          <div className="hidden lg:block">
+            <div className="border-line sticky top-28 aspect-[4/5] overflow-hidden rounded-[1.75rem] border">
+              {filtered.map((p, i) => (
+                <div key={p.id} className="project-preview" data-active={current === i || undefined} aria-hidden>
+                  <ProjectThumb project={p} className="absolute inset-0" />
+                  {p.summary && (
+                    <p className="absolute inset-x-0 bottom-0 p-6 text-sm leading-relaxed text-white/90">{p.summary}</p>
+                  )}
                 </div>
-                <ArrowUpRight
-                  className="text-subtle group-hover:text-accent size-5 transition group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
-                  aria-hidden
-                />
-              </Link>
-            </li>
-          ))}
-        </ul>
+              ))}
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

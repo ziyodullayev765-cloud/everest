@@ -5,6 +5,7 @@ import { CursorGlow } from "@/components/effects/cursor-glow";
 import { MusicDock } from "@/components/effects/sound";
 import { MediaGuard } from "@/components/effects/media-guard";
 import { SmoothScroll } from "@/components/effects/smooth-scroll";
+import { Parallax } from "@/components/effects/parallax";
 import { SoundProvider } from "@/components/effects/sound";
 import { MotionProvider } from "@/components/ui/motion-provider";
 import { getProfile, getSettings, getSocialLinks, isPreview } from "@/lib/data/public";
@@ -35,6 +36,7 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
             <MusicDock />
             <MediaGuard />
             <SmoothScroll />
+            <Parallax />
             <Header
               siteName={name}
               logoUrl={settings.logo_url}
