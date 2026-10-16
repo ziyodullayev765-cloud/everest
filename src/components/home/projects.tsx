@@ -7,8 +7,6 @@ import { useCopy } from "@/components/i18n/provider";
 import type { Project } from "@/lib/types";
 import { unique } from "@/lib/utils";
 import { HomeHeading } from "./section-heading";
-import { ProjectLink } from "@/components/site/project-quick-view";
-import { useRevealOnce } from "@/components/site/ed-section";
 
 function badgeFor(p: Project) {
   const role = p.role.toLowerCase();
@@ -28,24 +26,21 @@ function ProjectCard({ project, index }: { project: Project; index: number }) {
       ? { src: project.gallery[0].url, alt: project.gallery[0].alt || project.title }
       : null;
   return (
-    <ProjectLink
-      project={project}
+    <Link
       data-card
-      data-tilt
       draggable={false}
+      href={`/projects/${project.slug}`}
       className="group bronze-border border-line bg-surface hover:border-line-strong flex w-[82vw] max-w-[420px] shrink-0 snap-center flex-col overflow-hidden rounded-3xl border shadow-[var(--shadow)] transition-[transform,box-shadow,border-color] duration-300 hover:-translate-y-1.5 hover:shadow-[var(--shadow-hover)] sm:w-[380px] lg:w-[420px]"
     >
       <div className="relative aspect-[16/10] overflow-hidden">
         {image ? (
-          <div data-parallax className="absolute inset-[-8%_0]">
-            <SmartImage
-              src={image.src}
-              alt={image.alt}
-              fill
-              sizes="420px"
-              className="object-cover transition-[transform,filter] duration-700 ease-out group-hover:scale-[1.06] group-hover:brightness-110"
-            />
-          </div>
+          <SmartImage
+            src={image.src}
+            alt={image.alt}
+            fill
+            sizes="420px"
+            className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.06]"
+          />
         ) : (
           <div
             aria-hidden
@@ -87,7 +82,7 @@ function ProjectCard({ project, index }: { project: Project; index: number }) {
           {year && <span className="text-muted shrink-0 font-mono text-xs">{year}</span>}
         </div>
       </div>
-    </ProjectLink>
+    </Link>
   );
 }
 
@@ -99,8 +94,6 @@ function ProjectCard({ project, index }: { project: Project; index: number }) {
 export function Projects({ projects, labels }: { projects: Project[]; labels: { hint: string } }) {
   const copy = useCopy();
   const row = useRef<HTMLDivElement>(null);
-  const section = useRef<HTMLElement>(null);
-  useRevealOnce(section);
 
   useEffect(() => {
     const el = row.current;
@@ -158,7 +151,7 @@ export function Projects({ projects, labels }: { projects: Project[]; labels: { 
   }, [projects.length]);
 
   return (
-    <section ref={section} id="projects" aria-labelledby="projects-title" className="ed-section scroll-mt-24 py-14 sm:py-20">
+    <section id="projects" aria-labelledby="projects-title" className="scroll-mt-24 py-14 sm:py-20">
       <div className="mx-auto w-[min(1200px,calc(100%-2rem))]">
         <HomeHeading
           id="projects-title"

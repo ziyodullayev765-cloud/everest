@@ -39,7 +39,6 @@ export interface SiteSettings {
   accent_color: string;
   enable_3d: boolean;
   enable_particles: boolean;
-  ui_sounds: boolean;
   hero_eyebrow: string;
   hero_title: string;
   hero_description: string;
