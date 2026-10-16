@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { ProjectLink } from "./project-quick-view";
 import { SmartImage } from "@/components/ui/smart-image";
 import type { Project } from "@/lib/types";
 import { cn } from "@/lib/utils";
@@ -18,14 +18,16 @@ export function ProjectThumb({ project, className, priority }: { project: Projec
   return (
     <div className={cn("bg-bg-elevated relative overflow-hidden", className)}>
       {project.thumbnail_url ? (
-        <SmartImage
-          src={project.thumbnail_url}
-          alt={project.thumbnail_alt || project.title}
-          fill
-          priority={priority}
-          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-          className="ease-out-expo object-cover transition-transform duration-[1.2s] group-hover:scale-[1.04]"
-        />
+        <div data-parallax className="absolute inset-[-8%_0]">
+          <SmartImage
+            src={project.thumbnail_url}
+            alt={project.thumbnail_alt || project.title}
+            fill
+            priority={priority}
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 100vw"
+            className="ease-out-expo object-cover transition-[transform,filter] duration-[1.2s] group-hover:scale-[1.04] group-hover:brightness-110"
+          />
+        </div>
       ) : (
         <div className="absolute inset-0 grid place-items-center">
           <div
@@ -53,7 +55,10 @@ export function ProjectCard({
   featuredLabel?: string;
 }) {
   return (
-    <article className="border-rainbow group border-line ease-out-expo hover:border-line-strong relative flex h-full flex-col overflow-hidden rounded-[1.75rem] border bg-white/[0.02] transition-all duration-500 hover:-translate-y-1 hover:bg-white/[0.035] hover:shadow-[0_30px_80px_-30px_rgba(0,0,0,0.9)]">
+    <article
+      data-tilt
+      className="border-rainbow group border-line ease-out-expo hover:border-line-strong relative flex h-full flex-col overflow-hidden rounded-[1.75rem] border bg-white/[0.02] transition-all duration-500 hover:-translate-y-1 hover:bg-white/[0.035] hover:shadow-[0_30px_80px_-30px_rgba(0,0,0,0.9)]"
+    >
       <ProjectThumb project={project} priority={priority} className="aspect-[16/10]" />
       <div className="flex flex-1 flex-col p-6">
         <div className="text-subtle mb-3 flex flex-wrap items-center gap-2 text-xs">
@@ -65,13 +70,9 @@ export function ProjectCard({
           )}
         </div>
         <h3 className="text-xl font-semibold tracking-tight">
-          <Link
-            href={`/projects/${project.slug}`}
-
-            className="after:absolute after:inset-0 after:content-['']"
-          >
+          <ProjectLink project={project} className="after:absolute after:inset-0 after:content-['']">
             {project.title}
-          </Link>
+          </ProjectLink>
         </h3>
         {project.summary && <p className="text-muted mt-2 line-clamp-3 text-[0.95rem] leading-relaxed">{project.summary}</p>}
         <div className="mt-auto flex items-end justify-between gap-4 pt-6">

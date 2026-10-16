@@ -487,6 +487,12 @@ export const SETTINGS_CONFIG: SingletonConfig = {
         },
         { name: "enable_3d", label: "Let the 3D image dome drift on its own", type: "boolean" },
         { name: "enable_particles", label: "Ambient particles (unused by the current design)", type: "boolean" },
+        {
+          name: "ui_sounds",
+          label: "Soft click sounds on buttons and links",
+          type: "boolean",
+          help: "A very quiet tick when visitors press a button or link — makes the site feel like an app.",
+        },
       ],
     },
     {
