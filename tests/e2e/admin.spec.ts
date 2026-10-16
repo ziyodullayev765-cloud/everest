@@ -319,6 +319,20 @@ test.describe("as admin", () => {
     await expect(page.getByText(`Hello from the end-to-end test ${stamp}`).last()).toBeVisible();
   });
 
+  test("messages page offers push notifications and the admin can be installed", async ({ page, context, baseURL }) => {
+    await context.grantPermissions(["notifications"], { origin: new URL(baseURL!).origin });
+    await page.goto("/admin/messages");
+    await expect(page.getByText("Push notifications", { exact: true })).toBeVisible();
+    // Either the switch is offered, or (headless browsers often report notifications
+    // as blocked) the card explains how to allow them.
+    await expect(
+      page.getByRole("button", { name: "Turn on" }).or(page.getByText(/Notifications are blocked for this site/)),
+    ).toBeVisible();
+    await expect(page.locator('link[rel="manifest"]')).toHaveAttribute("href", "/admin.webmanifest");
+    const sw = await page.request.get("/sw.js");
+    expect(sw.ok()).toBe(true);
+  });
+
   test("sign out ends the session", async ({ page }) => {
     await page.goto("/admin");
     await expect(page.getByRole("heading", { name: "Overview" })).toBeVisible();

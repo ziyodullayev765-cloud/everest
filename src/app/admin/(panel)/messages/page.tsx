@@ -1,6 +1,8 @@
 import { MessagesInbox } from "@/components/admin/messages-inbox";
 import { PageTitle } from "@/components/admin/ui";
 import { requireAdminPage } from "@/lib/auth";
+import { PushToggle } from "@/components/admin/push-toggle";
+import { isPushConfigured, vapidPublicKey } from "@/lib/push";
 import type { ContactMessage } from "@/lib/types";
 
 export default async function MessagesAdmin() {
@@ -13,6 +15,7 @@ export default async function MessagesAdmin() {
   return (
     <>
       <PageTitle title="Messages" description="Submissions from the contact form. Opening a message marks it as read." />
+      <PushToggle publicKey={vapidPublicKey} configured={isPushConfigured()} />
       <MessagesInbox initial={(data ?? []) as ContactMessage[]} />
     </>
   );

@@ -5,7 +5,13 @@ import { SetupNotice } from "@/components/admin/setup-notice";
 import { requireAdminPage } from "@/lib/auth";
 import { isSupabaseConfigured } from "@/lib/env";
 
-export const metadata: Metadata = { title: "Admin", robots: { index: false, follow: false } };
+export const metadata: Metadata = {
+  title: "Admin",
+  robots: { index: false, follow: false },
+  // Installable as its own app (needed for push notifications on iPhone/iPad).
+  manifest: "/admin.webmanifest",
+  appleWebApp: { capable: true, title: "Admin", statusBarStyle: "black-translucent" },
+};
 export const dynamic = "force-dynamic";
 
 export default async function PanelLayout({ children }: { children: React.ReactNode }) {
