@@ -35,7 +35,13 @@ const securityHeaders = [
 const nextConfig: NextConfig = {
   poweredByHeader: false,
   // Generated brand artwork is read from disk at render time (OG image, ambient background).
-  outputFileTracingIncludes: { "/**": ["./public/brand/**/*"] },
+  outputFileTracingIncludes: {
+    "/**": ["./public/brand/**/*"],
+    "/cv.pdf": [
+      "./node_modules/geist/dist/fonts/geist-sans/Geist-Regular.ttf",
+      "./node_modules/geist/dist/fonts/geist-sans/Geist-SemiBold.ttf",
+    ],
+  },
   reactStrictMode: true,
   images: {
     formats: ["image/avif", "image/webp"],

@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { ArrowRight, ArrowUpRight, Code2 } from "lucide-react";
 import { ProjectThumb } from "@/components/site/project-card";
 import { ImageGallery } from "@/components/site/image-gallery";
+import { CaseStudy } from "@/components/site/case-study";
 import { Reveal } from "@/components/ui/reveal";
 import { RichText } from "@/components/ui/rich-text";
 import { getCopy } from "@/lib/i18n/server";
@@ -68,6 +69,22 @@ export default async function ProjectPage({ params }: Params) {
   const at = all.findIndex((p) => p.id === project.id);
   const next = all.length > 1 && at >= 0 ? all[(at + 1) % all.length] : null;
   const hasBody = !!project.description.trim();
+  const metrics = (project.metrics ?? [])
+    .map((m) => {
+      const [value, ...rest] = m.split("|");
+      return { value: value!.trim(), label: rest.join("|").trim() };
+    })
+    .filter((m) => m.value);
+  const caseSteps = (
+    [
+      ["problem", copy.caseStudy.problem, project.problem],
+      ["solution", copy.caseStudy.solution, project.solution],
+      ["architecture", copy.caseStudy.architecture, project.architecture],
+      ["results", copy.caseStudy.results, project.results],
+    ] as const
+  )
+    .filter(([, , text]) => !!text?.trim())
+    .map(([key, label, text]) => ({ key, label, content: <RichText text={text} /> }));
   const details = (
     <>
       {meta.length > 0 && (
@@ -148,6 +165,33 @@ export default async function ProjectPage({ params }: Params) {
             <div className="glass rounded-3xl p-6 sm:p-8">{details}</div>
           </div>
         )
+      )}
+
+      {(caseSteps.length > 0 || metrics.length > 0) && (
+        <section className="mx-auto mt-20 w-[min(1200px,calc(100%-2rem))]" aria-labelledby="case-study">
+          <h2 id="case-study" className="ed-eyebrow">
+            {copy.caseStudy.title}
+          </h2>
+          {metrics.length > 0 && (
+            <div
+              className="border-line mt-8 grid gap-px overflow-hidden rounded-3xl border bg-[var(--border)]"
+              style={{ gridTemplateColumns: `repeat(${metrics.length === 1 ? 1 : 2}, minmax(0, 1fr))` }}
+              data-metrics={metrics.length}
+            >
+              {metrics.map((m, i) => (
+                <Reveal key={i} delay={i * 0.06} className="bg-[var(--bg)] p-6 sm:p-8">
+                  <p className="cs-metric-value">{m.value}</p>
+                  {m.label && <p className="text-muted mt-3 text-sm">{m.label}</p>}
+                </Reveal>
+              ))}
+            </div>
+          )}
+          {caseSteps.length > 0 && (
+            <div className="mt-10">
+              <CaseStudy steps={caseSteps} prevLabel={copy.caseStudy.prev} nextLabel={copy.caseStudy.next} />
+            </div>
+          )}
+        </section>
       )}
 
       {project.gallery.length > 0 && (

@@ -32,27 +32,46 @@ export function domeTileCount(segments = 34) {
  * pass on every frame, which is what made scrolling stutter.
  */
 const greyCache = new Map<string, Promise<string>>();
+const MAX_SIDE = 320;
+
+/** Runs the work when the browser is idle, so the dome never delays the first paint. */
+function whenIdle(): Promise<void> {
+  return new Promise((resolve) => {
+    if (typeof window.requestIdleCallback === "function") window.requestIdleCallback(() => resolve(), { timeout: 2500 });
+    else setTimeout(resolve, 200);
+  });
+}
+
 function toGrey(url: string): Promise<string> {
   let p = greyCache.get(url);
   if (!p) {
     p = (async () => {
+      await whenIdle();
       const img = new Image();
       img.crossOrigin = "anonymous";
       img.src = url;
       await img.decode();
+      const scale = Math.min(1, MAX_SIDE / Math.max(img.naturalWidth, img.naturalHeight));
       const canvas = document.createElement("canvas");
-      canvas.width = img.naturalWidth;
-      canvas.height = img.naturalHeight;
-      const ctx = canvas.getContext("2d", { willReadFrequently: true });
+      canvas.width = Math.max(1, Math.round(img.naturalWidth * scale));
+      canvas.height = Math.max(1, Math.round(img.naturalHeight * scale));
+      const ctx = canvas.getContext("2d");
       if (!ctx) throw new Error("no 2d context");
-      ctx.drawImage(img, 0, 0);
-      const data = ctx.getImageData(0, 0, canvas.width, canvas.height); // throws if the image is cross-origin
-      const px = data.data;
-      for (let i = 0; i < px.length; i += 4) {
-        const l = px[i]! * 0.2126 + px[i + 1]! * 0.7152 + px[i + 2]! * 0.0722;
-        px[i] = px[i + 1] = px[i + 2] = l;
+      if (typeof (ctx as { filter?: unknown }).filter === "string") {
+        // One GPU-backed draw instead of a per-pixel loop.
+        ctx.filter = "grayscale(1)";
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        ctx.getImageData(0, 0, 1, 1); // throws if the image is cross-origin
+      } else {
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        const data = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        const px = data.data;
+        for (let i = 0; i < px.length; i += 4) {
+          const l = px[i]! * 0.2126 + px[i + 1]! * 0.7152 + px[i + 2]! * 0.0722;
+          px[i] = px[i + 1] = px[i + 2] = l;
+        }
+        ctx.putImageData(data, 0, 0);
       }
-      ctx.putImageData(data, 0, 0);
       const blob = await new Promise<Blob | null>((res) => canvas.toBlob(res, "image/webp", 0.82));
       if (!blob) throw new Error("encode failed");
       return URL.createObjectURL(blob);

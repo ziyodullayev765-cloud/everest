@@ -1,11 +1,11 @@
 import type { MetadataRoute } from "next";
-import { getProjects, getSettings } from "@/lib/data/public";
+import { getPosts, getProjects, getSettings } from "@/lib/data/public";
 import { env } from "@/lib/env";
 
 export const revalidate = 3600;
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const [settings, projects] = await Promise.all([getSettings(), getProjects()]);
+  const [settings, projects, posts] = await Promise.all([getSettings(), getProjects(), getPosts()]);
   const base = (settings.site_url || env.siteUrl).replace(/\/+$/, "");
   const now = new Date();
   const pages = [
@@ -19,6 +19,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     "/gallery",
     "/contact",
     "/privacy",
+    ...(posts.length ? ["/blog"] : []),
   ];
   return [
     ...pages.map((p) => ({
@@ -32,6 +33,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       lastModified: new Date(p.updated_at),
       changeFrequency: "monthly" as const,
       priority: 0.8,
+    })),
+    ...posts.map((p) => ({
+      url: `${base}/blog/${p.slug}`,
+      lastModified: new Date(p.updated_at),
+      changeFrequency: "monthly" as const,
+      priority: 0.6,
     })),
   ];
 }

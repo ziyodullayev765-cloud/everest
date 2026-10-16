@@ -5,6 +5,7 @@ import { Highlights } from "@/components/home/highlights";
 import { Projects } from "@/components/home/projects";
 import { Skills } from "@/components/home/skills";
 import { GithubActivity } from "@/components/home/github-activity";
+import { Testimonials } from "@/components/home/testimonials";
 import { getContributions, githubUserFromUrl, isGithubUsername } from "@/lib/github";
 import type { DomeTileData } from "@/components/site/dome-gallery";
 import {
@@ -17,6 +18,7 @@ import {
   getSkills,
   getSocialLinks,
   getStats,
+  getTestimonials,
 } from "@/lib/data/public";
 import { DEFAULT_SETTINGS, isPlaceholder, ownerName } from "@/lib/defaults";
 import { getCopy } from "@/lib/i18n/server";
@@ -31,17 +33,20 @@ function uiLabel(value: string, builtIn: string, translated: string) {
 
 export default async function HomePage() {
   const copy = await getCopy();
-  const [settings, profile, projects, achievements, skills, stats, experience, social, gallery] = await Promise.all([
-    getSettings(),
-    getProfile(),
-    getProjects(),
-    getAchievements(),
-    getSkills(),
-    getStats(),
-    getExperience(),
-    getSocialLinks(),
-    getGallery(),
-  ]);
+  const [settings, profile, projects, achievements, skills, stats, experience, social, gallery, testimonials] = await Promise.all(
+    [
+      getSettings(),
+      getProfile(),
+      getProjects(),
+      getAchievements(),
+      getSkills(),
+      getStats(),
+      getExperience(),
+      getSocialLinks(),
+      getGallery(),
+      getTestimonials(),
+    ],
+  );
 
   const name = ownerName(profile, settings);
   const githubUser =
@@ -79,7 +84,7 @@ export default async function HomePage() {
       ? derivedTicker
       : FALLBACK_WORDS;
 
-  const resumeUrl = settings.show_resume ? profile.resume_url : null;
+  const resumeUrl = settings.show_resume ? "/resume" : null;
 
   return (
     <div className="relative">
@@ -99,6 +104,7 @@ export default async function HomePage() {
         <Skills skills={skills} />
         {github && <GithubActivity calendar={github} />}
         <Experience items={experience} resumeUrl={resumeUrl} />
+        <Testimonials items={testimonials} />
         <Contact social={social} email={settings.contact_email} />
       </div>
     </div>

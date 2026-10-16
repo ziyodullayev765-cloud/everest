@@ -122,4 +122,44 @@ test.describe("public site", () => {
       expect(overflow, path).toBeLessThanOrEqual(0);
     }
   });
+  test("Ctrl+K palette searches and opens a page", async ({ page }) => {
+    await page.goto("/");
+    await page.keyboard.press("Control+k");
+    const dialog = page.getByRole("dialog", { name: "Search or jump to…" });
+    await expect(dialog).toBeVisible();
+    await page.keyboard.type("skills");
+    await page.keyboard.press("Enter");
+    await expect(page).toHaveURL(/\/skills$/);
+    await expect(dialog).toBeHidden();
+  });
+
+  test("~ opens the terminal, which runs commands", async ({ page }) => {
+    await page.goto("/");
+    await page.locator("body").click({ position: { x: 5, y: 300 } });
+    await page.keyboard.press("Shift+Backquote");
+    const term = page.getByRole("dialog", { name: "Terminal" });
+    await expect(term).toBeVisible();
+    const input = term.getByRole("textbox", { name: "Terminal" });
+    await input.fill("help");
+    await input.press("Enter");
+    await expect(term.getByText("switch language")).toBeVisible();
+    await input.fill("cd contact");
+    await input.press("Enter");
+    await expect(page).toHaveURL(/\/contact$/);
+  });
+
+  test("the generated CV is a PDF", async ({ request }) => {
+    const res = await request.get("/cv.pdf");
+    expect(res.status()).toBe(200);
+    expect(res.headers()["content-type"]).toBe("application/pdf");
+    expect((await res.body()).subarray(0, 5).toString()).toBe("%PDF-");
+    const resume = await request.get("/resume", { maxRedirects: 0 });
+    expect([302, 307, 308]).toContain(resume.status());
+  });
+
+  test("blog page responds", async ({ page }) => {
+    const res = await page.goto("/blog");
+    expect(res?.status()).toBe(200);
+    await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
+  });
 });

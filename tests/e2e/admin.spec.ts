@@ -319,6 +319,66 @@ test.describe("as admin", () => {
     await expect(page.getByText(`Hello from the end-to-end test ${stamp}`).last()).toBeVisible();
   });
 
+  test("quick reply fills a ready-made answer for the sender", async ({ page }) => {
+    await page.goto("/admin/messages");
+    await page
+      .getByRole("button", { name: /E2E Visitor/ })
+      .first()
+      .click();
+    const reply = page.getByLabel("Reply text").first();
+    await expect(reply).toHaveValue(/Assalomu alaykum, E2E!/);
+    await page.getByLabel("Quick reply").first().selectOption("thanks-en");
+    await expect(reply).toHaveValue(/^Hi E2E,/);
+    const href = await page.getByRole("link", { name: "Open in email app" }).first().getAttribute("href");
+    expect(href).toMatch(/^mailto:visitor@example\.com\?subject=Re/);
+    expect(decodeURIComponent(href!)).toContain("Thanks for reaching out");
+    await expect(page.getByText("Last 7 days")).toBeVisible();
+  });
+
+  test("blog post and testimonial go live from the admin", async ({ page, context }) => {
+    const title = `E2E Post ${stamp}`;
+    const slug = `e2e-post-${stamp}`;
+    await page.goto("/admin/posts/new");
+    await page.getByRole("textbox", { name: "Title", exact: true }).fill(title);
+    await expect(page.getByLabel("URL slug", { exact: true })).toHaveValue(slug);
+    await page.getByLabel("Excerpt", { exact: true }).fill("An article written by the end-to-end test.");
+    await page.getByLabel("Article text", { exact: true }).fill("## Section\n\nSome `code` here.");
+    await page.getByRole("radio", { name: "Published" }).click();
+    await page.getByRole("button", { name: "Save & publish" }).click();
+    await expect(page).toHaveURL(/\/admin\/posts\/[0-9a-f-]{36}$/);
+
+    await page.goto("/admin/testimonials/new");
+    await page.getByRole("textbox", { name: "Quote", exact: true }).fill(`A kind word ${stamp}`);
+    await page.getByRole("textbox", { name: "Person", exact: true }).fill("E2E Mentor");
+    await page.getByRole("radio", { name: "Published" }).click();
+    await page.getByRole("button", { name: "Save & publish" }).click();
+    await expect(page).toHaveURL(/\/admin\/testimonials\/[0-9a-f-]{36}$/);
+
+    const visitor = await context.browser()!.newContext();
+    const vpage = await visitor.newPage();
+    await vpage.goto("/blog");
+    await expect(vpage.getByRole("link", { name: new RegExp(title) })).toBeVisible();
+    await vpage.getByRole("link", { name: new RegExp(title) }).click();
+    await expect(vpage.getByRole("heading", { level: 1, name: title })).toBeVisible();
+    await expect(vpage.locator(".prose-rich h2")).toHaveText("Section");
+    await vpage.goto("/");
+    await expect(vpage.getByText(`A kind word ${stamp}`)).toBeVisible();
+    await visitor.close();
+
+    for (const [res, name] of [
+      ["posts", title],
+      ["testimonials", "E2E Mentor"],
+    ] as const) {
+      await page.goto(`/admin/${res}`);
+      await page
+        .getByRole("button", { name: `Delete ${name}` })
+        .first()
+        .click();
+      await page.getByRole("dialog").getByRole("button", { name: "Delete" }).click();
+      await expect(page.getByRole("button", { name: `Delete ${name}` })).toHaveCount(0);
+    }
+  });
+
   test("messages page offers push notifications and the admin can be installed", async ({ page, context, baseURL }) => {
     await context.grantPermissions(["notifications"], { origin: new URL(baseURL!).origin });
     await page.goto("/admin/messages");
