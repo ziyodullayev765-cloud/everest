@@ -39,6 +39,7 @@ export interface SiteSettings {
   accent_color: string;
   enable_3d: boolean;
   enable_particles: boolean;
+  github_username: string;
   hero_eyebrow: string;
   hero_title: string;
   hero_description: string;

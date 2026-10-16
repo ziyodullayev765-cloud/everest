@@ -34,7 +34,7 @@ export async function Highlights({
         </HomeHeading>
       )}
       {items.length > 0 && (
-        <div className={cn("grid grid-cols-2 gap-3 sm:gap-5 lg:grid-cols-4", heading && "mt-8 sm:mt-12")}>
+        <div data-stagger className={cn("grid grid-cols-2 gap-3 sm:gap-5 lg:grid-cols-4", heading && "mt-8 sm:mt-12")}>
           {items.map((a, i) => (
             <GlowCard key={a.id} className="flex min-h-40 flex-col justify-between gap-6 p-4 sm:min-h-56 sm:p-7">
               <span className="text-gold font-mono text-xs">{String(i + 1).padStart(2, "0")}</span>
@@ -51,7 +51,7 @@ export async function Highlights({
         </div>
       )}
       {stats.length > 0 && (
-        <div className="border-line mt-12 grid grid-cols-2 gap-8 border-y py-10 md:grid-cols-4">
+        <div data-stagger className="border-line mt-12 grid grid-cols-2 gap-8 border-y py-10 md:grid-cols-4">
           {stats.map((s) => (
             <div key={s.id} className="text-center">
               <span className="font-display text-gold block text-[2.6rem] leading-none font-semibold">{s.value}</span>

@@ -556,7 +556,11 @@ html.light:has(.site-root) body {
     letter-spacing: -0.03em;
     text-transform: none;
     color: var(--fg);
-    animation: name-in 1.4s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+  /* Inner page titles rise in word by word as the page opens. */
+  .page-title .reveal-word {
+    animation: word-rise 1100ms cubic-bezier(0.22, 1, 0.36, 1) backwards;
+    animation-delay: calc(150ms + var(--i, 0) * 90ms);
   }
   .page-title em {
     font-weight: 400;
@@ -596,6 +600,189 @@ html.light:has(.site-root) body {
   }
   .page-next:hover .page-next-arrow {
     transform: translateX(0.25em);
+  }
+
+  /* Projects page: editorial list with a cross-fading preview */
+  .project-row-title {
+    color: color-mix(in oklab, var(--fg) 55%, var(--bg));
+    transition:
+      color 300ms ease,
+      transform 500ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .project-row:hover .project-row-title,
+  .project-row:focus-visible .project-row-title,
+  .project-row[data-active] .project-row-title {
+    color: var(--fg);
+    transform: translateX(0.4rem);
+  }
+  .project-row-arrow {
+    transition:
+      transform 400ms cubic-bezier(0.22, 1, 0.36, 1),
+      color 300ms ease;
+  }
+  .project-row:hover .project-row-arrow {
+    color: var(--fg);
+    transform: translate(3px, -3px);
+  }
+  .project-preview {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    transform: scale(1.06);
+    transition:
+      opacity 600ms ease,
+      transform 900ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .project-preview[data-active] {
+    opacity: 1;
+    transform: none;
+  }
+
+  /* GitHub activity grid (home) */
+  .gh-grid {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: max-content;
+    gap: 3px;
+    width: max-content;
+  }
+  .gh-week {
+    display: grid;
+    grid-template-rows: repeat(7, auto);
+    gap: 3px;
+  }
+  .gh-day {
+    display: block;
+    width: 11px;
+    height: 11px;
+    border-radius: 3px;
+    background: color-mix(in oklab, var(--fg) 7%, transparent);
+  }
+  .gh-day--pad {
+    visibility: hidden;
+  }
+  .gh-day[data-level="1"] {
+    background: color-mix(in oklab, var(--name-tint) 35%, transparent);
+  }
+  .gh-day[data-level="2"] {
+    background: color-mix(in oklab, var(--name-tint) 60%, transparent);
+  }
+  .gh-day[data-level="3"] {
+    background: color-mix(in oklab, var(--name-tint) 82%, transparent);
+  }
+  .gh-day[data-level="4"] {
+    background: var(--name-tint);
+  }
+  /* Cells light up week by week, left to right, when the section appears. */
+  .gh-week .gh-day {
+    transition:
+      opacity 500ms ease,
+      transform 500ms cubic-bezier(0.22, 1, 0.36, 1);
+    transition-delay: calc(var(--w, 0) * 14ms);
+  }
+  .ed-section:not([data-visible="true"]) .gh-week .gh-day {
+    opacity: 0;
+    transform: scale(0.4);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .gh-week .gh-day {
+      transition: none;
+      opacity: 1 !important;
+      transform: none !important;
+    }
+  }
+
+  /* Section titles: each word rises out of a clipped line when its section
+     comes into view (words are split by RevealWords). */
+  .reveal-line {
+    display: inline-block;
+    overflow: hidden;
+    vertical-align: top;
+    padding-bottom: 0.08em;
+    margin-bottom: -0.08em;
+  }
+  .reveal-word {
+    display: inline-block;
+    transition: transform 1000ms cubic-bezier(0.22, 1, 0.36, 1);
+    transition-delay: calc(120ms + var(--i, 0) * 70ms);
+  }
+  .ed-section:not([data-visible="true"]) .reveal-word {
+    transform: translateY(105%);
+  }
+  .ed-section .ed-intro {
+    transition:
+      opacity 900ms ease 350ms,
+      transform 900ms cubic-bezier(0.22, 1, 0.36, 1) 350ms;
+  }
+  .ed-section:not([data-visible="true"]) .ed-intro {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+
+  /* Cards in a [data-stagger] container arrive one after another. A keyframe
+     animation (fill "backwards") rather than a transition, so the delays don't
+     linger on the cards' own hover effects afterwards. */
+  .ed-section:not([data-visible="true"]) [data-stagger] > * {
+    opacity: 0;
+  }
+  .ed-section[data-visible="true"] [data-stagger] > * {
+    animation: stagger-in 900ms cubic-bezier(0.22, 1, 0.36, 1) backwards;
+  }
+  .ed-section [data-stagger] > :nth-child(1) {
+    animation-delay: 240ms;
+  }
+  .ed-section [data-stagger] > :nth-child(2) {
+    animation-delay: 330ms;
+  }
+  .ed-section [data-stagger] > :nth-child(3) {
+    animation-delay: 420ms;
+  }
+  .ed-section [data-stagger] > :nth-child(4) {
+    animation-delay: 510ms;
+  }
+  .ed-section [data-stagger] > :nth-child(5) {
+    animation-delay: 600ms;
+  }
+  .ed-section [data-stagger] > :nth-child(6) {
+    animation-delay: 690ms;
+  }
+  .ed-section [data-stagger] > :nth-child(7) {
+    animation-delay: 780ms;
+  }
+  .ed-section [data-stagger] > :nth-child(8) {
+    animation-delay: 870ms;
+  }
+  .ed-section [data-stagger] > :nth-child(9) {
+    animation-delay: 960ms;
+  }
+  .ed-section [data-stagger] > :nth-child(10) {
+    animation-delay: 1050ms;
+  }
+  .ed-section [data-stagger] > :nth-child(11) {
+    animation-delay: 1140ms;
+  }
+  .ed-section [data-stagger] > :nth-child(12) {
+    animation-delay: 1230ms;
+  }
+
+  /* Images open like a curtain, bottom to top, when their section appears. */
+  .reveal-img {
+    clip-path: inset(0 0 0 0 round 0);
+    transition: clip-path 1200ms cubic-bezier(0.22, 1, 0.36, 1) 250ms;
+  }
+  .ed-section:not([data-visible="true"]) .reveal-img {
+    clip-path: inset(100% 0 0 0);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .reveal-word,
+    .ed-section .ed-intro,
+    .reveal-img {
+      transition: none !important;
+      transform: none !important;
+      opacity: 1 !important;
+      clip-path: none !important;
+    }
   }
 
   /* Reveal once on scroll */
@@ -889,6 +1076,17 @@ html.light:has(.site-root) body {
   syntax: "<angle>";
   initial-value: 0deg;
   inherits: false;
+}
+@keyframes word-rise {
+  from {
+    transform: translateY(105%);
+  }
+}
+@keyframes stagger-in {
+  from {
+    opacity: 0;
+    transform: translateY(28px);
+  }
 }
 @keyframes page-in {
   from {

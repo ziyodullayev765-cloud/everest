@@ -4,6 +4,8 @@ import { Hero } from "@/components/home/hero";
 import { Highlights } from "@/components/home/highlights";
 import { Projects } from "@/components/home/projects";
 import { Skills } from "@/components/home/skills";
+import { GithubActivity } from "@/components/home/github-activity";
+import { getContributions, githubUserFromUrl, isGithubUsername } from "@/lib/github";
 import type { DomeTileData } from "@/components/site/dome-gallery";
 import {
   getAchievements,
@@ -42,6 +44,11 @@ export default async function HomePage() {
   ]);
 
   const name = ownerName(profile, settings);
+  const githubUser =
+    (isGithubUsername(settings.github_username) && settings.github_username) ||
+    social.map((l) => githubUserFromUrl(l.url)).find(Boolean) ||
+    null;
+  const github = githubUser ? await getContributions(githubUser) : null;
   const featured = projects.some((p) => p.featured) ? projects.filter((p) => p.featured) : projects;
   const highlights = (achievements.some((a) => a.featured) ? achievements.filter((a) => a.featured) : achievements).slice(0, 8);
   const subtitle = [settings.hero_description, profile.short_intro, profile.headline].find((t) => t && !isPlaceholder(t)) ?? "";
@@ -90,6 +97,7 @@ export default async function HomePage() {
         <Projects projects={featured} labels={{ hint: copy.homePage.dragHint }} />
         <Highlights items={highlights} stats={stats} />
         <Skills skills={skills} />
+        {github && <GithubActivity calendar={github} />}
         <Experience items={experience} resumeUrl={resumeUrl} />
         <Contact social={social} email={settings.contact_email} />
       </div>

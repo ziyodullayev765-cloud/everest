@@ -16,7 +16,7 @@ export async function Skills({ skills }: { skills: Skill[] }) {
   return (
     <EdSection id="skills" className="mx-auto w-[min(1200px,calc(100%-2rem))] py-14 sm:py-24">
       <HomeHeading eyebrow={copy.homePage.capabilities} title={copy.skills.title} lead={copy.skills.lead} />
-      <div className="mt-12 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+      <div data-stagger className="mt-12 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
         {groups.map(([group, items], i) => (
           <div
             key={group}

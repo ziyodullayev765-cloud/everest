@@ -50,6 +50,7 @@ export const DEFAULT_SETTINGS: SiteSettings = {
   accent_color: "#c5a059",
   enable_3d: true,
   enable_particles: true,
+  github_username: "",
   hero_eyebrow: "Portfolio",
   hero_title: "",
   ticker_items: [],
