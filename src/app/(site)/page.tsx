@@ -86,7 +86,6 @@ export default async function HomePage() {
           ticker={ticker}
           tiles={tiles}
           animateDome={settings.enable_3d}
-          status={isPlaceholder(profile.availability) ? "" : profile.availability}
         />
         <Projects projects={featured} labels={{ hint: copy.homePage.dragHint }} />
         <Highlights items={highlights} stats={stats} />
