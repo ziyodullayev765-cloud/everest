@@ -528,22 +528,6 @@ html.light:has(.site-root) body {
     transform: translate(-50%, 0);
   }
 
-  /* Live status pill above the hero name */
-  .hero-status {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.6rem;
-    border: 1px solid var(--border);
-    border-radius: 999px;
-    background: color-mix(in oklab, var(--surface) 80%, transparent);
-    padding: 0.4rem 0.9rem;
-    font-size: 0.72rem;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--fg-secondary);
-    animation: name-in 1s 200ms cubic-bezier(0.22, 1, 0.36, 1) both;
-  }
-
   /* Pointer ring (effects/cursor-glow.tsx) */
   .cursor-ring {
     border: 1px solid color-mix(in oklab, var(--fg) 55%, transparent);

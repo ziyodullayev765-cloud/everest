@@ -19,7 +19,6 @@ export function Hero({
   ticker,
   tiles,
   animateDome,
-  status,
 }: {
   name: string;
   subtitle: string;
@@ -29,23 +28,12 @@ export function Hero({
   ticker: string[];
   tiles: DomeTileData[];
   animateDome: boolean;
-  /** Short live status shown under the name, e.g. "Available for projects". */
-  status?: string;
 }) {
   return (
     <section aria-label={name} className="relative">
       <div className="relative h-[84svh] min-h-[540px] overflow-hidden sm:h-[100svh] sm:min-h-[560px]">
         <DomeHero tiles={tiles} animate={animateDome} />
         <div className="pointer-events-none absolute inset-x-0 bottom-0 flex flex-col items-center px-4 pb-[7svh] text-center">
-          {status && (
-            <p className="hero-status pointer-events-auto mb-5">
-              <span className="relative flex size-2" aria-hidden>
-                <span className="absolute inline-flex size-full animate-ping rounded-full bg-emerald-400 opacity-60 motion-reduce:hidden" />
-                <span className="relative inline-flex size-2 rounded-full bg-emerald-400" />
-              </span>
-              {status}
-            </p>
-          )}
           <NameReveal text={name} className="ed-name pointer-events-auto text-[clamp(2rem,7.4vw,6.6rem)] whitespace-nowrap" />
           {subtitle && (
             <p className="pointer-events-auto mx-auto mt-4 max-w-[46rem] text-[clamp(0.95rem,1.7vw,1.25rem)] leading-[1.65] text-[var(--fg-secondary)]">
