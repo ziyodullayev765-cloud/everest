@@ -60,6 +60,17 @@ const nextConfig: NextConfig = {
     serverActions: { bodySizeLimit: "1mb" },
     optimizePackageImports: ["lucide-react", "recharts", "@react-three/drei"],
   },
+  // The old address keeps working and forwards visitors to the main one.
+  async redirects() {
+    return [
+      {
+        source: "/:path*",
+        has: [{ type: "host", value: "everest-green.vercel.app" }],
+        destination: "https://behruz-ziyodullayev.vercel.app/:path*",
+        permanent: true,
+      },
+    ];
+  },
   async headers() {
     return [
       { source: "/:path*", headers: securityHeaders },
