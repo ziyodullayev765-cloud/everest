@@ -211,6 +211,7 @@ const en = {
     back: "All articles",
     pinned: "Pinned",
   },
+  demo: { title: "Try it", launch: "Launch interactive demo", note: "Loads content from {host}.", open: "Open in a new tab" },
   caseStudy: {
     title: "Case study",
     problem: "Problem",
@@ -455,6 +456,12 @@ const uz: Copy = {
     back: "Barcha maqolalar",
     pinned: "Mahkamlangan",
   },
+  demo: {
+    title: "Sinab ko‘ring",
+    launch: "Interaktiv demoni ishga tushirish",
+    note: "Kontent {host} saytidan yuklanadi.",
+    open: "Yangi oynada ochish",
+  },
   caseStudy: {
     title: "Loyiha tahlili",
     problem: "Muammo",
@@ -696,6 +703,12 @@ const ru: Copy = {
     minRead: "мин чтения",
     back: "Все статьи",
     pinned: "Закреплено",
+  },
+  demo: {
+    title: "Попробуйте",
+    launch: "Запустить интерактивное демо",
+    note: "Содержимое загружается с {host}.",
+    open: "Открыть в новой вкладке",
   },
   caseStudy: {
     title: "Кейс",

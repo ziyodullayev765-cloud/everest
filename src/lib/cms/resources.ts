@@ -157,6 +157,23 @@ export const RESOURCES: Record<string, ResourceConfig> = {
         ],
       },
       {
+        title: "Interactive demo",
+        description:
+          "Optional. Visitors can try the project right on its page. Paste a link that allows embedding: your own app, a Figma prototype, a YouTube/Vimeo video, CodeSandbox, StackBlitz…",
+        fields: [
+          { name: "demo_url", label: "Demo link (https://…)", type: "url", wide: true },
+          {
+            name: "demo_kind",
+            label: "Frame",
+            type: "select",
+            options: [
+              { value: "browser", label: "Browser window (web apps, videos)" },
+              { value: "phone", label: "Phone (iOS / mobile apps)" },
+            ],
+          },
+        ],
+      },
+      {
         title: "Links",
         fields: [
           { name: "live_url", label: "Live demo URL", type: "url" },

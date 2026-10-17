@@ -99,6 +99,8 @@ export interface Project extends Row {
   results: string;
   /** "value | label" lines. */
   metrics: string[];
+  demo_url: string | null;
+  demo_kind: "browser" | "phone";
 }
 
 export interface Post extends Row {

@@ -3,6 +3,7 @@ import { PageTitle } from "@/components/admin/ui";
 import { requireAdminPage } from "@/lib/auth";
 import { PushToggle } from "@/components/admin/push-toggle";
 import { isPushConfigured, vapidPublicKey } from "@/lib/push";
+import { isEmailConfigured } from "@/lib/email";
 import type { ContactMessage } from "@/lib/types";
 
 export default async function MessagesAdmin() {
@@ -34,6 +35,11 @@ export default async function MessagesAdmin() {
         ))}
       </div>
       <PushToggle publicKey={vapidPublicKey} configured={isPushConfigured()} />
+      <p className="text-subtle mb-4 text-xs">
+        {isEmailConfigured()
+          ? "E-mail copies: on — every new message is also sent to your inbox."
+          : "E-mail copies: off. To also get messages by e-mail, add RESEND_API_KEY and CONTACT_NOTIFY_EMAIL in Vercel → Settings → Environment Variables."}
+      </p>
       <MessagesInbox initial={msgs} />
     </>
   );
