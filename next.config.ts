@@ -62,14 +62,12 @@ const nextConfig: NextConfig = {
   },
   // The old address keeps working and forwards visitors to the main one.
   async redirects() {
-    return [
-      {
-        source: "/:path*",
-        has: [{ type: "host", value: "everest-green.vercel.app" }],
-        destination: "https://behruz-ziyodullayev.vercel.app/:path*",
-        permanent: true,
-      },
-    ];
+    return ["everest-green.vercel.app", "behruz-ziyodullayev.vercel.app"].map((host) => ({
+      source: "/:path*",
+      has: [{ type: "host" as const, value: host }],
+      destination: "https://behruzjon.vercel.app/:path*",
+      permanent: true,
+    }));
   },
   async headers() {
     return [
