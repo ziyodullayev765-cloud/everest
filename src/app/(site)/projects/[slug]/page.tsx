@@ -5,6 +5,8 @@ import { ArrowRight, ArrowUpRight, Code2 } from "lucide-react";
 import { ProjectThumb } from "@/components/site/project-card";
 import { ImageGallery } from "@/components/site/image-gallery";
 import { CaseStudy } from "@/components/site/case-study";
+import { ProjectDemo } from "@/components/site/project-demo";
+import { embedUrl } from "@/lib/embed";
 import { Reveal } from "@/components/ui/reveal";
 import { RichText } from "@/components/ui/rich-text";
 import { getCopy } from "@/lib/i18n/server";
@@ -36,9 +38,11 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
       title,
       description,
       url: `/projects/${p.slug}`,
-      images: p.thumbnail_url ? [{ url: p.thumbnail_url, alt: p.thumbnail_alt || p.title }] : ["/og"],
+      images: p.thumbnail_url
+        ? [{ url: p.thumbnail_url, alt: p.thumbnail_alt || p.title }]
+        : [{ url: `/og?kicker=Project&title=${encodeURIComponent(p.title)}`, width: 1200, height: 630 }],
     },
-    twitter: { card: p.thumbnail_url ? "summary_large_image" : "summary", title, description },
+    twitter: { card: "summary_large_image", title, description },
   };
 }
 
@@ -69,6 +73,7 @@ export default async function ProjectPage({ params }: Params) {
   const at = all.findIndex((p) => p.id === project.id);
   const next = all.length > 1 && at >= 0 ? all[(at + 1) % all.length] : null;
   const hasBody = !!project.description.trim();
+  const demo = embedUrl(project.demo_url);
   const metrics = (project.metrics ?? [])
     .map((m) => {
       const [value, ...rest] = m.split("|");
@@ -165,6 +170,22 @@ export default async function ProjectPage({ params }: Params) {
             <div className="glass rounded-3xl p-6 sm:p-8">{details}</div>
           </div>
         )
+      )}
+
+      {demo && (
+        <section className="mx-auto mt-20 w-[min(1200px,calc(100%-2rem))]" aria-labelledby="project-demo">
+          <h2 id="project-demo" className="ed-eyebrow">
+            {copy.demo.title}
+          </h2>
+          <Reveal className="mt-8">
+            <ProjectDemo
+              src={demo}
+              kind={project.demo_kind === "phone" ? "phone" : "browser"}
+              title={project.title}
+              poster={project.thumbnail_url}
+            />
+          </Reveal>
+        </section>
       )}
 
       {(caseSteps.length > 0 || metrics.length > 0) && (

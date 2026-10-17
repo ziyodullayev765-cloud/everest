@@ -162,4 +162,20 @@ test.describe("public site", () => {
     expect(res?.status()).toBe(200);
     await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
   });
+  test("project demo loads only after pressing play", async ({ page }) => {
+    await page.goto("/projects/yolda");
+    const launch = page.getByRole("button", { name: /Launch interactive demo/ });
+    test.skip((await launch.count()) === 0, "no demo configured for this project in the test data");
+    await expect(page.locator("iframe")).toHaveCount(0);
+    await launch.click();
+    await expect(page.locator("iframe")).toHaveAttribute("src", "https://www.youtube-nocookie.com/embed/abc123");
+  });
+
+  test("per-page share card renders and the GitHub section has no profile link", async ({ page, request }) => {
+    const og = await request.get("/og?kicker=Project&title=Hello");
+    expect(og.status()).toBe(200);
+    expect(og.headers()["content-type"]).toContain("image/png");
+    await page.goto("/");
+    await expect(page.locator("#github a")).toHaveCount(0);
+  });
 });

@@ -12,8 +12,12 @@ const size = { width: 1200, height: 630 };
  * Default social sharing card (used when no image is set in Admin → Settings → SEO).
  * Text comes from the CMS; the background is the Higgsfield-generated artwork when present.
  */
-export async function GET() {
+export async function GET(request: Request) {
   const [settings, profile] = await Promise.all([getSettings(), getProfile()]);
+  // Optional per-page card: /og?title=Project%20name&kicker=Project
+  const params = new URL(request.url).searchParams;
+  const pageTitle = (params.get("title") ?? "").replace(/\s+/g, " ").trim().slice(0, 90);
+  const kicker = (params.get("kicker") ?? "").replace(/\s+/g, " ").trim().slice(0, 30);
   const bg = brandAssetDataUrl("og-background.jpg");
   const headline = isPlaceholder(profile.headline) ? "" : profile.headline;
   const accent = settings.accent_color;
@@ -62,12 +66,24 @@ export async function GET() {
       >
         <div style={{ display: "flex", alignItems: "center", gap: 14, fontSize: 22, letterSpacing: 6, color: accent }}>
           <div style={{ width: 36, height: 2, background: accent }} />
-          PORTFOLIO
+          {(kicker || "Portfolio").toUpperCase()}
         </div>
-        <div style={{ marginTop: 26, fontSize: 78, fontWeight: 700, lineHeight: 1.02, letterSpacing: -3 }}>
-          {ownerName(profile, settings)}
+        <div
+          style={{
+            marginTop: 26,
+            fontSize: pageTitle.length > 40 ? 60 : 78,
+            fontWeight: 700,
+            lineHeight: 1.04,
+            letterSpacing: -3,
+          }}
+        >
+          {pageTitle || ownerName(profile, settings)}
         </div>
-        {headline && <div style={{ marginTop: 22, fontSize: 32, color: "#a1a1aa" }}>{headline}</div>}
+        {pageTitle ? (
+          <div style={{ marginTop: 22, fontSize: 30, color: "#a1a1aa" }}>{ownerName(profile, settings)}</div>
+        ) : (
+          headline && <div style={{ marginTop: 22, fontSize: 32, color: "#a1a1aa" }}>{headline}</div>
+        )}
       </div>
     </div>,
     size,
