@@ -446,6 +446,28 @@ test.describe("as admin", () => {
     await expect(page.getByText("Saved.", { exact: true })).toBeVisible();
   });
 
+  test("audio has its own admin page, separate from the media library", async ({ page }) => {
+    await page.goto("/admin/audio");
+    await expect(page.getByRole("heading", { name: "Audio", exact: true })).toBeVisible();
+    await expect(page.getByText("MP3, M4A, OGG, WAV · max 15 MB")).toBeVisible();
+    await page.goto("/admin/media");
+    await expect(page.getByText("Images or PDF · max 10 MB")).toBeVisible();
+    await expect(page.getByRole("combobox", { name: "File type" }).locator("option", { hasText: "Audio" })).toHaveCount(0);
+  });
+
+  test("a reply can be e-mailed straight from the inbox when SMTP is set up", async ({ page }) => {
+    await page.goto("/admin/messages");
+    await page
+      .getByRole("button", { name: /E2E Visitor/ })
+      .first()
+      .click();
+    const send = page.getByRole("button", { name: /^Send reply to visitor@example\.com/ }).first();
+    test.skip((await send.count()) === 0, "SMTP is not configured for this run");
+    await send.click();
+    await expect(page.getByText("Reply sent to visitor@example.com.")).toBeVisible();
+    await expect(page.getByText("Replied", { exact: true }).first()).toBeVisible();
+  });
+
   test("messages page offers push notifications and the admin can be installed", async ({ page, context, baseURL }) => {
     await context.grantPermissions(["notifications"], { origin: new URL(baseURL!).origin });
     await page.goto("/admin/messages");

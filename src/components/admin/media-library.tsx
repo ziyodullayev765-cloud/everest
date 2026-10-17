@@ -228,7 +228,12 @@ function Editor({ media, onSaved, onDeleted }: { media: Media; onSaved: (m: Medi
   );
 }
 
-export function MediaLibrary({ initial }: { initial: Media[] }) {
+/**
+ * `section="media"`: images and PDFs (gallery switch, alt text).
+ * `section="audio"`: music and other audio files, each with a player.
+ */
+export function MediaLibrary({ initial, section = "media" }: { initial: Media[]; section?: "media" | "audio" }) {
+  const isAudio = section === "audio";
   const router = useRouter();
   const [items, setItems] = useState(initial);
   const [query, setQuery] = useState("");
@@ -251,33 +256,39 @@ export function MediaLibrary({ initial }: { initial: Media[] }) {
   return (
     <div className="grid gap-6">
       <Dropzone
-        galleryOption
+        accept={isAudio ? "audio" : "visual"}
+        galleryOption={!isAudio}
         onUploaded={(m) => {
           setItems((list) => [m, ...list]);
           router.refresh();
         }}
       />
 
-      <div className="grid gap-2 sm:grid-cols-[1fr_auto_auto] sm:items-center">
+      <div className={isAudio ? "grid gap-2" : "grid gap-2 sm:grid-cols-[1fr_auto_auto] sm:items-center"}>
         <label className="relative">
           <span className="sr-only">Search media</span>
           <Search className="text-subtle pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2" aria-hidden />
           <Input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search files…" className="pl-9" />
         </label>
-        <Select value={kind} onChange={(e) => setKind(e.target.value)} aria-label="File type">
-          <option value="">All files</option>
-          <option value="image">Images</option>
-          <option value="document">Documents</option>
-          <option value="audio">Audio</option>
-        </Select>
-        <Switch id="only-gallery" checked={onlyGallery} onChange={setOnlyGallery} label="Gallery only" />
+        {!isAudio && (
+          <>
+            <Select value={kind} onChange={(e) => setKind(e.target.value)} aria-label="File type">
+              <option value="">All files</option>
+              <option value="image">Images</option>
+              <option value="document">Documents</option>
+            </Select>
+            <Switch id="only-gallery" checked={onlyGallery} onChange={setOnlyGallery} label="Gallery only" />
+          </>
+        )}
       </div>
       <p className="text-subtle -mt-3 text-xs">
         {items.length} files · {formatBytes(totalBytes)}
       </p>
 
       {items.length === 0 ? (
-        <EmptyBlock title="Your media library is empty">Upload photos, certificates or your CV above.</EmptyBlock>
+        <EmptyBlock title={isAudio ? "No audio yet" : "Your media library is empty"}>
+          {isAudio ? "Upload MP3, M4A, OGG or WAV files above." : "Upload photos, certificates or your CV above."}
+        </EmptyBlock>
       ) : visible.length === 0 ? (
         <EmptyBlock title="No files match" />
       ) : (
@@ -298,6 +309,8 @@ export function MediaLibrary({ initial }: { initial: Media[] }) {
                       loading="lazy"
                       className="absolute inset-0 size-full object-cover transition group-hover:scale-[1.02]"
                     />
+                  ) : m.kind === "audio" ? (
+                    <Music className="text-subtle absolute inset-0 m-auto size-10" aria-hidden />
                   ) : (
                     <FileText className="text-subtle absolute inset-0 m-auto size-10" aria-hidden />
                   )}

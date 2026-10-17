@@ -10,7 +10,7 @@ import { ConfirmDialog, EmptyBlock, Input, Select, btnClass } from "./ui";
 import type { ContactMessage, MessageStatus } from "@/lib/types";
 import { cn, formatDateTime } from "@/lib/utils";
 
-export function MessagesInbox({ initial }: { initial: ContactMessage[] }) {
+export function MessagesInbox({ initial, canSend = false }: { initial: ContactMessage[]; canSend?: boolean }) {
   const router = useRouter();
   const [items, setItems] = useState(initial);
   const [filter, setFilter] = useState<"" | MessageStatus>("");
@@ -89,6 +89,11 @@ export function MessagesInbox({ initial }: { initial: ContactMessage[] }) {
                     <div className="flex flex-wrap items-baseline justify-between gap-x-3">
                       <p className={cn("truncate", m.status === "new" ? "font-semibold" : "text-fg/90 font-medium")}>
                         {m.name} <span className="text-subtle font-normal">&lt;{m.email}&gt;</span>
+                        {m.replied_at && (
+                          <span className="ml-2 rounded-full bg-emerald-400/10 px-2 py-0.5 text-[0.65rem] font-normal text-emerald-300">
+                            Replied
+                          </span>
+                        )}
                       </p>
                       <time className="text-subtle text-xs" dateTime={m.created_at}>
                         {formatDateTime(m.created_at)}
@@ -103,7 +108,14 @@ export function MessagesInbox({ initial }: { initial: ContactMessage[] }) {
                 {expanded && (
                   <div className="border-line border-t px-4 pt-3 pb-4 sm:pl-11">
                     <p className="text-fg/90 text-sm leading-relaxed break-words whitespace-pre-wrap">{m.message}</p>
-                    <QuickReply message={m} onReplied={() => m.status === "new" && setStatus(m, "read", true)} />
+                    <QuickReply
+                      message={m}
+                      canSend={canSend}
+                      onReplied={(at) => {
+                        if (at) setItems((xs) => xs.map((x) => (x.id === m.id ? { ...x, status: "read", replied_at: at } : x)));
+                        else if (m.status === "new") setStatus(m, "read", true);
+                      }}
+                    />
                     <div className="mt-4 flex flex-wrap gap-2">
                       {m.status !== "new" && (
                         <button

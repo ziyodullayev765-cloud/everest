@@ -54,3 +54,14 @@ describe("rate limiter", () => {
     expect(rateLimit("other", 2, 1000, t0 + 20)).toBe(true);
   });
 });
+
+describe("validateFile() for the split media / audio pages", () => {
+  it("the media library takes images and PDFs but sends audio to its own page", async () => {
+    const { validateFile } = await import("@/lib/validation/media");
+    expect(validateFile({ name: "a.jpg", type: "image/jpeg", size: 10 }, "visual")).toBeNull();
+    expect(validateFile({ name: "cv.pdf", type: "application/pdf", size: 10 }, "visual")).toBeNull();
+    expect(validateFile({ name: "song.mp3", type: "audio/mpeg", size: 10 }, "visual")).toMatch(/Audio/);
+    expect(validateFile({ name: "song.mp3", type: "audio/mpeg", size: 10 }, "audio")).toBeNull();
+    expect(validateFile({ name: "a.jpg", type: "image/jpeg", size: 10 }, "audio")).toMatch(/audio file/);
+  });
+});
