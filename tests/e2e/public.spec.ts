@@ -178,4 +178,44 @@ test.describe("public site", () => {
     await page.goto("/");
     await expect(page.locator("#github a")).toHaveCount(0);
   });
+  test("skills page links a skill to the projects that use it", async ({ page }) => {
+    await page.goto("/skills");
+    const section = page.locator("section[aria-labelledby='skill-explorer']");
+    test.skip((await section.count()) === 0, "no skill matches a project in the test data");
+    const chip = section.getByRole("button").first();
+    await chip.click();
+    await expect(chip).toHaveAttribute("aria-pressed", "true");
+    await expect(section.getByRole("link").first()).toHaveAttribute("href", /\/projects\//);
+  });
+
+  test("404 page has a playable mini-game", async ({ page }) => {
+    await page.goto("/this-page-does-not-exist");
+    await page.getByRole("button", { name: "Play while you're here" }).click();
+    await expect(page.getByText(/^Time:/)).toBeVisible();
+  });
+
+  test("Konami code shows the secret message", async ({ page }) => {
+    await page.goto("/about");
+    await page.locator("body").click({ position: { x: 5, y: 300 } });
+    for (const k of [
+      "ArrowUp",
+      "ArrowUp",
+      "ArrowDown",
+      "ArrowDown",
+      "ArrowLeft",
+      "ArrowRight",
+      "ArrowLeft",
+      "ArrowRight",
+      "b",
+      "a",
+    ]) {
+      await page.keyboard.press(k);
+    }
+    await expect(page.getByText(/You found the secret/)).toBeVisible();
+  });
+
+  test("project stage badge is shown", async ({ page }) => {
+    await page.goto("/projects/yolda");
+    await expect(page.getByText("Live", { exact: true }).first()).toBeVisible();
+  });
 });

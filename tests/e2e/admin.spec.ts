@@ -379,6 +379,49 @@ test.describe("as admin", () => {
     }
   });
 
+  test("guestbook: visitors sign, the admin approves, the note goes live", async ({ page, context }) => {
+    const note = `Hello from e2e ${stamp}`;
+    const visitor = await context.browser()!.newContext();
+    const vpage = await visitor.newPage();
+    await vpage.goto("/guestbook");
+    await vpage.getByLabel("Your name").fill("E2E Guest");
+    await vpage.getByLabel(/Your note/).fill(note);
+    await vpage.waitForTimeout(2800);
+    await vpage.getByRole("button", { name: "Sign the guestbook" }).click();
+    await expect(vpage.getByText("Your note will appear after review")).toBeVisible();
+    await vpage.reload();
+    await expect(vpage.getByText(note)).toHaveCount(0);
+
+    await page.goto("/admin/guestbook");
+    const card = page.locator("li", { hasText: note });
+    await expect(card.getByText("Waiting for review")).toBeVisible();
+    await card.getByRole("button", { name: "Approve" }).click();
+    await expect(card.getByText("Visible")).toBeVisible();
+
+    await vpage.goto("/guestbook");
+    await expect(vpage.getByText(note)).toBeVisible();
+    await visitor.close();
+
+    await card.getByRole("button", { name: /Delete note/ }).click();
+    await expect(page.locator("li", { hasText: note })).toHaveCount(0);
+  });
+
+  test("duplicate copies an item as a new draft", async ({ page }) => {
+    await page.goto("/admin/stats");
+    const first = page.getByRole("button", { name: /^Duplicate / }).first();
+    test.skip((await first.count()) === 0, "no statistics in the test data");
+    await first.click();
+    await expect(page).toHaveURL(/\/admin\/stats\/[0-9a-f-]{36}$/);
+    await expect(page.getByRole("radio", { name: "Draft" })).toBeChecked();
+    const label = page.getByRole("textbox", { name: "Label", exact: true });
+    await expect(label).toHaveValue(/\(copy\)$/);
+    const name = await label.inputValue();
+    await page.goto("/admin/stats");
+    await page.getByRole("button", { name: `Delete ${name}` }).click();
+    await page.getByRole("dialog").getByRole("button", { name: "Delete" }).click();
+    await expect(page.getByRole("button", { name: `Delete ${name}` })).toHaveCount(0);
+  });
+
   test("messages page offers push notifications and the admin can be installed", async ({ page, context, baseURL }) => {
     await context.grantPermissions(["notifications"], { origin: new URL(baseURL!).origin });
     await page.goto("/admin/messages");

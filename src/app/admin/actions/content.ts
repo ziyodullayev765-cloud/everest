@@ -124,6 +124,32 @@ export async function deleteResource(key: string, id: string): Promise<ActionRes
   }
 }
 
+/** Copies an item as a new draft ("… (copy)"), ready to be edited into a new one. */
+export async function duplicateResource(key: string, id: string): Promise<ActionResult<{ id: string }>> {
+  try {
+    const resource = getResource(key);
+    if (!resource || !uuid.safeParse(id).success) return { ok: false, error: "Invalid request." };
+    const { supabase } = await requireAdmin();
+    const { data: row, error: readError } = await supabase.from(resource.table).select("*").eq("id", id).maybeSingle();
+    if (readError) return dbError(readError);
+    if (!row) return { ok: false, error: "Record not found." };
+
+    const copy: Record<string, unknown> = { ...row, status: "draft" };
+    for (const k of ["id", "created_at", "updated_at", "published_at"]) delete copy[k];
+    const titleField = resource.titleField;
+    if (typeof copy[titleField] === "string") copy[titleField] = `${String(copy[titleField]).slice(0, 150)} (copy)`;
+    if (typeof copy.slug === "string") copy.slug = `${String(copy.slug).slice(0, 100)}-copy-${Date.now().toString(36).slice(-4)}`;
+    copy.sort_order = (Number(row.sort_order) || 0) + 1;
+
+    const { data, error } = await supabase.from(resource.table).insert(copy).select("id").single();
+    if (error) return dbError(error);
+    revalidateSite();
+    return { ok: true, data: { id: data.id as string }, message: `Copied as a draft.` };
+  } catch (e) {
+    return fail(e);
+  }
+}
+
 export async function setResourceStatus(key: string, id: string, status: "draft" | "published"): Promise<ActionResult> {
   try {
     const resource = getResource(key);

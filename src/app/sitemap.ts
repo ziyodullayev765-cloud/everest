@@ -19,6 +19,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     "/gallery",
     "/contact",
     "/privacy",
+    "/guestbook",
     ...(posts.length ? ["/blog"] : []),
   ];
   return [

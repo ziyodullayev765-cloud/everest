@@ -539,6 +539,18 @@ html.light:has(.site-root) body {
       border-color 200ms ease,
       color 200ms ease;
   }
+  @media (max-width: 639px) {
+    /* On phones: a small translucent round button that stays out of the way. */
+    .music-dock {
+      min-height: 2.5rem;
+      width: 2.5rem;
+      justify-content: center;
+      padding: 0;
+      background: color-mix(in oklab, var(--surface) 72%, transparent);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+    }
+  }
   .music-dock:hover,
   .music-dock[aria-pressed="true"] {
     border-color: var(--border-strong);
@@ -1237,11 +1249,15 @@ html.light:has(.site-root) body {
 
   /* Case study stepper (project page) */
   .cs-tabs {
-    display: flex;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 0.25rem;
-    overflow-x: auto;
     border-bottom: 1px solid var(--border);
-    scrollbar-width: none;
+  }
+  @media (min-width: 640px) {
+    .cs-tabs {
+      display: flex;
+    }
   }
   .cs-tab {
     position: relative;
@@ -1340,4 +1356,29 @@ html.light:has(.site-root) body {
 /* Readable bronze on the light background (WCAG AA for small caps text). */
 html.light .site-root .ed-eyebrow {
   color: color-mix(in oklab, var(--accent) 55%, #2a1d0e);
+}
+
+/* Konami easter egg */
+.konami-piece {
+  position: absolute;
+  top: -12px;
+  border-radius: 2px;
+  animation-name: konami-fall;
+  animation-timing-function: cubic-bezier(0.25, 0.6, 0.4, 1);
+  animation-fill-mode: forwards;
+}
+@keyframes konami-fall {
+  to {
+    transform: translate3d(0, 105vh, 0) rotate(var(--r));
+    opacity: 0.6;
+  }
+}
+.konami-msg {
+  animation: konami-pop 450ms cubic-bezier(0.22, 1.4, 0.36, 1) both;
+}
+@keyframes konami-pop {
+  from {
+    transform: scale(0.6);
+    opacity: 0;
+  }
 }

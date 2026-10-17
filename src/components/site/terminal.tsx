@@ -69,7 +69,7 @@ export function Terminal({ open, onClose, data }: { open: boolean; onClose: () =
 
   useEffect(() => {
     if (!open) return;
-    if (!lines.length) print(<span className="text-white/50">{copy.terminal.welcome}</span>);
+    if (!lines.length) print(<span className="text-[#f2f2f280]">{copy.terminal.welcome}</span>);
     const id = requestAnimationFrame(() => input.current?.focus());
     const onKey = (e: KeyboardEvent) => e.key === "Escape" && onClose();
     window.addEventListener("keydown", onKey);
@@ -85,7 +85,7 @@ export function Terminal({ open, onClose, data }: { open: boolean; onClose: () =
   }, [lines]);
 
   const navigate = (href: string) => {
-    print(<span className="text-white/50">→ {href}</span>);
+    print(<span className="text-[#f2f2f280]">→ {href}</span>);
     router.push(href);
     setTimeout(onClose, 250);
   };
@@ -104,21 +104,21 @@ export function Terminal({ open, onClose, data }: { open: boolean; onClose: () =
     switch (cmd.toLowerCase()) {
       case "help":
         print(
-          <span className="text-white/50">{copy.terminal.help}:</span>,
+          <span className="text-[#f2f2f280]">{copy.terminal.help}:</span>,
           ...COMMANDS.map(([c, d]) => (
             <span key={c}>
-              <span className="inline-block w-44 text-white">{c}</span>
-              <span className="text-white/50">{d}</span>
+              <span className="inline-block w-44 text-[#f2f2f2]">{c}</span>
+              <span className="text-[#f2f2f280]">{d}</span>
             </span>
           )),
         );
         break;
       case "whoami":
         print(
-          <span className="text-white">{data.name}</span>,
+          <span className="text-[#f2f2f2]">{data.name}</span>,
           ...(data.headline
             ? [
-                <span key="h" className="text-white/50">
+                <span key="h" className="text-[#f2f2f280]">
                   {data.headline}
                 </span>,
               ]
@@ -137,15 +137,15 @@ export function Terminal({ open, onClose, data }: { open: boolean; onClose: () =
         break;
       }
       case "projects":
-        if (!data.projects.length) print(<span className="text-white/50">(empty)</span>);
+        if (!data.projects.length) print(<span className="text-[#f2f2f280]">(empty)</span>);
         else
           print(
             ...data.projects.map((p, i) => (
               <span key={p.slug}>
-                <span className="text-white/50">[{i + 1}]</span> {p.title}
+                <span className="text-[#f2f2f280]">[{i + 1}]</span> {p.title}
               </span>
             )),
-            <span className="text-white/50">open &lt;n&gt;</span>,
+            <span className="text-[#f2f2f280]">open &lt;n&gt;</span>,
           );
         break;
       case "open": {
@@ -156,14 +156,14 @@ export function Terminal({ open, onClose, data }: { open: boolean; onClose: () =
         break;
       }
       case "blog":
-        if (!data.posts.length) print(<span className="text-white/50">(empty)</span>);
+        if (!data.posts.length) print(<span className="text-[#f2f2f280]">(empty)</span>);
         else print(...data.posts.map((p) => <span key={p.slug}>• {p.title}</span>));
         break;
       case "skills":
         print(<span>{data.skills.length ? data.skills.join(" · ") : "(empty)"}</span>);
         break;
       case "social":
-        if (!data.social.length) print(<span className="text-white/50">(empty)</span>);
+        if (!data.social.length) print(<span className="text-[#f2f2f280]">(empty)</span>);
         else
           print(
             ...data.social.map((s) => (
@@ -191,14 +191,14 @@ export function Terminal({ open, onClose, data }: { open: boolean; onClose: () =
         break;
       case "cv":
       case "resume":
-        print(<span className="text-white/50">→ {data.cvHref}</span>);
+        print(<span className="text-[#f2f2f280]">→ {data.cvHref}</span>);
         window.open(data.cvHref, "_blank", "noopener");
         break;
       case "lang": {
         const l = arg.toLowerCase();
         if (!isLocale(l)) {
           print(
-            <span className="text-white/50">
+            <span className="text-[#f2f2f280]">
               lang {LOCALES.join(" | ")} (now: {locale})
             </span>,
           );
@@ -234,7 +234,7 @@ export function Terminal({ open, onClose, data }: { open: boolean; onClose: () =
       default:
         print(
           <span className="text-red-400">
-            {copy.terminal.unknown}: {cmd}. <span className="text-white/50">help</span>
+            {copy.terminal.unknown}: {cmd}. <span className="text-[#f2f2f280]">help</span>
           </span>,
         );
     }
@@ -283,16 +283,16 @@ export function Terminal({ open, onClose, data }: { open: boolean; onClose: () =
           transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
           onClick={() => input.current?.focus()}
         >
-          <div className="flex items-center gap-2 border-b border-white/10 px-4 py-2.5">
+          <div className="flex items-center gap-2 border-b border-[#ffffff1a] px-4 py-2.5">
             <span className="size-3 rounded-full bg-[#ff5f57]" aria-hidden />
             <span className="size-3 rounded-full bg-[#febc2e]" aria-hidden />
             <span className="size-3 rounded-full bg-[#28c840]" aria-hidden />
-            <span className="ml-3 flex-1 truncate text-xs text-white/50">{prompt}</span>
+            <span className="ml-3 flex-1 truncate text-xs text-[#f2f2f280]">{prompt}</span>
             <button
               type="button"
               onClick={onClose}
               aria-label={copy.terminal.close}
-              className="rounded p-1 text-white/60 hover:text-white"
+              className="rounded p-1 text-[#f2f2f299] hover:text-[#fff]"
             >
               <X className="size-4" aria-hidden />
             </button>

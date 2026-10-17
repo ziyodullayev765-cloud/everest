@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { StageBadge } from "./stage-badge";
 import { useMemo, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { ArrowUpRight, LayoutGrid, List, Search } from "lucide-react";
@@ -160,8 +161,11 @@ export function ProjectBrowser({ projects }: { projects: Project[] }) {
                     <span className="project-row-title font-display block truncate text-[clamp(1.7rem,4.5vw,3.4rem)] leading-[1.05] normal-case">
                       {p.title}
                     </span>
-                    <span className="text-muted mt-2 block truncate text-sm">
-                      {[p.category, monthYear(p.completed_on ?? p.started_on, copy)].filter(Boolean).join(" · ")}
+                    <span className="text-muted mt-2 flex min-w-0 items-center gap-3 text-sm">
+                      <span className="truncate">
+                        {[p.category, monthYear(p.completed_on ?? p.started_on, copy)].filter(Boolean).join(" · ")}
+                      </span>
+                      <StageBadge stage={p.stage} label={p.stage ? copy.stage[p.stage] : undefined} className="shrink-0" />
                     </span>
                   </span>
                   <span className="relative block w-20 shrink-0 overflow-hidden rounded-xl lg:hidden">

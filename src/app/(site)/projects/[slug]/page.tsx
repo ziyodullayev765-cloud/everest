@@ -5,6 +5,7 @@ import { ArrowRight, ArrowUpRight, Code2 } from "lucide-react";
 import { ProjectThumb } from "@/components/site/project-card";
 import { ImageGallery } from "@/components/site/image-gallery";
 import { CaseStudy } from "@/components/site/case-study";
+import { StageBadge } from "@/components/site/stage-badge";
 import { ProjectDemo } from "@/components/site/project-demo";
 import { embedUrl } from "@/lib/embed";
 import { Reveal } from "@/components/ui/reveal";
@@ -13,6 +14,7 @@ import { getCopy } from "@/lib/i18n/server";
 import { getProjectBySlug, getProjects } from "@/lib/data/public";
 import { dateRange } from "@/lib/i18n/dictionaries";
 import { unique } from "@/lib/utils";
+import { TagList } from "@/components/ui/tag-list";
 
 type Params = { params: Promise<{ slug: string }> };
 
@@ -105,13 +107,7 @@ export default async function ProjectPage({ params }: Params) {
       {(project.technologies.length > 0 || project.tags.length > 0) && (
         <div className={meta.length ? "border-line mt-6 border-t pt-6" : ""}>
           <p className="text-subtle text-[0.7rem] tracking-[0.18em] uppercase">{copy.projects.technologies}</p>
-          <ul className="mt-3 flex flex-wrap gap-1.5">
-            {unique([...project.technologies, ...project.tags]).map((t) => (
-              <li key={t} className="border-line rounded-full border px-3 py-1 text-xs text-[var(--fg-secondary)]">
-                {t}
-              </li>
-            ))}
-          </ul>
+          <TagList tags={unique([...project.technologies, ...project.tags])} className="mt-3" />
         </div>
       )}
     </>
@@ -128,7 +124,12 @@ export default async function ProjectPage({ params }: Params) {
           <span aria-hidden>/</span>
           <span aria-current="page">{project.title}</span>
         </nav>
-        {project.category && <p className="ed-eyebrow mt-8">{project.category}</p>}
+        {(project.category || project.stage) && (
+          <div className="mt-8 flex flex-wrap items-center gap-3">
+            {project.category && <p className="ed-eyebrow">{project.category}</p>}
+            <StageBadge stage={project.stage} label={project.stage ? copy.stage[project.stage] : undefined} />
+          </div>
+        )}
         <h1 className="page-title">{project.title}</h1>
         {project.summary && <p className="ed-intro page-lead">{project.summary}</p>}
         {(project.live_url || project.source_url) && (

@@ -36,8 +36,10 @@ function useClickTracking() {
   }, []);
 }
 
-export function SiteAnalytics() {
+/** `enabled` is false outside Vercel, where the analytics scripts do not exist. */
+export function SiteAnalytics({ enabled = true }: { enabled?: boolean }) {
   useClickTracking();
+  if (!enabled) return null;
   return (
     <>
       <Analytics beforeSend={(e: BeforeSendEvent) => scrub(e)} />

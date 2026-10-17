@@ -202,3 +202,27 @@ export const getPostBySlug = cache(async (slug: string): Promise<Post | null> =>
 export const getTestimonials = cache(() =>
   list<Testimonial>("testimonials", (q) => q.order("sort_order", { ascending: true }).order("created_at", { ascending: false })),
 );
+
+export interface GuestbookEntry {
+  id: string;
+  name: string;
+  message: string;
+  created_at: string;
+}
+
+/** Approved guestbook notes only (RLS hides the rest from visitors). */
+export const getGuestbook = cache(async (): Promise<GuestbookEntry[]> => {
+  const reader = await getReader();
+  if (!reader) return [];
+  try {
+    const { data, error } = await createPublicClient()
+      .from("guestbook_entries")
+      .select("id, name, message, created_at")
+      .order("created_at", { ascending: false })
+      .limit(100);
+    if (error) throw error;
+    return (data ?? []) as GuestbookEntry[];
+  } catch (err) {
+    throw loadError("guestbook_entries", err);
+  }
+});

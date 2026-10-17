@@ -71,7 +71,7 @@ export function CaseStudy({ steps, prevLabel, nextLabel }: { steps: CaseStep[]; 
         id={`${id}-panel`}
         role="tabpanel"
         aria-labelledby={`${id}-tab-${at}`}
-        className="relative mt-8 min-h-[12rem] overflow-hidden"
+        className="relative mt-8 min-h-[5rem] overflow-hidden"
       >
         <AnimatePresence mode="wait" initial={false} custom={dir}>
           <motion.div

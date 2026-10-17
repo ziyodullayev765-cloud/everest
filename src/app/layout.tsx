@@ -71,7 +71,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       </head>
       <body className="font-sans">
         {children}
-        <SiteAnalytics />
+        <SiteAnalytics enabled={!!process.env.VERCEL} />
       </body>
     </html>
   );

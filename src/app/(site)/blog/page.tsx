@@ -8,6 +8,7 @@ import { getCopy } from "@/lib/i18n/server";
 import { getPosts } from "@/lib/data/public";
 import { fullDate } from "@/lib/i18n/dictionaries";
 import { readingMinutes } from "@/lib/reading";
+import { TagList } from "@/components/ui/tag-list";
 
 export async function generateMetadata(): Promise<Metadata> {
   const copy = await getCopy();
@@ -43,18 +44,7 @@ export default async function BlogPage() {
                         <ArrowUpRight className="post-row-arrow" aria-hidden />
                       </span>
                       {p.excerpt && <span className="post-row-excerpt">{p.excerpt}</span>}
-                      {p.tags.length > 0 && (
-                        <span className="mt-3 flex flex-wrap gap-1.5">
-                          {p.tags.map((t) => (
-                            <span
-                              key={t}
-                              className="border-line rounded-full border px-2.5 py-0.5 text-[0.7rem] text-[var(--fg-secondary)]"
-                            >
-                              {t}
-                            </span>
-                          ))}
-                        </span>
-                      )}
+                      <TagList tags={p.tags} size="sm" as="span" className="mt-3" />
                     </span>
                     {p.cover_url && (
                       <span className="post-row-cover protected-media">
