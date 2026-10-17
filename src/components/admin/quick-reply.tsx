@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useTransition } from "react";
+import { replyToMessage } from "@/app/admin/actions/messages";
 import { toast } from "sonner";
-import { Copy, Reply } from "lucide-react";
+import { Copy, Loader2, Reply, Send } from "lucide-react";
 import { Select, Textarea, btnClass } from "./ui";
 import type { ContactMessage } from "@/lib/types";
 
@@ -40,7 +41,17 @@ export const REPLY_TEMPLATES: { id: string; label: string; body: string }[] = [
   },
 ];
 
-export function QuickReply({ message, onReplied }: { message: ContactMessage; onReplied: () => void }) {
+export function QuickReply({
+  message,
+  onReplied,
+  canSend = false,
+}: {
+  message: ContactMessage;
+  onReplied: (repliedAt?: string) => void;
+  /** True when SMTP is set up, so the reply can be e-mailed from here. */
+  canSend?: boolean;
+}) {
+  const [sending, startSending] = useTransition();
   const first = message.name.trim().split(/\s+/)[0] ?? "";
   const fill = (id: string) => (REPLY_TEMPLATES.find((t) => t.id === id)?.body ?? "").replaceAll("{name}", first);
   const [tpl, setTpl] = useState(REPLY_TEMPLATES[0]!.id);
@@ -71,7 +82,29 @@ export function QuickReply({ message, onReplied }: { message: ContactMessage; on
       </Select>
       <Textarea aria-label="Reply text" className="mt-2" rows={6} value={body} onChange={(e) => setBody(e.target.value)} />
       <div className="mt-2 flex flex-wrap gap-2">
-        <a href={mailto} className={btnClass("primary", "sm")} onClick={onReplied}>
+        {canSend && (
+          <button
+            type="button"
+            className={btnClass("primary", "sm")}
+            disabled={sending || body.trim().length < 2}
+            onClick={() =>
+              startSending(async () => {
+                const res = await replyToMessage({
+                  id: message.id,
+                  subject,
+                  body: `${body}\n\n---\n${message.message.slice(0, 1200).replace(/^/gm, "> ")}`,
+                });
+                if (!res.ok) return void toast.error(res.error);
+                toast.success(res.message ?? "Reply sent.");
+                onReplied(new Date().toISOString());
+              })
+            }
+          >
+            {sending ? <Loader2 className="size-3.5 animate-spin" aria-hidden /> : <Send className="size-3.5" aria-hidden />}
+            Send reply to {message.email}
+          </button>
+        )}
+        <a href={mailto} className={btnClass(canSend ? "secondary" : "primary", "sm")} onClick={() => onReplied()}>
           <Reply className="size-3.5" aria-hidden /> Open in email app
         </a>
         <button

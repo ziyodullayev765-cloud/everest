@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import {
   Music,
   Award,
+  AudioLines,
   BarChart3,
   BookOpen,
   Newspaper,
@@ -50,6 +51,7 @@ const NAV = [
     group: "Library",
     items: [
       { href: "/admin/media", label: "Media", icon: Images },
+      { href: "/admin/audio", label: "Audio", icon: AudioLines },
       { href: "/admin/music", label: "Music", icon: Music },
       { href: "/admin/messages", label: "Messages", icon: Inbox, badge: true },
       { href: "/admin/guestbook", label: "Guestbook", icon: BookOpen },

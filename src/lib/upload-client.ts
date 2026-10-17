@@ -50,7 +50,7 @@ function putWithProgress(signedUrl: string, file: File, onProgress?: ProgressFn)
   });
 }
 
-async function uploadToStorage(file: File, accept: "image" | "document" | "audio" | "any", onProgress?: ProgressFn) {
+async function uploadToStorage(file: File, accept: "image" | "document" | "audio" | "visual" | "any", onProgress?: ProgressFn) {
   const invalid = validateFile(file, accept);
   if (invalid) throw new Error(invalid);
   const [target, dims] = await Promise.all([
@@ -74,7 +74,7 @@ async function uploadToStorage(file: File, accept: "image" | "document" | "audio
 export async function uploadMedia(
   file: File,
   opts: {
-    accept?: "image" | "document" | "audio" | "any";
+    accept?: "image" | "document" | "audio" | "visual" | "any";
     altText?: string;
     inGallery?: boolean;
     onProgress?: ProgressFn;

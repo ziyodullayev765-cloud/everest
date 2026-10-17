@@ -58,11 +58,13 @@ export function maxBytesFor(mime: string) {
 
 export function validateFile(
   file: { name: string; type: string; size: number },
-  accept: MediaKind | "any" = "any",
+  accept: MediaKind | "visual" | "any" = "any",
 ): string | null {
   const kind = mediaKind(file.type);
   if (!kind) return `“${file.name}”: unsupported file type. Use JPG, PNG, WebP, AVIF, GIF, ICO, PDF or MP3/M4A/OGG/WAV.`;
-  if (accept !== "any" && kind !== accept)
+  // "visual" = the media library: images and PDFs, but audio has its own page.
+  if (accept === "visual" && kind === "audio") return `“${file.name}”: audio files go in Admin → Audio.`;
+  if (accept !== "any" && accept !== "visual" && kind !== accept)
     return `“${file.name}”: please choose ${accept === "image" ? "an image" : accept === "audio" ? "an audio file" : "a PDF document"}.`;
   if (file.size <= 0) return `“${file.name}” is empty.`;
   const max = maxBytesFor(file.type);

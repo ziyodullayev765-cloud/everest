@@ -218,6 +218,7 @@ export interface ContactMessage {
   message: string;
   status: MessageStatus;
   created_at: string;
+  replied_at?: string | null;
 }
 
 export interface ActivityEntry {

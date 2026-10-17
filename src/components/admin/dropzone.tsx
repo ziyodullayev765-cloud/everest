@@ -19,6 +19,7 @@ interface Job {
 const ACCEPT_ATTR = {
   image: "image/jpeg,image/png,image/webp,image/avif,image/gif,image/x-icon,image/vnd.microsoft.icon",
   document: "application/pdf",
+  visual: "image/jpeg,image/png,image/webp,image/avif,image/gif,image/x-icon,image/vnd.microsoft.icon,application/pdf",
   audio: "audio/mpeg,audio/mp4,audio/x-m4a,audio/ogg,audio/wav,audio/webm,audio/aac,.mp3,.m4a",
   any: "image/jpeg,image/png,image/webp,image/avif,image/gif,image/x-icon,image/vnd.microsoft.icon,application/pdf,audio/mpeg,audio/mp4,audio/x-m4a,audio/ogg,audio/wav,audio/webm,audio/aac",
 };
@@ -33,7 +34,7 @@ export function Dropzone({
   compact,
   galleryOption = false,
 }: {
-  accept?: "image" | "document" | "audio" | "any";
+  accept?: "image" | "document" | "audio" | "visual" | "any";
   multiple?: boolean;
   onUploaded: (media: Media) => void;
   compact?: boolean;
@@ -127,7 +128,9 @@ export function Dropzone({
               ? "JPG, PNG, WebP, AVIF, GIF, ICO · max 10 MB"
               : accept === "audio"
                 ? "MP3, M4A, OGG, WAV · max 15 MB"
-                : "Images, PDF (10 MB) or audio (15 MB)"}
+                : accept === "visual"
+                  ? "Images or PDF · max 10 MB"
+                  : "Images, PDF (10 MB) or audio (15 MB)"}
         </span>
         <input
           ref={inputRef}

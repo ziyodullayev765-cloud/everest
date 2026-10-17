@@ -971,6 +971,10 @@ alter table public.site_settings add column if not exists uses_text text not nul
 alter table public.site_settings add column if not exists now_text  text not null default '' check (char_length(now_text) <= 300);
 
 
+-- When the admin last answered a contact message from the admin panel.
+alter table public.contact_messages add column if not exists replied_at timestamptz;
+
+
 -- =============================================================================
 -- Initial singleton rows. Safe to run more than once (does not overwrite edits).
 --

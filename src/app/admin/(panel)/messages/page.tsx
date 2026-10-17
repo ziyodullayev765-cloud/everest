@@ -4,13 +4,14 @@ import { requireAdminPage } from "@/lib/auth";
 import { PushToggle } from "@/components/admin/push-toggle";
 import { isPushConfigured, vapidPublicKey } from "@/lib/push";
 import { isEmailConfigured } from "@/lib/email";
+import { isMailerConfigured } from "@/lib/mailer";
 import type { ContactMessage } from "@/lib/types";
 
 export default async function MessagesAdmin() {
   const { supabase } = await requireAdminPage();
   const { data } = await supabase
     .from("contact_messages")
-    .select("id, name, email, subject, message, status, created_at")
+    .select("id, name, email, subject, message, status, created_at, replied_at")
     .order("created_at", { ascending: false })
     .limit(500);
   const msgs = (data ?? []) as ContactMessage[];
@@ -35,12 +36,17 @@ export default async function MessagesAdmin() {
         ))}
       </div>
       <PushToggle publicKey={vapidPublicKey} configured={isPushConfigured()} />
+      <p className="text-subtle mb-1 text-xs">
+        {isMailerConfigured()
+          ? "Replies: sent straight from here to the visitor’s e-mail."
+          : "Replies: to send them from here, add SMTP_HOST, SMTP_PORT, SMTP_USER and SMTP_PASS in Vercel → Settings → Environment Variables. Until then “Open in email app” works."}
+      </p>
       <p className="text-subtle mb-4 text-xs">
         {isEmailConfigured()
           ? "E-mail copies: on — every new message is also sent to your inbox."
           : "E-mail copies: off. To also get messages by e-mail, add RESEND_API_KEY and CONTACT_NOTIFY_EMAIL in Vercel → Settings → Environment Variables."}
       </p>
-      <MessagesInbox initial={msgs} />
+      <MessagesInbox initial={msgs} canSend={isMailerConfigured()} />
     </>
   );
 }
