@@ -71,6 +71,8 @@ export const DEFAULT_SETTINGS: SiteSettings = {
   nav_items: DEFAULT_NAV,
   footer_links: [{ label: "Maxfiylik siyosati", href: "/privacy", visible: true }],
   privacy_policy: "",
+  uses_text: "",
+  now_text: "",
   music_url: null,
   music_title: "",
 };

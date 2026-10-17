@@ -4,7 +4,8 @@ import { notFound } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import { SmartImage } from "@/components/ui/smart-image";
 import { Reveal } from "@/components/ui/reveal";
-import { RichText } from "@/components/ui/rich-text";
+import { RichText, headingsOf } from "@/components/ui/rich-text";
+import { CopyLink, PostToc, ReadingProgress } from "@/components/site/post-tools";
 import { getCopy } from "@/lib/i18n/server";
 import { getPostBySlug, getProfile, getSettings } from "@/lib/data/public";
 import { fullDate } from "@/lib/i18n/dictionaries";
@@ -44,6 +45,7 @@ export default async function PostPage({ params }: Params) {
   const [post, profile, settings] = await Promise.all([getPostBySlug(slug), getProfile(), getSettings()]);
   if (!post) notFound();
   const date = post.published_at ?? post.created_at;
+  const toc = headingsOf(post.body);
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -87,15 +89,26 @@ export default async function PostPage({ params }: Params) {
         </Reveal>
       )}
 
-      <Reveal className="post-body mx-auto mt-14 w-[min(720px,calc(100%-2rem))]">
-        <RichText text={post.body} />
-      </Reveal>
+      <ReadingProgress />
+      <div className="mx-auto mt-14 grid w-[min(1200px,calc(100%-2rem))] gap-10 lg:grid-cols-[1fr_minmax(0,720px)_1fr]">
+        <Reveal className="post-body min-w-0 lg:col-start-2">
+          <RichText text={post.body} />
+        </Reveal>
+        {toc.length >= 2 && (
+          <aside className="-order-1 lg:order-none lg:col-start-3">
+            <div className="lg:sticky lg:top-28 lg:max-w-[240px]">
+              <PostToc items={toc} />
+            </div>
+          </aside>
+        )}
+      </div>
 
-      <div className="mx-auto mt-20 w-[min(720px,calc(100%-2rem))]">
+      <div className="mx-auto mt-20 flex w-[min(720px,calc(100%-2rem))] flex-wrap gap-3">
         <Link href="/blog" className="ed-button">
           <ArrowLeft className="size-4" aria-hidden />
           {copy.blog.back}
         </Link>
+        <CopyLink />
       </div>
     </article>
   );

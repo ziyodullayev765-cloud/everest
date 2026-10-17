@@ -422,6 +422,30 @@ test.describe("as admin", () => {
     await expect(page.getByRole("button", { name: `Delete ${name}` })).toHaveCount(0);
   });
 
+  test("Now line and Uses page appear once filled in", async ({ page, context }) => {
+    const visitor = await context.browser()!.newContext();
+    const vpage = await visitor.newPage();
+    expect((await vpage.goto("/uses"))?.status()).toBe(404);
+
+    await page.goto("/admin/settings");
+    await page.getByLabel("Now (one line)", { exact: true }).fill(`Building things ${stamp}`);
+    await page.getByLabel("Uses page", { exact: true }).fill("## Software\n\n- VS Code\n- Figma");
+    await page.getByRole("button", { name: /^Save/ }).first().click();
+    await expect(page.getByText("Saved.", { exact: true })).toBeVisible();
+
+    await vpage.goto("/");
+    await expect(vpage.getByText(`Building things ${stamp}`)).toBeVisible();
+    expect((await vpage.goto("/uses"))?.status()).toBe(200);
+    await expect(vpage.getByRole("heading", { name: "Software" })).toBeVisible();
+    await visitor.close();
+
+    await page.goto("/admin/settings");
+    await page.getByLabel("Now (one line)", { exact: true }).fill("");
+    await page.getByLabel("Uses page", { exact: true }).fill("");
+    await page.getByRole("button", { name: /^Save/ }).first().click();
+    await expect(page.getByText("Saved.", { exact: true })).toBeVisible();
+  });
+
   test("messages page offers push notifications and the admin can be installed", async ({ page, context, baseURL }) => {
     await context.grantPermissions(["notifications"], { origin: new URL(baseURL!).origin });
     await page.goto("/admin/messages");

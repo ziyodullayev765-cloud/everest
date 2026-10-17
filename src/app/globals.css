@@ -1382,3 +1382,8 @@ html.light .site-root .ed-eyebrow {
     opacity: 0;
   }
 }
+
+/* Headings reached from a table of contents stop below the fixed header. */
+.prose-rich :is(h2, h3)[id] {
+  scroll-margin-top: 7rem;
+}

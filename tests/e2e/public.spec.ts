@@ -218,4 +218,23 @@ test.describe("public site", () => {
     await page.goto("/projects/yolda");
     await expect(page.getByText("Live", { exact: true }).first()).toBeVisible();
   });
+  test("contact card shows a QR code and offers a vCard", async ({ page, request }) => {
+    await page.goto("/card");
+    await expect(page.getByRole("img", { name: /^QR:/ })).toBeVisible();
+    await expect(page.getByRole("link", { name: "Save contact" })).toHaveAttribute("href", "/card.vcf");
+    const vcf = await request.get("/card.vcf");
+    expect(vcf.status()).toBe(200);
+    expect(vcf.headers()["content-type"]).toContain("text/vcard");
+    expect(await vcf.text()).toMatch(/^BEGIN:VCARD\r\nVERSION:3\.0/);
+  });
+
+  test("blog post shows a table of contents and a copy-link button", async ({ page }) => {
+    const res = await page.goto("/blog/portfolio-cms");
+    test.skip(res?.status() !== 200, "no test article");
+    await expect(page.getByRole("button", { name: "Copy link" })).toBeVisible();
+    const toc = page.getByRole("navigation", { name: "Contents" });
+    test.skip((await toc.count()) === 0, "test article has fewer than two headings");
+    await toc.getByRole("link").first().click();
+    await expect(page).toHaveURL(/#h-/);
+  });
 });
