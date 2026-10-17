@@ -1334,12 +1334,116 @@ html.light:has(.site-root) body {
     color: var(--fg);
   }
   .term {
-    font-family: var(--font-mono, ui-monospace, SFMono-Regular, Menlo, monospace);
-    font-size: 0.85rem;
-    line-height: 1.6;
+    font-family: "SF Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, var(--font-mono), monospace;
+    font-size: 0.82rem;
+    line-height: 1.55;
   }
   .term-prompt {
-    color: var(--name-tint);
+    color: #e6e6e6;
+    font-weight: 600;
+  }
+
+  /* macOS Terminal window (dark "Pro"-like profile) */
+  .mac-window {
+    border-radius: 10px;
+    background: #1e1e1e;
+    color: #e6e6e6;
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    box-shadow:
+      0 0 0 0.5px rgba(0, 0, 0, 0.8),
+      0 22px 70px 4px rgba(0, 0, 0, 0.56);
+  }
+  .mac-titlebar {
+    position: relative;
+    display: flex;
+    align-items: center;
+    height: 28px;
+    padding: 0 12px;
+    background: linear-gradient(#38383a, #2c2c2e);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.55);
+    user-select: none;
+  }
+  .mac-title {
+    position: absolute;
+    inset: 0 90px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    pointer-events: none;
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", var(--font-sans), sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.55);
+  }
+  .mac-light {
+    position: relative;
+    display: grid;
+    place-items: center;
+    width: 12px;
+    height: 12px;
+    border-radius: 999px;
+    border: 0.5px solid rgba(0, 0, 0, 0.25);
+  }
+  .mac-light svg {
+    width: 8px;
+    height: 8px;
+    fill: none;
+    stroke: rgba(0, 0, 0, 0.6);
+    stroke-width: 1.3;
+    stroke-linecap: round;
+    color: rgba(0, 0, 0, 0.6);
+    opacity: 0;
+    transition: opacity 120ms ease;
+  }
+  /* Like macOS: the ×, − and + symbols appear when the pointer is over the group. */
+  .mac-lights:hover .mac-light svg,
+  .mac-light:focus-visible svg {
+    opacity: 1;
+  }
+  .mac-light:active {
+    filter: brightness(0.82);
+  }
+  .mac-light--close {
+    background: #ff5f57;
+    border-color: #e0443e;
+  }
+  .mac-light--min {
+    background: #febc2e;
+    border-color: #dea123;
+  }
+  .mac-light--zoom {
+    background: #28c840;
+    border-color: #1aab29;
+  }
+  .mac-light--zoom svg {
+    stroke: none;
+  }
+  .mac-dock {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.45rem 0.9rem 0.45rem 0.45rem;
+    border-radius: 14px;
+    background: rgba(40, 40, 42, 0.92);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    color: #e6e6e6;
+    font-size: 0.8rem;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(16px);
+  }
+  .mac-dock-icon {
+    display: grid;
+    place-items: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 7px;
+    background: linear-gradient(#3b3b3d, #1c1c1e);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    font-size: 0.7rem;
+    font-weight: 700;
   }
 }
 
