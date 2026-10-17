@@ -7,7 +7,7 @@ const html = (text: string) => renderToStaticMarkup(<RichText text={text} />);
 describe("RichText", () => {
   it("renders headings, lists, emphasis and links", () => {
     const out = html("## Title\n\n- one\n- **two**\n\nSee [site](https://example.com).");
-    expect(out).toContain("<h2>Title</h2>");
+    expect(out).toContain(`<h2 id="h-title">Title</h2>`);
     expect(out).toContain("<li><strong>two</strong></li>");
     expect(out).toContain('href="https://example.com"');
     expect(out).toContain('rel="noopener noreferrer"');

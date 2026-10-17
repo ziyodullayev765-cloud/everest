@@ -966,6 +966,11 @@ revoke all on function public.sign_guestbook(text, text, text) from public;
 grant execute on function public.sign_guestbook(text, text, text) to anon, authenticated;
 
 
+-- "/uses" page text and the "Now" line on the home page (both on the settings row).
+alter table public.site_settings add column if not exists uses_text text not null default '' check (char_length(uses_text) <= 20000);
+alter table public.site_settings add column if not exists now_text  text not null default '' check (char_length(now_text) <= 300);
+
+
 -- =============================================================================
 -- Initial singleton rows. Safe to run more than once (does not overwrite edits).
 --

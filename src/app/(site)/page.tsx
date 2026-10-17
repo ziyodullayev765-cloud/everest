@@ -6,6 +6,7 @@ import { Projects } from "@/components/home/projects";
 import { Skills } from "@/components/home/skills";
 import { GithubActivity } from "@/components/home/github-activity";
 import { Testimonials } from "@/components/home/testimonials";
+import { NowLine } from "@/components/home/now-line";
 import { getContributions, githubUserFromUrl, isGithubUsername } from "@/lib/github";
 import type { DomeTileData } from "@/components/site/dome-gallery";
 import {
@@ -99,6 +100,7 @@ export default async function HomePage() {
           tiles={tiles}
           animateDome={settings.enable_3d}
         />
+        {settings.now_text?.trim() && <NowLine text={settings.now_text} label={copy.now.label} tashkent={copy.now.tashkent} />}
         <Projects projects={featured} labels={{ hint: copy.homePage.dragHint }} />
         <Highlights items={highlights} stats={stats} />
         <Skills skills={skills} />

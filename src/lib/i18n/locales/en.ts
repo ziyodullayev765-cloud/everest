@@ -29,6 +29,8 @@ export const en = {
     "/privacy": "Privacy policy",
     "/blog": "Blog",
     "/guestbook": "Guestbook",
+    "/uses": "Uses",
+    "/card": "Contact card",
   } as Record<string, string>,
 
   dates: {
@@ -212,6 +214,18 @@ export const en = {
     messageError: "Write 2–280 characters",
     empty: "No notes yet — be the first!",
   },
+  card: {
+    title: "Contact card",
+    lead: "Scan the code or save the contact straight to your phone.",
+    save: "Save contact",
+    share: "Share",
+    copied: "Link copied",
+    scan: "Scan to open the site",
+  },
+  uses: { title: "Uses", eyebrow: "Setup", lead: "The tools, apps and gear I build with." },
+  now: { label: "Now", tashkent: "in Tashkent" },
+  presence: { one: "You are here right now", many: "{n} people here right now" },
+  post: { contents: "Contents", copyLink: "Copy link", copied: "Link copied" },
   demo: { title: "Try it", launch: "Launch interactive demo", note: "Loads content from {host}.", open: "Open in a new tab" },
   caseStudy: {
     title: "Case study",

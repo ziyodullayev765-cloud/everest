@@ -30,6 +30,8 @@ export const uz: Copy = {
     "/privacy": "Maxfiylik siyosati",
     "/blog": "Blog",
     "/guestbook": "Mehmonlar daftari",
+    "/uses": "Vositalarim",
+    "/card": "Vizitka",
   },
 
   dates: {
@@ -217,6 +219,18 @@ export const uz: Copy = {
     messageError: "2–280 ta belgi yozing",
     empty: "Hozircha izohlar yo‘q — birinchi bo‘ling!",
   },
+  card: {
+    title: "Vizitka",
+    lead: "Kodni skanerlang yoki kontaktni to‘g‘ridan-to‘g‘ri telefoningizga saqlang.",
+    save: "Kontaktni saqlash",
+    share: "Ulashish",
+    copied: "Havola nusxalandi",
+    scan: "Saytni ochish uchun skanerlang",
+  },
+  uses: { title: "Vositalarim", eyebrow: "Sozlama", lead: "Ish jarayonimdagi vositalar, ilovalar va jihozlar." },
+  now: { label: "Hozir", tashkent: "Toshkentda" },
+  presence: { one: "Hozir saytda siz bor", many: "Hozir saytda {n} kishi" },
+  post: { contents: "Mundarija", copyLink: "Havolani nusxalash", copied: "Havola nusxalandi" },
   demo: {
     title: "Sinab ko‘ring",
     launch: "Interaktiv demoni ishga tushirish",

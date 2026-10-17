@@ -3,6 +3,7 @@ import { ArrowUp } from "lucide-react";
 import type { NavItem, SocialLink } from "@/lib/types";
 import { SocialIcon } from "./social-icon";
 import { TerminalButton } from "./palette-triggers";
+import { LiveVisitors } from "@/components/effects/live-visitors";
 
 export function Footer({
   siteName,
@@ -63,6 +64,7 @@ export function Footer({
         )}
         <div className="border-line flex w-full flex-col items-center justify-between gap-3 border-t pt-6 text-sm sm:flex-row">
           <p className="text-muted">{footerText}</p>
+          <LiveVisitors />
           <TerminalButton />
           <a
             href="#main"

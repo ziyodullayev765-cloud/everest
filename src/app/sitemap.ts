@@ -20,6 +20,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     "/contact",
     "/privacy",
     "/guestbook",
+    "/card",
+    ...(settings.uses_text?.trim() ? ["/uses"] : []),
     ...(posts.length ? ["/blog"] : []),
   ];
   return [

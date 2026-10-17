@@ -60,6 +60,8 @@ export interface SiteSettings {
   nav_items: NavItem[];
   footer_links: NavItem[];
   privacy_policy: string;
+  uses_text: string;
+  now_text: string;
   music_url: string | null;
   music_title: string;
   updated_at?: string;

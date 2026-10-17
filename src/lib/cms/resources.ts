@@ -709,6 +709,30 @@ export const SETTINGS_CONFIG: SingletonConfig = {
       title: "Privacy policy",
       fields: [{ name: "privacy_policy", label: "Privacy policy text", type: "markdown", max: 30000, rows: 14, wide: true }],
     },
+    {
+      title: "Now & Uses",
+      description:
+        "“Now” is a one-line status on the home page (e.g. “Building Yo‘lda, learning SwiftUI”). “Uses” fills the /uses page with the tools and setup you work with. Leave either empty to hide it.",
+      fields: [
+        {
+          name: "now_text",
+          label: "Now (one line)",
+          type: "text",
+          max: 300,
+          wide: true,
+          placeholder: "Building Yo‘lda · learning SwiftUI",
+        },
+        {
+          name: "uses_text",
+          label: "Uses page",
+          type: "markdown",
+          max: 20000,
+          rows: 12,
+          wide: true,
+          help: "Use ## headings for groups (## Hardware, ## Software) and - lists for the items.",
+        },
+      ],
+    },
   ],
 };
 

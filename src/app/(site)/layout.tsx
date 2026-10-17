@@ -46,11 +46,15 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
     ...nav,
     { href: "/about", label: copy.nav["/about"]! },
     { href: "/guestbook", label: copy.nav["/guestbook"]! },
+    { href: "/card", label: copy.nav["/card"]! },
+    ...(settings.uses_text?.trim() ? [{ href: "/uses", label: copy.nav["/uses"]! }] : []),
   ];
   const footerLinks = localizeNav(settings.footer_links, copy);
-  if (!footerLinks.some((l) => l.href === "/guestbook")) {
-    footerLinks.unshift({ label: copy.nav["/guestbook"]!, href: "/guestbook", visible: true });
-  }
+  // Pages that exist on every site get a footer link unless the admin added one already.
+  const extras = ["/guestbook", "/card", ...(settings.uses_text?.trim() ? ["/uses"] : [])].filter(
+    (href) => !footerLinks.some((l) => l.href === href),
+  );
+  footerLinks.unshift(...extras.map((href) => ({ label: copy.nav[href]!, href, visible: true })));
   const palette: TerminalData = {
     name,
     headline: isPlaceholder(profile.headline) ? "" : profile.headline,
