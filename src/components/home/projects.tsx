@@ -8,6 +8,7 @@ import type { Project } from "@/lib/types";
 import { unique } from "@/lib/utils";
 import { HomeHeading } from "./section-heading";
 import { useRevealOnce } from "@/components/site/ed-section";
+import { TagList } from "@/components/ui/tag-list";
 
 function badgeFor(p: Project) {
   const role = p.role.toLowerCase();
@@ -75,13 +76,7 @@ function ProjectCard({ project, index }: { project: Project; index: number }) {
           <p className="mt-3 line-clamp-3 text-[0.95rem] leading-relaxed text-[var(--fg-secondary)]">{project.summary}</p>
         )}
         <div className="border-line mt-auto flex items-center justify-between gap-3 border-t pt-4">
-          <div className="flex flex-wrap gap-1.5 pt-1">
-            {tags.map((t) => (
-              <span key={t} className="border-line rounded-full border px-2.5 py-0.5 text-[0.7rem] text-[var(--fg-secondary)]">
-                {t}
-              </span>
-            ))}
-          </div>
+          <TagList tags={tags} size="sm" as="span" className="pt-1" />
           {year && <span className="text-muted shrink-0 font-mono text-xs">{year}</span>}
         </div>
       </div>

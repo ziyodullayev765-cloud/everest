@@ -10,6 +10,7 @@ import { getPostBySlug, getProfile, getSettings } from "@/lib/data/public";
 import { fullDate } from "@/lib/i18n/dictionaries";
 import { ownerName } from "@/lib/defaults";
 import { readingMinutes } from "@/lib/reading";
+import { TagList } from "@/components/ui/tag-list";
 
 type Params = { params: Promise<{ slug: string }> };
 
@@ -70,15 +71,7 @@ export default async function PostPage({ params }: Params) {
         </p>
         <h1 className="page-title post-title">{post.title}</h1>
         {post.excerpt && <p className="ed-intro page-lead">{post.excerpt}</p>}
-        {post.tags.length > 0 && (
-          <ul className="mt-6 flex flex-wrap gap-1.5">
-            {post.tags.map((t) => (
-              <li key={t} className="border-line rounded-full border px-3 py-1 text-xs text-[var(--fg-secondary)]">
-                {t}
-              </li>
-            ))}
-          </ul>
-        )}
+        <TagList tags={post.tags} className="mt-6" />
       </header>
 
       {post.cover_url && (

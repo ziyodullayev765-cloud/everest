@@ -76,13 +76,6 @@ export function formatMonthYear(date: string | null | undefined): string {
   return `${MONTHS[Number(m[2]) - 1]} ${m[1]}`;
 }
 
-export function formatDate(date: string | null | undefined): string {
-  if (!date) return "";
-  const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(date);
-  if (!m) return "";
-  return `${Number(m[3])} ${MONTHS[Number(m[2]) - 1]} ${m[1]}`;
-}
-
 export function formatRange(start: string | null, end: string | null, current: boolean) {
   const s = formatMonthYear(start);
   const e = current ? "Present" : formatMonthYear(end);

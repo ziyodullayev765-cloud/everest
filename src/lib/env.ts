@@ -16,11 +16,3 @@ export const MEDIA_BUCKET = "media";
 export function publicMediaUrl(path: string) {
   return `${env.supabaseUrl}/storage/v1/object/public/${MEDIA_BUCKET}/${path.split("/").map(encodeURIComponent).join("/")}`;
 }
-
-/** Path of an object inside the media bucket, or null if the URL is not ours. */
-export function mediaPathFromUrl(url: string | null | undefined): string | null {
-  if (!url || !env.supabaseUrl) return null;
-  const prefix = `${env.supabaseUrl}/storage/v1/object/public/${MEDIA_BUCKET}/`;
-  if (!url.startsWith(prefix)) return null;
-  return url.slice(prefix.length).split("/").map(decodeURIComponent).join("/");
-}

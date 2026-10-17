@@ -1,5 +1,3 @@
-import Link from "next/link";
-import type { ComponentProps, ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
 type Variant = "primary" | "secondary" | "ghost";
@@ -22,31 +20,4 @@ const sizes: Record<Size, string> = {
 
 export function buttonClass(variant: Variant = "primary", size: Size = "md", className?: string) {
   return cn(base, variants[variant], sizes[size], className);
-}
-
-export function ButtonLink({
-  href,
-  variant = "primary",
-  size = "md",
-  className,
-  children,
-  external,
-  ...rest
-}: { href: string; variant?: Variant; size?: Size; className?: string; children: ReactNode; external?: boolean } & Omit<
-  ComponentProps<"a">,
-  "href"
->) {
-  const cls = buttonClass(variant, size, className);
-  if (external || /^(https?:|mailto:|tel:)/.test(href)) {
-    return (
-      <a href={href} className={cls} target={/^https?:/.test(href) ? "_blank" : undefined} rel="noopener noreferrer" {...rest}>
-        {children}
-      </a>
-    );
-  }
-  return (
-    <Link href={href} className={cls} {...rest}>
-      {children}
-    </Link>
-  );
 }

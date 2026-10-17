@@ -100,6 +100,7 @@ export interface Project extends Row {
   /** "value | label" lines. */
   metrics: string[];
   demo_url: string | null;
+  stage: "in_progress" | "completed" | "live" | null;
   demo_kind: "browser" | "phone";
 }
 

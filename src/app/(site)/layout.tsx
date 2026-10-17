@@ -10,6 +10,7 @@ import { SoundProvider } from "@/components/effects/sound";
 import { MotionProvider } from "@/components/ui/motion-provider";
 import { getPosts, getProfile, getProjects, getSettings, getSkills, getSocialLinks, isPreview } from "@/lib/data/public";
 import { CommandPalette } from "@/components/site/command-palette";
+import { KonamiEgg } from "@/components/effects/konami";
 import type { TerminalData } from "@/components/site/terminal";
 import { footerText, isPlaceholder, ownerName } from "@/lib/defaults";
 import { I18nProvider } from "@/components/i18n/provider";
@@ -40,7 +41,16 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
   const nav = localizeNav(navItems, copy);
   const resumeUrl = settings.show_resume ? "/resume" : null;
   const name = ownerName(profile, settings);
-  const pageLinks = [{ href: "/", label: copy.nav["/"]! }, ...nav, { href: "/about", label: copy.nav["/about"]! }];
+  const pageLinks = [
+    { href: "/", label: copy.nav["/"]! },
+    ...nav,
+    { href: "/about", label: copy.nav["/about"]! },
+    { href: "/guestbook", label: copy.nav["/guestbook"]! },
+  ];
+  const footerLinks = localizeNav(settings.footer_links, copy);
+  if (!footerLinks.some((l) => l.href === "/guestbook")) {
+    footerLinks.unshift({ label: copy.nav["/guestbook"]!, href: "/guestbook", visible: true });
+  }
   const palette: TerminalData = {
     name,
     headline: isPlaceholder(profile.headline) ? "" : profile.headline,
@@ -78,13 +88,14 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
             <Footer
               siteName={name}
               footerText={footerText(settings, name, copy.rights)}
-              links={localizeNav(settings.footer_links, copy)}
+              links={footerLinks}
               nav={nav}
               social={social}
               email={settings.contact_email}
               backToTop={copy.backToTop}
             />
             <CommandPalette data={palette} />
+            <KonamiEgg />
             {preview && <PreviewBanner />}
           </div>
         </SoundProvider>

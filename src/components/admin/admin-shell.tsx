@@ -7,6 +7,7 @@ import {
   Music,
   Award,
   BarChart3,
+  BookOpen,
   Newspaper,
   Quote,
   Briefcase,
@@ -51,6 +52,7 @@ const NAV = [
       { href: "/admin/media", label: "Media", icon: Images },
       { href: "/admin/music", label: "Music", icon: Music },
       { href: "/admin/messages", label: "Messages", icon: Inbox, badge: true },
+      { href: "/admin/guestbook", label: "Guestbook", icon: BookOpen },
     ],
   },
   {

@@ -119,10 +119,15 @@ export function fieldSchema(f: FieldDef): z.ZodTypeAny {
     }
     case "boolean":
       return z.preprocess((v) => v === true || v === "true" || v === "on", z.boolean());
-    case "select":
-      return z.enum(f.options.map((o) => o.value) as [string, ...string[]], {
+    case "select": {
+      const choice = z.enum(f.options.map((o) => o.value) as [string, ...string[]], {
         errorMap: () => ({ message: `Choose a valid ${f.label.toLowerCase()}` }),
       });
+      // An empty option means "not set" and is stored as NULL.
+      return f.options.some((o) => o.value === "")
+        ? z.preprocess((v) => v ?? "", choice).transform((v) => (v === "" ? null : v))
+        : choice;
+    }
     case "status":
       return z.enum(["draft", "published"]);
     case "tags":

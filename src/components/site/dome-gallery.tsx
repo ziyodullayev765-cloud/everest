@@ -21,11 +21,6 @@ function thumb(src: string, width: number) {
   return ours ? `/_next/image?url=${encodeURIComponent(src)}&w=${width}&q=70` : src;
 }
 
-/** Total tiles for a given segment count — `segments` columns × 5 rows. */
-export function domeTileCount(segments = 34) {
-  return segments * DOME_ROWS;
-}
-
 /*
  * Greyscale copies are made once per image on a canvas. A CSS `filter` on
  * every tile turns each of the ~170 3D layers into its own offscreen render

@@ -45,7 +45,7 @@ export function ProjectDemo({
       style={
         poster
           ? {
-              backgroundImage: `linear-gradient(rgba(0,0,0,.45),rgba(0,0,0,.55)), url(${JSON.stringify(poster).slice(1, -1)})`,
+              backgroundImage: `linear-gradient(rgba(0,0,0,.62),rgba(0,0,0,.72)), url(${JSON.stringify(poster).slice(1, -1)})`,
               backgroundSize: "cover",
               backgroundPosition: "center",
             }
@@ -55,8 +55,15 @@ export function ProjectDemo({
       <span className="grid size-16 place-items-center rounded-full bg-[var(--fg)] text-[var(--bg)] shadow-xl transition-transform duration-300 group-hover:scale-110">
         <Play className="ml-0.5 size-6" aria-hidden />
       </span>
-      <span className={cn("px-6 text-sm font-medium", poster ? "text-white" : "text-[var(--fg)]")}>{copy.demo.launch}</span>
-      <span className={cn("px-6 text-xs", poster ? "text-white/70" : "text-muted")}>
+      <span
+        className={cn(
+          "px-6 text-sm font-medium",
+          poster ? "text-[#fff] [text-shadow:0_1px_8px_rgba(0,0,0,.6)]" : "text-[var(--fg)]",
+        )}
+      >
+        {copy.demo.launch}
+      </span>
+      <span className={cn("px-6 text-xs", poster ? "text-[#ffffffb3]" : "text-muted")}>
         {copy.demo.note.replace("{host}", host)}
       </span>
     </button>

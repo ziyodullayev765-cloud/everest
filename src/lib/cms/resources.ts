@@ -92,6 +92,18 @@ export const RESOURCES: Record<string, ResourceConfig> = {
           },
           { name: "role", label: "Your role", type: "text", max: 160 },
           { name: "category", label: "Category", type: "text", max: 80, placeholder: "e.g. Web app" },
+          {
+            name: "stage",
+            label: "Stage",
+            type: "select",
+            options: [
+              { value: "", label: "— not shown —" },
+              { value: "in_progress", label: "In progress" },
+              { value: "completed", label: "Completed" },
+              { value: "live", label: "Live" },
+            ],
+            help: "Shown as a small badge next to the project.",
+          },
           { name: "technologies", label: "Technologies", type: "tags", maxItems: 30 },
           { name: "tags", label: "Tags", type: "tags", maxItems: 20 },
           { name: "started_on", label: "Start date", type: "date" },

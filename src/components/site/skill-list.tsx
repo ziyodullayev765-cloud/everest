@@ -53,15 +53,3 @@ export async function SkillGroups({ skills }: { skills: Skill[] }) {
     </div>
   );
 }
-
-export function SkillChips({ skills }: { skills: Skill[] }) {
-  return (
-    <ul className="flex flex-wrap gap-2.5">
-      {skills.map((s) => (
-        <li key={s.id} className="glass text-fg/90 hover:border-accent/50 rounded-full px-4 py-2 text-sm transition">
-          {s.name}
-        </li>
-      ))}
-    </ul>
-  );
-}

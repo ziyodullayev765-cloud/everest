@@ -8,7 +8,11 @@ import { useCopy, useLocale } from "@/components/i18n/provider";
 import { LOCALES, LOCALE_LABELS } from "@/lib/i18n/dictionaries";
 import { storeLocale, toggleTheme } from "@/lib/client/prefs";
 import { trackEvent } from "@/lib/client/track";
-import { Terminal, type TerminalData } from "./terminal";
+import dynamic from "next/dynamic";
+import type { TerminalData } from "./terminal";
+
+// The terminal is an easter egg: its code loads only the first time it opens.
+const Terminal = dynamic(() => import("./terminal").then((m) => m.Terminal), { ssr: false });
 
 export const PALETTE_EVENT = "portfolio:palette";
 export const TERMINAL_EVENT = "portfolio:terminal";
@@ -100,8 +104,12 @@ export function CommandPalette({ data }: { data: TerminalData }) {
     };
   }, []);
 
+  // Once opened, keep the terminal mounted so its close animation can play.
+  const [termUsed, setTermUsed] = useState(false);
   useEffect(() => {
-    if (term) trackEvent("Terminal opened");
+    if (!term) return;
+    setTermUsed(true);
+    trackEvent("Terminal opened");
   }, [term]);
 
   useEffect(() => {
@@ -330,7 +338,7 @@ export function CommandPalette({ data }: { data: TerminalData }) {
           </motion.div>
         )}
       </AnimatePresence>
-      <Terminal open={term} onClose={() => setTerm(false)} data={data} />
+      {termUsed && <Terminal open={term} onClose={() => setTerm(false)} data={data} />}
     </>
   );
 }

@@ -8,10 +8,6 @@ import path from "node:path";
  */
 const dir = path.join(process.cwd(), "public", "brand");
 
-export function brandAssetUrl(file: string): string | null {
-  return existsSync(path.join(dir, file)) ? `/brand/${file}` : null;
-}
-
 export function brandAssetDataUrl(file: string, mime = "image/jpeg"): string | null {
   const p = path.join(dir, file);
   if (!existsSync(p)) return null;

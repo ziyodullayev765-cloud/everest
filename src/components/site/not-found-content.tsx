@@ -2,6 +2,7 @@ import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { buttonClass } from "@/components/ui/button";
 import { getCopy } from "@/lib/i18n/server";
+import { LostLettersGame } from "./lost-letters-game";
 
 export async function NotFoundContent() {
   const copy = await getCopy();
@@ -16,6 +17,7 @@ export async function NotFoundContent() {
         <ArrowLeft className="size-4" aria-hidden />
         {copy.notFound.home}
       </Link>
+      <LostLettersGame labels={copy.notFound.game} />
     </section>
   );
 }

@@ -4,8 +4,8 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useMemo, useState, useTransition } from "react";
 import { toast } from "sonner";
-import { ArrowDown, ArrowUp, Eye, EyeOff, ImageIcon, Pencil, Plus, Search, Trash2 } from "lucide-react";
-import { deleteResource, reorderResource, setResourceStatus } from "@/app/admin/actions/content";
+import { ArrowDown, ArrowUp, Copy, Eye, EyeOff, ImageIcon, Pencil, Plus, Search, Trash2 } from "lucide-react";
+import { deleteResource, duplicateResource, reorderResource, setResourceStatus } from "@/app/admin/actions/content";
 import { ConfirmDialog, EmptyBlock, Input, Select, StatusBadge, btnClass } from "./ui";
 import { getResource, type ListColumn } from "@/lib/cms/resources";
 import { cn, formatDateTime, unique } from "@/lib/utils";
@@ -109,6 +109,18 @@ export function ResourceList({ resourceKey, rows: initialRows }: { resourceKey: 
       setToDelete(null);
       toast.success(res.message);
       router.refresh();
+    });
+  };
+
+  const duplicate = (row: Row) => {
+    startTransition(async () => {
+      const res = await duplicateResource(resourceKey, row.id);
+      if (!res.ok) {
+        toast.error(res.error);
+        return;
+      }
+      toast.success(res.message);
+      router.push(`/admin/${resourceKey}/${res.data!.id}`);
     });
   };
 
@@ -251,6 +263,16 @@ export function ResourceList({ resourceKey, rows: initialRows }: { resourceKey: 
                   >
                     <Pencil className="size-4" aria-hidden />
                   </Link>
+                  <button
+                    type="button"
+                    onClick={() => duplicate(r)}
+                    disabled={pending}
+                    className={btnClass("ghost", "sm", "px-2")}
+                    aria-label={`Duplicate ${title(r)}`}
+                    title="Duplicate (copy as a new draft)"
+                  >
+                    <Copy className="size-4" aria-hidden />
+                  </button>
                   <button
                     type="button"
                     onClick={() => setToDelete(r)}

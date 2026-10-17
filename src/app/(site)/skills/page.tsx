@@ -4,7 +4,9 @@ import { EmptyState, PageHeader } from "@/components/site/section-heading";
 import { Reveal } from "@/components/ui/reveal";
 import { PageNext } from "@/components/site/page-next";
 import { getCopy } from "@/lib/i18n/server";
-import { getSkills } from "@/lib/data/public";
+import { getProjects, getSkills } from "@/lib/data/public";
+import { SkillExplorer } from "@/components/site/skill-explorer";
+import { unique } from "@/lib/utils";
 
 export async function generateMetadata(): Promise<Metadata> {
   const copy = await getCopy();
@@ -17,7 +19,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function SkillsPage() {
   const copy = await getCopy();
-  const skills = await getSkills();
+  const [skills, projects] = await Promise.all([getSkills(), getProjects()]);
   return (
     <>
       <PageHeader title={copy.skills.title} lead={copy.skills.lead} />
@@ -29,6 +31,16 @@ export default async function SkillsPage() {
         ) : (
           <EmptyState>{copy.skills.empty}</EmptyState>
         )}
+        <SkillExplorer
+          skills={unique(skills.map((s) => s.name))}
+          projects={projects.map((p) => ({
+            slug: p.slug,
+            title: p.title,
+            summary: p.summary,
+            tech: [...p.technologies, ...p.tags],
+          }))}
+          labels={{ title: copy.explorer.title, lead: copy.explorer.lead, count: copy.explorer.count }}
+        />
       </section>
       <PageNext current="/skills" />
     </>
