@@ -66,7 +66,18 @@ const NAV = [
   },
 ];
 
-export function AdminShell({ email, newMessages, children }: { email: string; newMessages: number; children: React.ReactNode }) {
+export function AdminShell({
+  email,
+  newMessages,
+  monogram = "•",
+  children,
+}: {
+  email: string;
+  newMessages: number;
+  /** Owner's initials for the logo tile, e.g. "BZ". */
+  monogram?: string;
+  children: React.ReactNode;
+}) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
   useEffect(() => setOpen(false), [pathname]);
@@ -76,7 +87,7 @@ export function AdminShell({ email, newMessages, children }: { email: string; ne
   const sidebar = (
     <div className="flex h-full flex-col">
       <div className="flex items-center gap-3 px-5 py-5">
-        <span className="bg-accent grid size-9 place-items-center rounded-xl text-sm font-bold text-black">SZ</span>
+        <span className="bg-accent grid size-9 place-items-center rounded-xl text-sm font-bold text-black">{monogram}</span>
         <div className="min-w-0">
           <p className="text-sm font-semibold">Portfolio CMS</p>
           <p className="text-subtle truncate text-xs">{email}</p>

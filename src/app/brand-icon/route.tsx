@@ -1,8 +1,13 @@
 import { ImageResponse } from "next/og";
 import type { NextRequest } from "next/server";
+import { getProfile, getSettings } from "@/lib/data/public";
+import { ownerName } from "@/lib/defaults";
+import { initials } from "@/lib/utils";
 
-/** Default "SZ" monogram favicon / touch icon. Replaced by a favicon uploaded in Admin → Settings. */
-export function GET(request: NextRequest) {
+/** Monogram favicon / touch icon from the owner's name. Replaced by a favicon uploaded in Admin → Settings. */
+export async function GET(request: NextRequest) {
+  const [profile, settings] = await Promise.all([getProfile(), getSettings()]);
+  const mono = initials(ownerName(profile, settings)) || "•";
   const px = Math.min(512, Math.max(16, Number(request.nextUrl.searchParams.get("size")) || 64));
   const r = px / 64;
   return new ImageResponse(
@@ -22,7 +27,7 @@ export function GET(request: NextRequest) {
         letterSpacing: -1.5 * r,
       }}
     >
-      SZ
+      {mono}
     </div>,
     { width: px, height: px, headers: { "cache-control": "public, max-age=86400, immutable" } },
   );
