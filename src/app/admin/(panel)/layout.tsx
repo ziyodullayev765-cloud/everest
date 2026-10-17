@@ -4,6 +4,7 @@ import { AdminShell } from "@/components/admin/admin-shell";
 import { SetupNotice } from "@/components/admin/setup-notice";
 import { requireAdminPage } from "@/lib/auth";
 import { isSupabaseConfigured } from "@/lib/env";
+import { createSessionClient } from "@/lib/supabase/server";
 
 export const metadata: Metadata = {
   title: "Admin",
@@ -16,8 +17,13 @@ export const dynamic = "force-dynamic";
 
 export default async function PanelLayout({ children }: { children: React.ReactNode }) {
   if (!isSupabaseConfigured) return <SetupNotice />;
-  const { supabase, user } = await requireAdminPage();
-  const { count } = await supabase.from("contact_messages").select("id", { count: "exact", head: true }).eq("status", "new");
+  // The unread count runs alongside the admin check (RLS returns nothing to non-admins anyway).
+  const [{ user }, { count }] = await Promise.all([
+    requireAdminPage(),
+    createSessionClient().then((db) =>
+      db.from("contact_messages").select("id", { count: "exact", head: true }).eq("status", "new"),
+    ),
+  ]);
 
   return (
     <AdminShell email={user.email ?? ""} newMessages={count ?? 0}>

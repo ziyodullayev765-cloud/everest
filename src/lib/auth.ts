@@ -19,14 +19,16 @@ export interface AdminContext {
 export const getAdmin = cache(async (): Promise<AdminContext | null> => {
   if (!isSupabaseConfigured) return null;
   const supabase = await createSessionClient();
-  const {
-    data: { user },
-    error,
-  } = await supabase.auth.getUser();
+  // Both requests at once (one round trip instead of two). The admin_users
+  // lookup only returns a row for the signed-in caller, and getUser() still
+  // validates the session with Supabase Auth.
+  const [{ data: auth, error }, { data, error: adminError }] = await Promise.all([
+    supabase.auth.getUser(),
+    supabase.from("admin_users").select("user_id").maybeSingle(),
+  ]);
+  const user = auth?.user;
   if (error || !user) return null;
-
-  const { data, error: adminError } = await supabase.from("admin_users").select("user_id").eq("user_id", user.id).maybeSingle();
-  if (adminError || !data) return null;
+  if (adminError || !data || data.user_id !== user.id) return null;
 
   return { supabase, user };
 });
