@@ -27,44 +27,50 @@ function fail(e: unknown): ActionResult<never> {
 }
 
 async function usageOf(db: SupabaseClient, url: string) {
-  const places: string[] = [];
-  for (const { table, columns } of URL_COLUMNS) {
-    for (const col of columns) {
+  // All checks at once: the database can be far from the server, so one round
+  // trip for every column would make deleting a file take seconds.
+  const checks = URL_COLUMNS.flatMap(({ table, columns }) =>
+    columns.map(async (col) => {
       const { count } = await db.from(table).select("id", { count: "exact", head: true }).eq(col, url);
-      if (count) places.push(`${table}.${col}${count > 1 ? ` ×${count}` : ""}`);
-    }
-  }
-  const { count } = await db
+      return count ? `${table}.${col}${count > 1 ? ` ×${count}` : ""}` : null;
+    }),
+  );
+  const gallery = db
     .from("projects")
     .select("id", { count: "exact", head: true })
-    .contains("gallery", JSON.stringify([{ url }]));
-  if (count) places.push(`project galleries ×${count}`);
-  return places;
+    .contains("gallery", JSON.stringify([{ url }]))
+    .then(({ count }) => (count ? `project galleries ×${count}` : null));
+  return (await Promise.all([...checks, gallery])).filter((p): p is string => !!p);
 }
 
 /** Points every reference to `from` at `to` (or clears it when `to` is null). */
 async function rewriteReferences(db: SupabaseClient, from: string, to: string | null) {
-  for (const { table, columns } of URL_COLUMNS) {
-    for (const col of columns) {
+  const updates = URL_COLUMNS.flatMap(({ table, columns }) =>
+    columns.map(async (col) => {
       const { error } = await db
         .from(table)
         .update({ [col]: to })
         .eq(col, from);
       if (error) throw error;
-    }
-  }
-  const { data: projects, error } = await db
-    .from("projects")
-    .select("id, gallery")
-    .contains("gallery", JSON.stringify([{ url: from }]));
-  if (error) throw error;
-  for (const p of projects ?? []) {
-    const gallery = (p.gallery as GalleryImage[])
-      .map((g) => (g.url === from ? (to ? { ...g, url: to } : null) : g))
-      .filter(Boolean);
-    const { error: upErr } = await db.from("projects").update({ gallery }).eq("id", p.id);
-    if (upErr) throw upErr;
-  }
+    }),
+  );
+  const galleries = (async () => {
+    const { data: projects, error } = await db
+      .from("projects")
+      .select("id, gallery")
+      .contains("gallery", JSON.stringify([{ url: from }]));
+    if (error) throw error;
+    await Promise.all(
+      (projects ?? []).map(async (p) => {
+        const gallery = (p.gallery as GalleryImage[])
+          .map((g) => (g.url === from ? (to ? { ...g, url: to } : null) : g))
+          .filter(Boolean);
+        const { error: upErr } = await db.from("projects").update({ gallery }).eq("id", p.id);
+        if (upErr) throw upErr;
+      }),
+    );
+  })();
+  await Promise.all([...updates, galleries]);
 }
 
 export async function listMedia(kind?: "image" | "document" | "audio"): Promise<ActionResult<Media[]>> {
