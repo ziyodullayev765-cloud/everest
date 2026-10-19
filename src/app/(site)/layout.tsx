@@ -6,6 +6,7 @@ import { MusicDock } from "@/components/effects/sound";
 import { MediaGuard } from "@/components/effects/media-guard";
 import { SmoothScroll } from "@/components/effects/smooth-scroll";
 import { Parallax } from "@/components/effects/parallax";
+import { PageTransitions } from "@/components/effects/page-transitions";
 import { SoundProvider } from "@/components/effects/sound";
 import { MotionProvider } from "@/components/ui/motion-provider";
 import { getPosts, getProfile, getProjects, getSettings, getSkills, getSocialLinks, isPreview } from "@/lib/data/public";
@@ -79,6 +80,7 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
             <MediaGuard />
             <SmoothScroll />
             <Parallax />
+            <PageTransitions />
             <Header
               siteName={name}
               logoUrl={settings.logo_url}

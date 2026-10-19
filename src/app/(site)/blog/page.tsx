@@ -47,7 +47,7 @@ export default async function BlogPage() {
                       <TagList tags={p.tags} size="sm" as="span" className="mt-3" />
                     </span>
                     {p.cover_url && (
-                      <span className="post-row-cover protected-media">
+                      <span className="post-row-cover protected-media" data-vt-thumb="">
                         <SmartImage src={p.cover_url} alt={p.cover_alt || p.title} fill sizes="200px" className="object-cover" />
                       </span>
                     )}

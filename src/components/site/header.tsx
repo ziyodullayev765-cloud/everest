@@ -113,7 +113,7 @@ export function Header({ siteName, logoUrl, availability, nav, resumeUrl }: Prop
         {copy.skipToContent}
       </a>
 
-      <header className="fixed inset-x-0 top-0 z-50">
+      <header className="vt-header fixed inset-x-0 top-0 z-50">
         <div
           className={cn(
             "border-b transition-[background-color,border-color] duration-300",

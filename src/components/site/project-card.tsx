@@ -14,9 +14,23 @@ function placeholderGradient(title: string) {
   return `radial-gradient(circle at 25% 20%, ${a}, transparent 55%), radial-gradient(circle at 80% 85%, ${b}, transparent 55%), #0d0b14`;
 }
 
-export function ProjectThumb({ project, className, priority }: { project: Project; className?: string; priority?: boolean }) {
+export function ProjectThumb({
+  project,
+  className,
+  priority,
+  hero,
+}: {
+  project: Project;
+  className?: string;
+  priority?: boolean;
+  /** The page's main image: target of the page-transition morph. */
+  hero?: boolean;
+}) {
   return (
-    <div className={cn("bg-bg-elevated relative overflow-hidden", className)}>
+    <div
+      className={cn("bg-bg-elevated relative overflow-hidden", className)}
+      {...(hero ? { "data-vt-hero": "" } : { "data-vt-thumb": "" })}
+    >
       {project.thumbnail_url ? (
         <SmartImage
           src={project.thumbnail_url}
@@ -24,7 +38,7 @@ export function ProjectThumb({ project, className, priority }: { project: Projec
           fill
           priority={priority}
           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-          className="ease-out-expo object-cover transition-transform duration-[1.2s] group-hover:scale-[1.04]"
+          className="ease-out-expo object-cover transition-[transform,filter] duration-[1.2s] group-hover:scale-[1.04] group-hover:brightness-110 group-hover:saturate-[1.08]"
         />
       ) : (
         <div className="absolute inset-0 grid place-items-center">
