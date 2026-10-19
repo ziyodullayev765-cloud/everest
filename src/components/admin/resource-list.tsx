@@ -169,7 +169,7 @@ export function ResourceList({ resourceKey, rows: initialRows }: { resourceKey: 
 
       {rows.length === 0 ? (
         <EmptyBlock title={`No ${resource.label.toLowerCase()} yet`}>
-          <Link href={`/admin/${resourceKey}/new`} className={btnClass("primary", "md", "mt-4")}>
+          <Link prefetch={false} href={`/admin/${resourceKey}/new`} className={btnClass("primary", "md", "mt-4")}>
             <Plus className="size-4" aria-hidden /> Add {resource.singular.toLowerCase()}
           </Link>
         </EmptyBlock>
@@ -194,7 +194,11 @@ export function ResourceList({ resourceKey, rows: initialRows }: { resourceKey: 
                     </div>
                   )}
                   <div className="min-w-0">
-                    <Link href={`/admin/${resourceKey}/${r.id}`} className="hover:text-accent line-clamp-1 font-medium">
+                    <Link
+                      prefetch={false}
+                      href={`/admin/${resourceKey}/${r.id}`}
+                      className="hover:text-accent line-clamp-1 font-medium"
+                    >
                       {title(r)}
                     </Link>
                     <div className="text-muted mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs">
@@ -257,6 +261,7 @@ export function ResourceList({ resourceKey, rows: initialRows }: { resourceKey: 
                     </a>
                   )}
                   <Link
+                    prefetch={false}
                     href={`/admin/${resourceKey}/${r.id}`}
                     className={btnClass("ghost", "sm", "px-2")}
                     aria-label={`Edit ${title(r)}`}

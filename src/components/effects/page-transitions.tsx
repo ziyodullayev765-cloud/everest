@@ -6,7 +6,7 @@ import { useEffect, useRef } from "react";
 type Doc = Document & { startViewTransition?: (update: () => Promise<void>) => { finished: Promise<void> } };
 
 /** Longest the old page may stay frozen while the next one loads. */
-const MAX_WAIT_MS = 900;
+const MAX_WAIT_MS = 350;
 
 /**
  * Smooth page-to-page transitions using the View Transitions API. Internal link

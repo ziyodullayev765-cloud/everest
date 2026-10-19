@@ -127,7 +127,7 @@ export function ContentForm({ mode, initial }: { mode: Mode; initial: Record<str
 
         <div className="border-line bg-bg/85 fixed inset-x-0 bottom-0 z-30 border-t backdrop-blur-xl lg:left-64">
           <div className="mx-auto flex max-w-5xl flex-wrap items-center gap-2 px-4 py-3 sm:px-8">
-            <Link href={backHref} className={btnClass("ghost")}>
+            <Link prefetch={false} href={backHref} className={btnClass("ghost")}>
               <ArrowLeft className="size-4" aria-hidden />
               <span className="hidden sm:inline">Back</span>
             </Link>

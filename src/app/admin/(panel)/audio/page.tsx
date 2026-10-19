@@ -20,6 +20,7 @@ export default async function AudioAdmin() {
         description="Music and other audio files (MP3, M4A, OGG, WAV — up to 15 MB each)."
         actions={
           <Link
+            prefetch={false}
             href="/admin/music"
             className="border-line inline-flex h-10 items-center rounded-xl border px-4 text-sm hover:bg-white/[0.06]"
           >

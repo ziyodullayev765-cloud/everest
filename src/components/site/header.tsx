@@ -126,6 +126,7 @@ export function Header({ siteName, logoUrl, availability, nav, resumeUrl }: Prop
               <Link
                 key={item.href}
                 href={item.href}
+                prefetch
                 className="ed-pill"
                 aria-current={isActive(pathname, item.href) ? "page" : undefined}
               >
@@ -188,6 +189,7 @@ export function Header({ siteName, logoUrl, availability, nav, resumeUrl }: Prop
                   >
                     <Link
                       href={item.href}
+                      prefetch
                       onClick={() => setOpen(false)}
                       aria-current={isActive(pathname, item.href) ? "page" : undefined}
                       className="font-display aria-[current=page]:text-gold flex items-center justify-between py-4 text-3xl"
