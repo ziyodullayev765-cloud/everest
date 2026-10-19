@@ -151,9 +151,9 @@ export default async function ProjectPage({ params }: Params) {
       </header>
 
       {project.thumbnail_url && (
-        <Reveal className="protected-media mx-auto mt-12 w-[min(1200px,calc(100%-2rem))] sm:mt-16">
-          <ProjectThumb project={project} priority className="border-line aspect-[16/9] rounded-[2rem] border" />
-        </Reveal>
+        <div className="protected-media page-hero-media mx-auto mt-12 w-[min(1200px,calc(100%-2rem))] sm:mt-16">
+          <ProjectThumb project={project} priority hero className="border-line aspect-[16/9] rounded-[2rem] border" />
+        </div>
       )}
 
       {hasBody ? (

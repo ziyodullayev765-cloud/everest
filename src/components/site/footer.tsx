@@ -30,7 +30,7 @@ export function Footer({
           <ul className="flex flex-wrap justify-center gap-x-6 gap-y-2 text-[0.78rem] tracking-[0.04em] uppercase">
             {[...nav, ...links].map((n) => (
               <li key={n.href}>
-                <Link href={n.href} className="text-muted hover:text-fg transition">
+                <Link href={n.href} className="link-draw text-muted hover:text-fg transition">
                   {n.label}
                 </Link>
               </li>
@@ -47,7 +47,7 @@ export function Footer({
                   rel="noopener noreferrer me"
                   aria-label={s.label || s.platform}
                   title={s.label || s.platform}
-                  className="border-line text-muted hover:border-line-strong hover:text-fg grid size-10 place-items-center rounded-full border transition"
+                  className="border-line text-muted hover:border-line-strong hover:text-fg ease-out-expo grid size-10 place-items-center rounded-full border transition duration-300 hover:-translate-y-0.5"
                 >
                   <SocialIcon platform={s.platform} url={s.url} className="size-4" />
                 </a>
@@ -55,7 +55,7 @@ export function Footer({
             ))}
             {email && (
               <li>
-                <a href={`mailto:${email}`} className="text-muted hover:text-accent ml-2 text-sm transition">
+                <a href={`mailto:${email}`} className="link-draw text-muted hover:text-accent ml-2 text-sm transition">
                   {email}
                 </a>
               </li>

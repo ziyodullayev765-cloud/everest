@@ -77,7 +77,10 @@ export default async function PostPage({ params }: Params) {
       </header>
 
       {post.cover_url && (
-        <Reveal className="protected-media relative mx-auto mt-12 aspect-[16/9] w-[min(1080px,calc(100%-2rem))] overflow-hidden rounded-[2rem] border border-[var(--line)]">
+        <div
+          data-vt-hero=""
+          className="protected-media page-hero-media relative mx-auto mt-12 aspect-[16/9] w-[min(1080px,calc(100%-2rem))] overflow-hidden rounded-[2rem] border border-[var(--line)]"
+        >
           <SmartImage
             src={post.cover_url}
             alt={post.cover_alt || post.title}
@@ -86,7 +89,7 @@ export default async function PostPage({ params }: Params) {
             sizes="(min-width: 1100px) 1080px, 100vw"
             className="object-cover"
           />
-        </Reveal>
+        </div>
       )}
 
       <ReadingProgress />
