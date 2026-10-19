@@ -1,6 +1,8 @@
 "use client";
 
 import Link from "next/link";
+import { HoverPrefetch } from "@/components/effects/hover-prefetch";
+import { AdminPageSkeleton } from "./page-skeleton";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import {
@@ -80,9 +82,31 @@ export function AdminShell({
 }) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
-  useEffect(() => setOpen(false), [pathname]);
+  // The page a click is heading to: highlighted and shown as a skeleton right
+  // away, while the server renders it.
+  const [pending, setPending] = useState<string | null>(null);
+  useEffect(() => {
+    setOpen(false);
+    setPending(null);
+  }, [pathname]);
+  useEffect(() => {
+    if (!pending) return;
+    const t = setTimeout(() => setPending(null), 15_000);
+    return () => clearTimeout(t);
+  }, [pending]);
 
-  const isActive = (href: string) => (href === "/admin" ? pathname === "/admin" : pathname.startsWith(href));
+  const onClickCapture = (e: React.MouseEvent) => {
+    if (e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+    const a = (e.target as Element).closest("a");
+    if (!a || (a.target && a.target !== "_self") || a.hasAttribute("download")) return;
+    const url = new URL(a.href, location.href);
+    if (url.origin !== location.origin || !url.pathname.startsWith("/admin") || url.pathname === pathname) return;
+    setPending(url.pathname);
+    setOpen(false);
+  };
+
+  const current = pending ?? pathname;
+  const isActive = (href: string) => (href === "/admin" ? current === "/admin" : current.startsWith(href));
 
   const sidebar = (
     <div className="flex h-full flex-col">
@@ -106,6 +130,7 @@ export function AdminShell({
                 return (
                   <li key={item.href}>
                     <Link
+                      prefetch={false}
                       href={item.href}
                       aria-current={active ? "page" : undefined}
                       className={cn(
@@ -153,7 +178,9 @@ export function AdminShell({
   );
 
   return (
-    <div className="bg-bg min-h-dvh">
+    <div className="bg-bg min-h-dvh" onClickCapture={onClickCapture}>
+      <HoverPrefetch />
+      {pending && <div className="admin-progress" aria-hidden />}
       <aside className="border-line bg-bg-elevated fixed inset-y-0 left-0 z-40 hidden w-64 border-r lg:block">{sidebar}</aside>
 
       <header className="border-line bg-bg/85 sticky top-0 z-30 flex h-14 items-center justify-between border-b px-4 backdrop-blur-xl lg:hidden">
@@ -187,7 +214,7 @@ export function AdminShell({
       )}
 
       <main id="main" className="lg:pl-64">
-        <div className="mx-auto max-w-5xl px-4 py-8 sm:px-8 sm:py-10">{children}</div>
+        <div className="mx-auto max-w-5xl px-4 py-8 sm:px-8 sm:py-10">{pending ? <AdminPageSkeleton /> : children}</div>
       </main>
     </div>
   );

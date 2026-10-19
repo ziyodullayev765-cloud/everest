@@ -58,6 +58,9 @@ const nextConfig: NextConfig = {
   },
   experimental: {
     serverActions: { bodySizeLimit: "1mb" },
+    // Keep pages the browser already loaded for a while, so going back to one is instant.
+    // (Saving in the admin clears this cache, so edits still show at once.)
+    staleTimes: { dynamic: 60, static: 300 },
     optimizePackageImports: ["lucide-react", "recharts", "@react-three/drei"],
   },
   // The old address keeps working and forwards visitors to the main one.

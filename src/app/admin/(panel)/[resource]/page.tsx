@@ -20,7 +20,7 @@ export default async function ResourceIndex({ params }: { params: Promise<{ reso
         title={resource.label}
         description={resource.description}
         actions={
-          <Link href={`/admin/${key}/new`} className={btnClass("primary")}>
+          <Link prefetch={false} href={`/admin/${key}/new`} className={btnClass("primary")}>
             <Plus className="size-4" aria-hidden /> New {resource.singular.toLowerCase()}
           </Link>
         }

@@ -101,6 +101,7 @@ export default async function Overview() {
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
         {tiles.map((t) => (
           <Link
+            prefetch={false}
             key={t.label}
             href={t.href}
             className="group border-line hover:border-line-strong rounded-2xl border bg-white/[0.025] p-4 transition sm:p-5"
