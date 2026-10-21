@@ -39,8 +39,8 @@ export async function listClasses(actor: Actor, includeArchived = false) {
       academicYear: schema.classes.academicYear,
       joinCode: schema.classes.joinCode,
       archivedAt: schema.classes.archivedAt,
-      students: sql<number>`(select count(*)::int from class_students cs join users u on u.id = cs.student_id where cs.class_id = ${schema.classes.id} and u.status = 'active')`,
-      teachers: sql<string>`coalesce((select string_agg(distinct u.display_name, ', ') from class_teachers ct join users u on u.id = ct.teacher_id where ct.class_id = ${schema.classes.id}), '')`,
+      students: sql<number>`(select count(*)::int from class_students cs join users u on u.id = cs.student_id where cs.class_id = classes.id and u.status = 'active')`,
+      teachers: sql<string>`coalesce((select string_agg(distinct u.display_name, ', ') from class_teachers ct join users u on u.id = ct.teacher_id where ct.class_id = classes.id), '')`,
     })
     .from(schema.classes)
     .where(and(includeArchived ? sql`true` : isNull(schema.classes.archivedAt), scope === "all" ? sql`true` : inArray(schema.classes.id, scope)))
@@ -187,8 +187,8 @@ export async function studentClasses(studentId: string) {
       name: schema.classes.name,
       academicYear: schema.classes.academicYear,
       archivedAt: schema.classes.archivedAt,
-      teachers: sql<string>`coalesce((select string_agg(distinct u.display_name, ', ') from class_teachers ct join users u on u.id = ct.teacher_id where ct.class_id = ${schema.classes.id}), '')`,
-      subjects: sql<string>`coalesce((select string_agg(distinct s.name, ', ') from class_teachers ct join subjects s on s.id = ct.subject_id where ct.class_id = ${schema.classes.id}), '')`,
+      teachers: sql<string>`coalesce((select string_agg(distinct u.display_name, ', ') from class_teachers ct join users u on u.id = ct.teacher_id where ct.class_id = classes.id), '')`,
+      subjects: sql<string>`coalesce((select string_agg(distinct s.name, ', ') from class_teachers ct join subjects s on s.id = ct.subject_id where ct.class_id = classes.id), '')`,
     })
     .from(schema.classes)
     .where(inArray(schema.classes.id, ids))

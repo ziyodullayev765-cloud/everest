@@ -24,15 +24,46 @@ export function lastNDays(today: string, n: number) {
   return out;
 }
 
-const fmt = (opts: Intl.DateTimeFormatOptions, locale = "uz-Latn") => new Intl.DateTimeFormat(locale, { timeZone: DEFAULT_TZ, ...opts });
+/*
+ * Uzbek names are spelled out here instead of relying on Intl: browser ICU data for "uz" is uneven
+ * (Chromium renders short months as "M10"), and server and client must print the same text.
+ */
+const MONTHS = ["yanvar", "fevral", "mart", "aprel", "may", "iyun", "iyul", "avgust", "sentabr", "oktabr", "noyabr", "dekabr"];
+const MONTHS_SHORT = ["yan", "fev", "mar", "apr", "may", "iyn", "iyl", "avg", "sen", "okt", "noy", "dek"];
+const WEEKDAYS = ["yakshanba", "dushanba", "seshanba", "chorshanba", "payshanba", "juma", "shanba"];
+const WEEKDAYS_SHORT = ["Ya", "Du", "Se", "Ch", "Pa", "Ju", "Sh"];
+const TZ_OFFSET_MS = 5 * 3600_000; // Asia/Tashkent, no DST
 
-export const formatDate = (d: Date | string) => fmt({ day: "numeric", month: "long", year: "numeric" }).format(new Date(d));
-export const formatShortDate = (d: Date | string) => fmt({ day: "numeric", month: "short" }).format(new Date(d));
-export const formatDateTime = (d: Date | string) => fmt({ day: "numeric", month: "short", hour: "2-digit", minute: "2-digit", hourCycle: "h23" }).format(new Date(d));
-export const formatTime = (d: Date | string) => fmt({ hour: "2-digit", minute: "2-digit", hourCycle: "h23" }).format(new Date(d));
-export const formatWeekday = (day: string) =>
-  new Intl.DateTimeFormat("uz-Latn", { weekday: "short", timeZone: "UTC" }).format(new Date(day + "T00:00:00Z"));
-export const formatLongToday = (d = new Date()) => fmt({ weekday: "long", day: "numeric", month: "long" }).format(d);
+/** Wall-clock parts in Tashkent. */
+function parts(d: Date | string) {
+  const x = new Date(new Date(d).getTime() + TZ_OFFSET_MS);
+  return { y: x.getUTCFullYear(), m: x.getUTCMonth(), d: x.getUTCDate(), wd: x.getUTCDay(), h: x.getUTCHours(), min: x.getUTCMinutes() };
+}
+const hhmm = (p: { h: number; min: number }) => `${String(p.h).padStart(2, "0")}:${String(p.min).padStart(2, "0")}`;
+
+export const formatDate = (d: Date | string) => {
+  const p = parts(d);
+  return `${p.d}-${MONTHS[p.m]}, ${p.y}`;
+};
+export const formatShortDate = (d: Date | string) => {
+  const p = parts(d);
+  return `${p.d}-${MONTHS_SHORT[p.m]}`;
+};
+export const formatDateTime = (d: Date | string) => {
+  const p = parts(d);
+  return `${p.d}-${MONTHS_SHORT[p.m]}, ${hhmm(p)}`;
+};
+export const formatTime = (d: Date | string) => hhmm(parts(d));
+/** For YYYY-MM-DD day keys. */
+export const formatWeekday = (day: string) => WEEKDAYS_SHORT[new Date(day + "T00:00:00Z").getUTCDay()];
+export const formatDayShort = (day: string) => {
+  const x = new Date(day + "T00:00:00Z");
+  return `${x.getUTCDate()}-${MONTHS_SHORT[x.getUTCMonth()]}`;
+};
+export const formatLongToday = (d = new Date()) => {
+  const p = parts(d);
+  return `${WEEKDAYS[p.wd]}, ${p.d}-${MONTHS[p.m]}`;
+};
 
 /** "2 kun 4 soat qoldi" / "3 soat oldin tugadi". */
 export function remaining(due: Date | string, now = new Date()) {

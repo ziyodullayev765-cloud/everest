@@ -289,7 +289,7 @@ export async function listUsers(actor: Actor, f: { role: Role | "staff"; q?: str
     const like = "%" + f.q.replace(/[%_\\]/g, "\\$&") + "%";
     conds.push(or(ilike(schema.users.displayName, like), ilike(schema.users.username, like), ilike(schema.users.studentCode, like))!);
   }
-  if (f.classId) conds.push(sql`exists (select 1 from class_students cs where cs.student_id = ${schema.users.id} and cs.class_id = ${f.classId})`);
+  if (f.classId) conds.push(sql`exists (select 1 from class_students cs where cs.student_id = users.id and cs.class_id = ${f.classId})`);
   return db
     .select({
       id: schema.users.id,
@@ -304,7 +304,7 @@ export async function listUsers(actor: Actor, f: { role: Role | "staff"; q?: str
       createdAt: schema.users.createdAt,
       classNames: sql<string>`coalesce((
         select string_agg(c.name, ', ' order by c.name) from classes c
-        where c.id in (select class_id from class_students where student_id = ${schema.users.id} union select class_id from class_teachers where teacher_id = ${schema.users.id})
+        where c.id in (select class_id from class_students where student_id = users.id union select class_id from class_teachers where teacher_id = users.id)
       ), '')`,
     })
     .from(schema.users)
@@ -344,7 +344,7 @@ export async function studentRecord(actor: Actor, studentId: string) {
     .where(and(eq(schema.users.id, studentId), eq(schema.users.role, "student")));
   if (!u) throw notFound();
   const scope = await manageableClassIds(actor);
-  const grades = await db.execute<Record<string, unknown>>(sql`
+  const grades = await db.execute<{ assignment_id: string; title: string; subject: string; points: string; max_points: string; percent: string; status: "provisional" | "final"; scale_label: string; graded_at: string }>(sql`
     select g.points, g.max_points, g.percent, g.status, g.scale_label, g.graded_at, a.id as assignment_id, a.title, s.name as subject
     from grades g join assignments a on a.id = g.assignment_id join subjects s on s.id = a.subject_id
     where g.student_id = ${studentId}

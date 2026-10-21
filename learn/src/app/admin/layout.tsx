@@ -1,0 +1,63 @@
+import type { Metadata } from "next";
+import { pageUser } from "@/server/auth/guards";
+import { BrandStyle } from "@/components/app/brand-style";
+import { AppShell, type NavSection } from "@/components/app/shell";
+import { logoutAction } from "@/app/actions/auth";
+import { unreadCount } from "@/server/services/notifications";
+import { getSettings } from "@/server/services/settings";
+import { t } from "@/lib/i18n";
+
+export const metadata: Metadata = { title: { default: "Boshqaruv", template: "%s · Boshqaruv" } };
+
+export default async function AdminLayout({ children }: { children: React.ReactNode }) {
+  const user = await pageUser("admin", "super_admin");
+  const [unread, settings] = await Promise.all([unreadCount(user.id), getSettings()]);
+  const sections: NavSection[] = [
+    { items: [{ href: "/admin", label: t.nav.overview, icon: "dashboard", exact: true }] },
+    {
+      title: "Odamlar",
+      items: [
+        { href: "/admin/students", label: t.nav.students, icon: "students" },
+        { href: "/admin/teachers", label: t.nav.teachers, icon: "teachers" },
+        { href: "/admin/classes", label: t.nav.classesAdmin, icon: "classes" },
+        { href: "/admin/subjects", label: t.nav.subjects, icon: "subjects" },
+      ],
+    },
+    {
+      title: "O‘quv jarayoni",
+      items: [
+        { href: "/admin/assignments", label: t.nav.content, icon: "builder" },
+        { href: "/admin/bank", label: t.nav.questionBank, icon: "bank" },
+        { href: "/admin/submissions", label: t.nav.submissions, icon: "inbox" },
+        { href: "/admin/gradebook", label: t.nav.gradebook, icon: "gradebook" },
+      ],
+    },
+    {
+      title: "Tizim",
+      items: [
+        { href: "/admin/settings", label: t.nav.settings, icon: "settings" },
+        { href: "/admin/audit", label: t.nav.audit, icon: "audit" },
+        { href: "/admin/notifications", label: t.nav.notifications, icon: "notifications" },
+        { href: "/admin/profile", label: t.nav.profile, icon: "profile" },
+      ],
+    },
+  ];
+  return (
+    <>
+    <BrandStyle color={settings.branding.primaryColor} />
+    <AppShell
+      appName={settings.branding.shortName}
+      logoFileId={settings.branding.logoFileId}
+      areaLabel={t.nav.admin}
+      sections={sections}
+      user={{ displayName: user.displayName, avatarFileId: user.avatarFileId, roleLabel: t.role[user.role] }}
+      unread={unread}
+      logout={logoutAction}
+      profileHref="/admin/profile"
+      notificationsHref="/admin/notifications"
+    >
+      {children}
+    </AppShell>
+    </>
+  );
+}

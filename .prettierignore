@@ -5,3 +5,4 @@ package-lock.json
 supabase/
 test-results/
 playwright-report/
+learn/

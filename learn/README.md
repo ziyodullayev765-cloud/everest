@@ -1,0 +1,391 @@
+# Everest Ta’lim — learning platform (PWA)
+
+A mobile-first learning platform for **students, teachers and administrators**: assignments, a full quiz engine,
+grading with an auditable gradebook, weekly analytics, optional gamification, notifications and an installable PWA.
+The interface is in **Uzbek (Latin)**; the i18n layer is ready for English and Russian.
+
+This app lives in `learn/` and is independent of the portfolio site at the repository root (separate
+`package.json`, database and deployment).
+
+- **Stack:** Next.js 15 (App Router, TypeScript, Server Actions) · Tailwind CSS 4 · PostgreSQL 14+ · Drizzle ORM
+  (SQL migrations) · postgres.js · Zod · Recharts · Lucide · KaTeX · Vitest · Playwright
+- **Auth:** own, database-backed sessions (no third-party provider needed); passwords hashed with scrypt.
+
+---
+
+## Contents
+
+1. [What’s included](#whats-included)
+2. [Architecture](#architecture)
+3. [Roles & permissions](#roles--permissions)
+4. [Data model](#data-model)
+5. [API](#api)
+6. [Setup & local development](#setup--local-development)
+7. [Deployment](#deployment)
+8. [PWA, installation & offline](#pwa-installation--offline)
+9. [Security](#security)
+10. [Testing](#testing)
+11. [Incomplete or externally dependent features](#incomplete-or-externally-dependent-features)
+
+---
+
+## What’s included
+
+### Students (bottom tabs on phones: Bosh sahifa · Vazifalar · Quizlar · Natijalar · Profil)
+
+| Route                                  | Purpose                                                                                                                                                                           |
+| -------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `/`                                    | Greeting, date, motivation, today summary; 6 stat cards (completed, pending, average grade, quiz accuracy, weekly goal %, streak); filterable assignments; 7-day activity chart; deadlines; achievements |
+| `/assignments`, `/assignments/[id]`    | All work with subject/status/deadline filters; details with instructions, attachments, links, rubric, grade, feedback                                                             |
+| `/assignments/[id]/submit`             | Written answer and/or files, autosaved draft, confirmation dialog, timestamped confirmation                                                                                       |
+| `/quizzes`, `/quizzes/[id]`            | Quiz list + attempt history; overview with rules, attempts left, start/resume                                                                                                     |
+| `/quizzes/[id]/attempt/[attemptId]`    | One question at a time, progress, optional overview grid, server-synced countdown, autosave with retry, confirm-before-submit, auto-submit on expiry                             |
+| `/quizzes/[id]/results/[attemptId]`    | Score, %, pass/fail, correct/incorrect, per-question review and explanations — **only as the quiz’s review settings allow**                                                       |
+| `/grades`                              | Grades by subject, provisional vs final, feedback indicator, grading scale                                                                                                        |
+| `/results` (Natijalar)                 | 7d/30d/3m/1y filters; this week vs last week; average by subject; completed vs assigned; quiz accuracy; trend; punctuality; strong subjects / needs practice; goals            |
+| `/achievements`                        | XP, level, streaks, personal bests, badge gallery, transparent XP rules                                                                                                           |
+| `/classes`, `/classes/[id]`            | Classes, teachers, announcements, class challenges (aggregate only); join by code                                                                                                 |
+| `/profile`, `/notifications`           | Profile (fields editable per admin policy), goals, notification preferences, theme, password                                                                                     |
+
+### Teachers (`/teacher`)
+
+Dashboard (pending reviews, recent submissions, completion per assignment, deadlines) · submission queue with
+filters · grading screen (written work with rubric, late penalty, feedback, return for revision, version history;
+quizzes with per-question review and manual grading) · assignment & quiz builder · question bank · gradebook with
+CSV export · class pages with announcements and class challenges · student records (own subjects only).
+
+### Administrators (`/admin`)
+
+Overview (students, teachers, classes, published, pending, activity, completion, recent actions) · student
+management (create, edit, deactivate/reactivate, classes, one-time reset links, **CSV import**) · staff management
+(roles, permissions, class/subject assignments, activity) · classes (create, edit, archive, join codes, enrolment,
+teachers) · subjects · all teacher tools across every class · platform settings (branding, grading scale, XP rules,
+languages, assignment defaults, profile policy, notification templates) · audit log.
+
+### Other pages
+
+`/login`, `/change-password` (forced after provisioning), `/reset/[token]`, `/install` (iOS/Android/desktop
+guide + native prompt where supported), `/offline`, 404 and error pages.
+
+---
+
+## Architecture
+
+```
+learn/
+├── drizzle/                     SQL migrations (0000 schema, 0001 integrity guards) — applied by scripts/migrate.ts
+├── public/icons/                PWA icons (generated by scripts/make-icons.mjs)
+├── scripts/                     migrate · seed (demo) · create-admin · make-icons · e2e-reset
+├── src/
+│   ├── app/
+│   │   ├── (auth)/              login, change-password, reset/[token]
+│   │   ├── (student)/           student pages (shell with bottom tabs)
+│   │   ├── teacher/ admin/      staff areas (thin routes mounting shared staff pages)
+│   │   ├── actions/             server actions: auth, student, staff, admin
+│   │   ├── api/                 files, export, cron, health, v1 REST
+│   │   ├── manifest.ts          web app manifest
+│   │   └── sw.js/route.ts       versioned service worker
+│   ├── components/              ui/ (design system) · app/ (shell, PWA, profile…) · student/ · staff/ · admin/
+│   ├── lib/                     pure, unit-tested logic: scoring, grading, gamification, dates, status, validation, i18n
+│   └── server/
+│       ├── db/                  Drizzle schema + client
+│       ├── auth/                password (scrypt), session, RBAC, page guards
+│       └── services/            ALL business rules + authorisation (assignments, submissions, quiz, grades,
+│                                analytics, gamification, notifications, users, classes, files, settings, audit…)
+└── tests/                       unit/ · integration/ (real Postgres) · e2e/ (Playwright, production build)
+```
+
+**One rule:** pages, server actions and route handlers are thin. Every read and write goes through
+`src/server/services/*`, which receives the acting user and enforces role + data scope itself. UI visibility is
+never the security boundary.
+
+**Design system:** colour tokens in `src/app/globals.css` (light and dark, deep-green primary), Geist type, primitives
+in `src/components/ui` (button, card, badge, form controls, dialog/bottom-sheet, progress/ring, skeleton, empty
+state, toast). Charts use the same tokens. Light/dark/system theme is applied before first paint.
+
+**i18n:** `src/lib/i18n/uz.ts` is the reference dictionary; `en.ts`/`ru.ts` are partial overlays that fall back to
+Uzbek. Navigation, statuses, enums and common actions go through it; most page copy is still inline Uzbek (see
+[incomplete features](#incomplete-or-externally-dependent-features)).
+
+---
+
+## Roles & permissions
+
+| Capability                                   | Super admin | Admin | Teacher                                         | Student          |
+| -------------------------------------------- | :---------: | :---: | ----------------------------------------------- | ---------------- |
+| Manage admins                                |      ✓      |   —   | —                                               | —                |
+| Manage teachers & students, classes, subjects |      ✓      |   ✓   | —                                               | —                |
+| Platform settings, audit log                  |      ✓      |   ✓   | —                                               | —                |
+| Create/edit assignments & quizzes             |      ✓      |   ✓   | with `assignments.create`, **own classes only** | —                |
+| See/grade submissions                         |   all       |  all  | assignments they manage × students they teach   | own only         |
+| Change a **finalized** grade                  |      ✓      |   ✓   | with `grades.edit_final` (reason required)      | —                |
+| Export gradebook CSV                          |      ✓      |   ✓   | with `reports.export`                           | —                |
+| Access every class                            |      ✓      |   ✓   | only with `classes.all`                         | —                |
+
+Teacher scope comes from `class_teachers` (class, optional subject). A teacher sees an assignment if they created it
+or it targets one of their classes (and matching subject when the assignment is subject-scoped).
+
+---
+
+## Data model
+
+PostgreSQL schema in `src/server/db/schema.ts`; migrations in `drizzle/`.
+
+`users` (role, status, permissions, goals, notification prefs) · `sessions` (SHA-256 of token) · `password_resets` ·
+`rate_limits` · `files` (bytea, sniffed MIME, visibility) · `subjects` · `classes` (join code, archive) ·
+`class_students` · `class_teachers` · `assignments` (type, status, schedule, late/resubmission rules, quiz settings,
+rubric, links) · `assignment_targets` (class **xor** student) · `assignment_attachments` · `questions` (quiz or bank) ·
+`question_options` · `quiz_attempts` (order, timer, scores; one open attempt per student via partial unique index) ·
+`quiz_responses` · `submissions` · `submission_versions` (immutable) · `submission_files` · `grades` (one per
+student × assignment, provisional/final, scale label, late penalty) · `grade_history` · `feedback` ·
+`xp_transactions` (unique source key) · `user_achievements` · `class_challenges` · `notifications` (dedupe key) ·
+`announcements` · `settings` · `audit_logs`.
+
+**Integrity guarantees enforced by the database (`drizzle/0001_integrity_guards.sql`):**
+
+- `grade_history`, `submission_versions` and `audit_logs` are append-only (UPDATE/DELETE raise).
+- Grades are never deleted; a **final** grade cannot change unless the transaction declares an audited reason
+  (`app.grade_change_reason`), which the service only sets after the permission check and while writing history.
+- History tables reference users/assignments with `ON DELETE RESTRICT`; users are deactivated and classes/assignments
+  archived — nothing academic is hard-deleted.
+- CHECK constraints on scores, percentages, attempts, colours, usernames, target shape, etc.
+
+**Scoring rules.** Single choice / true-false: exact. Multiple choice: all-or-nothing. Short answer: normalised
+(case, whitespace, apostrophes ‘ ’ ʻ ` → ') match against accepted answers; none configured → manual. Fill-in-the-blank
+and matching: partial credit per blank/pair. Essay: manual. The official grade for a quiz is the best fully scored
+attempt (minus late penalty); it is provisional while attempts remain and final when they’re used up. Practice and
+materials never create grades.
+
+**XP rules** (configurable, defaults): on-time submission +20, late +10, first quiz completion +10 + 1 per 10 % +15 for
+100 %, material read +5. Only the first submission/attempt per assignment earns XP (unique `source_key`), so retries,
+resubmissions and repeated requests can’t farm it. XP never touches grades.
+
+---
+
+## API
+
+### Server actions (the app’s write API)
+
+All live in `src/app/actions/*` and are invoked from the UI. Each one re-reads the session, calls the service
+(which authorises), and returns `{ ok: true, data } | { ok: false, error, code, fields }`. Next.js checks the
+Origin header for server actions (CSRF).
+
+| Module      | Actions                                                                                                                                          |
+| ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `auth.ts`   | `loginAction`, `logoutAction`, `changePasswordAction`, `resetPasswordAction`                                                                     |
+| `student.ts`| `saveDraftAction`, `submitWorkAction`, `markReadAction`, `startQuizAction`, `saveAnswerAction`, `submitQuizAction`, `markNotificationsReadAction`, `updateProfileAction`, `joinClassAction` |
+| `staff.ts`  | `saveAssignmentAction`, `saveQuestionsAction`, `assignmentStatusAction`, `duplicateAssignmentAction`, `gradeAction`, `returnAction`, `feedbackAction`, `finalizeAction`, `gradeAttemptAction`, bank actions, `announceAction`, `challengeAction` |
+| `admin.ts`  | users (create/update/status/memberships/import/reset link), classes, enrolment, teacher assignment, join codes, subjects, `settingsAction`      |
+
+### HTTP endpoints
+
+All JSON responses are `Cache-Control: no-store`. Cookie-authenticated mutating endpoints require a same-origin
+`Origin` header.
+
+| Method & path                               | Auth                         | Description                                                                 |
+| ------------------------------------------- | ---------------------------- | --------------------------------------------------------------------------- |
+| `GET /api/health`                           | none                         | `{ ok, db }` — liveness + DB reachability                                    |
+| `GET /api/v1/me`                            | session                      | Current user                                                                |
+| `GET /api/v1/assignments`                   | session                      | Students: visible assignments with derived status. Staff: managed ones      |
+| `GET /api/v1/grades`                        | student                      | The caller’s own grades                                                     |
+| `GET /api/v1/notifications`                 | session                      | `{ unread, items }`                                                         |
+| `POST /api/v1/notifications` `{ id? }`      | session + same origin        | Mark one / all read                                                         |
+| `POST /api/files` (multipart `file`)        | session + same origin        | Upload (≤ `MAX_UPLOAD_BYTES`, type sniffed); returns `{ id, name, mime, size }` |
+| `GET /api/files/:id`                        | per-file authorisation       | Download; private files `no-store`                                          |
+| `GET /api/export/gradebook?class=&subject=` | `reports.export` + scope     | Gradebook CSV (UTF-8 BOM, formula-injection safe)                           |
+| `GET /api/cron`                             | `Authorization: Bearer $CRON_SECRET` | Publish due scheduled items, 24 h deadline reminders, cleanup       |
+
+Errors: `401 unauthenticated`, `403 forbidden`, `404 not_found` (also used instead of 403 where existence must not
+leak), `409 conflict/closed`, `422 invalid`, `429 rate_limited`, `500 server` (generic message; details only in logs).
+
+---
+
+## Setup & local development
+
+Requirements: Node ≥ 20.9, PostgreSQL ≥ 14.
+
+```bash
+cd learn
+npm install
+cp .env.example .env.local          # then edit
+npm run db:migrate                  # apply migrations
+npm run db:seed                     # optional DEMO data (see below)
+npm run dev                         # http://localhost:3100
+```
+
+### Environment variables
+
+| Variable             | Required | Notes                                                                                                           |
+| -------------------- | :------: | --------------------------------------------------------------------------------------------------------------- |
+| `DATABASE_URL`       |    ✓     | Server-only Postgres URL. On serverless hosts use the **pooled** URL (Neon `-pooler`, Supabase port 6543).        |
+| `APP_SECRET`         |    ✓     | ≥ 32 random chars (`openssl rand -hex 32`). HMAC key for hashed IPs and quiz matching tokens.                     |
+| `APP_URL`            |    ✓     | Public base URL, no trailing slash (reset links).                                                                |
+| `CRON_SECRET`        |          | Enables `/api/cron`. Without it the endpoint returns 401; the app still does the same work lazily on page loads.  |
+| `MAX_UPLOAD_BYTES`   |          | Default 4 MB (Vercel caps function bodies at ~4.5 MB).                                                            |
+| `DATABASE_POOL_MAX`  |          | Default 5 connections per instance.                                                                              |
+| `DATABASE_PREPARE`   |          | `true` only for direct (non-pgbouncer) connections.                                                              |
+
+Nothing secret is exposed to the browser: there are **no** `NEXT_PUBLIC_*` variables.
+
+### First administrator
+
+```bash
+npm run admin:create -- --username direktor --name "Maktab direktori"
+```
+
+Prints a one-time temporary password; the account must set its own password at first sign-in. Create everyone
+else from **Admin → O‘quvchilar / O‘qituvchilar** (single or CSV import). Each new account gets a temporary password
+shown once, and is forced to change it.
+
+### Demo data
+
+`npm run db:seed` creates demo accounts (password `Demo12345`): super admin `admin`; teachers `t.rahimov`,
+`t.saidova`; students `ali.valiyev`, `madina.usmonova`, `jasur.toshmatov`, `nigora.aliyeva` (7-A) and
+`sardor.qodirov`, `zarina.ismoilova` (7-B), plus subjects and a few published assignments and quizzes. It creates
+**no** submissions, grades or history, so every chart starts empty. It refuses to run when `NODE_ENV=production`
+(override with `ALLOW_DEMO_SEED=1`) and skips if users already exist. **Don’t seed a real school’s database.**
+
+### Scripts
+
+`dev` · `build` · `start` · `typecheck` · `lint` · `test` (unit + integration) · `test:e2e` · `check` ·
+`db:generate` (new migration from schema changes) · `db:migrate` · `db:seed` · `admin:create` · `icons`.
+
+**Changing the schema:** edit `src/server/db/schema.ts` → `npm run db:generate -- --name what_changed` → review the
+SQL in `drizzle/` → `npm run db:migrate`. Migrations are additive; never edit an applied one.
+
+---
+
+## Deployment
+
+The app needs a Node runtime (server actions, route handlers) and a PostgreSQL database, **over HTTPS** (required for
+service workers and installation).
+
+### Vercel + Neon (or Supabase Postgres)
+
+1. Create a Postgres database; copy the **pooled** connection string.
+2. Create a Vercel project from this repository with **Root Directory = `learn`** (framework: Next.js).
+3. Environment variables: `DATABASE_URL`, `APP_SECRET`, `APP_URL=https://your-domain`, optionally `CRON_SECRET`.
+4. Run migrations against the production database from a trusted machine (or a CI step):
+   `DATABASE_URL=… npm run db:migrate`, then `npm run admin:create`.
+5. Deploy. `vercel.json` registers a daily cron for `/api/cron` (Hobby plans allow daily; scheduled publication and
+   reminders also run lazily whenever students open the app). Vercel sends `Authorization: Bearer $CRON_SECRET`
+   automatically when `CRON_SECRET` is set.
+6. Add your domain; HTTPS is automatic.
+
+### Any Node host (Render, Railway, VPS)
+
+`npm ci && npm run build && npm run db:migrate && npm start` (port 3100; override with `next start -p $PORT`). Put it
+behind HTTPS. Set `x-forwarded-for` correctly at the proxy so rate limiting sees client IPs.
+
+### Before going live
+
+- Replace the demo data with real accounts (or don’t seed).
+- Set a strong `APP_SECRET`; keep `DATABASE_URL` server-side only.
+- Configure branding, grading scale and XP rules in **Admin → Sozlamalar**.
+- Optional: regenerate icons from your own artwork (`scripts/make-icons.mjs`).
+- Back up the database (provider snapshots / `pg_dump`). Uploaded files live in the database, so they’re included.
+
+---
+
+## PWA, installation & offline
+
+- **Manifest** (`/manifest.webmanifest`): name/short name from settings, `display: standalone`, `start_url`,
+  scope, theme/background colours, `lang: uz`, 192/512 icons, 192/512 **maskable** icons, shortcuts.
+- **Apple:** `apple-touch-icon` (180 px, opaque), `apple-mobile-web-app-capable`, `viewport-fit=cover` and
+  safe-area padding for notches and the home indicator.
+- **Service worker** (`/sw.js`, generated per build so each deploy rotates the cache, served `no-store`):
+  precaches `/offline` and icons; cache-first for hashed `/_next/static` and `/icons`; **network-only for pages,
+  RSC payloads, `/api` and files — they are never stored**, so a shared device cannot show one user’s data to the
+  next; navigations that fail offline show `/offline`. Old caches are deleted on activate; a “Yangi versiya tayyor”
+  banner lets the user reload into the new version.
+- **Offline UX:** a banner appears when the connection drops; the submission editor and quiz player show offline
+  status, keep unsaved answers in memory and retry saves when the connection returns. **Submitting work, taking
+  quizzes and loading grades require a connection** — there is no offline sync, by design.
+- **Installation:** `/install` detects the platform. Android/desktop Chromium browsers get the native “Install”
+  button via `beforeinstallprompt` when the browser offers it (it is not offered on iOS, Firefox desktop or many
+  in-app browsers). iOS shows the Safari steps: Share → **Add to Home Screen** → Add. The app then opens in standalone
+  mode. Behaviour differs between browsers and versions; the guide says so.
+
+Tested here: manifest validity, icon delivery, service-worker registration and offline fallback (Playwright,
+Chromium, mobile + desktop viewports). **Not tested here:** installation on physical iPhones/Android devices (needs
+real devices on an HTTPS deployment).
+
+---
+
+## Security
+
+- **Authentication:** scrypt (N=2¹⁵, r=8, p=1) password hashes; constant-time comparison; dummy hash for unknown
+  usernames (no timing oracle); generic “login or password incorrect” message; rate limits per IP (30/15 min) and per
+  username (8/15 min) stored in Postgres; temporary passwords and forced change for provisioned accounts; no public
+  sign-up.
+- **Sessions:** 32-byte random token in an `httpOnly`, `SameSite=Lax`, `Secure` (`__Host-` prefixed in production)
+  cookie; only its SHA-256 is stored; 14-day sliding expiry; deactivation and password changes revoke sessions.
+- **Account recovery:** admins issue one-time, 24-hour reset links (stored hashed, single use, previous links
+  revoked). Suitable for minors without e-mail.
+- **Authorisation:** enforced in services for every read/write (role + class/subject scope); students get `404` for
+  others’ content; file downloads are individually authorised; staff can only see students they teach.
+- **Input validation:** Zod on client and server; unknown keys stripped; CHECK constraints as the last line.
+- **Uploads:** type detected from magic bytes (PDF, PNG, JPEG, WebP, GIF, DOCX/XLSX/PPTX, TXT — no SVG/HTML), size
+  limit, sanitised filenames, `nosniff`, attachment disposition for non-inline types, users can only attach their own
+  uploads.
+- **Output:** user text is rendered as text (React escaping) with safe links; math via KaTeX with `trust: false`.
+  CSV exports guard against formula injection.
+- **Headers:** strict CSP (`default-src 'self'`, no external origins, `frame-ancestors 'none'`), HSTS, nosniff,
+  `X-Frame-Options: DENY`, Referrer- and Permissions-Policy.
+- **Quiz integrity:** correct answers, accepted answers and matching keys never reach the client before review is
+  allowed; matching uses HMAC tokens; timers are enforced on the server (15 s grace); duplicate submissions are
+  idempotent.
+- **Audit:** logins, account and permission changes, grade changes (with reasons), publication, exports and settings
+  are written to an append-only audit log with HMAC-hashed IPs.
+- **Minors & privacy:** e-mail is optional; only name, username and optional student ID are required; no analytics
+  or third-party scripts; no public rankings — class challenges show aggregate progress only.
+
+---
+
+## Testing
+
+```bash
+npm run typecheck && npm run lint
+npm test                 # unit + integration (needs Postgres; uses TEST_DATABASE_URL or postgres://learn:learn@localhost:5432/learn_test)
+npm run test:e2e         # builds must exist (npm run build); uses E2E_DATABASE_URL or …/learn_e2e, which it wipes and re-seeds
+```
+
+Results at the time of writing (local Postgres 16, Chromium):
+
+- **Unit (35):** scoring for every question type, normalisation, seeded shuffles, grading scale, late penalty, XP,
+  levels, streaks, achievements, status derivation, submission windows, Tashkent date handling, RBAC helpers, CSV
+  escaping/parsing, validation rules.
+- **Integration (15, real database):** full written-work lifecycle with role checks; no edits after submission; XP
+  awarded once; provisional → final grading; final-grade changes require permission + reason and are audited; the
+  database itself rejects silent final-grade changes and history deletion; return for revision + resubmission with
+  version history; late rules (closed vs penalty); rubric grading; drafts, scheduled publication, archive, duplicate;
+  quiz engine (scoring, answers hidden before submission, resume, idempotent submit, review modes, manual essay
+  grading, timer auto-submit, best-of-attempts grading, questions locked after attempts); analytics from real
+  records (empty state for new students); private file access; listing aggregates.
+- **E2E (20, production build, Pixel 7 + desktop):** admin publishes → visible to the right class only → student
+  submits with confirmation and can’t edit → teacher outside the scope can’t see it → teacher grades → student sees
+  final grade, feedback and notification; student completes a quiz and sees the score; results page reflects it;
+  signed-out redirect; students blocked from staff pages and APIs; teachers blocked from admin; generic login error;
+  manifest/icons; service worker + offline fallback; SW never caches private responses.
+
+---
+
+## Incomplete or externally dependent features
+
+Stated plainly so nothing is mistaken for working when it isn’t:
+
+- **E-mail and push notifications are not implemented.** In-app notifications (with preferences, dedupe and read
+  state) work. Sending e-mail would need an SMTP/Resend account; push would need VAPID keys and a subscription flow.
+  Neither is configured or claimed.
+- **English and Russian:** the i18n architecture, dictionaries and settings switch exist, but only navigation is
+  translated so far, and most page copy is still inline Uzbek. Enable a language only after translating it.
+- **File storage is in PostgreSQL** (4 MB per file by default). Fine for a school; for large volumes, move
+  `services/files.ts` to S3/R2 (needs credentials).
+- **Scheduled publication** happens lazily (within ~30 s of any student opening the app) and through `/api/cron`;
+  publication notifications for scheduled items are sent at that point, not at the exact minute if nobody is online
+  and no cron is configured.
+- **Time zone** is fixed to Asia/Tashkent (UTC+5, no DST) for deadlines, “today”, streaks and weeks.
+- **Physical-device install testing** on iOS/Android hasn’t been done (requires an HTTPS deployment and devices).
+- **Self-service password reset by e-mail** isn’t offered; recovery is via admin-issued one-time links, by design for
+  accounts without e-mail.
+- Not deployed: no production database or domain has been provisioned from this environment.

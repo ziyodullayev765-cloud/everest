@@ -1,0 +1,203 @@
+@import "tailwindcss";
+
+/* ─── Design tokens ──────────────────────────────────────────────────────────
+   Soft neutral surfaces, a deep "pine" green primary, restrained secondary hues.
+   Every colour in the UI comes from these variables, so light/dark stay in sync. */
+:root {
+  --bg: #f5f6f3;
+  --surface: #ffffff;
+  --surface-2: #f0f2ee;
+  --surface-3: #e8ebe6;
+  --border: #e2e6df;
+  --border-strong: #cdd3ca;
+  --text: #121a15;
+  --text-2: #36423b;
+  --muted: #66726b;
+  --primary: #0f7a5a;
+  --primary-hover: #0b6a4d;
+  --primary-fg: #ffffff;
+  --primary-soft: #e6f2ec;
+  --primary-soft-fg: #0a5c43;
+  --ring: rgb(15 122 90 / 0.35);
+  --info: #2f64c8;
+  --info-soft: #e8effb;
+  --warning: #a8650c;
+  --warning-soft: #fbf1df;
+  --danger: #c03a33;
+  --danger-soft: #fbeae8;
+  --success: #17804a;
+  --success-soft: #e5f4ea;
+  --violet: #6a4fc1;
+  --violet-soft: #efebfa;
+  --shadow-sm: 0 1px 2px rgb(16 24 20 / 0.05);
+  --shadow: 0 1px 2px rgb(16 24 20 / 0.04), 0 4px 14px -4px rgb(16 24 20 / 0.08);
+  --shadow-lg: 0 12px 40px -12px rgb(16 24 20 / 0.22);
+  --chart-1: #0f7a5a;
+  --chart-2: #2f64c8;
+  --chart-3: #c08a1e;
+  --chart-grid: #e7eae4;
+  color-scheme: light;
+}
+
+.dark {
+  --bg: #0b100d;
+  --surface: #121814;
+  --surface-2: #171f1a;
+  --surface-3: #1e2721;
+  --border: #232d27;
+  --border-strong: #324039;
+  --text: #e9efea;
+  --text-2: #c3cdc6;
+  --muted: #8f9c94;
+  --primary: #36b383;
+  --primary-hover: #49c493;
+  --primary-fg: #06140e;
+  --primary-soft: #14281f;
+  --primary-soft-fg: #7fd9b1;
+  --ring: rgb(54 179 131 / 0.4);
+  --info: #6e9bf0;
+  --info-soft: #172338;
+  --warning: #e2a447;
+  --warning-soft: #2b2112;
+  --danger: #f0786f;
+  --danger-soft: #331a18;
+  --success: #4cc584;
+  --success-soft: #13281b;
+  --violet: #a48df0;
+  --violet-soft: #221d36;
+  --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.3);
+  --shadow: 0 1px 2px rgb(0 0 0 / 0.3), 0 6px 18px -6px rgb(0 0 0 / 0.45);
+  --shadow-lg: 0 16px 48px -12px rgb(0 0 0 / 0.6);
+  --chart-1: #36b383;
+  --chart-2: #6e9bf0;
+  --chart-3: #e2a447;
+  --chart-grid: #222c26;
+  color-scheme: dark;
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-surface-3: var(--surface-3);
+  --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
+  --color-text: var(--text);
+  --color-text-2: var(--text-2);
+  --color-muted: var(--muted);
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-primary-fg: var(--primary-fg);
+  --color-primary-soft: var(--primary-soft);
+  --color-primary-soft-fg: var(--primary-soft-fg);
+  --color-info: var(--info);
+  --color-info-soft: var(--info-soft);
+  --color-warning: var(--warning);
+  --color-warning-soft: var(--warning-soft);
+  --color-danger: var(--danger);
+  --color-danger-soft: var(--danger-soft);
+  --color-success: var(--success);
+  --color-success-soft: var(--success-soft);
+  --color-violet: var(--violet);
+  --color-violet-soft: var(--violet-soft);
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+  --shadow-card: var(--shadow);
+  --shadow-soft: var(--shadow-sm);
+  --shadow-pop: var(--shadow-lg);
+  --radius-xl: 0.875rem;
+  --radius-2xl: 1.125rem;
+  --animate-fade-up: fade-up 0.32s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  --animate-shimmer: shimmer 1.4s linear infinite;
+}
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+}
+@keyframes shimmer {
+  to {
+    background-position: -200% 0;
+  }
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-rendering: optimizeLegibility;
+}
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-feature-settings: "cv11", "ss01";
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+  overscroll-behavior-y: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+::selection {
+  background: var(--primary-soft);
+  color: var(--primary-soft-fg);
+}
+
+:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+/* Safe areas for notched phones in standalone mode. */
+.pt-safe {
+  padding-top: env(safe-area-inset-top);
+}
+.pb-safe {
+  padding-bottom: max(env(safe-area-inset-bottom), 0px);
+}
+.pb-nav {
+  padding-bottom: calc(76px + env(safe-area-inset-bottom));
+}
+@media (min-width: 1024px) {
+  .pb-nav {
+    padding-bottom: 2.5rem;
+  }
+}
+
+.skeleton {
+  background: linear-gradient(90deg, var(--surface-2) 25%, var(--surface-3) 37%, var(--surface-2) 63%);
+  background-size: 200% 100%;
+  animation: var(--animate-shimmer);
+  border-radius: 0.5rem;
+}
+
+.scrollbar-none {
+  scrollbar-width: none;
+}
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}
+
+.tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Prose for user-entered text (instructions, feedback). Rendered as plain text with line breaks. */
+.prose-text {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  line-height: 1.65;
+}
+
+.katex {
+  font-size: 1.05em;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

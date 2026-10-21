@@ -11,6 +11,10 @@ navigation, footer, colours and the privacy policy — is edited from `/admin`, 
 > The repository previously contained an unrelated static prototype (“Everest / Barkamol” English-learning app). It
 > was not wired into any build, so it was preserved unchanged under `legacy/everest-academy/` rather than deleted.
 
+> **Learning platform:** `learn/` contains a separate application — the Everest Ta’lim student/teacher/admin
+> learning platform (PWA). It has its own dependencies, database and deployment; see [`learn/README.md`](learn/README.md).
+> It does not affect this portfolio’s build.
+
 ---
 
 ## Contents

@@ -159,3 +159,15 @@ describe("validation", () => {
     expect(questionInput.safeParse({ type: "fill_blank", prompt: "2+2=___", accepted: [] }).success).toBe(false);
   });
 });
+
+describe("uzbek date formatting", async () => {
+  const { formatDate, formatDateTime, formatLongToday, formatWeekday, formatDayShort } = await import("@/lib/dates");
+  it("formats in Tashkent time with Uzbek names", () => {
+    const d = new Date("2026-10-21T19:30:00Z"); // 00:30 next day in Tashkent
+    expect(formatDate(d)).toBe("22-oktabr, 2026");
+    expect(formatDateTime(d)).toBe("22-okt, 00:30");
+    expect(formatLongToday(d)).toBe("payshanba, 22-oktabr");
+    expect(formatWeekday("2026-10-19")).toBe("Du");
+    expect(formatDayShort("2026-01-05")).toBe("5-yan");
+  });
+});
