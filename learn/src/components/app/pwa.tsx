@@ -108,3 +108,35 @@ export function useInstallPrompt() {
     },
   };
 }
+
+/**
+ * Blocks zoom gestures the viewport meta can't: iOS Safari ignores `user-scalable=no`, so pinch
+ * (gesture events / multi-touch) is cancelled here; desktop Ctrl+wheel and Ctrl +/−/0 are blocked too.
+ */
+export function NoZoom() {
+  useEffect(() => {
+    const stop = (e: Event) => e.preventDefault();
+    const touch = (e: TouchEvent) => {
+      if (e.touches.length > 1) e.preventDefault();
+    };
+    const wheel = (e: WheelEvent) => {
+      if (e.ctrlKey) e.preventDefault();
+    };
+    const key = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && ["+", "-", "=", "0"].includes(e.key)) e.preventDefault();
+    };
+    document.addEventListener("gesturestart", stop, { passive: false });
+    document.addEventListener("gesturechange", stop, { passive: false });
+    document.addEventListener("touchmove", touch, { passive: false });
+    window.addEventListener("wheel", wheel, { passive: false });
+    window.addEventListener("keydown", key);
+    return () => {
+      document.removeEventListener("gesturestart", stop);
+      document.removeEventListener("gesturechange", stop);
+      document.removeEventListener("touchmove", touch);
+      window.removeEventListener("wheel", wheel);
+      window.removeEventListener("keydown", key);
+    };
+  }, []);
+  return null;
+}

@@ -177,7 +177,7 @@ export function PeopleToolbar({ kind, classes, canCreateAdmins }: { kind: "stude
                 if (file) setCsv(await file.text());
               }}
             />
-            <textarea value={csv} onChange={(e) => setCsv(e.target.value)} rows={6} className="w-full rounded-xl border border-border bg-surface p-3 font-mono text-[12.5px]" placeholder={"username,display_name,class,student_code\nali.v,Ali Valiyev,7-A,S-1001"} aria-label="CSV matni" />
+            <textarea value={csv} onChange={(e) => setCsv(e.target.value)} rows={6} className="w-full rounded-xl border border-border bg-surface p-3 font-mono text-base sm:text-[12.5px]" placeholder={"username,display_name,class,student_code\nali.v,Ali Valiyev,7-A,S-1001"} aria-label="CSV matni" />
             {importErrors.length ? (
               <Alert tone="danger" title={`${importErrors.length} ta xato — hech narsa import qilinmadi`}>
                 <ul className="mt-1 max-h-36 overflow-y-auto">

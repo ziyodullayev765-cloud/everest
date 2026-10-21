@@ -419,7 +419,7 @@ function QuestionInput({ q, value, onChange }: { q: PublicQuestion; value: Answe
                   aria-label={`${i + 1}-bo‘sh joy`}
                   maxLength={200}
                   autoComplete="off"
-                  className="mx-1 inline-block h-9 w-32 rounded-lg border border-border-strong bg-surface px-2.5 text-center text-[15px] font-medium focus:border-primary focus:ring-4 focus:ring-[var(--ring)] focus:outline-none"
+                  className="mx-1 inline-block h-9 w-32 rounded-lg border border-border-strong bg-surface px-2.5 text-center text-base font-medium focus:border-primary focus:ring-4 focus:ring-[var(--ring)] focus:outline-none"
                 />
               ) : null}
             </span>

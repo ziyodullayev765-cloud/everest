@@ -3,7 +3,7 @@ import { ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const control =
-  "w-full rounded-xl border border-border bg-surface px-3.5 text-[15px] text-text shadow-soft transition placeholder:text-muted/80 hover:border-border-strong focus:border-primary focus:ring-4 focus:ring-[var(--ring)] focus:outline-none disabled:cursor-not-allowed disabled:bg-surface-2 disabled:opacity-70 aria-[invalid=true]:border-danger sm:text-sm";
+  "w-full rounded-xl border border-border bg-surface px-3.5 text-base text-text shadow-soft transition placeholder:text-muted/80 hover:border-border-strong focus:border-primary focus:ring-4 focus:ring-[var(--ring)] focus:outline-none disabled:cursor-not-allowed disabled:bg-surface-2 disabled:opacity-70 aria-[invalid=true]:border-danger sm:text-sm";
 
 export const Input = forwardRef<HTMLInputElement, InputHTMLAttributes<HTMLInputElement>>(function Input({ className, ...rest }, ref) {
   return <input ref={ref} className={cn(control, "h-11 sm:h-10", className)} {...rest} />;

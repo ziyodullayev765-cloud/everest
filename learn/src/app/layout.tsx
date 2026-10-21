@@ -4,7 +4,7 @@ import { GeistMono } from "geist/font/mono";
 import "katex/dist/katex.min.css";
 import "./globals.css";
 import { themeScript } from "@/components/app/theme";
-import { OfflineIndicator, ServiceWorkerRegistrar } from "@/components/app/pwa";
+import { NoZoom, OfflineIndicator, ServiceWorkerRegistrar } from "@/components/app/pwa";
 import { Toaster } from "@/components/ui/toast";
 
 export const metadata: Metadata = {
@@ -27,6 +27,8 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
   viewportFit: "cover",
   themeColor: [
     { media: "(prefers-color-scheme: light)", color: "#f5f6f3" },
@@ -42,6 +44,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body className="min-h-dvh font-sans">
         {children}
+        <NoZoom />
         <OfflineIndicator />
         <ServiceWorkerRegistrar />
         <Toaster />
