@@ -1,5 +1,6 @@
 "use client";
-import { useRef, useState } from "react";
+import { useCallback, useRef, useState } from "react";
+import { PdfReader, downloadFile } from "./pdf-reader";
 import { FileText, ImageIcon, Loader2, Music, Paperclip, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "@/components/ui/toast";
@@ -67,6 +68,8 @@ export async function uploadFile(file: File, opts: { visibility?: "public" | "pr
 }
 
 export function FileChip({ f, onRemove, href = true }: { f: UploadedFile; onRemove?: () => void; href?: boolean }) {
+  const [reading, setReading] = useState(false);
+  const closeReader = useCallback(() => setReading(false), []);
   const Icon = f.mime.startsWith("image/") ? ImageIcon : f.mime.startsWith("audio/") ? Music : FileText;
   const inner = (
     <>
@@ -82,9 +85,10 @@ export function FileChip({ f, onRemove, href = true }: { f: UploadedFile; onRemo
   return (
     <div className="flex items-center gap-2 rounded-xl border border-border bg-surface p-2 pr-2.5">
       {href ? (
-        <a href={`/api/files/${f.id}`} target="_blank" rel="noopener" className="flex min-w-0 flex-1 items-center gap-2.5 hover:opacity-80">
+        // Opened in-app (PDF reader / same-tab download): a new tab loses the session inside the installed app.
+        <button type="button" onClick={() => (f.mime === "application/pdf" ? setReading(true) : downloadFile(f))} className="flex min-w-0 flex-1 items-center gap-2.5 text-left hover:opacity-80">
           {inner}
-        </a>
+        </button>
       ) : (
         <div className="flex min-w-0 flex-1 items-center gap-2.5">{inner}</div>
       )}
@@ -93,6 +97,7 @@ export function FileChip({ f, onRemove, href = true }: { f: UploadedFile; onRemo
           <X className="size-4" />
         </button>
       ) : null}
+      {reading ? <PdfReader file={f} onClose={closeReader} /> : null}
     </div>
   );
 }

@@ -19,7 +19,7 @@ test("admin adds a book with cover, PDF and audio", async ({ page }) => {
   await expect(page.getByLabel("Trek nomi")).toHaveValue("track01");
   await page.getByRole("button", { name: "Saqlash" }).click();
   await expect(page).toHaveURL(/\/admin\/library\/[0-9a-f-]{36}$/);
-  await expect(page.getByRole("link", { name: /Kitobni ochish/ })).toBeVisible();
+  await expect(page.getByRole("button", { name: /Kitobni o‘qish/ })).toBeVisible();
 });
 
 test("admin builds homework from the template, links the book and attaches a board photo", async ({ page }) => {
@@ -46,6 +46,14 @@ test("student sees the list, the board photo and the book; ticks items and submi
   await page.getByRole("link", { name: BOOK }).click();
   await expect(page.getByRole("heading", { name: BOOK })).toBeVisible();
   await expect(page.locator("audio")).toHaveCount(1);
+  // The PDF opens in the in-app reader (a new tab loses the session in the installed app).
+  await page.getByRole("button", { name: /Kitobni o‘qish/ }).click();
+  const reader = page.getByRole("dialog");
+  await expect(reader.getByText("1 / 2 bet")).toBeVisible();
+  await expect.poll(() => reader.locator('canvas[aria-label="1-bet"]').evaluate((c: HTMLCanvasElement) => c.width)).toBeGreaterThan(0);
+  await page.goBack(); // the back gesture closes the reader, not the page
+  await expect(reader).toHaveCount(0);
+  await expect(page.getByRole("heading", { name: BOOK })).toBeVisible();
   await page.goBack();
   await page.getByRole("link", { name: /Bajarishni boshlash/ }).click();
   await page.getByLabel("Barron's Reading — bajarildi").check();

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { BookOpen, Download, ExternalLink, Headphones, Library } from "lucide-react";
+import { BookOpen, Headphones, Library } from "lucide-react";
 import type { SessionUser } from "@/server/auth/session";
 import { getBook, listBooks } from "@/server/services/library";
 import { orNotFound } from "@/server/auth/guards";
@@ -10,10 +10,10 @@ import { PageHeader } from "@/components/ui/page";
 import { Card, CardBody, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { EmptyState } from "@/components/ui/feedback";
-import { LinkButton, buttonClass } from "@/components/ui/button";
+import { LinkButton } from "@/components/ui/button";
 import { RichText } from "@/components/ui/rich-text";
 import { AudioPlayer } from "@/components/app/media";
-import { fmtSize } from "@/lib/utils";
+import { PdfOpenButton } from "@/components/app/pdf-reader";
 
 export function BookCover({ coverFileId, title, className }: { coverFileId: string | null; title: string; className?: string }) {
   return coverFileId ? (
@@ -89,12 +89,7 @@ export async function BookView({ user, base, id, manage }: { user: SessionUser; 
           {b.description ? <RichText text={b.description} className="text-[14.5px] text-text-2" /> : null}
           {pdf ? (
             <div className="flex flex-wrap gap-2">
-              <a href={`/api/files/${pdf.id}`} target="_blank" rel="noopener" className={buttonClass("primary", "lg")}>
-                <ExternalLink /> Kitobni ochish (PDF)
-              </a>
-              <a href={`/api/files/${pdf.id}?download=1`} className={buttonClass("secondary", "lg")}>
-                <Download /> Yuklab olish · {fmtSize(pdf.size)}
-              </a>
+              <PdfOpenButton file={{ id: pdf.id, name: pdf.name, size: pdf.size }} withDownload />
             </div>
           ) : (
             <p className="text-[13.5px] text-muted">Bu kitobning PDF fayli yuklanmagan.</p>
