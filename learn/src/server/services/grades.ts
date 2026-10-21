@@ -8,6 +8,7 @@ import { bandFor, latePenalty, percentOf, round2 } from "@/lib/grading";
 import { isGradedType, isQuizType } from "@/lib/assignment-kinds";
 import { assertCanGrade, manageableAssignmentsWhere, manageableClassIds } from "./access";
 import { audit } from "./audit";
+import { booksByIds } from "./library";
 import { notify } from "./notifications";
 import { fillTemplate, getSettings } from "./settings";
 import { evaluateAchievements } from "./gamification";
@@ -56,7 +57,8 @@ export async function gradingContext(actor: Actor, assignmentId: string, student
         .where(eq(schema.gradeHistory.gradeId, g.id))
         .orderBy(desc(schema.gradeHistory.changedAt))
     : [];
-  return { assignment: asg, subject: subject[0], student: student[0], submission: sub, files, versions, grade: g, feedback: fb, history, canEditFinal: can(actor, "grades.edit_final") };
+  const books = await booksByIds([...new Set(asg.items.map((i) => i.bookId).filter((x): x is string => !!x))]);
+  return { assignment: asg, subject: subject[0], student: student[0], submission: sub, files, versions, grade: g, feedback: fb, history, books, canEditFinal: can(actor, "grades.edit_final") };
 }
 
 /** Grades written / file-upload work (quizzes are graded through the quiz engine). */

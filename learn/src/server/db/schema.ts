@@ -40,6 +40,7 @@ export const assignmentTypeEnum = pgEnum("assignment_type", [
   "timed_quiz",
   "practice",
   "material",
+  "homework",
 ]);
 export const assignmentStatusEnum = pgEnum("assignment_status", ["draft", "scheduled", "published", "archived"]);
 export const reviewModeEnum = pgEnum("review_mode", ["never", "after_submit", "after_due", "after_grading"]);
@@ -148,13 +149,17 @@ export const files = pgTable(
     sha256: text("sha256").notNull(),
     /** "public" files (logo, assignment images) may be cached; "private" (submissions) never. */
     visibility: text("visibility").notNull().default("private"),
-    data: bytea("data").notNull(),
+    /** "db": bytes in `data`; "blob": object storage (large books/audio), bytes at `blobUrl`. */
+    storage: text("storage").notNull().default("db"),
+    data: bytea("data"),
+    blobUrl: text("blob_url"),
     createdAt: ts("created_at").notNull().defaultNow(),
   },
   (t) => [
     index("files_owner_idx").on(t.ownerId),
     check("files_size_positive", sql`${t.size} > 0`),
     check("files_visibility", sql`${t.visibility} in ('public','private')`),
+    check("files_storage", sql`(${t.storage} = 'db' and ${t.data} is not null) or (${t.storage} = 'blob' and ${t.blobUrl} is not null)`),
   ],
 );
 
@@ -231,6 +236,11 @@ export const classTeachers = pgTable(
 // ─── Assignments & quizzes ───────────────────────────────────────────────────
 
 export type RubricCriterion = { id: string; title: string; description?: string; maxPoints: number };
+export const HOMEWORK_KINDS = ["reading", "vocabulary", "listening", "translation", "tapescript", "writing", "other"] as const;
+export type HomeworkKind = (typeof HOMEWORK_KINDS)[number];
+/** One line of a homework list, e.g. "Barron's Reading — Passage 1-2". */
+export type HomeworkItem = { id: string; kind: HomeworkKind; title: string; bookId?: string | null; range?: string; note?: string };
+export type ItemProgress = Record<string, { done: boolean; text?: string }>;
 export type AssignmentLink = { title: string; url: string };
 
 export const assignments = pgTable(
@@ -253,6 +263,7 @@ export const assignments = pgTable(
     maxScore: score("max_score").notNull().default(100),
     links: jsonb("links").$type<AssignmentLink[]>().notNull().default([]),
     rubric: jsonb("rubric").$type<RubricCriterion[]>().notNull().default([]),
+    items: jsonb("items").$type<HomeworkItem[]>().notNull().default([]),
     allowLate: boolean("allow_late").notNull().default(true),
     latePenaltyPercent: integer("late_penalty_percent").notNull().default(0),
     lateCutoffAt: ts("late_cutoff_at"),
@@ -430,6 +441,7 @@ export const submissions = pgTable(
       .references(() => users.id, { onDelete: "restrict" }),
     status: submissionStatusEnum("status").notNull().default("draft"),
     content: text("content").notNull().default(""),
+    itemProgress: jsonb("item_progress").$type<ItemProgress>().notNull().default({}),
     /** Number of times the work was submitted (1 = first submission). */
     version: integer("version").notNull().default(0),
     isLate: boolean("is_late").notNull().default(false),
@@ -454,6 +466,7 @@ export const submissionVersions = pgTable(
       .references(() => submissions.id, { onDelete: "restrict" }),
     version: integer("version").notNull(),
     content: text("content").notNull(),
+    itemProgress: jsonb("item_progress").$type<ItemProgress>().notNull().default({}),
     fileIds: jsonb("file_ids").$type<string[]>().notNull().default([]),
     isLate: boolean("is_late").notNull(),
     submittedAt: ts("submitted_at").notNull(),
@@ -472,6 +485,52 @@ export const submissionFiles = pgTable(
       .references(() => files.id, { onDelete: "restrict" }),
   },
   (t) => [primaryKey({ columns: [t.submissionId, t.fileId] })],
+);
+
+// ─── Library ─────────────────────────────────────────────────────────────────
+
+export const BOOK_CATEGORIES = ["reading", "listening", "vocabulary", "grammar", "speaking", "writing", "other"] as const;
+
+/** Books and course materials uploaded by admins; visible to every signed-in user once published. */
+export const books = pgTable(
+  "books",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    title: text("title").notNull(),
+    author: text("author").notNull().default(""),
+    level: text("level").notNull().default(""),
+    category: text("category").notNull().default("other"),
+    description: text("description").notNull().default(""),
+    coverFileId: uuid("cover_file_id").references(() => files.id, { onDelete: "set null" }),
+    pdfFileId: uuid("pdf_file_id").references(() => files.id, { onDelete: "set null" }),
+    status: text("status").notNull().default("draft"),
+    createdBy: uuid("created_by")
+      .notNull()
+      .references(() => users.id, { onDelete: "restrict" }),
+    createdAt: ts("created_at").notNull().defaultNow(),
+    updatedAt: ts("updated_at").notNull().defaultNow(),
+  },
+  (t) => [
+    index("books_status_idx").on(t.status, t.title),
+    check("books_status", sql`${t.status} in ('draft','published','archived')`),
+    check("books_category", sql`${t.category} in ('reading','listening','vocabulary','grammar','speaking','writing','other')`),
+  ],
+);
+
+export const bookAudio = pgTable(
+  "book_audio",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    bookId: uuid("book_id")
+      .notNull()
+      .references(() => books.id, { onDelete: "cascade" }),
+    title: text("title").notNull(),
+    fileId: uuid("file_id")
+      .notNull()
+      .references(() => files.id, { onDelete: "restrict" }),
+    position: integer("position").notNull().default(0),
+  },
+  (t) => [index("book_audio_book_idx").on(t.bookId, t.position)],
 );
 
 // ─── Grading ─────────────────────────────────────────────────────────────────
@@ -685,6 +744,7 @@ export type Question = typeof questions.$inferSelect;
 export type QuestionOption = typeof questionOptions.$inferSelect;
 export type Submission = typeof submissions.$inferSelect;
 export type Grade = typeof grades.$inferSelect;
+export type Book = typeof books.$inferSelect;
 export type QuizAttempt = typeof quizAttempts.$inferSelect;
 export type Role = (typeof roleEnum.enumValues)[number];
 export type AssignmentType = (typeof assignmentTypeEnum.enumValues)[number];

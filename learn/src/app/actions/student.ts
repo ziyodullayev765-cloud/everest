@@ -8,7 +8,7 @@ import { markRead } from "@/server/services/notifications";
 import { updateOwnProfile } from "@/server/services/users";
 import { joinByCode } from "@/server/services/classes";
 
-export async function saveDraftAction(assignmentId: string, input: { content: string; fileIds: string[] }) {
+export async function saveDraftAction(assignmentId: string, input: { content: string; fileIds: string[]; itemProgress?: Record<string, { done: boolean; text?: string }> }) {
   return run(async () => {
     const u = await requireUser();
     const r = await saveDraft(u, assignmentId, input);
@@ -16,7 +16,7 @@ export async function saveDraftAction(assignmentId: string, input: { content: st
   });
 }
 
-export async function submitWorkAction(assignmentId: string, input: { content: string; fileIds: string[] }) {
+export async function submitWorkAction(assignmentId: string, input: { content: string; fileIds: string[]; itemProgress?: Record<string, { done: boolean; text?: string }> }) {
   return run(async () => {
     const u = await requireUser();
     const r = await submitWork(u, assignmentId, input);

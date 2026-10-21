@@ -1,4 +1,4 @@
-import { forwardRef, type InputHTMLAttributes, type ReactNode, type SelectHTMLAttributes, type TextareaHTMLAttributes } from "react";
+import { cloneElement, forwardRef, isValidElement, useId, type InputHTMLAttributes, type ReactNode, type SelectHTMLAttributes, type TextareaHTMLAttributes } from "react";
 import { ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -24,14 +24,25 @@ export const Select = forwardRef<HTMLSelectElement, SelectHTMLAttributes<HTMLSel
   );
 });
 
+/**
+ * Label + control + hint/error. When `htmlFor` isn't given, an id is generated and put on the child
+ * control, so the label is always programmatically linked (screen readers, tap-to-focus, tests).
+ */
 export function Field({ label, htmlFor, hint, error, children, className, required }: { label: ReactNode; htmlFor?: string; hint?: ReactNode; error?: string | null; children: ReactNode; className?: string; required?: boolean }) {
+  const auto = useId();
+  let id = htmlFor;
+  let control = children;
+  if (!id && isValidElement<{ id?: string }>(children)) {
+    id = children.props.id ?? auto;
+    if (!children.props.id) control = cloneElement(children, { id });
+  }
   return (
     <div className={cn("space-y-1.5", className)}>
-      <label htmlFor={htmlFor} className="block text-[13px] font-medium text-text-2">
+      <label htmlFor={id} className="block text-[13px] font-medium text-text-2">
         {label}
         {required ? <span className="text-danger"> *</span> : null}
       </label>
-      {children}
+      {control}
       {error ? (
         <p className="text-[12.5px] text-danger" role="alert">
           {error}

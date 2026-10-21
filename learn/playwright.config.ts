@@ -14,7 +14,7 @@ export default defineConfig({
   use: { baseURL: `http://localhost:${PORT}`, trace: "retain-on-failure" },
   projects: [
     { name: "mobile", use: { ...devices["Pixel 7"] } },
-    { name: "desktop", use: { ...devices["Desktop Chrome"] }, testMatch: /access|pwa/ },
+    { name: "desktop", use: { ...devices["Desktop Chrome"] }, testMatch: /access|pwa|homework/ },
   ],
   webServer: {
     command: `node scripts/e2e-reset.mjs && npx next start -p ${PORT}`,

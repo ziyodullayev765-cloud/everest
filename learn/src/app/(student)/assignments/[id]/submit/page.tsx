@@ -50,7 +50,10 @@ export default async function SubmitPage({ params }: { params: Promise<{ id: str
       ) : (
         <SubmitEditor
           assignmentId={id}
-          type={a.type as "written" | "file_upload"}
+          type={a.type as "written" | "file_upload" | "homework"}
+          items={a.items}
+          books={d.books}
+          initialProgress={d.submission?.itemProgress ?? {}}
           dueAt={a.dueAt?.toISOString() ?? null}
           late={win.late}
           latePenaltyPercent={a.latePenaltyPercent}

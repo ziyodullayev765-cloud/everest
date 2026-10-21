@@ -27,6 +27,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
       title: "O‘quv jarayoni",
       items: [
         { href: "/admin/assignments", label: t.nav.content, icon: "builder" },
+        { href: "/admin/library", label: t.nav.library, icon: "subjects" },
         { href: "/admin/bank", label: t.nav.questionBank, icon: "bank" },
         { href: "/admin/submissions", label: t.nav.submissions, icon: "inbox" },
         { href: "/admin/gradebook", label: t.nav.gradebook, icon: "gradebook" },

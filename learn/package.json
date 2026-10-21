@@ -22,6 +22,7 @@
     "node": ">=20.9"
   },
   "dependencies": {
+    "@vercel/blob": "^2.8.2",
     "clsx": "^2.1.1",
     "drizzle-orm": "^0.45.4",
     "geist": "^1.8.1",

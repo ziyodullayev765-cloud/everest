@@ -14,7 +14,7 @@ import { assertCanGrade, assertStudentCanSee } from "./access";
 import { questionsWithOptions } from "./assignments";
 import { awardXp, evaluateAchievements } from "./gamification";
 import { notify, teachersFor } from "./notifications";
-import { getSettings } from "./settings";
+import { getSettings, type PlatformSettings } from "./settings";
 import { audit } from "./audit";
 
 const GRACE_MS = 15_000;
@@ -314,7 +314,7 @@ export async function submitAttempt(actor: Actor, attemptId: string, finalAnswer
         needsManualGrading: needsManual,
       })
       .where(eq(schema.quizAttempts.id, attemptId));
-    if (!needsManual) await upsertQuizGrade(tx, asg, actor.id, actor.id);
+    if (!needsManual) await upsertQuizGrade(tx, asg, actor.id, actor.id, settings);
 
     const firstAttempt = att.attemptNo === 1;
     const percent = percentOf(auto, Number(att.maxScore));
@@ -338,7 +338,7 @@ export async function submitAttempt(actor: Actor, attemptId: string, finalAnswer
  * It stays provisional while attempts remain, and becomes final when none do.
  * Changes are written to grade_history — never silently.
  */
-async function upsertQuizGrade(tx: Tx, asg: Assignment, studentId: string, changedBy: string) {
+async function upsertQuizGrade(tx: Tx, asg: Assignment, studentId: string, changedBy: string, settings: PlatformSettings) {
   if (!isGradedType(asg.type)) return;
   const attempts = await tx
     .select()
@@ -346,7 +346,6 @@ async function upsertQuizGrade(tx: Tx, asg: Assignment, studentId: string, chang
     .where(and(eq(schema.quizAttempts.assignmentId, asg.id), eq(schema.quizAttempts.studentId, studentId)));
   const scored = attempts.filter((a) => a.status === "graded" && a.score != null);
   if (!scored.length) return;
-  const settings = await getSettings();
   const best = scored
     .map((a) => {
       const max = Number(a.maxScore);
@@ -476,6 +475,7 @@ export async function gradeAttemptManually(actor: Actor, attemptId: string, inpu
   if (att.status === "in_progress") throw new AppError("conflict", "Urinish hali yakunlanmagan.");
   const v = manualInput.parse(input);
   const qs = await questionsWithOptions(att.assignmentId);
+  const settings = await getSettings();
   await db.transaction(async (tx) => {
     await tx.execute(sql`select id from quiz_attempts where id = ${attemptId} for update`);
     for (const [qid, pts] of Object.entries(v.points)) {
@@ -498,13 +498,12 @@ export async function gradeAttemptManually(actor: Actor, attemptId: string, inpu
       .set({ status: pending ? "submitted" : "graded", needsManualGrading: pending, score: pending ? null : total, manualScore: round2(total - Number(att.autoScore ?? 0)) })
       .where(eq(schema.quizAttempts.id, attemptId));
     const [asg] = await tx.select().from(schema.assignments).where(eq(schema.assignments.id, att.assignmentId));
-    if (!pending) await upsertQuizGrade(tx, asg, att.studentId, actor.id);
+    if (!pending) await upsertQuizGrade(tx, asg, att.studentId, actor.id, settings);
     await audit(actor.id, "quiz.manual_grade", "quiz_attempt", attemptId, { student: att.studentId }, tx);
   });
   const [after] = await db.select().from(schema.quizAttempts).where(eq(schema.quizAttempts.id, attemptId));
   if (after.status === "graded") {
     const [asg] = await db.select().from(schema.assignments).where(eq(schema.assignments.id, att.assignmentId));
-    const settings = await getSettings();
     if (settings.gamification.enabled)
       await awardXp(att.studentId, quizXp(settings.gamification.rules, percentOf(Number(after.score), Number(after.maxScore)), att.attemptNo === 1), "quiz", `quiz:${asg.id}:${att.studentId}`);
     await notify([att.studentId], { type: "grade", title: `Quiz natijasi tayyor: ${asg.title}`, link: `/quizzes/${asg.id}/results/${attemptId}`, dedupeKey: `att-graded:${attemptId}` });

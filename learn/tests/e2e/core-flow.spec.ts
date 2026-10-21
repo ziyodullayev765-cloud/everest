@@ -9,6 +9,7 @@ test("admin creates and publishes an assignment for 7-A", async ({ page }) => {
   await login(page, "admin");
   await page.goto("/admin/assignments/new");
   await page.getByLabel("Sarlavha").fill(TITLE);
+  await page.getByRole("button", { name: /Yozma javob/ }).click();
   await page.getByLabel("Ko‘rsatmalar").fill("Yozgi ta’til haqida 5 gap yozing.");
   await page.getByLabel("Maksimal ball").fill("10");
   await page.getByRole("checkbox", { name: /7-A/ }).check();

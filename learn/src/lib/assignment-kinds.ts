@@ -3,7 +3,7 @@ import type { AssignmentType } from "@/server/db/schema";
 /** Assignment types that are answered through the quiz engine (questions + attempts). */
 export const QUIZ_TYPES: AssignmentType[] = ["multiple_choice", "short_answer", "true_false", "timed_quiz", "practice"];
 /** Types answered with a written response and/or files. */
-export const WORK_TYPES: AssignmentType[] = ["written", "file_upload"];
+export const WORK_TYPES: AssignmentType[] = ["written", "file_upload", "homework"];
 
 export const isQuizType = (t: AssignmentType) => QUIZ_TYPES.includes(t);
 export const isWorkType = (t: AssignmentType) => WORK_TYPES.includes(t);

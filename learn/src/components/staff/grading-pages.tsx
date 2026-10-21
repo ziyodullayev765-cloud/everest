@@ -21,7 +21,8 @@ import { EmptyState, Alert } from "@/components/ui/feedback";
 import { LinkButton } from "@/components/ui/button";
 import { RichText } from "@/components/ui/rich-text";
 import { Avatar } from "@/components/ui/avatar";
-import { FileChip } from "@/components/app/uploader";
+import { MediaGallery } from "@/components/app/media";
+import { HomeworkItemsList } from "@/components/app/homework-items";
 import { FilterBar } from "./filter-bar";
 import { GradeForm, QuizGradeForm, FinalizeButton } from "./grade-forms";
 import { BankManager } from "./bank-manager";
@@ -122,8 +123,9 @@ export async function GradePage({ user, base, assignmentId, studentId }: { user:
                     action={c.submission.isLate ? <Badge tone="warning">Kechikkan</Badge> : <Badge tone="success">Muddatida</Badge>}
                   />
                   <CardBody className="space-y-3 pt-3">
-                    {c.versions[0]?.content ? <div className="rounded-xl bg-surface-2 p-4 text-[14.5px]"><RichText text={c.versions[0].content} /></div> : <p className="text-[13px] text-muted">Matn yo‘q.</p>}
-                    {c.files.length ? <div className="grid gap-2 sm:grid-cols-2">{c.files.map((f) => <FileChip key={f.id} f={f} />)}</div> : null}
+                    {a.type === "homework" ? <HomeworkItemsList items={a.items} books={c.books} progress={c.versions[0]?.itemProgress ?? {}} bookHref={(id) => `${base}/library/${id}`} /> : null}
+                    {c.versions[0]?.content ? <div className="rounded-xl bg-surface-2 p-4 text-[14.5px]"><RichText text={c.versions[0].content} /></div> : a.type === "homework" ? null : <p className="text-[13px] text-muted">Matn yo‘q.</p>}
+                    {c.files.length ? <MediaGallery files={c.files} /> : null}
                   </CardBody>
                 </Card>
                 {c.versions.length > 1 ? (

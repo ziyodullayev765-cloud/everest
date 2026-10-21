@@ -63,3 +63,5 @@ export function parseCsv(text: string): string[][] {
   if (row.some((x) => x.trim() !== "")) rows.push(row);
   return rows;
 }
+
+export const fmtSize = (n: number) => (n < 1024 ? `${n} B` : n < 1024 * 1024 ? `${Math.round(n / 1024)} KB` : `${(n / 1024 / 1024).toFixed(1)} MB`);

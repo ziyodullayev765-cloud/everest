@@ -23,6 +23,7 @@ export default async function StudentLayout({ children }: { children: React.Reac
       items: [
         { href: "/grades", label: t.nav.grades, icon: "grades" },
         ...(settings.gamification.enabled && user.gamificationEnabled ? [{ href: "/achievements", label: t.nav.achievements, icon: "achievements" }] : []),
+        { href: "/library", label: t.nav.library, icon: "bank" },
         { href: "/classes", label: t.nav.classes, icon: "classes" },
         { href: "/notifications", label: t.nav.notifications, icon: "notifications" },
         { href: "/profile", label: t.nav.profile, icon: "profile" },

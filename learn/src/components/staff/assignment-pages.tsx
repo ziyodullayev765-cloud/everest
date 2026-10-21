@@ -6,6 +6,7 @@ import { can } from "@/server/auth/rbac";
 import { getForEditing, listForStaff, subjectsList } from "@/server/services/assignments";
 import { listClasses, targetableStudents } from "@/server/services/classes";
 import { listBank } from "@/server/services/bank";
+import { bookOptions } from "@/server/services/library";
 import { getSettings } from "@/server/services/settings";
 import { orNotFound } from "@/server/auth/guards";
 import { isQuizType } from "@/lib/assignment-kinds";
@@ -99,8 +100,8 @@ export async function AssignmentListPage({ user, base, sp }: { user: SessionUser
 }
 
 async function builderData(user: SessionUser) {
-  const [subjects, classes, students] = await Promise.all([subjectsList(), listClasses(user), targetableStudents(user)]);
-  return { subjects: subjects.map((s) => ({ id: s.id, name: s.name })), classes: classes.map((c) => ({ id: c.id, name: c.name, students: c.students })), students };
+  const [subjects, classes, students, books] = await Promise.all([subjectsList(), listClasses(user), targetableStudents(user), bookOptions()]);
+  return { subjects: subjects.map((s) => ({ id: s.id, name: s.name })), classes: classes.map((c) => ({ id: c.id, name: c.name, students: c.students })), students, books };
 }
 
 export async function NewAssignmentPage({ user, base }: { user: SessionUser; base: string }) {
@@ -111,7 +112,7 @@ export async function NewAssignmentPage({ user, base }: { user: SessionUser; bas
     title: "",
     description: "",
     instructions: "",
-    type: "written",
+    type: "homework",
     subjectId: data.subjects[0]?.id ?? "",
     dueAt: "",
     publishMode: "now",
@@ -135,6 +136,7 @@ export async function NewAssignmentPage({ user, base }: { user: SessionUser; bas
     rubric: [],
     classIds: [],
     studentIds: [],
+    items: [],
   };
   return (
     <div className="mx-auto max-w-4xl">
@@ -178,6 +180,7 @@ export async function EditAssignmentPage({ user, base, id, tab }: { user: Sessio
     rubric: a.rubric,
     classIds: e.targets.filter((x) => x.classId).map((x) => x.classId!),
     studentIds: e.targets.filter((x) => x.studentId).map((x) => x.studentId!),
+    items: a.items,
   };
   const questions: EditQuestion[] = e.questions.map((q) => {
     const cfg = q.config as QuestionConfig;

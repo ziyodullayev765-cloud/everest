@@ -1,7 +1,7 @@
 "use client";
 import { useMemo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { BookOpen, Dumbbell, FileText, FileUp, Link2, ListChecks, Plus, Save, Search, Send, Timer, Trash2, Users, CalendarClock, Scale, Settings2, CheckSquare } from "lucide-react";
+import { ArrowDown, ArrowUp, ListTodo, Wand2, BookOpen, Dumbbell, FileText, FileUp, Link2, ListChecks, Plus, Save, Search, Send, Timer, Trash2, Users, CalendarClock, Scale, Settings2, CheckSquare } from "lucide-react";
 import { saveAssignmentAction } from "@/app/actions/staff";
 import { Card, CardBody, CardHeader } from "@/components/ui/card";
 import { Field, Input, Select, Switch, Textarea, Checkbox } from "@/components/ui/form";
@@ -14,6 +14,7 @@ import { t } from "@/lib/i18n";
 
 const QUIZ = ["multiple_choice", "short_answer", "true_false", "timed_quiz", "practice"];
 const TYPES = [
+  { k: "homework", icon: ListTodo, d: "Bir nechta topshiriq" },
   { k: "written", icon: FileText, d: "Matnli javob" },
   { k: "file_upload", icon: FileUp, d: "Fayl topshirish" },
   { k: "multiple_choice", icon: ListChecks, d: "Variantli test" },
@@ -52,7 +53,20 @@ export type BuilderValue = {
   rubric: { id: string; title: string; description?: string; maxPoints: number }[];
   classIds: string[];
   studentIds: string[];
+  items: { id: string; kind: HomeworkKind; title: string; bookId?: string | null; range?: string; note?: string }[];
 };
+
+type HomeworkKind = "reading" | "vocabulary" | "listening" | "translation" | "tapescript" | "writing" | "other";
+const KINDS: HomeworkKind[] = ["reading", "vocabulary", "listening", "translation", "tapescript", "writing", "other"];
+const newId = () => Math.random().toString(36).slice(2, 10);
+/** The centre's usual homework, as a one-click starting point. */
+const TEMPLATE: Omit<BuilderValue["items"][number], "id">[] = [
+  { kind: "reading", title: "Barron's Reading", range: "Passage 1-2" },
+  { kind: "vocabulary", title: "B2 unit — so‘zlarni yodlash", range: "" },
+  { kind: "listening", title: "Basic Listening", range: "18-betgacha" },
+  { kind: "translation", title: "Text translation", range: "" },
+  { kind: "tapescript", title: "BBC tapescript yozish", range: "" },
+];
 
 type Props = {
   base: string;
@@ -63,6 +77,7 @@ type Props = {
   subjects: { id: string; name: string }[];
   classes: { id: string; name: string; students: number }[];
   students: { id: string; displayName: string; className: string }[];
+  books: { id: string; title: string; category: string }[];
   hasWork: boolean;
 };
 
@@ -76,7 +91,7 @@ export function AssignmentBuilder(p: Props) {
   const router = useRouter();
   const set = <K extends keyof BuilderValue>(k: K, val: BuilderValue[K]) => setV((x) => ({ ...x, [k]: val }));
   const isQuiz = QUIZ.includes(v.type);
-  const isWork = v.type === "written" || v.type === "file_upload";
+  const isWork = v.type === "written" || v.type === "file_upload" || v.type === "homework";
   const live = p.status === "published";
   const rubricSum = v.rubric.reduce((s, c) => s + Number(c.maxPoints || 0), 0);
 
@@ -153,10 +168,73 @@ export function AssignmentBuilder(p: Props) {
         </CardBody>
       </Card>
 
+      {v.type === "homework" ? (
+        <Card>
+          <CardHeader
+            title="Topshiriqlar"
+            icon={<ListTodo />}
+            description="O‘quvchi har birini alohida belgilaydi. Tarjima va tapescript uchun matn yozadi."
+            action={
+              <Button variant="secondary" size="sm" onClick={() => set("items", [...v.items, ...TEMPLATE.map((x) => ({ ...x, id: newId() }))])}>
+                <Wand2 /> Namuna
+              </Button>
+            }
+          />
+          <CardBody className="space-y-3">
+            {errors.items ? <p className="text-[12.5px] text-danger">{errors.items}</p> : null}
+            {v.items.map((it, i) => {
+              const upd = (patch: Partial<BuilderValue["items"][number]>) => set("items", v.items.map((x, j) => (j === i ? { ...x, ...patch } : x)));
+              return (
+                <div key={it.id} className="space-y-2 rounded-xl border border-border p-3">
+                  <div className="flex items-center gap-2">
+                    <span className="grid size-7 shrink-0 place-items-center rounded-lg bg-surface-2 text-[12.5px] font-semibold tabular">{i + 1}</span>
+                    <Select value={it.kind} onChange={(e) => upd({ kind: e.target.value as HomeworkKind })} aria-label="Turi" className="h-9">
+                      {KINDS.map((k) => (
+                        <option key={k} value={k}>
+                          {t.homeworkKind[k]}
+                        </option>
+                      ))}
+                    </Select>
+                    <div className="ml-auto flex shrink-0">
+                      <Button variant="ghost" size="icon" className="size-8" disabled={i === 0} onClick={() => { const n = [...v.items]; [n[i - 1], n[i]] = [n[i], n[i - 1]]; set("items", n); }} aria-label="Yuqoriga"><ArrowUp /></Button>
+                      <Button variant="ghost" size="icon" className="size-8" disabled={i === v.items.length - 1} onClick={() => { const n = [...v.items]; [n[i + 1], n[i]] = [n[i], n[i + 1]]; set("items", n); }} aria-label="Pastga"><ArrowDown /></Button>
+                      <Button variant="ghost" size="icon" className="size-8 hover:text-danger" onClick={() => set("items", v.items.filter((_, j) => j !== i))} aria-label="O‘chirish"><Trash2 /></Button>
+                    </div>
+                  </div>
+                  <div className="grid gap-2 sm:grid-cols-[1.4fr_1fr]">
+                    <Input value={it.title} onChange={(e) => upd({ title: e.target.value })} placeholder="Masalan: Barron's Reading" aria-label="Topshiriq nomi" maxLength={200} />
+                    <Input value={it.range ?? ""} onChange={(e) => upd({ range: e.target.value })} placeholder="Passage 1-2 / 18-betgacha" aria-label="Oraliq" maxLength={120} />
+                  </div>
+                  <div className="grid gap-2 sm:grid-cols-[1fr_1.4fr]">
+                    <Select value={it.bookId ?? ""} onChange={(e) => { const b = p.books.find((x) => x.id === e.target.value); upd({ bookId: e.target.value || null, ...(b && !it.title.trim() ? { title: b.title } : {}) }); }} aria-label="Kitob">
+                      <option value="">Kitob biriktirilmagan</option>
+                      {p.books.map((b) => (
+                        <option key={b.id} value={b.id}>
+                          {b.title}
+                        </option>
+                      ))}
+                    </Select>
+                    <Input value={it.note ?? ""} onChange={(e) => upd({ note: e.target.value })} placeholder="Izoh (ixtiyoriy)" aria-label="Izoh" maxLength={2000} />
+                  </div>
+                </div>
+              );
+            })}
+            <div className="flex flex-wrap gap-2">
+              {KINDS.slice(0, 6).map((k) => (
+                <Button key={k} variant="secondary" size="sm" onClick={() => set("items", [...v.items, { id: newId(), kind: k, title: "", range: "" }])}>
+                  <Plus /> {t.homeworkKind[k]}
+                </Button>
+              ))}
+            </div>
+            {!p.books.length ? <p className="text-[12.5px] text-muted">Kitob biriktirish uchun avval Admin → Kutubxona bo‘limiga kitob qo‘shing.</p> : null}
+          </CardBody>
+        </Card>
+      ) : null}
+
       <Card>
-        <CardHeader title="Materiallar" icon={<Link2 />} description="Fayllar faqat shu vazifani ko‘ra oladiganlarga ochiladi." />
+        <CardHeader title="Materiallar" icon={<Link2 />} description="Doska rasmi, audio yozuvlar, fayllar. Faqat shu vazifani ko‘ra oladiganlarga ochiladi." />
         <CardBody className="space-y-4">
-          <Uploader files={files} onChange={setFiles} max={20} label="Fayl yoki rasm biriktirish" />
+          <Uploader files={files} onChange={setFiles} max={30} label="Doska rasmi, audio yoki fayl biriktirish" />
           <div className="space-y-2">
             {v.links.map((l, i) => (
               <div key={i} className="grid gap-2 sm:grid-cols-[1fr_1.4fr_auto]">

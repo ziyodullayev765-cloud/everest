@@ -5,6 +5,7 @@ import { requireRole } from "@/server/auth/session";
 import { createResetLink, createUser, importStudents, setClassMemberships, setUserStatus, updateUser } from "@/server/services/users";
 import { assignTeacher, createClass, createSubject, enroll, setClassArchived, setJoinCode, setSubjectArchived, unassignTeacher, updateClass, updateSubject } from "@/server/services/classes";
 import { updateSettings } from "@/server/services/settings";
+import { saveBook, setBookStatus } from "@/server/services/library";
 import { env } from "@/server/env";
 import type { SessionUser } from "@/server/auth/session";
 
@@ -67,4 +68,10 @@ export async function archiveSubjectAction(id: string, archived: boolean) {
 }
 export async function settingsAction(input: unknown) {
   return adminRun((u) => updateSettings(u, input));
+}
+export async function saveBookAction(id: string | null, input: unknown) {
+  return adminRun((u) => saveBook(u, id, input));
+}
+export async function bookStatusAction(id: string, status: "draft" | "published" | "archived") {
+  return adminRun((u) => setBookStatus(u, id, status));
 }

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
-import { CalendarClock, CheckCircle2, ExternalLink, FileText, Link2, MessageSquareText, RotateCcw, Scale, User } from "lucide-react";
+import { CalendarClock, CheckCircle2, ExternalLink, FileText, Link2, ListTodo, MessageSquareText, RotateCcw, Scale, User } from "lucide-react";
 import { orNotFound, pageUser } from "@/server/auth/guards";
 import { getForStudent } from "@/server/services/assignments";
 import { editability } from "@/server/services/submissions";
@@ -15,7 +15,8 @@ import { Alert } from "@/components/ui/feedback";
 import { LinkButton } from "@/components/ui/button";
 import { RichText } from "@/components/ui/rich-text";
 import { StatusBadge } from "@/components/student/status";
-import { FileChip } from "@/components/app/uploader";
+import { MediaGallery } from "@/components/app/media";
+import { HomeworkItemsList } from "@/components/app/homework-items";
 import { MarkReadButton } from "./mark-read";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -71,13 +72,28 @@ export default async function AssignmentDetail({ params }: { params: Promise<{ i
             </Card>
           ) : null}
 
-          {d.attachments.length || a.links.length ? (
+          {a.type === "homework" && a.items.length ? (
             <Card>
-              <CardHeader title="Materiallar" icon={<Link2 />} />
+              <CardHeader title="Topshiriqlar" icon={<ListTodo />} description={`${a.items.length} ta topshiriq`} />
+              <CardBody className="pt-3">
+                <HomeworkItemsList items={a.items} books={d.books} progress={d.submission && d.submission.version > 0 ? d.submission.itemProgress : null} />
+              </CardBody>
+            </Card>
+          ) : null}
+
+          {d.attachments.length ? (
+            <Card>
+              <CardHeader title="Materiallar" description="Doska rasmi, audio va fayllar" icon={<Link2 />} />
+              <CardBody className="pt-3">
+                <MediaGallery files={d.attachments} />
+              </CardBody>
+            </Card>
+          ) : null}
+
+          {a.links.length ? (
+            <Card>
+              <CardHeader title="Havolalar" icon={<ExternalLink />} />
               <CardBody className="grid gap-2 pt-3 sm:grid-cols-2">
-                {d.attachments.map((f) => (
-                  <FileChip key={f.id} f={f} />
-                ))}
                 {a.links.map((l) => (
                   <a key={l.url} href={l.url} target="_blank" rel="noopener noreferrer nofollow" className="flex items-center gap-2.5 rounded-xl border border-border bg-surface p-2 pr-3 hover:border-border-strong">
                     <span className="grid size-8 place-items-center rounded-lg bg-info-soft text-info">
@@ -129,13 +145,7 @@ export default async function AssignmentDetail({ params }: { params: Promise<{ i
               />
               <CardBody className="space-y-3 pt-3">
                 {d.submission!.content ? <div className="rounded-xl bg-surface-2 p-4 text-[14px]"><RichText text={d.submission!.content} /></div> : null}
-                {d.submissionFiles.length ? (
-                  <div className="grid gap-2 sm:grid-cols-2">
-                    {d.submissionFiles.map((f) => (
-                      <FileChip key={f.id} f={f} />
-                    ))}
-                  </div>
-                ) : null}
+                {d.submissionFiles.length ? <MediaGallery files={d.submissionFiles} /> : null}
               </CardBody>
             </Card>
           ) : null}

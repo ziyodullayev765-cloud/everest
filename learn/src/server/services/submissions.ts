@@ -5,6 +5,7 @@ import { db, schema } from "../db";
 import type { Actor } from "../auth/rbac";
 import { AppError, forbidden, invalid } from "../errors";
 import { isWorkType, submissionWindow } from "@/lib/assignment-kinds";
+import type { HomeworkItem, ItemProgress } from "../db/schema";
 import { assertStudentCanSee } from "./access";
 import { assertOwnFiles } from "./files";
 import { awardXp, evaluateAchievements } from "./gamification";
@@ -13,8 +14,16 @@ import { getSettings } from "./settings";
 
 const workInput = z.object({
   content: z.string().max(50_000, "Javob juda uzun (50 000 belgigacha).").default(""),
-  fileIds: z.array(z.string().uuid()).max(10, "Ko‘pi bilan 10 ta fayl.").default([]),
+  fileIds: z.array(z.string().uuid()).max(20, "Ko‘pi bilan 20 ta fayl.").default([]),
+  itemProgress: z.record(z.string().max(40), z.object({ done: z.boolean(), text: z.string().max(20_000, "Matn juda uzun.").optional() })).default({}),
 });
+
+/** Keeps only progress for items that exist on the homework (drops anything the client invented). */
+function cleanProgress(asg: { type: string; items: HomeworkItem[] }, p: ItemProgress): ItemProgress {
+  if (asg.type !== "homework") return {};
+  const ids = new Set(asg.items.map((i) => i.id));
+  return Object.fromEntries(Object.entries(p).filter(([k]) => ids.has(k)).map(([k, v]) => [k, { done: v.done, ...(v.text?.trim() ? { text: v.text } : {}) }]));
+}
 
 function requireStudent(actor: Actor) {
   if (actor.role !== "student") throw forbidden("Faqat o‘quvchilar topshira oladi.");
@@ -42,6 +51,7 @@ export async function saveDraft(actor: Actor, assignmentId: string, input: unkno
   const asg = await assertStudentCanSee(actor.id, assignmentId);
   if (!isWorkType(asg.type)) throw invalid("Bu vazifa turi uchun qoralama yo‘q.");
   const v = workInput.parse(input);
+  const itemProgress = cleanProgress(asg, v.itemProgress);
   await assertOwnFilesOrExisting(actor.id, assignmentId, v.fileIds);
 
   return db.transaction(async (tx) => {
@@ -54,12 +64,12 @@ export async function saveDraft(actor: Actor, assignmentId: string, input: unkno
     if (existing?.status === "submitted" || existing?.status === "graded") throw new AppError("closed", "Ish topshirilgan. O‘zgartirish uchun «Qayta topshirish» tugmasidan foydalaning.");
     let id = existing?.id;
     if (!id) {
-      const [row] = await tx.insert(schema.submissions).values({ assignmentId, studentId: actor.id, content: v.content }).returning({ id: schema.submissions.id });
+      const [row] = await tx.insert(schema.submissions).values({ assignmentId, studentId: actor.id, content: v.content, itemProgress }).returning({ id: schema.submissions.id });
       id = row.id;
     } else {
       await tx
         .update(schema.submissions)
-        .set({ content: v.content, updatedAt: new Date() })
+        .set({ content: v.content, itemProgress, updatedAt: new Date() })
         .where(eq(schema.submissions.id, id));
     }
     await tx.delete(schema.submissionFiles).where(eq(schema.submissionFiles.submissionId, id));
@@ -80,6 +90,8 @@ export async function submitWork(actor: Actor, assignmentId: string, input: unkn
   const v = workInput.parse(input);
   if (asg.type === "file_upload" && v.fileIds.length === 0) throw invalid("Kamida bitta fayl biriktiring.");
   if (asg.type === "written" && v.content.trim().length === 0 && v.fileIds.length === 0) throw invalid("Javob matnini yozing.");
+  const itemProgress = cleanProgress(asg, v.itemProgress);
+  if (asg.type === "homework" && !Object.values(itemProgress).some((p) => p.done)) throw invalid("Kamida bitta topshiriqni bajarilgan deb belgilang.");
   await assertOwnFilesOrExisting(actor.id, assignmentId, v.fileIds);
   const settings = await getSettings();
 
@@ -101,11 +113,11 @@ export async function submitWork(actor: Actor, assignmentId: string, input: unkn
     const version = existing.version + 1;
     await tx
       .update(schema.submissions)
-      .set({ status: "submitted", content: v.content, version, isLate: late, submittedAt: now, updatedAt: now })
+      .set({ status: "submitted", content: v.content, itemProgress, version, isLate: late, submittedAt: now, updatedAt: now })
       .where(eq(schema.submissions.id, existing.id));
     await tx.delete(schema.submissionFiles).where(eq(schema.submissionFiles.submissionId, existing.id));
     if (v.fileIds.length) await tx.insert(schema.submissionFiles).values(v.fileIds.map((fileId) => ({ submissionId: existing.id, fileId })));
-    await tx.insert(schema.submissionVersions).values({ submissionId: existing.id, version, content: v.content, fileIds: v.fileIds, isLate: late, submittedAt: now });
+    await tx.insert(schema.submissionVersions).values({ submissionId: existing.id, version, content: v.content, itemProgress, fileIds: v.fileIds, isLate: late, submittedAt: now });
 
     // XP only for the first submission of an assignment.
     if (settings.gamification.enabled) {

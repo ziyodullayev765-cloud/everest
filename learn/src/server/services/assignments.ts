@@ -9,6 +9,7 @@ import { fromLocalInput } from "@/lib/dates";
 import { randomUUID } from "node:crypto";
 import { assertCanManageAssignment, assertStudentCanSee, liveWhere, manageableAssignmentsWhere, manageableClassIds, targetsStudent } from "./access";
 import { assertOwnFiles } from "./files";
+import { booksByIds } from "./library";
 import { audit } from "./audit";
 import { notify } from "./notifications";
 import { fillTemplate, getSettings } from "./settings";
@@ -62,6 +63,7 @@ function toRow(v: ReturnType<typeof assignmentInput.parse>) {
     showCorrectAnswers: v.showCorrectAnswers,
     links: v.links,
     rubric: v.rubric,
+    items: v.type === "homework" ? v.items.map((i) => ({ ...i, bookId: i.bookId ?? null })) : [],
   };
 }
 
@@ -76,6 +78,11 @@ export async function saveAssignment(actor: Actor, id: string | null, input: unk
   const v = parsed.data;
   await assertOwnFilesOrAttached(actor, id, v.attachmentFileIds);
   const row = toRow(v);
+  const bookIds = [...new Set(row.items.map((i) => i.bookId).filter((x): x is string => !!x))];
+  if (bookIds.length) {
+    const found = await db.select({ id: schema.books.id }).from(schema.books).where(inArray(schema.books.id, bookIds));
+    if (found.length !== bookIds.length) throw invalid("Tanlangan kitob topilmadi.");
+  }
 
   const result = await db.transaction(async (tx) => {
     await assertTargetsInScope(actor, v.classIds, v.studentIds, tx);
@@ -477,6 +484,7 @@ export async function getForStudent(studentId: string, assignmentId: string) {
     grade: grade[0] ?? null,
     feedback: fb,
     status: list?.status ?? "new",
+    books: await booksByIds([...new Set(asg.items.map((i) => i.bookId).filter((x): x is string => !!x))]),
   };
 }
 

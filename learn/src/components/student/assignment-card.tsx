@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { CalendarClock, ChevronRight, FileText, FileUp, BookOpen, Sparkles, Timer, Dumbbell, ListChecks } from "lucide-react";
+import { CalendarClock, ChevronRight, FileText, FileUp, BookOpen, Sparkles, Timer, Dumbbell, ListChecks, ListTodo } from "lucide-react";
 import type { StudentAssignmentRow } from "@/server/services/assignments";
 import { isQuizType } from "@/lib/assignment-kinds";
 import { formatDateTime, remaining } from "@/lib/dates";
@@ -7,7 +7,7 @@ import { cn, fmtNumber } from "@/lib/utils";
 import { t } from "@/lib/i18n";
 import { StatusBadge } from "./status";
 
-const TYPE_ICON = { written: FileText, file_upload: FileUp, multiple_choice: ListChecks, short_answer: ListChecks, true_false: ListChecks, timed_quiz: Timer, practice: Dumbbell, material: BookOpen } as const;
+const TYPE_ICON = { written: FileText, file_upload: FileUp, multiple_choice: ListChecks, short_answer: ListChecks, true_false: ListChecks, timed_quiz: Timer, practice: Dumbbell, material: BookOpen, homework: ListTodo } as const;
 
 export function hrefFor(a: Pick<StudentAssignmentRow, "id" | "type">) {
   return isQuizType(a.type) ? `/quizzes/${a.id}` : `/assignments/${a.id}`;

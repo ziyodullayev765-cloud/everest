@@ -13,7 +13,7 @@ const optionalDateTime = z
   .refine((v) => v === "" || /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/.test(v), "Sana noto‘g‘ri")
   .default("");
 
-export const ASSIGNMENT_TYPES = ["written", "file_upload", "multiple_choice", "short_answer", "true_false", "timed_quiz", "practice", "material"] as const;
+export const ASSIGNMENT_TYPES = ["written", "file_upload", "multiple_choice", "short_answer", "true_false", "timed_quiz", "practice", "material", "homework"] as const;
 
 export const assignmentInput = z
   .object({
@@ -47,9 +47,23 @@ export const assignmentInput = z
       .default([]),
     classIds: z.array(uuid).max(100).default([]),
     studentIds: z.array(uuid).max(500).default([]),
-    attachmentFileIds: z.array(uuid).max(20).default([]),
+    attachmentFileIds: z.array(uuid).max(30).default([]),
+    items: z
+      .array(
+        z.object({
+          id: z.string().min(1).max(40),
+          kind: z.enum(["reading", "vocabulary", "listening", "translation", "tapescript", "writing", "other"]),
+          title: z.string().trim().min(1, "Topshiriq nomini yozing").max(200),
+          bookId: uuid.nullable().optional(),
+          range: z.string().trim().max(120).optional(),
+          note: z.string().trim().max(2000).optional(),
+        }),
+      )
+      .max(20)
+      .default([]),
   })
   .superRefine((v, ctx) => {
+    if (v.type === "homework" && v.items.length === 0) ctx.addIssue({ code: "custom", path: ["items"], message: "Uyga vazifaga kamida bitta topshiriq qo‘shing" });
     if (v.publishMode === "schedule" && !v.publishAt) ctx.addIssue({ code: "custom", path: ["publishAt"], message: "E’lon qilish vaqtini kiriting" });
     if (v.publishMode !== "draft" && v.classIds.length + v.studentIds.length === 0)
       ctx.addIssue({ code: "custom", path: ["classIds"], message: "Kamida bitta sinf yoki o‘quvchini tanlang" });
