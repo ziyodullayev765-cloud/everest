@@ -15,7 +15,8 @@
     "db:seed": "tsx --conditions=react-server scripts/seed.ts",
     "admin:create": "tsx --conditions=react-server scripts/create-admin.ts",
     "icons": "node scripts/make-icons.mjs",
-    "check": "npm run typecheck && npm run lint && npm test"
+    "check": "npm run typecheck && npm run lint && npm test",
+    "vercel-build": "node scripts/vercel-build.mjs"
   },
   "engines": {
     "node": ">=20.9"
