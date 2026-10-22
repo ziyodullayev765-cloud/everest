@@ -11,8 +11,9 @@ import { Card, CardBody } from "@/components/ui/card";
 import { CheckCircle2 } from "lucide-react";
 import { formatDateTime } from "@/lib/dates";
 import { SubmitEditor } from "./submit-editor";
+import { tr } from "@/lib/i18n/tr";
 
-export const metadata: Metadata = { title: "Topshirish" };
+export const metadata: Metadata = { get title() { return tr("Topshirish"); } };
 
 export default async function SubmitPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -24,7 +25,7 @@ export default async function SubmitPage({ params }: { params: Promise<{ id: str
   const win = submissionWindow(a);
   return (
     <div className="mx-auto max-w-3xl">
-      <PageHeader back={{ href: `/assignments/${id}`, label: "Vazifa" }} eyebrow={d.subject?.name} title={a.title} />
+      <PageHeader back={{ href: `/assignments/${id}`, label: tr("Vazifa") }} eyebrow={d.subject?.name} title={a.title} />
       {!ed.canEdit && d.submission && d.submission.version > 0 ? (
         // Also what the student sees right after submitting (the action revalidates this page).
         <Card className="animate-fade-up">
@@ -32,20 +33,20 @@ export default async function SubmitPage({ params }: { params: Promise<{ id: str
             <div className="mb-4 grid size-16 place-items-center rounded-full bg-success-soft text-success">
               <CheckCircle2 className="size-8" aria-hidden />
             </div>
-            <h2 className="text-[20px] font-bold tracking-[-0.01em]">Ishingiz topshirildi</h2>
+            <h2 className="text-[20px] font-bold tracking-[-0.01em]">{tr("Ishingiz topshirildi")}</h2>
             <p className="mt-1.5 text-[14px] text-muted">
-              {formatDateTime(d.submission.submittedAt!)} da qabul qilindi{d.submission.version > 1 ? ` (${d.submission.version}-topshiriq)` : ""}.{d.submission.isLate ? " Muddatdan kechikib topshirildi." : ""}
+              {tr("{0} da qabul qilindi", formatDateTime(d.submission.submittedAt!))}{d.submission.version > 1 ? ` (${d.submission.version}-topshiriq)` : ""}.{d.submission.isLate ? tr(" Muddatdan kechikib topshirildi.") : ""}
             </p>
-            <p className="mt-1 text-[13px] text-muted">O‘qituvchi tekshirgach, baho va izohlar vazifa sahifasida ko‘rinadi.</p>
+            <p className="mt-1 text-[13px] text-muted">{tr("O‘qituvchi tekshirgach, baho va izohlar vazifa sahifasida ko‘rinadi.")}</p>
             <div className="mt-6 flex flex-wrap justify-center gap-2">
-              <LinkButton href={`/assignments/${id}`} variant="secondary">Vazifani ko‘rish</LinkButton>
-              <LinkButton href="/">Bosh sahifa</LinkButton>
+              <LinkButton href={`/assignments/${id}`} variant="secondary">{tr("Vazifani ko‘rish")}</LinkButton>
+              <LinkButton href="/">{tr("Bosh sahifa")}</LinkButton>
             </div>
           </CardBody>
         </Card>
       ) : !ed.canEdit ? (
-        <Alert tone="info" title="Ishni o‘zgartirib bo‘lmaydi">
-          {ed.reason} <LinkButton href={`/assignments/${id}`} variant="ghost" size="sm">Vazifaga qaytish</LinkButton>
+        <Alert tone="info" title={tr("Ishni o‘zgartirib bo‘lmaydi")}>
+          {ed.reason} <LinkButton href={`/assignments/${id}`} variant="ghost" size="sm">{tr("Vazifaga qaytish")}</LinkButton>
         </Alert>
       ) : (
         <SubmitEditor

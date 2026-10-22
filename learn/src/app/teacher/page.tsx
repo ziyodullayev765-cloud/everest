@@ -12,8 +12,9 @@ import { LinkButton } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar } from "@/components/ui/avatar";
 import { FollowUpCard, RecentQuizzesCard } from "@/components/staff/follow-ups";
+import { tr } from "@/lib/i18n/tr";
 
-export const metadata: Metadata = { title: "Bosh sahifa" };
+export const metadata: Metadata = { get title() { return tr("Bosh sahifa"); } };
 
 export default async function TeacherHome() {
   const user = await pageUser("teacher");
@@ -22,30 +23,30 @@ export default async function TeacherHome() {
     <>
       <PageHeader
         eyebrow={<span className="first-letter:uppercase">{formatLongToday()}</span>}
-        title={`Xush kelibsiz, ${user.displayName.split(" ")[0]}`}
+        title={tr("Xush kelibsiz, {0}", user.displayName.split(" ")[0])}
         actions={
           <>
             <LinkButton href="/teacher/submissions" variant="secondary">
-              <Inbox /> Tekshirish
+              <Inbox /> {tr("Tekshirish")}
             </LinkButton>
             {can(user, "assignments.create") ? (
               <LinkButton href="/teacher/assignments/new">
-                <Plus /> Yangi vazifa
+                <Plus /> {tr("Yangi vazifa")}
               </LinkButton>
             ) : null}
           </>
         }
       />
       <div className="mb-6 grid grid-cols-2 gap-3 lg:grid-cols-4">
-        <StatCard label="Tekshirish kutilmoqda" value={o.counts.pending} icon={<ClipboardCheck />} tone="violet" hint={<Link href="/teacher/submissions" className="text-primary hover:underline">Ko‘rish →</Link>} />
-        <StatCard label="E’lon qilingan" value={o.counts.published} icon={<Send />} hint="faol vazifalar" />
-        <StatCard label="Qoralama / reja" value={o.counts.drafts} icon={<FilePen />} tone="info" />
-        <StatCard label="Guruhlar" value={o.classes.length} icon={<UsersRound />} tone="warning" hint={`${o.classes.reduce((s, c) => s + c.students, 0)} o‘quvchi`} />
+        <StatCard label={tr("Tekshirish kutilmoqda")} value={o.counts.pending} icon={<ClipboardCheck />} tone="violet" hint={<Link href="/teacher/submissions" className="text-primary hover:underline">{tr("Ko‘rish →")}</Link>} />
+        <StatCard label={tr("E’lon qilingan")} value={o.counts.published} icon={<Send />} hint={tr("faol vazifalar")} />
+        <StatCard label={tr("Qoralama / reja")} value={o.counts.drafts} icon={<FilePen />} tone="info" />
+        <StatCard label={tr("Guruhlar")} value={o.classes.length} icon={<UsersRound />} tone="warning" hint={tr("{0} o‘quvchi", o.classes.reduce((s, c) => s + c.students, 0))} />
       </div>
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-[1fr_360px]">
         <div className="min-w-0 space-y-6">
           <Card>
-            <CardHeader title="So‘nggi topshirilgan ishlar" action={<LinkButton href="/teacher/submissions?status=all" variant="ghost" size="sm">Barchasi</LinkButton>} />
+            <CardHeader title={tr("So‘nggi topshirilgan ishlar")} action={<LinkButton href="/teacher/submissions?status=all" variant="ghost" size="sm">{tr("Barchasi")}</LinkButton>} />
             <CardBody className="pt-2">
               {o.recent.length ? (
                 <ul className="-mx-2">
@@ -58,19 +59,19 @@ export default async function TeacherHome() {
                           <span className="block truncate text-[12px] text-muted">{r.title}</span>
                         </span>
                         <span className="shrink-0 text-[12px] text-muted">{formatDateTime(r.submitted_at)}</span>
-                        {r.is_late ? <Badge tone="warning">kech</Badge> : null}
+                        {r.is_late ? <Badge tone="warning">{tr("kech")}</Badge> : null}
                         <ChevronRight className="size-4 text-muted" aria-hidden />
                       </Link>
                     </li>
                   ))}
                 </ul>
               ) : (
-                <EmptyState icon={<Inbox />} title="Hali ish topshirilmagan" className="py-6" />
+                <EmptyState icon={<Inbox />} title={tr("Hali ish topshirilmagan")} className="py-6" />
               )}
             </CardBody>
           </Card>
           <Card>
-            <CardHeader title="Bajarilish darajasi" description="So‘nggi e’lon qilingan vazifalar" />
+            <CardHeader title={tr("Bajarilish darajasi")} description={tr("So‘nggi e’lon qilingan vazifalar")} />
             <CardBody className="space-y-4 pt-3">
               {o.completion.length ? (
                 o.completion.map((c) => (
@@ -83,7 +84,7 @@ export default async function TeacherHome() {
                   </div>
                 ))
               ) : (
-                <p className="text-[13.5px] text-muted">E’lon qilingan vazifa yo‘q.</p>
+                <p className="text-[13.5px] text-muted">{tr("E’lon qilingan vazifa yo‘q.")}</p>
               )}
             </CardBody>
           </Card>
@@ -92,7 +93,7 @@ export default async function TeacherHome() {
           <FollowUpCard user={user} base="/teacher" />
           <RecentQuizzesCard user={user} base="/teacher" />
           <Card>
-            <CardHeader title="Yaqin muddatlar" icon={<CalendarClock />} />
+            <CardHeader title={tr("Yaqin muddatlar")} icon={<CalendarClock />} />
             <CardBody className="pt-2">
               {o.upcoming.length ? (
                 <ul className="-mx-2">
@@ -106,23 +107,23 @@ export default async function TeacherHome() {
                   ))}
                 </ul>
               ) : (
-                <p className="py-3 text-[13.5px] text-muted">Yaqin muddat yo‘q.</p>
+                <p className="py-3 text-[13.5px] text-muted">{tr("Yaqin muddat yo‘q.")}</p>
               )}
             </CardBody>
           </Card>
           <Card>
-            <CardHeader title="Guruhlarim" icon={<UsersRound />} />
+            <CardHeader title={tr("Guruhlarim")} icon={<UsersRound />} />
             <CardBody className="pt-2">
               <ul className="-mx-2">
                 {o.classes.map((c) => (
                   <li key={c.id}>
                     <Link href={`/teacher/classes/${c.id}`} className="flex items-center justify-between rounded-xl px-2 py-2.5 hover:bg-surface-2">
                       <span className="font-semibold">{c.name}</span>
-                      <span className="text-[12.5px] text-muted">{c.students} o‘quvchi</span>
+                      <span className="text-[12.5px] text-muted">{tr("{0} o‘quvchi", c.students)}</span>
                     </Link>
                   </li>
                 ))}
-                {!o.classes.length ? <li className="px-2 py-3 text-[13.5px] text-muted">Administrator sizga hali guruh biriktirmagan.</li> : null}
+                {!o.classes.length ? <li className="px-2 py-3 text-[13.5px] text-muted">{tr("Administrator sizga hali guruh biriktirmagan.")}</li> : null}
               </ul>
             </CardBody>
           </Card>

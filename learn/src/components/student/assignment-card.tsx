@@ -6,6 +6,7 @@ import { formatDateTime, remaining } from "@/lib/dates";
 import { cn, fmtNumber } from "@/lib/utils";
 import { t } from "@/lib/i18n";
 import { StatusBadge } from "./status";
+import { tr } from "@/lib/i18n/tr";
 
 const TYPE_ICON = { written: FileText, file_upload: FileUp, multiple_choice: ListChecks, short_answer: ListChecks, true_false: ListChecks, timed_quiz: Timer, practice: Dumbbell, material: BookOpen, homework: ListTodo } as const;
 
@@ -14,17 +15,17 @@ export function hrefFor(a: Pick<StudentAssignmentRow, "id" | "type">) {
 }
 
 function actionLabel(a: StudentAssignmentRow) {
-  if (a.type === "material") return a.status === "read" ? "Qayta o‘qish" : "O‘qish";
+  if (a.type === "material") return a.status === "read" ? tr("Qayta o‘qish") : tr("O‘qish");
   if (isQuizType(a.type)) {
-    if (a.status === "in_progress") return "Davom ettirish";
-    if (a.status === "graded" || a.status === "reviewing" || a.status === "submitted") return "Natija";
-    return a.status === "overdue" ? "Ko‘rish" : "Boshlash";
+    if (a.status === "in_progress") return tr("Davom ettirish");
+    if (a.status === "graded" || a.status === "reviewing" || a.status === "submitted") return tr("Natija");
+    return a.status === "overdue" ? tr("Ko‘rish") : tr("Boshlash");
   }
-  if (a.status === "returned") return "Qayta ishlash";
-  if (a.status === "in_progress") return "Davom ettirish";
-  if (a.status === "new") return "Bajarish";
-  if (a.status === "overdue") return a.allowLate ? "Kechikib topshirish" : "Ko‘rish";
-  return "Ko‘rish";
+  if (a.status === "returned") return tr("Qayta ishlash");
+  if (a.status === "in_progress") return tr("Davom ettirish");
+  if (a.status === "new") return tr("Bajarish");
+  if (a.status === "overdue") return a.allowLate ? tr("Kechikib topshirish") : tr("Ko‘rish");
+  return tr("Ko‘rish");
 }
 
 export function DueLabel({ dueAt, done }: { dueAt: Date | null; done?: boolean }) {
@@ -74,14 +75,14 @@ export function AssignmentCard({ a, compact }: { a: StudentAssignmentRow; compac
                   <b className="font-bold text-text">{fmtNumber(a.gradePoints, 2)}</b> / {fmtNumber(a.maxScore, 2)} {t.common.points}
                 </>
               ) : (
-                <>max {fmtNumber(a.maxScore, 2)} {t.common.points}</>
+                <>{tr("max {0} {1}", fmtNumber(a.maxScore, 2), t.common.points)}</>
               )}
             </span>
           ) : null}
           {a.timeLimitMinutes ? (
             <span className="inline-flex items-center gap-1 text-muted">
               <Timer className="size-3.5" aria-hidden />
-              {a.timeLimitMinutes} daq
+              {tr("{0} daq", a.timeLimitMinutes)}
             </span>
           ) : null}
         </div>

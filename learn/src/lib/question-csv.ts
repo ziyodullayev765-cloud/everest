@@ -1,6 +1,7 @@
 import { parseCsv } from "./utils";
 import { countBlanks } from "./scoring";
 import { QUESTION_TYPES } from "./validation/assignment";
+import { tr } from "@/lib/i18n/tr";
 
 /**
  * CSV template for quiz questions (header row required):
@@ -52,10 +53,10 @@ export function parseQuestionCsv(text: string): { questions: CsvQuestion[]; erro
   const rows = parseCsv(text);
   const errors: { line: number; message: string }[] = [];
   const questions: CsvQuestion[] = [];
-  if (!rows.length) return { questions, errors: [{ line: 1, message: "Fayl bo‘sh." }] };
+  if (!rows.length) return { questions, errors: [{ line: 1, message: tr("Fayl bo‘sh.") }] };
   const head = rows[0].map((h) => h.trim().toLowerCase());
   const col = (name: string) => head.indexOf(name);
-  if (col("type") < 0 || col("prompt") < 0) return { questions, errors: [{ line: 1, message: `Sarlavha qatori kerak: ${QUESTION_CSV_HEADER}` }] };
+  if (col("type") < 0 || col("prompt") < 0) return { questions, errors: [{ line: 1, message: tr("Sarlavha qatori kerak: {0}", QUESTION_CSV_HEADER) }] };
   const get = (r: string[], name: string) => (col(name) >= 0 ? (r[col(name)] ?? "").trim() : "");
   if (rows.length > 201) errors.push({ line: 1, message: "Bir martada ko‘pi bilan 200 ta savol." });
 
@@ -64,11 +65,11 @@ export function parseQuestionCsv(text: string): { questions: CsvQuestion[]; erro
     const type = get(r, "type").toLowerCase() as CsvQuestion["type"];
     const prompt = get(r, "prompt");
     const fail = (message: string) => errors.push({ line, message });
-    if (!QUESTION_TYPES.includes(type)) return fail(`Noma’lum tur: “${get(r, "type")}”`);
-    if (!prompt) return fail("Savol matni bo‘sh");
+    if (!QUESTION_TYPES.includes(type)) return fail(tr("Noma’lum tur: “{0}”", get(r, "type")));
+    if (!prompt) return fail(tr("Savol matni bo‘sh"));
     const pointsRaw = get(r, "points");
     const points = pointsRaw ? Number(pointsRaw.replace(",", ".")) : type === "essay" ? 5 : 1;
-    if (!Number.isFinite(points) || points < 0 || points > 100) return fail("Ball 0–100 oralig‘ida bo‘lishi kerak");
+    if (!Number.isFinite(points) || points < 0 || points > 100) return fail(tr("Ball 0–100 oralig‘ida bo‘lishi kerak"));
     const answers = get(r, "answers");
     const extra = get(r, "extra");
     const q: CsvQuestion = { type, prompt, points, explanation: get(r, "explanation"), options: [], accepted: [], pairs: [], words: [], direction: null, incorrect: "", base: "" };
@@ -78,17 +79,17 @@ export function parseQuestionCsv(text: string): { questions: CsvQuestion[]; erro
       case "multiple_choice": {
         q.options = split(get(r, "options"), "|").map((o) => ({ label: o.replace(/^\*/, "").trim(), isCorrect: o.startsWith("*") }));
         const correct = q.options.filter((o) => o.isCorrect).length;
-        if (q.options.length < 2) return fail("Kamida 2 ta variant kerak (| bilan ajrating)");
-        if (type === "single_choice" ? correct !== 1 : correct < 1) return fail("To‘g‘ri variant(lar)ni * bilan belgilang");
+        if (q.options.length < 2) return fail(tr("Kamida 2 ta variant kerak (| bilan ajrating)"));
+        if (type === "single_choice" ? correct !== 1 : correct < 1) return fail(tr("To‘g‘ri variant(lar)ni * bilan belgilang"));
         break;
       }
       case "true_false": {
         const v = answers.toLowerCase();
-        if (!["true", "false", "to‘g‘ri", "noto‘g‘ri"].includes(v)) return fail("answers ustuniga true yoki false yozing");
+        if (!["true", "false", tr("to‘g‘ri"), tr("noto‘g‘ri")].includes(v)) return fail(tr("answers ustuniga true yoki false yozing"));
         const yes = v === "true" || v === "to‘g‘ri";
         q.options = [
-          { label: "To‘g‘ri", isCorrect: yes },
-          { label: "Noto‘g‘ri", isCorrect: !yes },
+          { label: tr("To‘g‘ri"), isCorrect: yes },
+          { label: tr("Noto‘g‘ri"), isCorrect: !yes },
         ];
         break;
       }
@@ -100,13 +101,13 @@ export function parseQuestionCsv(text: string): { questions: CsvQuestion[]; erro
       case "grammar_correction":
         q.incorrect = extra;
         q.accepted = [split(answers, "|")];
-        if (!q.incorrect || !q.accepted[0].length) return fail("extra ustunida xato gap, answers ustunida to‘g‘ri variant kerak");
+        if (!q.incorrect || !q.accepted[0].length) return fail(tr("extra ustunida xato gap, answers ustunida to‘g‘ri variant kerak"));
         break;
       case "fill_blank": {
         q.accepted = answers.split("#").map((b) => split(b, "|"));
         const n = countBlanks(prompt);
-        if (!n) return fail("Matnda bo‘sh joyni ___ bilan belgilang");
-        if (q.accepted.length !== n || q.accepted.some((a) => !a.length)) return fail(`${n} ta bo‘sh joy uchun javob kerak (# bilan ajrating)`);
+        if (!n) return fail(tr("Matnda bo‘sh joyni ___ bilan belgilang"));
+        if (q.accepted.length !== n || q.accepted.some((a) => !a.length)) return fail(tr("{0} ta bo‘sh joy uchun javob kerak (# bilan ajrating)", n));
         break;
       }
       case "irregular_verb":
@@ -117,14 +118,14 @@ export function parseQuestionCsv(text: string): { questions: CsvQuestion[]; erro
       case "arrange_words":
         q.words = split(answers, " ");
         q.accepted = [[]];
-        if (q.words.length < 2) return fail("answers ustuniga to‘g‘ri gapni yozing");
+        if (q.words.length < 2) return fail(tr("answers ustuniga to‘g‘ri gapni yozing"));
         break;
       case "matching":
         q.pairs = split(get(r, "options"), "|").map((p) => {
           const [left, ...rest] = p.split("=");
           return { left: (left ?? "").trim(), right: rest.join("=").trim() };
         });
-        if (q.pairs.length < 2 || q.pairs.some((p) => !p.left || !p.right)) return fail("options: chap=o‘ng|chap=o‘ng (kamida 2 ta)");
+        if (q.pairs.length < 2 || q.pairs.some((p) => !p.left || !p.right)) return fail(tr("options: chap=o‘ng|chap=o‘ng (kamida 2 ta)"));
         break;
       case "essay":
         break;

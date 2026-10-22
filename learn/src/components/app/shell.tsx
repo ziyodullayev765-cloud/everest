@@ -40,6 +40,7 @@ import { cn } from "@/lib/utils";
 import { LogoMark } from "./logo";
 import { Avatar } from "@/components/ui/avatar";
 import { ThemeSwitcher } from "./theme";
+import { tr } from "@/lib/i18n/tr";
 
 const ICONS: Record<string, LucideIcon> = {
   home: Home,
@@ -131,7 +132,7 @@ export function AppShell({ appName, logoFileId, areaLabel, sections, tabs, user,
           {areaLabel ? <div className="text-[11.5px] font-semibold text-muted">{areaLabel}</div> : null}
         </div>
       </div>
-      <nav className="flex-1 space-y-5 overflow-y-auto px-3 py-2" aria-label="Asosiy">
+      <nav className="flex-1 space-y-5 overflow-y-auto px-3 py-2" aria-label={tr("Asosiy")}>
         {sections.map((s, i) => (
           <div key={i}>
             {s.title ? <div className="mb-1.5 px-3 text-[11px] font-bold tracking-[0.06em] text-muted uppercase">{s.title}</div> : null}
@@ -154,7 +155,7 @@ export function AppShell({ appName, logoFileId, areaLabel, sections, tabs, user,
             </div>
           </Link>
           <form action={logout} onSubmit={clearSavedFiles}>
-            <button className="grid size-9 place-items-center rounded-lg text-muted hover:bg-surface-2 hover:text-danger" aria-label="Chiqish" title="Chiqish">
+            <button className="grid size-9 place-items-center rounded-lg text-muted hover:bg-surface-2 hover:text-danger" aria-label={tr("Chiqish")} title={tr("Chiqish")}>
               <LogOut className="size-4" />
             </button>
           </form>
@@ -171,7 +172,7 @@ export function AppShell({ appName, logoFileId, areaLabel, sections, tabs, user,
       <header className="sticky top-0 z-40 border-b border-border/70 bg-bg/85 pt-safe backdrop-blur-xl lg:hidden">
         <div className="flex h-14 items-center gap-2 px-4">
           {!tabs ? (
-            <button onClick={() => setDrawer(true)} className="-ml-1.5 grid size-10 place-items-center rounded-xl text-text-2 hover:bg-surface-2" aria-label="Menyu">
+            <button onClick={() => setDrawer(true)} className="-ml-1.5 grid size-10 place-items-center rounded-xl text-text-2 hover:bg-surface-2" aria-label={tr("Menyu")}>
               <Menu className="size-5" />
             </button>
           ) : null}
@@ -180,16 +181,16 @@ export function AppShell({ appName, logoFileId, areaLabel, sections, tabs, user,
             <span className="truncate text-[15px] font-bold tracking-[-0.01em]">{appName}</span>
           </Link>
           <div className="ml-auto flex items-center gap-1">
-            <Link href={notificationsHref} className="relative grid size-10 place-items-center rounded-xl text-text-2 hover:bg-surface-2" aria-label={`Bildirishnomalar${unread ? `, ${unread} ta yangi` : ""}`}>
+            <Link href={notificationsHref} className="relative grid size-10 place-items-center rounded-xl text-text-2 hover:bg-surface-2" aria-label={`Bildirishnomalar${unread ? tr(", {0} ta yangi", unread) : ""}`}>
               <Bell className="size-5" />
               {unread ? <span className="absolute top-2 right-2 grid min-w-4 place-items-center rounded-full bg-danger px-1 text-[10px] leading-4 font-bold text-white tabular">{unread > 9 ? "9+" : unread}</span> : null}
             </Link>
             {tabs ? (
-              <button onClick={() => setDrawer(true)} className="grid size-10 place-items-center rounded-xl text-text-2 hover:bg-surface-2" aria-label="Ko‘proq">
+              <button onClick={() => setDrawer(true)} className="grid size-10 place-items-center rounded-xl text-text-2 hover:bg-surface-2" aria-label={tr("Ko‘proq")}>
                 <Menu className="size-5" />
               </button>
             ) : (
-              <Link href={profileHref} aria-label="Profil" className="ml-1">
+              <Link href={profileHref} aria-label={tr("Profil")} className="ml-1">
                 <Avatar name={user.displayName} fileId={user.avatarFileId} size={30} />
               </Link>
             )}
@@ -204,9 +205,9 @@ export function AppShell({ appName, logoFileId, areaLabel, sections, tabs, user,
           className={cn("absolute inset-y-0 w-[86%] max-w-[320px] bg-surface pt-safe pb-safe shadow-pop transition-transform duration-300", tabs ? "right-0" : "left-0", drawer ? "translate-x-0" : tabs ? "translate-x-full" : "-translate-x-full")}
           role="dialog"
           aria-modal="true"
-          aria-label="Menyu"
+          aria-label={tr("Menyu")}
         >
-          <button onClick={() => setDrawer(false)} className="absolute top-[calc(env(safe-area-inset-top)+12px)] right-3 grid size-9 place-items-center rounded-lg text-muted hover:bg-surface-2" aria-label="Yopish">
+          <button onClick={() => setDrawer(false)} className="absolute top-[calc(env(safe-area-inset-top)+12px)] right-3 grid size-9 place-items-center rounded-lg text-muted hover:bg-surface-2" aria-label={tr("Yopish")}>
             <X className="size-5" />
           </button>
           {sidebar(() => setDrawer(false))}
@@ -219,7 +220,7 @@ export function AppShell({ appName, logoFileId, areaLabel, sections, tabs, user,
 
       {/* Bottom tab bar (students, phones) */}
       {tabs ? (
-        <nav className="fixed inset-x-2 bottom-[max(4px,calc(env(safe-area-inset-bottom)*0.35))] z-40 lg:hidden" aria-label="Asosiy">
+        <nav className="fixed inset-x-2 bottom-[max(4px,calc(env(safe-area-inset-bottom)*0.35))] z-40 lg:hidden" aria-label={tr("Asosiy")}>
           <ul className="mx-auto grid h-[68px] max-w-md grid-cols-5 rounded-[28px] border border-border/60 bg-surface shadow-[0_8px_30px_rgba(16,40,28,0.12)]">
             {tabs.map((t, i) => {
               const Icon = ICONS[t.icon] ?? Home;

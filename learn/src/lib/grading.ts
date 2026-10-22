@@ -1,8 +1,9 @@
+import { tr } from "@/lib/i18n/tr";
 /** Configurable grading scale. Bands are matched from the highest `min` down. */
 export type ScaleBand = { min: number; label: string; name: string };
 
 export const DEFAULT_SCALE: ScaleBand[] = [
-  { min: 86, label: "5", name: "A’lo" },
+  { min: 86, label: "5", get name() { return tr("A’lo"); } },
   { min: 71, label: "4", name: "Yaxshi" },
   { min: 56, label: "3", name: "Qoniqarli" },
   { min: 0, label: "2", name: "Qoniqarsiz" },
@@ -24,11 +25,11 @@ export function bandFor(percent: number, scale: ScaleBand[] = DEFAULT_SCALE): Sc
 
 /** Validates an admin-supplied scale: unique labels, a band starting at 0, mins within 0–100. */
 export function validateScale(scale: ScaleBand[]): string | null {
-  if (scale.length < 2 || scale.length > 12) return "Shkala 2–12 ta oraliqdan iborat bo‘lishi kerak.";
-  if (scale.some((b) => b.min < 0 || b.min > 100 || !b.label.trim())) return "Har bir oraliq 0–100 bo‘lishi va belgi bo‘lishi kerak.";
-  if (!scale.some((b) => b.min === 0)) return "Shkalada 0 dan boshlanadigan oraliq bo‘lishi kerak.";
-  if (new Set(scale.map((b) => b.min)).size !== scale.length) return "Oraliqlar takrorlanmasligi kerak.";
-  if (new Set(scale.map((b) => b.label)).size !== scale.length) return "Belgilar takrorlanmasligi kerak.";
+  if (scale.length < 2 || scale.length > 12) return tr("Shkala 2–12 ta oraliqdan iborat bo‘lishi kerak.");
+  if (scale.some((b) => b.min < 0 || b.min > 100 || !b.label.trim())) return tr("Har bir oraliq 0–100 bo‘lishi va belgi bo‘lishi kerak.");
+  if (!scale.some((b) => b.min === 0)) return tr("Shkalada 0 dan boshlanadigan oraliq bo‘lishi kerak.");
+  if (new Set(scale.map((b) => b.min)).size !== scale.length) return tr("Oraliqlar takrorlanmasligi kerak.");
+  if (new Set(scale.map((b) => b.label)).size !== scale.length) return tr("Belgilar takrorlanmasligi kerak.");
   return null;
 }
 

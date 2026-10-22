@@ -12,6 +12,7 @@ import { booksByIds } from "./library";
 import { notify } from "./notifications";
 import { fillTemplate, getSettings } from "./settings";
 import { evaluateAchievements } from "./achievements";
+import { tr } from "@/lib/i18n/tr";
 
 const gradeInput = z.object({
   points: z.coerce.number().min(0).optional(),
@@ -64,34 +65,34 @@ export async function gradingContext(actor: Actor, assignmentId: string, student
 /** Grades written / file-upload work (quizzes are graded through the quiz engine). */
 export async function gradeSubmission(actor: Actor, assignmentId: string, studentId: string, input: unknown) {
   const asg = await assertCanGrade(actor, assignmentId, studentId);
-  if (isQuizType(asg.type)) throw invalid("Quizlar savollar bo‘yicha baholanadi.");
-  if (!isGradedType(asg.type)) throw invalid("Bu vazifa baholanmaydi.");
+  if (isQuizType(asg.type)) throw invalid(tr("Quizlar savollar bo‘yicha baholanadi."));
+  if (!isGradedType(asg.type)) throw invalid(tr("Bu vazifa baholanmaydi."));
   const v = gradeInput.parse(input);
   const max = Number(asg.maxScore);
   let raw: number;
   if (asg.rubric.length) {
     for (const c of asg.rubric) {
       const s = v.rubricScores[c.id];
-      if (s == null) throw invalid(`“${c.title}” mezoni uchun ball kiriting.`);
-      if (s > c.maxPoints) throw invalid(`“${c.title}” uchun ko‘pi bilan ${c.maxPoints} ball.`);
+      if (s == null) throw invalid(tr("“{0}” mezoni uchun ball kiriting.", c.title));
+      if (s > c.maxPoints) throw invalid(tr("“{0}” uchun ko‘pi bilan {1} ball.", c.title, c.maxPoints));
     }
     raw = round2(asg.rubric.reduce((s, c) => s + (v.rubricScores[c.id] ?? 0), 0));
   } else {
-    if (v.points == null) throw invalid("Ballni kiriting.");
+    if (v.points == null) throw invalid(tr("Ballni kiriting."));
     raw = round2(v.points);
   }
-  if (raw > max) throw invalid(`Ball ${max} dan oshmasligi kerak.`);
+  if (raw > max) throw invalid(tr("Ball {0} dan oshmasligi kerak.", max));
   const settings = await getSettings();
 
   const res = await db.transaction(async (tx) => {
     const sub = (await tx.execute<{ id: string; is_late: boolean; status: string }>(sql`
       select id, is_late, status from submissions where assignment_id = ${assignmentId} and student_id = ${studentId} for update`))[0];
-    if (!sub || sub.status === "draft") throw new AppError("conflict", "O‘quvchi hali ishni topshirmagan.");
+    if (!sub || sub.status === "draft") throw new AppError("conflict", tr("O‘quvchi hali ishni topshirmagan."));
     const existing = (await tx.execute<{ id: string; points: string; status: "provisional" | "final" }>(sql`
       select id, points, status from grades where assignment_id = ${assignmentId} and student_id = ${studentId} for update`))[0];
     if (existing?.status === "final") {
-      if (!can(actor, "grades.edit_final")) throw forbidden("Yakuniy bahoni o‘zgartirish uchun ruxsat yo‘q.");
-      if (v.reason.length < 5) throw invalid("Yakuniy bahoni o‘zgartirish sababini yozing (kamida 5 belgi).");
+      if (!can(actor, "grades.edit_final")) throw forbidden(tr("Yakuniy bahoni o‘zgartirish uchun ruxsat yo‘q."));
+      if (v.reason.length < 5) throw invalid(tr("Yakuniy bahoni o‘zgartirish sababini yozing (kamida 5 belgi)."));
       // Opens the database guard for this transaction only; the reason is also written to grade_history.
       await tx.execute(sql`select set_config('app.grade_change_reason', ${v.reason}, true)`);
     }
@@ -106,12 +107,12 @@ export async function gradeSubmission(actor: Actor, assignmentId: string, studen
       gradeId = existing.id;
       if (Number(existing.points) !== points || existing.status !== status) {
         await tx.update(schema.grades).set(values).where(eq(schema.grades.id, existing.id));
-        await tx.insert(schema.gradeHistory).values({ gradeId, oldPoints: Number(existing.points), newPoints: points, oldStatus: existing.status, newStatus: status, reason: v.reason || (status === "final" ? "Yakunlandi" : "Baho yangilandi"), changedBy: actor.id });
+        await tx.insert(schema.gradeHistory).values({ gradeId, oldPoints: Number(existing.points), newPoints: points, oldStatus: existing.status, newStatus: status, reason: v.reason || (status === "final" ? tr("Yakunlandi") : tr("Baho yangilandi")), changedBy: actor.id });
       } else await tx.update(schema.grades).set({ rubricScores: v.rubricScores, gradedBy: actor.id }).where(eq(schema.grades.id, existing.id));
     } else {
       const [g] = await tx.insert(schema.grades).values({ assignmentId, studentId, ...values }).returning({ id: schema.grades.id });
       gradeId = g.id;
-      await tx.insert(schema.gradeHistory).values({ gradeId, oldPoints: null, newPoints: points, oldStatus: null, newStatus: status, reason: v.reason || "Birinchi baho", changedBy: actor.id });
+      await tx.insert(schema.gradeHistory).values({ gradeId, oldPoints: null, newPoints: points, oldStatus: null, newStatus: status, reason: v.reason || tr("Birinchi baho"), changedBy: actor.id });
     }
     await tx.update(schema.submissions).set({ status: status === "final" ? "graded" : "submitted", updatedAt: new Date() }).where(eq(schema.submissions.id, sub.id));
     if (v.feedback) await tx.insert(schema.feedback).values({ assignmentId, studentId, authorId: actor.id, body: v.feedback });
@@ -119,7 +120,7 @@ export async function gradeSubmission(actor: Actor, assignmentId: string, studen
     return { gradeId, points, percent, status, label };
   });
   if (res.status === "final") {
-    await notify([studentId], { type: "grade", title: fillTemplate(settings.notificationTemplates.graded, { title: asg.title }), body: `${res.points} / ${max} ball`, link: `/assignments/${assignmentId}`, dedupeKey: `grade:${res.gradeId}:${res.points}` });
+    await notify([studentId], { type: "grade", title: fillTemplate(settings.notificationTemplates.graded, { title: asg.title }), body: tr("{0} / {1} ball", res.points, max), link: `/assignments/${assignmentId}`, dedupeKey: `grade:${res.gradeId}:${res.points}` });
     await evaluateAchievements(studentId);
   } else if (v.feedback) {
     await notify([studentId], { type: "feedback", title: `Yangi izoh: ${asg.title}`, link: `/assignments/${assignmentId}` });
@@ -131,12 +132,12 @@ export async function gradeSubmission(actor: Actor, assignmentId: string, studen
 export async function returnForRevision(actor: Actor, assignmentId: string, studentId: string, message: string) {
   const asg = await assertCanGrade(actor, assignmentId, studentId);
   const body = message.trim();
-  if (body.length < 3) throw invalid("Qaytarish sababini yozing.");
+  if (body.length < 3) throw invalid(tr("Qaytarish sababini yozing."));
   await db.transaction(async (tx) => {
     const sub = (await tx.execute<{ id: string; status: string }>(sql`select id, status from submissions where assignment_id = ${assignmentId} and student_id = ${studentId} for update`))[0];
-    if (!sub || sub.status === "draft") throw new AppError("conflict", "Topshirilgan ish yo‘q.");
+    if (!sub || sub.status === "draft") throw new AppError("conflict", tr("Topshirilgan ish yo‘q."));
     const g = (await tx.select().from(schema.grades).where(and(eq(schema.grades.assignmentId, assignmentId), eq(schema.grades.studentId, studentId))))[0];
-    if (g?.status === "final") throw new AppError("closed", "Yakuniy baholangan ishni qaytarib bo‘lmaydi.");
+    if (g?.status === "final") throw new AppError("closed", tr("Yakuniy baholangan ishni qaytarib bo‘lmaydi."));
     await tx.update(schema.submissions).set({ status: "returned", updatedAt: new Date() }).where(eq(schema.submissions.id, sub.id));
     await tx.insert(schema.feedback).values({ assignmentId, studentId, authorId: actor.id, body: body.slice(0, 5000), kind: "revision_request" });
     await audit(actor.id, "submission.return", "submission", sub.id, {}, tx);
@@ -147,7 +148,7 @@ export async function returnForRevision(actor: Actor, assignmentId: string, stud
 export async function addFeedback(actor: Actor, assignmentId: string, studentId: string, body: string) {
   const asg = await assertCanGrade(actor, assignmentId, studentId);
   const text = body.trim();
-  if (!text) throw invalid("Izoh bo‘sh.");
+  if (!text) throw invalid(tr("Izoh bo‘sh."));
   await db.insert(schema.feedback).values({ assignmentId, studentId, authorId: actor.id, body: text.slice(0, 5000) });
   await notify([studentId], { type: "feedback", title: `Yangi izoh: ${asg.title}`, link: isQuizType(asg.type) ? `/quizzes/${assignmentId}` : `/assignments/${assignmentId}` });
 }
@@ -222,7 +223,7 @@ export async function submissionQueue(actor: Actor, f: SubmissionQueueFilter = {
     title: r.title as string,
     type: r.type as string,
     maxScore: Number(r.max_score),
-    subjectName: r.subject_name as string,
+    subjectName: tr(r.subject_name as string),
     subjectColor: r.subject_color as string,
     studentName: r.student_name as string,
     classNames: (r.class_names as string) ?? "",
@@ -261,7 +262,7 @@ export async function gradebook(actor: Actor, classId: string, subjectId?: strin
   const map = new Map(grades.map((g) => [`${g.assignment_id}:${g.student_id}`, g]));
   return {
     cls,
-    assignments: assignments.map((a) => ({ id: a.id, title: a.title, maxScore: Number(a.max_score), dueAt: a.due_at, subjectName: a.subject_name, type: a.type })),
+    assignments: assignments.map((a) => ({ id: a.id, title: a.title, maxScore: Number(a.max_score), dueAt: a.due_at, subjectName: tr(a.subject_name as string), type: a.type })),
     rows: students.map((s) => {
       const cells = assignments.map((a) => {
         const g = map.get(`${a.id}:${s.id}`);
@@ -274,12 +275,12 @@ export async function gradebook(actor: Actor, classId: string, subjectId?: strin
 }
 
 export async function gradebookCsv(actor: Actor, classId: string, subjectId?: string) {
-  if (!can(actor, "reports.export")) throw forbidden("Eksport uchun ruxsat yo‘q.");
+  if (!can(actor, "reports.export")) throw forbidden(tr("Eksport uchun ruxsat yo‘q."));
   const gb = await gradebook(actor, classId, subjectId);
   await audit(actor.id, "gradebook.export", "class", classId, { subjectId });
-  const header = ["O‘quvchi", "Login", ...gb.assignments.map((a) => `${a.title} (${a.maxScore})`), "O‘rtacha %"];
+  const header = [tr("O‘quvchi"), "Login", ...gb.assignments.map((a) => `${a.title} (${a.maxScore})`), tr("O‘rtacha %")];
   const rows = gb.rows.map((r) => [r.student.name, r.student.username, ...r.cells.map((c) => (c ? `${c.points}${c.status === "provisional" ? "*" : ""}` : "")), r.average ?? ""]);
-  return { filename: `baholar-${gb.cls.name.replace(/[^\p{L}\p{N}]+/gu, "-")}.csv`, rows: [header, ...rows, [], ["* — dastlabki (yakunlanmagan) baho"]] };
+  return { filename: `baholar-${gb.cls.name.replace(/[^\p{L}\p{N}]+/gu, "-")}.csv`, rows: [header, ...rows, [], [tr("* — dastlabki (yakunlanmagan) baho")]] };
 }
 
 // ─── Student view ────────────────────────────────────────────────────────────
@@ -306,7 +307,7 @@ export async function studentGrades(studentId: string) {
     title: r.title as string,
     type: r.type as string,
     subjectId: r.subject_id as string,
-    subjectName: r.subject_name as string,
+    subjectName: tr(r.subject_name as string),
     subjectColor: r.subject_color as string,
     feedbackCount: r.feedback_count as number,
     attemptId: (r.attempt_id as string) ?? null,

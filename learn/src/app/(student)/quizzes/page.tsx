@@ -12,8 +12,9 @@ import { PageHeader } from "@/components/ui/page";
 import { Card, CardBody, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { AssignmentBoard } from "@/components/student/assignment-board";
+import { tr } from "@/lib/i18n/tr";
 
-export const metadata: Metadata = { title: "Quizlar" };
+export const metadata: Metadata = { get title() { return tr("Quizlar"); } };
 
 export default async function QuizzesPage() {
   const user = await pageUser("student");
@@ -27,11 +28,11 @@ export default async function QuizzesPage() {
     .limit(12);
   return (
     <>
-      <PageHeader title="Quizlar" description="Testlar, vaqtli quizlar va mashqlar. Natijalar topshirishingiz bilan hisoblanadi." />
+      <PageHeader title={tr("Quizlar")} description={tr("Testlar, vaqtli quizlar va mashqlar. Natijalar topshirishingiz bilan hisoblanadi.")} />
       <div className="grid grid-cols-1 gap-6 xl:grid-cols-[1fr_340px]">
-        <AssignmentBoard rows={rows} emptyTitle="Hozircha quiz yo‘q" emptyText="Yangi quiz e’lon qilinganda bildirishnoma olasiz." />
+        <AssignmentBoard rows={rows} emptyTitle={tr("Hozircha quiz yo‘q")} emptyText={tr("Yangi quiz e’lon qilinganda bildirishnoma olasiz.")} />
         <Card className="self-start">
-          <CardHeader title="Urinishlar tarixi" icon={<History />} />
+          <CardHeader title={tr("Urinishlar tarixi")} icon={<History />} />
           <CardBody className="pt-2">
             {history.length ? (
               <ul className="-mx-2">
@@ -44,13 +45,13 @@ export default async function QuizzesPage() {
                         <span className="min-w-0 flex-1">
                           <span className="block truncate text-[13.5px] font-semibold">{title}</span>
                           <span className="block text-[12px] text-muted">
-                            {a.attemptNo}-urinish · {formatDateTime(a.submittedAt ?? a.startedAt)}
+                            {tr("{0}-urinish · {1}", a.attemptNo, formatDateTime(a.submittedAt ?? a.startedAt))}
                           </span>
                         </span>
                         {a.status === "in_progress" ? (
-                          <Badge tone="warning">Jarayonda</Badge>
+                          <Badge tone="warning">{tr("Jarayonda")}</Badge>
                         ) : pct == null ? (
-                          <Badge tone="violet">Tekshirilmoqda</Badge>
+                          <Badge tone="violet">{tr("Tekshirilmoqda")}</Badge>
                         ) : (
                           <Badge tone={pct >= passing ? "success" : "neutral"} className="tabular">
                             {Math.round(pct)}%
@@ -63,7 +64,7 @@ export default async function QuizzesPage() {
                 })}
               </ul>
             ) : (
-              <p className="py-6 text-center text-[13.5px] text-muted">Hali birorta quiz ishlanmagan.</p>
+              <p className="py-6 text-center text-[13.5px] text-muted">{tr("Hali birorta quiz ishlanmagan.")}</p>
             )}
           </CardBody>
         </Card>

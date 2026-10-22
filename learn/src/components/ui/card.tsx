@@ -1,4 +1,5 @@
 import type { HTMLAttributes, ReactNode } from "react";
+import { trNode } from "@/lib/i18n/node";
 import { cn } from "@/lib/utils";
 
 export function Card({ className, ...rest }: HTMLAttributes<HTMLDivElement>) {
@@ -6,6 +7,7 @@ export function Card({ className, ...rest }: HTMLAttributes<HTMLDivElement>) {
 }
 
 export function CardHeader({ title, description, action, className, icon }: { title: ReactNode; description?: ReactNode; action?: ReactNode; className?: string; icon?: ReactNode }) {
+  title = trNode(title); description = trNode(description);
   return (
     <div className={cn("flex items-start justify-between gap-3 px-5 pt-5", className)}>
       <div className="flex min-w-0 items-start gap-3">

@@ -1,5 +1,5 @@
 import "server-only";
-import { setLocaleCookie } from "@/server/locale";
+import { deviceLocale, setLocaleCookie } from "@/server/locale";
 import { and, asc, desc, eq, ilike, inArray, isNull, or, sql, type SQL } from "drizzle-orm";
 import { z } from "zod";
 import { db, schema } from "../db";
@@ -15,6 +15,7 @@ import { enforce, reset as resetLimit } from "./rate-limit";
 import { canViewStudent, manageableClassIds } from "./access";
 import { assertOwnFiles } from "./files";
 import { getSettings } from "./settings";
+import { tr } from "@/lib/i18n/tr";
 
 const GENERIC_LOGIN_ERROR = "Login yoki parol noto‘g‘ri.";
 
@@ -36,7 +37,10 @@ export async function login(usernameRaw: string, password: string) {
   }
   await resetLimit(`login-user:${keyedHash(username)}`);
   await createSession(user.id);
-  await setLocaleCookie(user.locale === "en" ? "en" : "uz"); // the account's language follows it to new devices
+  // A language picked on this device (e.g. on the login page) wins and is saved; otherwise the account's follows it here.
+  const device = await deviceLocale();
+  if (device && device !== user.locale) await db.update(schema.users).set({ locale: device }).where(eq(schema.users.id, user.id));
+  else if (!device) await setLocaleCookie(user.locale === "en" ? "en" : "uz");
   await db.update(schema.users).set({ lastLoginAt: new Date() }).where(eq(schema.users.id, user.id));
   await audit(user.id, "auth.login", "user", user.id);
   return user;
@@ -45,10 +49,10 @@ export async function login(usernameRaw: string, password: string) {
 export async function changePassword(actor: Actor, current: string, next: string) {
   await enforce(`pw-change:${actor.id}`, 10, 15 * 60);
   const [u] = await db.select().from(schema.users).where(eq(schema.users.id, actor.id));
-  if (!u || !(await verifyPassword(current, u.passwordHash))) throw invalid("Joriy parol noto‘g‘ri.", { current: "Joriy parol noto‘g‘ri." });
+  if (!u || !(await verifyPassword(current, u.passwordHash))) throw invalid(tr("Joriy parol noto‘g‘ri."), { current: tr("Joriy parol noto‘g‘ri.") });
   const problem = passwordProblem(next);
   if (problem) throw invalid(problem, { next: problem });
-  if (await verifyPassword(next, u.passwordHash)) throw invalid("Yangi parol eskisidan farq qilishi kerak.", { next: "Yangi parol eskisidan farq qilishi kerak." });
+  if (await verifyPassword(next, u.passwordHash)) throw invalid(tr("Yangi parol eskisidan farq qilishi kerak."), { next: tr("Yangi parol eskisidan farq qilishi kerak.") });
   await db.update(schema.users).set({ passwordHash: await hashPassword(next), mustChangePassword: false, updatedAt: new Date() }).where(eq(schema.users.id, actor.id));
   // Sign out every other device.
   await destroyAllSessions(actor.id);
@@ -90,7 +94,7 @@ export async function consumeReset(token: string, password: string) {
       where token_hash = ${sha256(token)} and used_at is null and expires_at > now()
       returning user_id`);
     const id = rows[0]?.user_id;
-    if (!id) throw new AppError("invalid", "Havola eskirgan yoki allaqachon ishlatilgan.");
+    if (!id) throw new AppError("invalid", tr("Havola eskirgan yoki allaqachon ishlatilgan."));
     await tx.update(schema.users).set({ passwordHash: await hashPassword(password), mustChangePassword: false, updatedAt: new Date() }).where(eq(schema.users.id, id));
     return id;
   });
@@ -132,9 +136,9 @@ function uniqueViolation(e: unknown, fallback: string) {
   const cause = (e as { cause?: { message?: string; constraint_name?: string } })?.cause;
   const msg = `${cause?.constraint_name ?? ""} ${cause?.message ?? (e as { message?: string })?.message ?? ""}`;
   if (isUniqueViolation(e) || msg.includes("duplicate key")) {
-    if (msg.includes("username")) return invalid("Bu login band.", { username: "Bu login band." });
-    if (msg.includes("email")) return invalid("Bu e-pochta band.", { email: "Bu e-pochta band." });
-    if (msg.includes("student_code")) return invalid("Bu o‘quvchi ID band.", { studentCode: "Bu o‘quvchi ID band." });
+    if (msg.includes("username")) return invalid(tr("Bu login band."), { username: tr("Bu login band.") });
+    if (msg.includes("email")) return invalid(tr("Bu e-pochta band."), { email: tr("Bu e-pochta band.") });
+    if (msg.includes("student_code")) return invalid(tr("Bu o‘quvchi ID band."), { studentCode: tr("Bu o‘quvchi ID band.") });
     return invalid(fallback);
   }
   return e;
@@ -144,10 +148,10 @@ export async function createUser(actor: Actor, input: unknown) {
   const parsed = userInput.safeParse(input);
   if (!parsed.success) {
     const fields = Object.fromEntries(parsed.error.issues.map((i) => [i.path.join("."), i.message]));
-    throw invalid(parsed.error.issues[0]?.message ?? "Ma’lumotlar noto‘g‘ri", fields);
+    throw invalid(parsed.error.issues[0]?.message ?? tr("Ma’lumotlar noto‘g‘ri"), fields);
   }
   const v = parsed.data;
-  if (!canManageRole(actor, v.role)) throw forbidden("Bu roldagi foydalanuvchini yarata olmaysiz.");
+  if (!canManageRole(actor, v.role)) throw forbidden(tr("Bu roldagi foydalanuvchini yarata olmaysiz."));
   const temp = generateTempPassword();
   try {
     const id = await db.transaction(async (tx) => {
@@ -171,7 +175,7 @@ export async function createUser(actor: Actor, input: unknown) {
     });
     return { id, tempPassword: temp };
   } catch (e) {
-    throw uniqueViolation(e, "Foydalanuvchi yaratilmadi.");
+    throw uniqueViolation(e, tr("Foydalanuvchi yaratilmadi."));
   }
 }
 
@@ -182,7 +186,7 @@ export async function updateUser(actor: Actor, id: string, input: unknown) {
   if (!u) throw notFound();
   if (!canManageRole(actor, u.role)) throw forbidden();
   const parsed = updateInput.safeParse(input);
-  if (!parsed.success) throw invalid(parsed.error.issues[0]?.message ?? "Ma’lumotlar noto‘g‘ri");
+  if (!parsed.success) throw invalid(parsed.error.issues[0]?.message ?? tr("Ma’lumotlar noto‘g‘ri"));
   const v = parsed.data;
   try {
     await db
@@ -196,7 +200,7 @@ export async function updateUser(actor: Actor, id: string, input: unknown) {
 }
 
 export async function setUserStatus(actor: Actor, id: string, status: "active" | "deactivated") {
-  if (id === actor.id) throw invalid("O‘zingizni o‘chira olmaysiz.");
+  if (id === actor.id) throw invalid(tr("O‘zingizni o‘chira olmaysiz."));
   const [u] = await db.select().from(schema.users).where(eq(schema.users.id, id));
   if (!u) throw notFound();
   if (!canManageRole(actor, u.role)) throw forbidden();
@@ -226,13 +230,13 @@ export type CsvImportResult = { created: { username: string; displayName: string
  */
 export async function importStudents(actor: Actor, text: string): Promise<CsvImportResult> {
   if (!isAdmin(actor)) throw forbidden();
-  if (text.length > 1_000_000) throw invalid("Fayl juda katta (1 MB gacha).");
+  if (text.length > 1_000_000) throw invalid(tr("Fayl juda katta (1 MB gacha)."));
   const rows = parseCsv(text);
-  if (rows.length < 2) throw invalid("CSV bo‘sh yoki sarlavha qatori yo‘q.");
+  if (rows.length < 2) throw invalid(tr("CSV bo‘sh yoki sarlavha qatori yo‘q."));
   const header = rows[0].map((h) => h.trim().toLowerCase());
   const col = (n: string) => header.indexOf(n);
-  if (col("username") < 0 || col("display_name") < 0) throw invalid("Sarlavhada username va display_name ustunlari bo‘lishi kerak.");
-  if (rows.length > 1001) throw invalid("Bir martada ko‘pi bilan 1000 ta o‘quvchi.");
+  if (col("username") < 0 || col("display_name") < 0) throw invalid(tr("Sarlavhada username va display_name ustunlari bo‘lishi kerak."));
+  if (rows.length > 1001) throw invalid(tr("Bir martada ko‘pi bilan 1000 ta o‘quvchi."));
   const classes = await db.select().from(schema.classes).where(isNull(schema.classes.archivedAt));
   const errors: CsvImportResult["errors"] = [];
   const parsed: { username: string; displayName: string; studentCode: string | null; email: string | null; classId: string | null; className: string; line: number }[] = [];
@@ -277,7 +281,7 @@ export async function importStudents(actor: Actor, text: string): Promise<CsvImp
       await audit(actor.id, "user.import", "user", null, { count: parsed.length }, tx);
     });
   } catch (e) {
-    throw uniqueViolation(e, "Import bajarilmadi: takrorlangan qiymat bor.");
+    throw uniqueViolation(e, tr("Import bajarilmadi: takrorlangan qiymat bor."));
   }
   return { created, errors: [] };
 }
@@ -373,8 +377,8 @@ export async function updateOwnProfile(actor: Actor, input: unknown) {
   const v = profileInput.parse(input);
   const settings = await getSettings();
   const isStudent = actor.role === "student";
-  if (v.displayName !== undefined && isStudent && !settings.profile.studentsCanEditDisplayName) throw forbidden("Ismni faqat administrator o‘zgartira oladi.");
-  if (v.avatarFileId !== undefined && isStudent && !settings.profile.studentsCanEditAvatar) throw forbidden("Rasmni faqat administrator o‘zgartira oladi.");
+  if (v.displayName !== undefined && isStudent && !settings.profile.studentsCanEditDisplayName) throw forbidden(tr("Ismni faqat administrator o‘zgartira oladi."));
+  if (v.avatarFileId !== undefined && isStudent && !settings.profile.studentsCanEditAvatar) throw forbidden(tr("Rasmni faqat administrator o‘zgartira oladi."));
   if (v.avatarFileId) await assertOwnFiles(actor.id, [v.avatarFileId]);
   await db
     .update(schema.users)

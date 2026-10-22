@@ -292,6 +292,21 @@ behind HTTPS. Set `x-forwarded-for` correctly at the proxy so rate limiting sees
 
 ---
 
+## Languages (O‘zbekcha / English)
+
+The whole interface is available in Uzbek and English; users switch in **Settings → Til · Language** or on the
+login page. The choice is stored on the account and in a `lang` cookie on the device.
+
+- Source strings are the Uzbek text itself: `tr("Saqlash")`, with `{0}`, `{1}` placeholders for values.
+  `src/lib/i18n/en.json` maps them to English; a missing entry falls back to Uzbek. The `t.*` dictionary goes
+  through the same lookup. Dates, durations, category and default achievement names follow the language.
+- Server code reads the request's cookie; the browser reads `<html lang>`, which the root layout sets.
+- Adding text: write it in Uzbek inside `tr()` and add the English line to `scripts/i18n/extra.json`, then
+  `node scripts/i18n-build.mjs`. `node scripts/i18n-audit.mjs` lists Uzbek text that isn’t wrapped yet.
+- Not translated: content people write (assignments, words, comments) and stored notifications.
+
+---
+
 ## Hosting region
 
 Production runs in **Frankfurt**: functions in `fra1`, Postgres (Neon) in `eu-central-1`, close to Uzbekistan.

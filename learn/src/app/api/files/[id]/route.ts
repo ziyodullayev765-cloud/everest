@@ -2,13 +2,14 @@ import { NextResponse } from "next/server";
 import { getCurrentUser } from "@/server/auth/session";
 import { authorizeFileRead, openFile } from "@/server/services/files";
 import { AppError } from "@/server/errors";
+import { tr } from "@/lib/i18n/tr";
 
 const INLINE = new Set(["image/png", "image/jpeg", "image/webp", "image/gif", "application/pdf", "audio/mpeg", "audio/mp4", "audio/wav", "audio/ogg", "audio/webm", "audio/aac"]);
 
 /** GET /api/files/:id — authorised download; supports Range so audio can seek (required by iOS Safari). */
 export async function GET(req: Request, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  if (!/^[0-9a-f-]{36}$/i.test(id)) return new NextResponse("Not found", { status: 404 });
+  if (!/^[0-9a-f-]{36}$/i.test(id)) return new NextResponse(tr("Not found"), { status: 404 });
   try {
     const user = await getCurrentUser();
     const f = await authorizeFileRead(user, id);
@@ -29,8 +30,8 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
       },
     });
   } catch (e) {
-    if (e instanceof AppError) return new NextResponse("Not found", { status: 404, headers: { "Cache-Control": "no-store" } });
+    if (e instanceof AppError) return new NextResponse(tr("Not found"), { status: 404, headers: { "Cache-Control": "no-store" } });
     console.error("[files]", e);
-    return new NextResponse("Server error", { status: 500 });
+    return new NextResponse(tr("Server error"), { status: 500 });
   }
 }

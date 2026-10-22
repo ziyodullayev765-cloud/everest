@@ -11,6 +11,7 @@ import { toast } from "@/components/ui/toast";
 import { GAME_SECONDS, pointsFor } from "@/lib/game";
 import { buzz, play, setSoundOn, soundOn } from "@/lib/sfx";
 import { cn } from "@/lib/utils";
+import { tr } from "@/lib/i18n/tr";
 
 const TILES = [
   "bg-[#e5484d] shadow-[0_5px_0_0_#a8282d]",
@@ -103,10 +104,10 @@ export function VocabGame({ cards, listId, best, backHref }: { cards: GameCard[]
         <div className="mx-auto mb-4 grid size-16 place-items-center rounded-3xl bg-sun/20 text-warning">
           <Gamepad2 className="size-8" aria-hidden />
         </div>
-        <h1 className="text-[22px] font-black">O‘yin uchun so‘z yetarli emas</h1>
-        <p className="mt-2 text-[14.5px] text-muted">Kamida 2 ta so‘z kerak. Ustozingiz lug‘at ro‘yxatini biriktirgach o‘ynash mumkin.</p>
+        <h1 className="text-[22px] font-black">{tr("O‘yin uchun so‘z yetarli emas")}</h1>
+        <p className="mt-2 text-[14.5px] text-muted">{tr("Kamida 2 ta so‘z kerak. Ustozingiz lug‘at ro‘yxatini biriktirgach o‘ynash mumkin.")}</p>
         <LinkButton href={backHref} variant="secondary" className="mt-6">
-          Orqaga
+          {tr("Orqaga")}
         </LinkButton>
       </div>
     );
@@ -117,13 +118,13 @@ export function VocabGame({ cards, listId, best, backHref }: { cards: GameCard[]
         <div className="mb-5 grid size-24 animate-pop place-items-center rounded-[28px] bg-sun text-white shadow-[0_6px_0_0_var(--sun-shadow)]">
           <Gamepad2 className="size-12" aria-hidden />
         </div>
-        <h1 className="text-[30px] leading-tight font-black">So‘z o‘yini</h1>
+        <h1 className="text-[30px] leading-tight font-black">{tr("So‘z o‘yini")}</h1>
         <p className="mt-2 text-[15px] text-muted">
-          {cards.length} ta savol · har biriga {GAME_SECONDS} soniya. Tez va to‘g‘ri javob — ko‘proq ball, ketma-ket to‘g‘ri javoblar — bonus!
+          {tr("{0} ta savol · har biriga {1} soniya. Tez va to‘g‘ri javob — ko‘proq ball, ketma-ket to‘g‘ri javoblar — bonus!", cards.length, GAME_SECONDS)}
         </p>
         {best ? (
           <p className="mt-4 inline-flex items-center gap-1.5 rounded-full bg-sun/15 px-3 py-1 text-[13.5px] font-bold text-warning">
-            <Trophy className="size-4" aria-hidden /> Rekordingiz: {best.toLocaleString("en")}
+            <Trophy className="size-4" aria-hidden /> {tr("Rekordingiz: {0}", best.toLocaleString("en"))}
           </p>
         ) : null}
         <Button
@@ -135,11 +136,11 @@ export function VocabGame({ cards, listId, best, backHref }: { cards: GameCard[]
             setPhase("play");
           }}
         >
-          Boshlash
+          {tr("Boshlash")}
         </Button>
         <div className="mt-4 flex gap-2">
           <LinkButton href={backHref} variant="ghost" size="sm">
-            Orqaga
+            {tr("Orqaga")}
           </LinkButton>
           <Button
             variant="ghost"
@@ -150,7 +151,7 @@ export function VocabGame({ cards, listId, best, backHref }: { cards: GameCard[]
             }}
             aria-pressed={sound}
           >
-            {sound ? <Volume2 /> : <VolumeX />} Ovoz {sound ? "yoqilgan" : "o‘chirilgan"}
+            {sound ? <Volume2 /> : <VolumeX />} {tr("Ovoz {0}", sound ? "yoqilgan" : tr("o‘chirilgan"))}
           </Button>
         </div>
       </div>
@@ -166,16 +167,16 @@ export function VocabGame({ cards, listId, best, backHref }: { cards: GameCard[]
         <div className="mx-auto mb-4 grid size-20 animate-pop place-items-center rounded-[26px] bg-sun text-white shadow-[0_6px_0_0_var(--sun-shadow)]">
           <Trophy className="size-10" aria-hidden />
         </div>
-        <h1 className="text-[26px] font-black">{right === total ? "Mukammal!" : right / total >= 0.6 ? "Zo‘r o‘yin!" : "Yaxshi urinish!"}</h1>
-        {result?.newBest ? <p className="mt-1 animate-pop text-[15px] font-extrabold text-warning">Yangi rekord!</p> : null}
+        <h1 className="text-[26px] font-black">{right === total ? tr("Mukammal!") : right / total >= 0.6 ? tr("Zo‘r o‘yin!") : tr("Yaxshi urinish!")}</h1>
+        {result?.newBest ? <p className="mt-1 animate-pop text-[15px] font-extrabold text-warning">{tr("Yangi rekord!")}</p> : null}
         <div className="mt-6 grid grid-cols-3 gap-2">
-          <Stat label="Ball" value={(result?.score ?? score).toLocaleString("en")} />
-          <Stat label="To‘g‘ri" value={`${right}/${total}`} />
-          <Stat label="Seriya" value={result?.bestStreak ?? "—"} />
+          <Stat label={tr("Ball")} value={(result?.score ?? score).toLocaleString("en")} />
+          <Stat label={tr("To‘g‘ri")} value={`${right}/${total}`} />
+          <Stat label={tr("Seriya")} value={result?.bestStreak ?? "—"} />
         </div>
         {missed.length ? (
           <div className="mt-6 rounded-3xl border-2 border-border bg-surface p-4 text-left">
-            <div className="mb-2 text-[13px] font-extrabold text-muted">Takrorlash kerak</div>
+            <div className="mb-2 text-[13px] font-extrabold text-muted">{tr("Takrorlash kerak")}</div>
             <ul className="space-y-1.5">
               {missed.map((m) => (
                 <li key={m.id} className="flex justify-between gap-3 text-[14.5px]">
@@ -188,10 +189,10 @@ export function VocabGame({ cards, listId, best, backHref }: { cards: GameCard[]
         ) : null}
         <div className="mt-8 flex justify-center gap-2">
           <LinkButton href={backHref} variant="secondary">
-            Lug‘at
+            {tr("Lug‘at")}
           </LinkButton>
           <Button onClick={() => location.reload()}>
-            <RotateCcw /> Yana o‘ynash
+            <RotateCcw /> {tr("Yana o‘ynash")}
           </Button>
         </div>
       </div>
@@ -202,7 +203,7 @@ export function VocabGame({ cards, listId, best, backHref }: { cards: GameCard[]
   return (
     <div className="mx-auto max-w-xl">
       <div className="mb-4 flex items-center gap-3">
-        <Link href={backHref} className="grid size-10 shrink-0 place-items-center rounded-xl text-muted hover:bg-surface-2" aria-label="Chiqish">
+        <Link href={backHref} className="grid size-10 shrink-0 place-items-center rounded-xl text-muted hover:bg-surface-2" aria-label={tr("Chiqish")}>
           <X className="size-5" />
         </Link>
         <div className="flex-1 text-[13px] font-extrabold text-muted tabular">
@@ -216,12 +217,12 @@ export function VocabGame({ cards, listId, best, backHref }: { cards: GameCard[]
           {gain ? <span className="absolute -top-6 right-0 animate-pop text-[14px] font-black text-primary">+{gain}</span> : null}
         </span>
       </div>
-      <div className="mb-5 h-3 overflow-hidden rounded-full bg-surface-3" role="progressbar" aria-label="Qolgan vaqt" aria-valuenow={Math.round(pct)}>
+      <div className="mb-5 h-3 overflow-hidden rounded-full bg-surface-3" role="progressbar" aria-label={tr("Qolgan vaqt")} aria-valuenow={Math.round(pct)}>
         <div className={cn("h-full rounded-full transition-[width] duration-100 ease-linear", pct > 50 ? "bg-primary" : pct > 25 ? "bg-sun" : "bg-danger")} style={{ width: `${pct}%` }} />
       </div>
 
       <section key={card.id} className="animate-pop rounded-3xl border-2 border-border bg-surface px-6 py-8 text-center">
-        <div className="text-[12.5px] font-extrabold tracking-[0.06em] text-muted uppercase">{card.direction === "en_uz" ? "Tarjimasini toping" : "Inglizchasini toping"}</div>
+        <div className="text-[12.5px] font-extrabold tracking-[0.06em] text-muted uppercase">{card.direction === "en_uz" ? tr("Tarjimasini toping") : tr("Inglizchasini toping")}</div>
         <div className="mt-2 text-[32px] leading-tight font-black break-words">{card.prompt}</div>
       </section>
 
@@ -248,7 +249,7 @@ export function VocabGame({ cards, listId, best, backHref }: { cards: GameCard[]
           );
         })}
       </div>
-      {picked === "__timeout__" ? <p className="mt-4 text-center text-[14px] font-bold text-danger">Vaqt tugadi! To‘g‘ri javob: {card.answer}</p> : null}
+      {picked === "__timeout__" ? <p className="mt-4 text-center text-[14px] font-bold text-danger">{tr("Vaqt tugadi! To‘g‘ri javob: {0}", card.answer)}</p> : null}
     </div>
   );
 }

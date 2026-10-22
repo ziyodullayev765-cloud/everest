@@ -1,10 +1,11 @@
 import type { MetadataRoute } from "next";
 import { getSettings } from "@/server/services/settings";
+import { tr } from "@/lib/i18n/tr";
 
 export const dynamic = "force-dynamic";
 
 export default async function manifest(): Promise<MetadataRoute.Manifest> {
-  let name = "Everest Ta’lim";
+  let name = tr("Everest Ta’lim");
   let short = "Everest";
   try {
     const s = await getSettings();
@@ -17,7 +18,7 @@ export default async function manifest(): Promise<MetadataRoute.Manifest> {
     id: "/",
     name,
     short_name: short,
-    description: "Vazifalar, quizlar, baholar va shaxsiy natijalar — bir joyda.",
+    description: tr("Vazifalar, quizlar, baholar va shaxsiy natijalar — bir joyda."),
     lang: "uz",
     dir: "ltr",
     start_url: "/?source=pwa",

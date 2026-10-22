@@ -2,6 +2,7 @@ import { BarChart3, CalendarCheck2, Sparkles } from "lucide-react";
 import { Logo, LogoMark } from "@/components/app/logo";
 import { getSettings } from "@/server/services/settings";
 import { LanguageSwitch } from "@/components/app/language-switch";
+import { tr } from "@/lib/i18n/tr";
 
 export default async function AuthLayout({ children }: { children: React.ReactNode }) {
   const s = await getSettings();
@@ -17,13 +18,13 @@ export default async function AuthLayout({ children }: { children: React.ReactNo
           <Logo name={s.branding.appName} />
         </div>
         <div className="relative max-w-md">
-          <h1 className="text-[34px] leading-[1.1] font-bold tracking-[-0.03em] text-text">O‘qish — tartibli, qiziqarli va natijali.</h1>
-          <p className="mt-4 text-[15px] leading-relaxed text-muted">Vazifalar, quizlar, baholar va shaxsiy natijalaringiz — barchasi bir joyda, telefoningizda ham.</p>
+          <h1 className="text-[34px] leading-[1.1] font-bold tracking-[-0.03em] text-text">{tr("O‘qish — tartibli, qiziqarli va natijali.")}</h1>
+          <p className="mt-4 text-[15px] leading-relaxed text-muted">{tr("Vazifalar, quizlar, baholar va shaxsiy natijalaringiz — barchasi bir joyda, telefoningizda ham.")}</p>
           <ul className="mt-8 space-y-4">
             {[
-              { icon: CalendarCheck2, t: "Kunlik reja", d: "Bugungi vazifalar va yaqinlashayotgan muddatlar" },
-              { icon: Sparkles, t: "Interaktiv quizlar", d: "Darhol natija va tushuntirishlar" },
-              { icon: BarChart3, t: "Shaxsiy tahlil", d: "Haftalik o‘sish, kuchli tomonlar va maqsadlar" },
+              { icon: CalendarCheck2, t: tr("Kunlik reja"), d: tr("Bugungi vazifalar va yaqinlashayotgan muddatlar") },
+              { icon: Sparkles, t: tr("Interaktiv quizlar"), d: tr("Darhol natija va tushuntirishlar") },
+              { icon: BarChart3, t: tr("Shaxsiy tahlil"), d: tr("Haftalik o‘sish, kuchli tomonlar va maqsadlar") },
             ].map(({ icon: Icon, t, d }) => (
               <li key={t} className="flex gap-3">
                 <span className="grid size-9 shrink-0 place-items-center rounded-xl border border-border bg-surface text-primary shadow-soft">

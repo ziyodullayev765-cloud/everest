@@ -15,6 +15,7 @@ import { RichText } from "@/components/ui/rich-text";
 import { AudioPlayer } from "@/components/app/media";
 import { PdfOpenButton } from "@/components/app/pdf-reader";
 import { SaveOffline } from "./save-offline";
+import { tr } from "@/lib/i18n/tr";
 
 export function BookCover({ coverFileId, title, className }: { coverFileId: string | null; title: string; className?: string }) {
   return coverFileId ? (
@@ -35,8 +36,8 @@ export async function LibraryGrid({ user, base, sp, manage }: { user: SessionUse
   const cats = [["", "Barchasi"], ...BOOK_CATEGORIES.map((c) => [c, t.bookCategory[c]])];
   return (
     <>
-      <PageHeader title="Kutubxona" description="Kitoblar, PDF fayllar va audio yozuvlar." actions={manage ? <LinkButton href={`${base}/library/new`}>Kitob qo‘shish</LinkButton> : null} />
-      <nav className="scrollbar-none -mx-4 mb-5 flex gap-2 overflow-x-auto px-4 sm:mx-0 sm:px-0" aria-label="Turkumlar">
+      <PageHeader title={tr("Kutubxona")} description={tr("Kitoblar, PDF fayllar va audio yozuvlar.")} actions={manage ? <LinkButton href={`${base}/library/new`}>{tr("Kitob qo‘shish")}</LinkButton> : null} />
+      <nav className="scrollbar-none -mx-4 mb-5 flex gap-2 overflow-x-auto px-4 sm:mx-0 sm:px-0" aria-label={tr("Turkumlar")}>
         {cats.map(([k, l]) => (
           <Link key={k} href={k ? `${base}/library?category=${k}` : `${base}/library`} className={cn("shrink-0 rounded-full border px-3.5 py-1.5 text-[13px] font-semibold", (sp.category ?? "") === k ? "border-primary bg-primary-soft text-primary-soft-fg" : "border-border bg-surface text-text-2 hover:bg-surface-2")}>
             {l}
@@ -49,7 +50,7 @@ export async function LibraryGrid({ user, base, sp, manage }: { user: SessionUse
             <Link key={b.id} href={`${base}/library/${b.id}${manage ? "/edit" : ""}`} className="group animate-fade-up">
               <div className="relative">
                 <BookCover coverFileId={b.coverFileId} title={b.title} className="transition group-hover:-translate-y-0.5 group-hover:shadow-pop" />
-                {manage && b.status !== "published" ? <Badge className="absolute top-2 left-2">{b.status === "draft" ? "Qoralama" : "Arxiv"}</Badge> : null}
+                {manage && b.status !== "published" ? <Badge className="absolute top-2 left-2">{b.status === "draft" ? tr("Qoralama") : tr("Arxiv")}</Badge> : null}
               </div>
               <div className="mt-2 line-clamp-2 text-[13.5px] leading-snug font-bold">{b.title}</div>
               <div className="mt-0.5 flex flex-wrap items-center gap-x-2 text-[12px] text-muted">
@@ -66,7 +67,7 @@ export async function LibraryGrid({ user, base, sp, manage }: { user: SessionUse
         </div>
       ) : (
         <Card>
-          <EmptyState icon={<Library />} title="Kitoblar yo‘q" description={manage ? "Birinchi kitobni qo‘shing: muqova, PDF va audio." : "Administrator kitob qo‘shganda shu yerda ko‘rinadi."} action={manage ? <LinkButton href={`${base}/library/new`}>Kitob qo‘shish</LinkButton> : null} />
+          <EmptyState icon={<Library />} title={tr("Kitoblar yo‘q")} description={manage ? tr("Birinchi kitobni qo‘shing: muqova, PDF va audio.") : tr("Administrator kitob qo‘shganda shu yerda ko‘rinadi.")} action={manage ? <LinkButton href={`${base}/library/new`}>{tr("Kitob qo‘shish")}</LinkButton> : null} />
         </Card>
       )}
     </>
@@ -77,7 +78,7 @@ export async function BookView({ user, base, id, manage }: { user: SessionUser; 
   const { book: b, audio, pdf } = await orNotFound(getBook(user, id));
   return (
     <div className="mx-auto max-w-4xl">
-      <PageHeader back={{ href: `${base}/library`, label: "Kutubxona" }} title={b.title} description={[b.author, b.level].filter(Boolean).join(" · ") || undefined} actions={manage ? <LinkButton href={`${base}/library/${b.id}/edit`} variant="secondary">Tahrirlash</LinkButton> : null} />
+      <PageHeader back={{ href: `${base}/library`, label: tr("Kutubxona") }} title={b.title} description={[b.author, b.level].filter(Boolean).join(" · ") || undefined} actions={manage ? <LinkButton href={`${base}/library/${b.id}/edit`} variant="secondary">{tr("Tahrirlash")}</LinkButton> : null} />
       <div className="grid grid-cols-1 gap-6 md:grid-cols-[220px_1fr]">
         <div className="mx-auto w-44 md:w-full">
           <BookCover coverFileId={b.coverFileId} title={b.title} />
@@ -93,12 +94,12 @@ export async function BookView({ user, base, id, manage }: { user: SessionUser; 
               <PdfOpenButton file={{ id: pdf.id, name: pdf.name, size: pdf.size }} withDownload />
             </div>
           ) : (
-            <p className="text-[13.5px] text-muted">Bu kitobning PDF fayli yuklanmagan.</p>
+            <p className="text-[13.5px] text-muted">{tr("Bu kitobning PDF fayli yuklanmagan.")}</p>
           )}
           {!manage ? <SaveOffline files={[...(pdf ? [{ id: pdf.id, size: pdf.size }] : []), ...audio.map((a) => ({ id: a.fileId, size: a.size }))]} /> : null}
           {audio.length ? (
             <Card>
-              <CardHeader title="Audio" icon={<Headphones />} description={`${audio.length} ta trek`} />
+              <CardHeader title={tr("Audio")} icon={<Headphones />} description={tr("{0} ta trek", audio.length)} />
               <CardBody className="space-y-2 pt-3">
                 {audio.map((a) => (
                   <AudioPlayer key={a.id} file={{ id: a.fileId, name: a.name, size: a.size }} title={a.title} />

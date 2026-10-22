@@ -1,4 +1,5 @@
 import { cloneElement, forwardRef, isValidElement, useId, type InputHTMLAttributes, type ReactNode, type SelectHTMLAttributes, type TextareaHTMLAttributes } from "react";
+import { trNode } from "@/lib/i18n/node";
 import { ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -29,6 +30,7 @@ export const Select = forwardRef<HTMLSelectElement, SelectHTMLAttributes<HTMLSel
  * control, so the label is always programmatically linked (screen readers, tap-to-focus, tests).
  */
 export function Field({ label, htmlFor, hint, error, children, className, required }: { label: ReactNode; htmlFor?: string; hint?: ReactNode; error?: string | null; children: ReactNode; className?: string; required?: boolean }) {
+  label = trNode(label); hint = trNode(hint);
   const auto = useId();
   let id = htmlFor;
   let control = children;
@@ -55,6 +57,7 @@ export function Field({ label, htmlFor, hint, error, children, className, requir
 }
 
 export function Switch({ checked, onChange, label, description, name, disabled }: { checked: boolean; onChange: (v: boolean) => void; label: ReactNode; description?: ReactNode; name?: string; disabled?: boolean }) {
+  label = trNode(label); description = trNode(description);
   return (
     <label className={cn("flex cursor-pointer items-start justify-between gap-4 py-1", disabled && "cursor-not-allowed opacity-60")}>
       <span className="min-w-0">
@@ -71,6 +74,7 @@ export function Switch({ checked, onChange, label, description, name, disabled }
 }
 
 export function Checkbox({ checked, onChange, label, className }: { checked: boolean; onChange: (v: boolean) => void; label: ReactNode; className?: string }) {
+  label = trNode(label);
   return (
     <label className={cn("flex cursor-pointer items-center gap-2.5 text-sm text-text", className)}>
       <input type="checkbox" checked={checked} onChange={(e) => onChange(e.target.checked)} className="size-4 rounded border-border-strong accent-[var(--primary)]" />

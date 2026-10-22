@@ -11,6 +11,7 @@ import { Dialog } from "@/components/ui/dialog";
 import { Field, Input, Select, Switch, Textarea } from "@/components/ui/form";
 import { toast } from "@/components/ui/toast";
 import { Medal } from "@/components/student/medal";
+import { tr } from "@/lib/i18n/tr";
 
 type Row = AchievementDef & { earners: number };
 type Draft = Omit<AchievementDef, "code" | "sortOrder">;
@@ -26,7 +27,7 @@ export function AchievementAdmin({ rows }: { rows: Row[] }) {
     start(async () => {
       const r = await setAchievementActiveAction(code, active);
       if (r.ok) {
-        toast.success(active ? "Yutuq yoqildi" : "Yutuq vaqtincha o‘chirildi");
+        toast.success(active ? tr("Yutuq yoqildi") : tr("Yutuq vaqtincha o‘chirildi"));
         router.refresh();
       } else toast.error(r.error);
     });
@@ -36,7 +37,7 @@ export function AchievementAdmin({ rows }: { rows: Row[] }) {
     start(async () => {
       const r = await saveAchievementAction(edit.code, edit.v);
       if (r.ok) {
-        toast.success("Saqlandi");
+        toast.success(tr("Saqlandi"));
         setEdit(null);
         router.refresh();
       } else toast.error(r.error);
@@ -48,7 +49,7 @@ export function AchievementAdmin({ rows }: { rows: Row[] }) {
     <div className="space-y-6">
       <div className="flex justify-end">
         <Button onClick={() => setEdit({ code: null, v: EMPTY })}>
-          <Plus /> Yangi yutuq
+          <Plus /> {tr("Yangi yutuq")}
         </Button>
       </div>
 
@@ -67,14 +68,14 @@ export function AchievementAdmin({ rows }: { rows: Row[] }) {
                   <div className="min-w-0 flex-1">
                     <div className="truncate text-[14.5px] font-extrabold">{a.title}</div>
                     <div className="truncate text-[12.5px] text-muted">
-                      {METRICS[a.metric as MetricKey]?.label ?? a.metric} ≥ {fmtNumber(a.threshold)} · +{a.xpReward} XP
+                      {tr("{0} ≥ {1} · +{2} XP", METRICS[a.metric as MetricKey]?.label ?? a.metric, fmtNumber(a.threshold), a.xpReward)}
                     </div>
                   </div>
-                  <Link href={`/admin/achievements/${a.code}`} className="hidden shrink-0 items-center gap-1 rounded-full bg-surface-2 px-2.5 py-1 text-[12px] font-bold text-text-2 hover:text-primary sm:inline-flex" title="Olgan o‘quvchilar">
+                  <Link href={`/admin/achievements/${a.code}`} className="hidden shrink-0 items-center gap-1 rounded-full bg-surface-2 px-2.5 py-1 text-[12px] font-bold text-text-2 hover:text-primary sm:inline-flex" title={tr("Olgan o‘quvchilar")}>
                     <Users className="size-3.5" aria-hidden /> {a.earners}
                   </Link>
-                  <Switch checked={a.active} onChange={(v) => toggle(a.code, v)} label={<span className="sr-only">Faol</span>} disabled={pending} />
-                  <Button variant="ghost" size="icon" aria-label="Tahrirlash" onClick={() => setEdit({ code: a.code, v: { title: a.title, description: a.description, category: a.category, icon: a.icon, metric: a.metric, threshold: a.threshold, xpReward: a.xpReward, active: a.active } })}>
+                  <Switch checked={a.active} onChange={(v) => toggle(a.code, v)} label={<span className="sr-only">{tr("Faol")}</span>} disabled={pending} />
+                  <Button variant="ghost" size="icon" aria-label={tr("Tahrirlash")} onClick={() => setEdit({ code: a.code, v: { title: a.title, description: a.description, category: a.category, icon: a.icon, metric: a.metric, threshold: a.threshold, xpReward: a.xpReward, active: a.active } })}>
                     <Pencil />
                   </Button>
                 </li>
@@ -87,12 +88,12 @@ export function AchievementAdmin({ rows }: { rows: Row[] }) {
       <Dialog
         open={!!edit}
         onClose={() => setEdit(null)}
-        title={edit?.code ? "Yutuqni tahrirlash" : "Yangi yutuq"}
-        description="Yutuq shart bajarilganda avtomatik ochiladi. XP bir marta beriladi."
+        title={edit?.code ? tr("Yutuqni tahrirlash") : tr("Yangi yutuq")}
+        description={tr("Yutuq shart bajarilganda avtomatik ochiladi. XP bir marta beriladi.")}
         footer={
           <>
-            <Button variant="secondary" onClick={() => setEdit(null)}>Bekor qilish</Button>
-            <Button onClick={save} loading={pending} disabled={!edit || edit.v.title.trim().length < 2}>Saqlash</Button>
+            <Button variant="secondary" onClick={() => setEdit(null)}>{tr("Bekor qilish")}</Button>
+            <Button onClick={save} loading={pending} disabled={!edit || edit.v.title.trim().length < 2}>{tr("Saqlash")}</Button>
           </>
         }
       >
@@ -101,40 +102,40 @@ export function AchievementAdmin({ rows }: { rows: Row[] }) {
             <div className="flex items-center gap-4">
               <Medal icon={edit.v.icon} category={edit.v.category} size={72} />
               <div className="min-w-0 flex-1 space-y-3">
-                <Field label="Nomi" htmlFor="ach-title" required>
-                  <Input id="ach-title" value={edit.v.title} maxLength={60} onChange={(e) => set("title", e.target.value)} placeholder="Masalan: Word Hero" />
+                <Field label={tr("Nomi")} htmlFor="ach-title" required>
+                  <Input id="ach-title" value={edit.v.title} maxLength={60} onChange={(e) => set("title", e.target.value)} placeholder={tr("Masalan: Word Hero")} />
                 </Field>
               </div>
             </div>
-            <Field label="Tavsif" htmlFor="ach-desc">
-              <Textarea id="ach-desc" rows={2} maxLength={200} value={edit.v.description} onChange={(e) => set("description", e.target.value)} placeholder="Nima qilish kerak?" />
+            <Field label={tr("Tavsif")} htmlFor="ach-desc">
+              <Textarea id="ach-desc" rows={2} maxLength={200} value={edit.v.description} onChange={(e) => set("description", e.target.value)} placeholder={tr("Nima qilish kerak?")} />
             </Field>
             <div className="grid gap-4 sm:grid-cols-2">
-              <Field label="Turkum" htmlFor="ach-cat">
+              <Field label={tr("Turkum")} htmlFor="ach-cat">
                 <Select id="ach-cat" value={edit.v.category} onChange={(e) => set("category", e.target.value as Draft["category"])}>
                   {ACH_CATEGORIES.map((c) => (
                     <option key={c.key} value={c.key}>{c.label}</option>
                   ))}
                 </Select>
               </Field>
-              <Field label="XP mukofoti" htmlFor="ach-xp">
+              <Field label={tr("XP mukofoti")} htmlFor="ach-xp">
                 <Input id="ach-xp" type="number" min={0} max={1000} value={edit.v.xpReward} onChange={(e) => set("xpReward", Number(e.target.value))} />
               </Field>
             </div>
             <div className="grid gap-4 sm:grid-cols-[1fr_120px]">
-              <Field label="Shart" htmlFor="ach-metric">
+              <Field label={tr("Shart")} htmlFor="ach-metric">
                 <Select id="ach-metric" value={edit.v.metric} onChange={(e) => set("metric", e.target.value as MetricKey)}>
                   {METRIC_KEYS.map((k) => (
                     <option key={k} value={k}>{METRICS[k].label}</option>
                   ))}
                 </Select>
               </Field>
-              <Field label={`Kamida (${METRICS[edit.v.metric].unit})`} htmlFor="ach-th">
+              <Field label={tr("Kamida ({0})", METRICS[edit.v.metric].unit)} htmlFor="ach-th">
                 <Input id="ach-th" type="number" min={1} max={100000} value={edit.v.threshold} onChange={(e) => set("threshold", Number(e.target.value))} />
               </Field>
             </div>
             <fieldset>
-              <legend className="mb-1.5 text-[13px] font-semibold text-text-2">Medal belgisi</legend>
+              <legend className="mb-1.5 text-[13px] font-semibold text-text-2">{tr("Medal belgisi")}</legend>
               <div className="grid grid-cols-6 gap-2 sm:grid-cols-9">
                 {MEDAL_ICONS.map((i) => (
                   <button
@@ -150,7 +151,7 @@ export function AchievementAdmin({ rows }: { rows: Row[] }) {
                 ))}
               </div>
             </fieldset>
-            <Switch checked={edit.v.active} onChange={(v) => set("active", v)} label="Faol" description="O‘chirilgan yutuq yangi o‘quvchilarga ochilmaydi; olinganlari saqlanadi." />
+            <Switch checked={edit.v.active} onChange={(v) => set("active", v)} label={tr("Faol")} description={tr("O‘chirilgan yutuq yangi o‘quvchilarga ochilmaydi; olinganlari saqlanadi.")} />
           </div>
         ) : null}
       </Dialog>

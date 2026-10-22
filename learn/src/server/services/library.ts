@@ -7,6 +7,7 @@ import { forbidden, invalid, notFound } from "../errors";
 import { BOOK_CATEGORIES } from "../db/schema";
 import { audit } from "./audit";
 import { assertOwnFiles } from "./files";
+import { tr } from "@/lib/i18n/tr";
 
 /**
  * Book library: admins upload covers, PDFs and audio tracks; every signed-in user can read
@@ -26,7 +27,7 @@ const bookInput = z.object({
 });
 
 const requireAdmin = (a: Actor) => {
-  if (!isAdmin(a)) throw forbidden("Kutubxonani faqat administrator boshqaradi.");
+  if (!isAdmin(a)) throw forbidden(tr("Kutubxonani faqat administrator boshqaradi."));
 };
 
 export async function listBooks(actor: Actor, opts: { all?: boolean; category?: string; q?: string } = {}) {
@@ -54,7 +55,7 @@ export async function listBooks(actor: Actor, opts: { all?: boolean; category?: 
 
 export async function getBook(actor: Actor, id: string) {
   const [b] = await db.select().from(schema.books).where(eq(schema.books.id, id));
-  if (!b || (b.status !== "published" && !isAdmin(actor))) throw notFound("Kitob topilmadi.");
+  if (!b || (b.status !== "published" && !isAdmin(actor))) throw notFound(tr("Kitob topilmadi."));
   const [audio, pdf] = await Promise.all([
     db
       .select({ id: schema.bookAudio.id, title: schema.bookAudio.title, fileId: schema.bookAudio.fileId, position: schema.bookAudio.position, size: schema.files.size, mime: schema.files.mime, name: schema.files.name })
@@ -71,7 +72,7 @@ export async function getBook(actor: Actor, id: string) {
 export async function saveBook(actor: Actor, id: string | null, input: unknown) {
   requireAdmin(actor);
   const parsed = bookInput.safeParse(input);
-  if (!parsed.success) throw invalid(parsed.error.issues[0]?.message ?? "Ma’lumotlar noto‘g‘ri");
+  if (!parsed.success) throw invalid(parsed.error.issues[0]?.message ?? tr("Ma’lumotlar noto‘g‘ri"));
   const v = parsed.data;
   const newFiles = [v.coverFileId, v.pdfFileId, ...v.audio.map((a) => a.fileId)].filter((x): x is string => !!x);
   if (newFiles.length) {
@@ -81,15 +82,15 @@ export async function saveBook(actor: Actor, id: string | null, input: unknown) 
   }
   if (v.pdfFileId) {
     const [f] = await db.select({ mime: schema.files.mime }).from(schema.files).where(eq(schema.files.id, v.pdfFileId));
-    if (f?.mime !== "application/pdf") throw invalid("Kitob fayli PDF bo‘lishi kerak.");
+    if (f?.mime !== "application/pdf") throw invalid(tr("Kitob fayli PDF bo‘lishi kerak."));
   }
   if (v.coverFileId) {
     const [f] = await db.select({ mime: schema.files.mime }).from(schema.files).where(eq(schema.files.id, v.coverFileId));
-    if (!f?.mime.startsWith("image/")) throw invalid("Muqova rasm bo‘lishi kerak.");
+    if (!f?.mime.startsWith("image/")) throw invalid(tr("Muqova rasm bo‘lishi kerak."));
   }
   if (v.audio.length) {
     const rows = await db.select({ mime: schema.files.mime }).from(schema.files).where(inArray(schema.files.id, v.audio.map((a) => a.fileId)));
-    if (rows.some((r) => !r.mime.startsWith("audio/"))) throw invalid("Audio treklar faqat audio fayl bo‘lishi mumkin.");
+    if (rows.some((r) => !r.mime.startsWith("audio/"))) throw invalid(tr("Audio treklar faqat audio fayl bo‘lishi mumkin."));
   }
   const { audio, ...row } = v;
   return db.transaction(async (tx) => {

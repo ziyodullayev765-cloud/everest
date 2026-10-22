@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { countBlanks } from "@/lib/scoring";
+import { tr } from "@/lib/i18n/tr";
 
 const uuid = z.string().uuid();
 const httpsUrl = z
@@ -70,14 +71,14 @@ export const assignmentInput = z
       .default([]),
   })
   .superRefine((v, ctx) => {
-    if (v.type === "homework" && v.items.length === 0) ctx.addIssue({ code: "custom", path: ["items"], message: "Uyga vazifaga kamida bitta topshiriq qo‘shing" });
-    if (v.publishMode === "schedule" && !v.publishAt) ctx.addIssue({ code: "custom", path: ["publishAt"], message: "E’lon qilish vaqtini kiriting" });
+    if (v.type === "homework" && v.items.length === 0) ctx.addIssue({ code: "custom", path: ["items"], message: tr("Uyga vazifaga kamida bitta topshiriq qo‘shing") });
+    if (v.publishMode === "schedule" && !v.publishAt) ctx.addIssue({ code: "custom", path: ["publishAt"], message: tr("E’lon qilish vaqtini kiriting") });
     if (v.publishMode !== "draft" && v.classIds.length + v.studentIds.length === 0)
-      ctx.addIssue({ code: "custom", path: ["classIds"], message: "Kamida bitta guruh yoki o‘quvchini tanlang" });
-    if (v.lateCutoffAt && v.dueAt && v.lateCutoffAt < v.dueAt) ctx.addIssue({ code: "custom", path: ["lateCutoffAt"], message: "Kechikish chegarasi muddatdan keyin bo‘lishi kerak" });
+      ctx.addIssue({ code: "custom", path: ["classIds"], message: tr("Kamida bitta guruh yoki o‘quvchini tanlang") });
+    if (v.lateCutoffAt && v.dueAt && v.lateCutoffAt < v.dueAt) ctx.addIssue({ code: "custom", path: ["lateCutoffAt"], message: tr("Kechikish chegarasi muddatdan keyin bo‘lishi kerak") });
     if (v.rubric.length) {
       const sum = v.rubric.reduce((s, c) => s + c.maxPoints, 0);
-      if (Math.abs(sum - v.maxScore) > 0.001) ctx.addIssue({ code: "custom", path: ["rubric"], message: `Mezonlar yig‘indisi (${sum}) maksimal ballga (${v.maxScore}) teng bo‘lishi kerak` });
+      if (Math.abs(sum - v.maxScore) > 0.001) ctx.addIssue({ code: "custom", path: ["rubric"], message: tr("Mezonlar yig‘indisi ({0}) maksimal ballga ({1}) teng bo‘lishi kerak", sum, v.maxScore) });
     }
   });
 export type AssignmentInput = z.infer<typeof assignmentInput>;
@@ -116,18 +117,18 @@ export const questionInput = z
   .superRefine((q, ctx) => {
     const correct = q.options.filter((o) => o.isCorrect).length;
     const add = (message: string) => ctx.addIssue({ code: "custom", message });
-    if (q.type === "single_choice" && (q.options.length < 2 || correct !== 1)) add("Kamida 2 ta variant va aynan bitta to‘g‘ri javob kerak");
-    if (q.type === "multiple_choice" && (q.options.length < 2 || correct < 1)) add("Kamida 2 ta variant va kamida bitta to‘g‘ri javob kerak");
-    if (q.type === "true_false" && (q.options.length !== 2 || correct !== 1)) add("To‘g‘ri/noto‘g‘ri savolida bitta to‘g‘ri javob belgilang");
+    if (q.type === "single_choice" && (q.options.length < 2 || correct !== 1)) add(tr("Kamida 2 ta variant va aynan bitta to‘g‘ri javob kerak"));
+    if (q.type === "multiple_choice" && (q.options.length < 2 || correct < 1)) add(tr("Kamida 2 ta variant va kamida bitta to‘g‘ri javob kerak"));
+    if (q.type === "true_false" && (q.options.length !== 2 || correct !== 1)) add(tr("To‘g‘ri/noto‘g‘ri savolida bitta to‘g‘ri javob belgilang"));
     if (q.type === "fill_blank") {
       const n = countBlanks(q.prompt);
-      if (n === 0) add("Matnda bo‘sh joyni ___ bilan belgilang");
-      else if (q.accepted.length !== n || q.accepted.some((a) => a.length === 0)) add(`Har bir bo‘sh joy (${n} ta) uchun to‘g‘ri javob kiriting`);
+      if (n === 0) add(tr("Matnda bo‘sh joyni ___ bilan belgilang"));
+      else if (q.accepted.length !== n || q.accepted.some((a) => a.length === 0)) add(tr("Har bir bo‘sh joy ({0} ta) uchun to‘g‘ri javob kiriting", n));
     }
-    if (q.type === "matching" && q.pairs.length < 2) add("Kamida 2 ta juftlik kerak");
-    if (q.type === "arrange_words" && q.words.length < 2) add("Gapni kamida 2 ta so‘zga ajrating");
-    if (q.type === "grammar_correction" && (!q.incorrect || !q.accepted[0]?.length)) add("Xato gapni va to‘g‘ri variant(lar)ni kiriting");
-    if (q.type === "irregular_verb" && (!q.base || q.accepted.length !== 2 || q.accepted.some((a) => !a.length))) add("Fe’lning asosiy shakli, Past Simple va Past Participle shakllarini kiriting");
+    if (q.type === "matching" && q.pairs.length < 2) add(tr("Kamida 2 ta juftlik kerak"));
+    if (q.type === "arrange_words" && q.words.length < 2) add(tr("Gapni kamida 2 ta so‘zga ajrating"));
+    if (q.type === "grammar_correction" && (!q.incorrect || !q.accepted[0]?.length)) add(tr("Xato gapni va to‘g‘ri variant(lar)ni kiriting"));
+    if (q.type === "irregular_verb" && (!q.base || q.accepted.length !== 2 || q.accepted.some((a) => !a.length))) add(tr("Fe’lning asosiy shakli, Past Simple va Past Participle shakllarini kiriting"));
   });
 export type QuestionInput = z.infer<typeof questionInput>;
 

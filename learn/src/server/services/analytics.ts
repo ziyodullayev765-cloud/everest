@@ -1,4 +1,5 @@
 import "server-only";
+import { tr } from "@/lib/i18n/tr";
 import { sql } from "drizzle-orm";
 import { db } from "../db";
 import type { Actor } from "../auth/rbac";
@@ -400,7 +401,7 @@ export async function followUps(actor: Actor, limit = 8) {
       const reasons: string[] = [];
       if (idleDays == null) reasons.push("hali faollik yo‘q");
       else if (idleDays >= 7) reasons.push(`${idleDays} kundan beri faol emas`);
-      if (r.overdue >= 2) reasons.push(`${r.overdue} ta muddati o‘tgan`);
+      if (r.overdue >= 2) reasons.push(tr("{0} tasi muddati o‘tgan", r.overdue));
       if (avg != null && avg < 50) reasons.push(`o‘rtacha ${Math.round(avg)}%`);
       return { id: r.id, name: r.name, reasons, weight: (idleDays ?? 30) + r.overdue * 5 + (avg != null && avg < 50 ? 10 : 0) };
     })

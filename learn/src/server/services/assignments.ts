@@ -15,13 +15,14 @@ import { audit } from "./audit";
 import { notify } from "./notifications";
 import { fillTemplate, getSettings } from "./settings";
 import { CATEGORY_CODES } from "@/lib/course";
+import { tr } from "@/lib/i18n/tr";
 
 // ─── Staff: create / update ──────────────────────────────────────────────────
 
 export async function assertTargetsInScope(actor: Actor, classIds: string[], studentIds: string[], ex: Executor) {
   const scope = await manageableClassIds(actor, ex);
   if (scope === "all") return;
-  if (classIds.some((c) => !scope.includes(c))) throw forbidden("Siz faqat o‘zingizga biriktirilgan guruhlarga vazifa bera olasiz.");
+  if (classIds.some((c) => !scope.includes(c))) throw forbidden(tr("Siz faqat o‘zingizga biriktirilgan guruhlarga vazifa bera olasiz."));
   if (studentIds.length) {
     const rows = scope.length
       ? await ex
@@ -29,15 +30,15 @@ export async function assertTargetsInScope(actor: Actor, classIds: string[], stu
           .from(schema.classStudents)
           .where(and(inArray(schema.classStudents.studentId, studentIds), inArray(schema.classStudents.classId, scope)))
       : [];
-    if (rows.length !== new Set(studentIds).size) throw forbidden("Tanlangan o‘quvchilardan ba’zilari sizning guruhlaringizda emas.");
+    if (rows.length !== new Set(studentIds).size) throw forbidden(tr("Tanlangan o‘quvchilardan ba’zilari sizning guruhlaringizda emas."));
   }
 }
 
 function toRow(v: ReturnType<typeof assignmentInput.parse>) {
   const dueAt = fromLocalInput(v.dueAt);
   const publishAt = v.publishMode === "schedule" ? fromLocalInput(v.publishAt) : null;
-  if (v.publishMode === "schedule" && publishAt && publishAt.getTime() < Date.now() - 60_000) throw invalid("Rejalashtirilgan vaqt kelajakda bo‘lishi kerak.");
-  if (dueAt && publishAt && dueAt <= publishAt) throw invalid("Muddat e’lon qilish vaqtidan keyin bo‘lishi kerak.");
+  if (v.publishMode === "schedule" && publishAt && publishAt.getTime() < Date.now() - 60_000) throw invalid(tr("Rejalashtirilgan vaqt kelajakda bo‘lishi kerak."));
+  if (dueAt && publishAt && dueAt <= publishAt) throw invalid(tr("Muddat e’lon qilish vaqtidan keyin bo‘lishi kerak."));
   const quiz = isQuizType(v.type);
   return {
     title: v.title,
@@ -77,12 +78,12 @@ function toRow(v: ReturnType<typeof assignmentInput.parse>) {
 }
 
 export async function saveAssignment(actor: Actor, id: string | null, input: unknown) {
-  if (!can(actor, "assignments.create")) throw forbidden("Vazifa yaratish uchun ruxsat yo‘q.");
+  if (!can(actor, "assignments.create")) throw forbidden(tr("Vazifa yaratish uchun ruxsat yo‘q."));
   const parsed = assignmentInput.safeParse(input);
   if (!parsed.success) {
     const fields: Record<string, string> = {};
     for (const i of parsed.error.issues) fields[i.path.join(".") || "_"] ??= i.message;
-    throw invalid(parsed.error.issues[0]?.message ?? "Ma’lumotlar noto‘g‘ri", fields);
+    throw invalid(parsed.error.issues[0]?.message ?? tr("Ma’lumotlar noto‘g‘ri"), fields);
   }
   const v = parsed.data;
   await assertOwnFilesOrAttached(actor, id, v.attachmentFileIds);
@@ -91,21 +92,21 @@ export async function saveAssignment(actor: Actor, id: string | null, input: unk
   const bookIds = [...new Set(row.items.map((i) => i.bookId).filter((x): x is string => !!x))];
   if (bookIds.length) {
     const found = await db.select({ id: schema.books.id }).from(schema.books).where(inArray(schema.books.id, bookIds));
-    if (found.length !== bookIds.length) throw invalid("Tanlangan kitob topilmadi.");
+    if (found.length !== bookIds.length) throw invalid(tr("Tanlangan kitob topilmadi."));
   }
 
   const result = await db.transaction(async (tx) => {
     await assertTargetsInScope(actor, v.classIds, v.studentIds, tx);
     const subject = await tx.select().from(schema.subjects).where(eq(schema.subjects.id, v.subjectId)).limit(1);
-    if (!subject[0] || subject[0].archivedAt) throw invalid("Kategoriya topilmadi.");
+    if (!subject[0] || subject[0].archivedAt) throw invalid(tr("Kategoriya topilmadi."));
 
     let assignmentId = id;
     let wasLive = false;
     if (id) {
       const existing = await assertCanManageAssignment(actor, id, tx);
-      if (existing.status === "archived") throw new AppError("closed", "Arxivlangan vazifani tahrirlab bo‘lmaydi. Avval tiklang.");
+      if (existing.status === "archived") throw new AppError("closed", tr("Arxivlangan vazifani tahrirlab bo‘lmaydi. Avval tiklang."));
       wasLive = existing.status === "published";
-      if (existing.type !== v.type && (await hasStudentWork(id, tx))) throw invalid("O‘quvchilar ishlay boshlagan vazifaning turini o‘zgartirib bo‘lmaydi.");
+      if (existing.type !== v.type && (await hasStudentWork(id, tx))) throw invalid(tr("O‘quvchilar ishlay boshlagan vazifaning turini o‘zgartirib bo‘lmaydi."));
       // Keep publication history: once published it stays published (unless archived explicitly).
       const status = wasLive ? "published" : row.status;
       await tx
@@ -151,7 +152,7 @@ async function assertOwnFilesOrAttached(actor: Actor, assignmentId: string | nul
 
 async function assertAudioFile(actor: Actor, assignmentId: string | null, fileId: string) {
   const [f] = await db.select({ mime: schema.files.mime }).from(schema.files).where(eq(schema.files.id, fileId));
-  if (!f || !f.mime.startsWith("audio/")) throw invalid("Listening uchun audio fayl tanlang.");
+  if (!f || !f.mime.startsWith("audio/")) throw invalid(tr("Listening uchun audio fayl tanlang."));
   if (assignmentId) {
     const [cur] = await db.select({ a: schema.assignments.audioFileId }).from(schema.assignments).where(eq(schema.assignments.id, assignmentId));
     if (cur?.a === fileId) return;
@@ -168,15 +169,15 @@ async function hasStudentWork(assignmentId: string, ex: Executor) {
 /** Replaces the question set. Locked once any student has started an attempt (history must stay intact). */
 export async function saveQuestions(actor: Actor, assignmentId: string, input: unknown) {
   const asg = await assertCanManageAssignment(actor, assignmentId);
-  if (!isQuizType(asg.type)) throw invalid("Bu vazifa turi savollarni qo‘llab-quvvatlamaydi.");
+  if (!isQuizType(asg.type)) throw invalid(tr("Bu vazifa turi savollarni qo‘llab-quvvatlamaydi."));
   const parsed = questionsInput.safeParse(input);
   if (!parsed.success) {
     const issue = parsed.error.issues[0];
     const idx = typeof issue?.path[0] === "number" ? `${(issue.path[0] as number) + 1}-savol: ` : "";
-    throw invalid(idx + (issue?.message ?? "Savollar noto‘g‘ri"));
+    throw invalid(idx + (issue?.message ?? tr("Savollar noto‘g‘ri")));
   }
   const attempts = await db.select({ n: sql<number>`count(*)::int` }).from(schema.quizAttempts).where(eq(schema.quizAttempts.assignmentId, assignmentId));
-  if ((attempts[0]?.n ?? 0) > 0) throw new AppError("closed", "O‘quvchilar quizni boshlagan. Savollarni o‘zgartirish uchun nusxa yarating.");
+  if ((attempts[0]?.n ?? 0) > 0) throw new AppError("closed", tr("O‘quvchilar quizni boshlagan. Savollarni o‘zgartirish uchun nusxa yarating."));
   const imageIds = parsed.data.flatMap((q) => [q.imageFileId, q.audioFileId]).filter((x): x is string => !!x);
   const existingRows = await db.select({ id: schema.questions.imageFileId, config: schema.questions.config }).from(schema.questions).where(eq(schema.questions.assignmentId, assignmentId));
   const existingImages = existingRows.flatMap((r) => [r.id, (r.config as QuestionConfig).audioFileId]);
@@ -244,16 +245,16 @@ export async function setAssignmentStatus(actor: Actor, id: string, action: "pub
   let status = asg.status;
   if (action === "publish") {
     const targets = await db.select().from(schema.assignmentTargets).where(eq(schema.assignmentTargets.assignmentId, id));
-    if (!targets.length) throw invalid("E’lon qilishdan oldin guruh yoki o‘quvchini tanlang.");
+    if (!targets.length) throw invalid(tr("E’lon qilishdan oldin guruh yoki o‘quvchini tanlang."));
     if (isQuizType(asg.type)) {
       const q = await db.select({ n: sql<number>`count(*)::int` }).from(schema.questions).where(eq(schema.questions.assignmentId, id));
-      if (!q[0]?.n) throw invalid("Quizda kamida bitta savol bo‘lishi kerak.");
+      if (!q[0]?.n) throw invalid(tr("Quizda kamida bitta savol bo‘lishi kerak."));
     }
     status = "published";
   } else if (action === "archive") status = "archived";
   else if (action === "restore") status = asg.publishedAt ? "published" : "draft";
   else if (action === "unpublish") {
-    if (await hasStudentWork(id, db)) throw new AppError("closed", "O‘quvchilar ishlagan vazifani qoralamaga qaytarib bo‘lmaydi. Uni arxivlang.");
+    if (await hasStudentWork(id, db)) throw new AppError("closed", tr("O‘quvchilar ishlagan vazifani qoralamaga qaytarib bo‘lmaydi. Uni arxivlang."));
     status = "draft";
   }
   await db
@@ -373,7 +374,8 @@ export async function listForStaff(actor: Actor, filter: { status?: string; type
     .innerJoin(schema.users, eq(schema.users.id, schema.assignments.createdBy))
     .where(and(...conds))
     .orderBy(desc(schema.assignments.updatedAt))
-    .limit(300);
+    .limit(300)
+    .then((rows) => rows.map((r) => ({ ...r, subjectName: tr(r.subjectName) })));
 }
 
 export async function getForEditing(actor: Actor, id: string) {
@@ -473,7 +475,7 @@ export async function listForStudent(studentId: string): Promise<StudentAssignme
       publishedAt: r.published_at ? new Date(r.published_at as string) : r.publish_at ? new Date(r.publish_at as string) : null,
       maxScore: Number(r.max_score),
       subjectId: r.subject_id as string,
-      subjectName: r.subject_name as string,
+      subjectName: tr(r.subject_name as string),
       subjectColor: r.subject_color as string,
       category: r.category as string,
       level: (r.level as string) ?? "",
@@ -554,14 +556,15 @@ export async function subjectsList(includeArchived = false) {
     .select()
     .from(schema.subjects)
     .where(includeArchived ? sql`true` : sql`${schema.subjects.archivedAt} is null`)
-    .orderBy(sql`coalesce(array_position(${codes}, ${schema.subjects.code}), 999)`, asc(schema.subjects.name));
+    .orderBy(sql`coalesce(array_position(${codes}, ${schema.subjects.code}), 999)`, asc(schema.subjects.name))
+    .then((rows) => rows.map((r) => ({ ...r, name: tr(r.name) })));
 }
 
 /** Category id by code (falls back to "Boshqa mashq"). */
 export async function categoryId(code: string, ex: Executor = db) {
   const rows = await ex.select({ id: schema.subjects.id, code: schema.subjects.code }).from(schema.subjects).where(inArray(schema.subjects.code, [code, "CUSTOM"]));
   const hit = rows.find((r) => r.code === code) ?? rows[0];
-  if (!hit) throw invalid("Kategoriyalar sozlanmagan. Migratsiyani ishga tushiring.");
+  if (!hit) throw invalid(tr("Kategoriyalar sozlanmagan. Migratsiyani ishga tushiring."));
   return hit.id;
 }
 

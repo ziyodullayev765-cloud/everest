@@ -1,11 +1,12 @@
 import { BookA } from "lucide-react";
+import { tr } from "@/lib/i18n/tr";
 
 /** Words from the student's own vocabulary lists that occur in a reading text. */
 export function Glossary({ items }: { items: { english: string; uzbek: string; phonetic: string }[] }) {
   return (
     <details className="mt-5 rounded-xl border border-border bg-surface-2/60 px-4 py-3" open={items.length <= 8}>
       <summary className="flex cursor-pointer items-center gap-2 text-[13.5px] font-bold">
-        <BookA className="size-4 text-primary" aria-hidden /> Matndagi lug‘at so‘zlari ({items.length})
+        <BookA className="size-4 text-primary" aria-hidden /> {tr("Matndagi lug‘at so‘zlari ({0})", items.length)}
       </summary>
       <dl className="mt-3 grid gap-x-6 gap-y-1.5 sm:grid-cols-2">
         {items.map((w) => (

@@ -18,6 +18,7 @@ import { cn } from "@/lib/utils";
 import { t } from "@/lib/i18n";
 import { QUESTION_TYPES } from "@/lib/validation/assignment";
 import { AudioPlayer } from "@/components/app/media";
+import { tr } from "@/lib/i18n/tr";
 
 export type EditQuestion = {
   key: string;
@@ -54,8 +55,8 @@ export function blankQuestion(type: EditQuestion["type"]): EditQuestion {
     options:
       type === "true_false"
         ? [
-            { label: "To‘g‘ri", isCorrect: true },
-            { label: "Noto‘g‘ri", isCorrect: false },
+            { label: tr("To‘g‘ri"), isCorrect: true },
+            { label: tr("Noto‘g‘ri"), isCorrect: false },
           ]
         : type === "single_choice" || type === "multiple_choice"
           ? [
@@ -123,24 +124,24 @@ export function QuestionEditor({ assignmentId, initial, locked, status, bank, su
           setError(p.error);
           return;
         }
-        toast.success("Quiz e’lon qilindi");
-      } else toast.success("Savollar saqlandi");
+        toast.success(tr("Quiz e’lon qilindi"));
+      } else toast.success(tr("Savollar saqlandi"));
       router.refresh();
     });
 
   if (locked)
     return (
       <div className="space-y-4">
-        <Alert tone="info" title="Savollar qulflangan">
+        <Alert tone="info" title={tr("Savollar qulflangan")}>
           <span className="inline-flex items-center gap-1.5">
-            <Lock className="size-4" aria-hidden /> O‘quvchilar bu quizni boshlagan. Natijalar buzilmasligi uchun savollarni o‘zgartirib bo‘lmaydi — o‘zgartirish kerak bo‘lsa, vazifaning nusxasini yarating.
+            <Lock className="size-4" aria-hidden /> {tr("O‘quvchilar bu quizni boshlagan. Natijalar buzilmasligi uchun savollarni o‘zgartirib bo‘lmaydi — o‘zgartirish kerak bo‘lsa, vazifaning nusxasini yarating.")}
           </span>
         </Alert>
         {qs.map((q, i) => (
           <Card key={q.key}>
             <CardBody>
               <div className="mb-1 text-[12.5px] text-muted">
-                {i + 1}. {t.questionType[q.type]} · {q.points} ball
+                {tr("{0}. {1} · {2} ball", i + 1, t.questionType[q.type], q.points)}
               </div>
               <RichText text={q.prompt} className="font-semibold" />
             </CardBody>
@@ -154,21 +155,21 @@ export function QuestionEditor({ assignmentId, initial, locked, status, bank, su
       {error ? <Alert tone="danger">{error}</Alert> : null}
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="text-[13.5px] text-muted">
-          <b className="text-text">{qs.length}</b> ta savol · jami <b className="text-text tabular">{total}</b> ball
+          <b className="text-text">{qs.length}</b> {tr("ta savol · jami")} <b className="text-text tabular">{total}</b> {tr("ball")}
         </div>
         <div className="flex flex-wrap gap-2">
           <Button variant="secondary" size="sm" onClick={() => setCsvOpen(true)}>
-            <FileUp /> CSV import
+            <FileUp /> {tr("CSV import")}
           </Button>
           <Button variant="secondary" size="sm" onClick={() => setBankOpen(true)}>
-            <Library /> Savollar bankidan
+            <Library /> {tr("Savollar bankidan")}
           </Button>
         </div>
       </div>
 
       {qs.length === 0 ? (
         <Card>
-          <EmptyState icon={<Plus />} title="Hali savol yo‘q" description="Quyidagi tugmalar orqali birinchi savolni qo‘shing." />
+          <EmptyState icon={<Plus />} title={tr("Hali savol yo‘q")} description={tr("Quyidagi tugmalar orqali birinchi savolni qo‘shing.")} />
         </Card>
       ) : null}
 
@@ -190,7 +191,7 @@ export function QuestionEditor({ assignmentId, initial, locked, status, bank, su
           }}
           onSaveToBank={async () => {
             const r = await addToBankAction(subjectId, toPayload(q));
-            if (r.ok) toast.success("Savollar bankiga qo‘shildi");
+            if (r.ok) toast.success(tr("Savollar bankiga qo‘shildi"));
             else toast.error(r.error);
           }}
         />
@@ -198,7 +199,7 @@ export function QuestionEditor({ assignmentId, initial, locked, status, bank, su
 
       <Card>
         <CardBody>
-          <div className="mb-2 text-[13px] font-semibold text-text-2">Savol qo‘shish</div>
+          <div className="mb-2 text-[13px] font-semibold text-text-2">{tr("Savol qo‘shish")}</div>
           <div className="flex flex-wrap gap-2">
             {QUESTION_TYPES.map((ty) => (
               <Button
@@ -218,14 +219,14 @@ export function QuestionEditor({ assignmentId, initial, locked, status, bank, su
       </Card>
 
       <div className="sticky bottom-4 z-10 flex flex-wrap items-center justify-between gap-2 rounded-3xl border-2 border-border bg-surface/95 p-3 shadow-pop backdrop-blur">
-        <span className="pl-1 text-[12.5px] text-muted">{dirty ? "Saqlanmagan o‘zgarishlar bor" : "Barcha o‘zgarishlar saqlangan"}</span>
+        <span className="pl-1 text-[12.5px] text-muted">{dirty ? tr("Saqlanmagan o‘zgarishlar bor") : tr("Barcha o‘zgarishlar saqlangan")}</span>
         <div className="flex gap-2">
           <Button variant="secondary" onClick={() => save(false)} loading={pending} disabled={!qs.length}>
-            <Save /> Saqlash
+            <Save /> {tr("Saqlash")}
           </Button>
           {status !== "published" ? (
             <Button onClick={() => save(true)} loading={pending} disabled={!qs.length}>
-              Saqlash va e’lon qilish
+              {tr("Saqlash va e’lon qilish")}
             </Button>
           ) : null}
         </div>
@@ -238,19 +239,19 @@ export function QuestionEditor({ assignmentId, initial, locked, status, bank, su
           setQs((xs) => [...xs, ...list.map((c) => ({ ...blankQuestion(c.type), ...c, key: key() }))]);
           setDirty(true);
           setCsvOpen(false);
-          toast.success(`${list.length} ta savol qo‘shildi — saqlashni unutmang`);
+          toast.success(tr("{0} ta savol qo‘shildi — saqlashni unutmang", list.length));
         }}
       />
 
       <Dialog
         open={bankOpen}
         onClose={() => setBankOpen(false)}
-        title="Savollar banki"
-        description="Tanlangan savollar quizga nusxa sifatida qo‘shiladi (avval joriy o‘zgarishlarni saqlang)."
+        title={tr("Savollar banki")}
+        description={tr("Tanlangan savollar quizga nusxa sifatida qo‘shiladi (avval joriy o‘zgarishlarni saqlang).")}
         footer={
           <>
             <Button variant="secondary" onClick={() => setBankOpen(false)}>
-              Bekor qilish
+              {tr("Bekor qilish")}
             </Button>
             <Button
               disabled={!picked.length}
@@ -263,7 +264,7 @@ export function QuestionEditor({ assignmentId, initial, locked, status, bank, su
                   }
                   const r = await copyFromBankAction(assignmentId, picked);
                   if (r.ok) {
-                    toast.success(`${picked.length} ta savol qo‘shildi`);
+                    toast.success(tr("{0} ta savol qo‘shildi", picked.length));
                     setBankOpen(false);
                     setPicked([]);
                     location.reload();
@@ -271,7 +272,7 @@ export function QuestionEditor({ assignmentId, initial, locked, status, bank, su
                 })
               }
             >
-              Qo‘shish ({picked.length})
+              {tr("Qo‘shish ({0})", picked.length)}
             </Button>
           </>
         }
@@ -288,7 +289,7 @@ export function QuestionEditor({ assignmentId, initial, locked, status, bank, su
                     <span>
                       <span className="line-clamp-2 font-semibold">{b.prompt}</span>
                       <span className="text-[12px] text-muted">
-                        {t.questionType[b.type as EditQuestion["type"]]} · {b.points} ball · {b.subjectName} · {b.ownerName}
+                        {tr("{0} · {1} ball · {2} · {3}", t.questionType[b.type as EditQuestion["type"]], b.points, b.subjectName, b.ownerName)}
                       </span>
                     </span>
                   }
@@ -297,7 +298,7 @@ export function QuestionEditor({ assignmentId, initial, locked, status, bank, su
             ))}
           </ul>
         ) : (
-          <p className="py-6 text-center text-[13.5px] text-muted">Bu kategoriya bo‘yicha bankda savol yo‘q. Savol kartasidagi “Bankka” tugmasi orqali qo‘shing.</p>
+          <p className="py-6 text-center text-[13.5px] text-muted">{tr("Bu kategoriya bo‘yicha bankda savol yo‘q. Savol kartasidagi “Bankka” tugmasi orqali qo‘shing.")}</p>
         )}
       </Dialog>
     </div>
@@ -305,12 +306,12 @@ export function QuestionEditor({ assignmentId, initial, locked, status, bank, su
 }
 
 const PROMPT_HINT: Partial<Record<QuestionType, string>> = {
-  single_choice: "Masalan: Choose the correct form: She ___ to school every day.",
-  translation: "Tarjima qilinadigan gap yoki so‘z.",
-  grammar_correction: "Masalan: Find and correct the mistake.",
-  arrange_words: "Masalan: Put the words in the correct order.",
-  irregular_verb: "Masalan: Write the past forms of the verb.",
-  essay: "Masalan: Write 80–100 words about your last holiday.",
+  get single_choice() { return tr("Masalan: Choose the correct form: She ___ to school every day."); },
+  get translation() { return tr("Tarjima qilinadigan gap yoki so‘z."); },
+  get grammar_correction() { return tr("Masalan: Find and correct the mistake."); },
+  get arrange_words() { return tr("Masalan: Put the words in the correct order."); },
+  get irregular_verb() { return tr("Masalan: Write the past forms of the verb."); },
+  get essay() { return tr("Masalan: Write 80–100 words about your last holiday."); },
 };
 
 export function QuestionCard({ q, index, count, onChange, onMove, onDelete, onDuplicate, onSaveToBank }: { q: EditQuestion; index: number; count: number; onChange: (p: Partial<EditQuestion>) => void; onMove?: (d: number) => void; onDelete?: () => void; onDuplicate?: () => void; onSaveToBank?: () => void }) {
@@ -327,19 +328,19 @@ export function QuestionCard({ q, index, count, onChange, onMove, onDelete, onDu
         </div>
         {onMove && onDelete && onDuplicate && onSaveToBank ? (
           <div className="flex items-center [&_button]:size-8 sm:[&_button]:size-10">
-            <Button variant="ghost" size="icon" onClick={() => onMove(-1)} disabled={index === 0} aria-label="Yuqoriga">
+            <Button variant="ghost" size="icon" onClick={() => onMove(-1)} disabled={index === 0} aria-label={tr("Yuqoriga")}>
               <ArrowUp />
             </Button>
-            <Button variant="ghost" size="icon" onClick={() => onMove(1)} disabled={index === count - 1} aria-label="Pastga">
+            <Button variant="ghost" size="icon" onClick={() => onMove(1)} disabled={index === count - 1} aria-label={tr("Pastga")}>
               <ArrowDown />
             </Button>
-            <Button variant="ghost" size="icon" onClick={onDuplicate} aria-label="Nusxa">
+            <Button variant="ghost" size="icon" onClick={onDuplicate} aria-label={tr("Nusxa")}>
               <Copy />
             </Button>
-            <Button variant="ghost" size="icon" onClick={onSaveToBank} aria-label="Savollar bankiga saqlash" title="Bankka saqlash">
+            <Button variant="ghost" size="icon" onClick={onSaveToBank} aria-label={tr("Savollar bankiga saqlash")} title={tr("Bankka saqlash")}>
               <Library />
             </Button>
-            <Button variant="ghost" size="icon" onClick={onDelete} aria-label="O‘chirish" className="hover:text-danger">
+            <Button variant="ghost" size="icon" onClick={onDelete} aria-label={tr("O‘chirish")} className="hover:text-danger">
               <Trash2 />
             </Button>
           </div>
@@ -347,10 +348,10 @@ export function QuestionCard({ q, index, count, onChange, onMove, onDelete, onDu
       </div>
       <CardBody className="space-y-4">
         <div className="grid gap-4 sm:grid-cols-[1fr_120px]">
-          <Field label="Savol matni" hint={q.type === "fill_blank" ? `Bo‘sh joylarni ___ bilan belgilang (topildi: ${blanks})` : PROMPT_HINT[q.type]}>
+          <Field label={tr("Savol matni")} hint={q.type === "fill_blank" ? tr("Bo‘sh joylarni ___ bilan belgilang (topildi: {0})", blanks) : PROMPT_HINT[q.type]}>
             <Textarea value={q.prompt} onChange={(e) => onChange({ prompt: e.target.value, ...(q.type === "fill_blank" ? { accepted: Array.from({ length: countBlanks(e.target.value) }, (_, i) => q.accepted[i] ?? []) } : {}) })} rows={3} />
           </Field>
-          <Field label="Ball">
+          <Field label={tr("Ball")}>
             <Input type="number" min={0} max={100} step="0.5" value={q.points} onChange={(e) => onChange({ points: Number(e.target.value) })} />
           </Field>
         </div>
@@ -360,13 +361,13 @@ export function QuestionCard({ q, index, count, onChange, onMove, onDelete, onDu
             <div className="relative">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={`/api/files/${q.imageFileId}`} alt="" className="h-24 rounded-xl border border-border object-cover" />
-              <button onClick={() => onChange({ imageFileId: null })} className="absolute -top-2 -right-2 grid size-6 place-items-center rounded-full bg-text text-bg" aria-label="Rasmni olib tashlash">
+              <button onClick={() => onChange({ imageFileId: null })} className="absolute -top-2 -right-2 grid size-6 place-items-center rounded-full bg-text text-bg" aria-label={tr("Rasmni olib tashlash")}>
                 <X className="size-3.5" />
               </button>
             </div>
           ) : (
             <label className="inline-flex h-9 cursor-pointer items-center gap-2 rounded-xl border border-dashed border-border-strong px-3 text-[13px] font-semibold text-text-2 hover:border-primary hover:text-primary">
-              <ImagePlus className="size-4" aria-hidden /> {uploading ? "Yuklanmoqda…" : "Rasm qo‘shish"}
+              <ImagePlus className="size-4" aria-hidden /> {uploading ? tr("Yuklanmoqda…") : tr("Rasm qo‘shish")}
               <input
                 type="file"
                 hidden
@@ -389,12 +390,12 @@ export function QuestionCard({ q, index, count, onChange, onMove, onDelete, onDu
           )}
           {q.audioFileId ? (
             <div className="flex min-w-0 flex-1 items-center gap-2">
-              <div className="min-w-0 flex-1"><AudioPlayer file={{ id: q.audioFileId, name: "Savol audiosi", size: 0 }} title="Savol audiosi" /></div>
-              <Button variant="ghost" size="icon" onClick={() => onChange({ audioFileId: null })} aria-label="Audioni olib tashlash"><X /></Button>
+              <div className="min-w-0 flex-1"><AudioPlayer file={{ id: q.audioFileId, name: tr("Savol audiosi"), size: 0 }} title={tr("Savol audiosi")} /></div>
+              <Button variant="ghost" size="icon" onClick={() => onChange({ audioFileId: null })} aria-label={tr("Audioni olib tashlash")}><X /></Button>
             </div>
           ) : (
             <label className="inline-flex h-9 cursor-pointer items-center gap-2 rounded-xl border border-dashed border-border-strong px-3 text-[13px] font-semibold text-text-2 hover:border-primary hover:text-primary">
-              <Music className="size-4" aria-hidden /> {audioUp ? "Yuklanmoqda…" : "Audio qo‘shish"}
+              <Music className="size-4" aria-hidden /> {audioUp ? tr("Yuklanmoqda…") : tr("Audio qo‘shish")}
               <input
                 type="file"
                 hidden
@@ -419,21 +420,21 @@ export function QuestionCard({ q, index, count, onChange, onMove, onDelete, onDu
 
         {isChoice || q.type === "true_false" ? (
           <div className="space-y-2">
-            <div className="text-[13px] font-semibold text-text-2">Variantlar {q.type === "multiple_choice" ? "(bir nechta to‘g‘ri bo‘lishi mumkin)" : "(bitta to‘g‘ri)"}</div>
+            <div className="text-[13px] font-semibold text-text-2">{tr("Variantlar {0}", q.type === "multiple_choice" ? tr("(bir nechta to‘g‘ri bo‘lishi mumkin)") : tr("(bitta to‘g‘ri)"))}</div>
             {q.options.map((o, i) => (
               <div key={i} className="flex items-center gap-2">
                 <button
                   type="button"
                   onClick={() => onChange({ options: q.options.map((x, j) => (q.type === "multiple_choice" ? (j === i ? { ...x, isCorrect: !x.isCorrect } : x) : { ...x, isCorrect: j === i })) })}
                   className={cn("grid size-9 shrink-0 place-items-center border transition", q.type === "multiple_choice" ? "rounded-lg" : "rounded-full", o.isCorrect ? "border-success bg-success text-white" : "border-border-strong text-transparent hover:border-success")}
-                  aria-label={o.isCorrect ? "To‘g‘ri javob" : "To‘g‘ri deb belgilash"}
+                  aria-label={o.isCorrect ? tr("To‘g‘ri javob") : tr("To‘g‘ri deb belgilash")}
                   aria-pressed={o.isCorrect}
                 >
                   <Check className="size-4" strokeWidth={3} />
                 </button>
                 <Input value={o.label} disabled={q.type === "true_false"} onChange={(e) => onChange({ options: q.options.map((x, j) => (j === i ? { ...x, label: e.target.value } : x)) })} placeholder={`${i + 1}-variant`} />
                 {isChoice ? (
-                  <Button variant="ghost" size="icon" onClick={() => onChange({ options: q.options.filter((_, j) => j !== i) })} disabled={q.options.length <= 2} aria-label="Variantni o‘chirish">
+                  <Button variant="ghost" size="icon" onClick={() => onChange({ options: q.options.filter((_, j) => j !== i) })} disabled={q.options.length <= 2} aria-label={tr("Variantni o‘chirish")}>
                     <X />
                   </Button>
                 ) : null}
@@ -441,55 +442,55 @@ export function QuestionCard({ q, index, count, onChange, onMove, onDelete, onDu
             ))}
             {isChoice && q.options.length < 10 ? (
               <Button variant="ghost" size="sm" onClick={() => onChange({ options: [...q.options, { label: "", isCorrect: false }] })}>
-                <Plus /> Variant
+                <Plus /> {tr("Variant")}
               </Button>
             ) : null}
           </div>
         ) : null}
 
         {q.type === "short_answer" ? (
-          <Field label="Qabul qilinadigan javoblar" hint="Har birini yangi qatorga yozing. Bo‘sh qoldirsangiz — o‘qituvchi qo‘lda baholaydi.">
+          <Field label={tr("Qabul qilinadigan javoblar")} hint={tr("Har birini yangi qatorga yozing. Bo‘sh qoldirsangiz — o‘qituvchi qo‘lda baholaydi.")}>
             <Textarea rows={3} value={(q.accepted[0] ?? []).join("\n")} onChange={(e) => onChange({ accepted: [e.target.value.split("\n")] })} />
           </Field>
         ) : null}
         {q.type === "fill_blank" && blanks > 0 ? (
           <div className="grid gap-3 sm:grid-cols-2">
             {Array.from({ length: blanks }).map((_, i) => (
-              <Field key={i} label={`${i + 1}-bo‘sh joy javoblari`} hint="Vergul bilan ajrating">
+              <Field key={i} label={tr("{0}-bo‘sh joy javoblari", i + 1)} hint={tr("Vergul bilan ajrating")}>
                 <Input value={(q.accepted[i] ?? []).join(", ")} onChange={(e) => onChange({ accepted: Array.from({ length: blanks }, (_, j) => (j === i ? e.target.value.split(",") : (q.accepted[j] ?? []))) })} />
               </Field>
             ))}
           </div>
         ) : null}
-        {q.type === "short_answer" || q.type === "fill_blank" ? <Checkbox checked={q.caseSensitive} onChange={(c) => onChange({ caseSensitive: c })} label="Katta-kichik harfni farqlash" /> : null}
+        {q.type === "short_answer" || q.type === "fill_blank" ? <Checkbox checked={q.caseSensitive} onChange={(c) => onChange({ caseSensitive: c })} label={tr("Katta-kichik harfni farqlash")} /> : null}
 
         {q.type === "matching" ? (
           <div className="space-y-2">
-            <div className="text-[13px] font-semibold text-text-2">Juftliklar (o‘quvchiga o‘ng ustun aralashtirib ko‘rsatiladi)</div>
+            <div className="text-[13px] font-semibold text-text-2">{tr("Juftliklar (o‘quvchiga o‘ng ustun aralashtirib ko‘rsatiladi)")}</div>
             {q.pairs.map((pr, i) => (
               <div key={i} className="grid grid-cols-[1fr_1fr_auto] gap-2">
-                <Input value={pr.left} onChange={(e) => onChange({ pairs: q.pairs.map((x, j) => (j === i ? { ...x, left: e.target.value } : x)) })} placeholder="Chap" aria-label="Chap tomon" />
-                <Input value={pr.right} onChange={(e) => onChange({ pairs: q.pairs.map((x, j) => (j === i ? { ...x, right: e.target.value } : x)) })} placeholder="O‘ng" aria-label="O‘ng tomon" />
-                <Button variant="ghost" size="icon" onClick={() => onChange({ pairs: q.pairs.filter((_, j) => j !== i) })} disabled={q.pairs.length <= 2} aria-label="Juftlikni o‘chirish">
+                <Input value={pr.left} onChange={(e) => onChange({ pairs: q.pairs.map((x, j) => (j === i ? { ...x, left: e.target.value } : x)) })} placeholder={tr("Chap")} aria-label={tr("Chap tomon")} />
+                <Input value={pr.right} onChange={(e) => onChange({ pairs: q.pairs.map((x, j) => (j === i ? { ...x, right: e.target.value } : x)) })} placeholder={tr("O‘ng")} aria-label={tr("O‘ng tomon")} />
+                <Button variant="ghost" size="icon" onClick={() => onChange({ pairs: q.pairs.filter((_, j) => j !== i) })} disabled={q.pairs.length <= 2} aria-label={tr("Juftlikni o‘chirish")}>
                   <X />
                 </Button>
               </div>
             ))}
             <Button variant="ghost" size="sm" onClick={() => onChange({ pairs: [...q.pairs, { left: "", right: "" }] })}>
-              <Plus /> Juftlik
+              <Plus /> {tr("Juftlik")}
             </Button>
           </div>
         ) : null}
 
         {q.type === "translation" ? (
           <div className="space-y-3">
-            <Field label="Yo‘nalish">
+            <Field label={tr("Yo‘nalish")}>
               <Select value={q.direction ?? "en_uz"} onChange={(e) => onChange({ direction: e.target.value as "en_uz" | "uz_en" })}>
-                <option value="en_uz">Inglizchadan o‘zbekchaga</option>
-                <option value="uz_en">O‘zbekchadan inglizchaga</option>
+                <option value="en_uz">{tr("Inglizchadan o‘zbekchaga")}</option>
+                <option value="uz_en">{tr("O‘zbekchadan inglizchaga")}</option>
               </Select>
             </Field>
-            <Field label="To‘g‘ri tarjimalar" hint="Har birini yangi qatorga yozing. Bo‘sh qoldirsangiz — ustoz qo‘lda baholaydi.">
+            <Field label={tr("To‘g‘ri tarjimalar")} hint={tr("Har birini yangi qatorga yozing. Bo‘sh qoldirsangiz — ustoz qo‘lda baholaydi.")}>
               <Textarea rows={3} value={(q.accepted[0] ?? []).join("\n")} onChange={(e) => onChange({ accepted: [e.target.value.split("\n")] })} />
             </Field>
           </div>
@@ -497,21 +498,21 @@ export function QuestionCard({ q, index, count, onChange, onMove, onDelete, onDu
 
         {q.type === "grammar_correction" ? (
           <div className="space-y-3">
-            <Field label="Xatosi bor gap" hint="O‘quvchiga shu gap tahrirlash uchun beriladi.">
-              <Input value={q.incorrect} onChange={(e) => onChange({ incorrect: e.target.value })} placeholder="She don't like coffee." />
+            <Field label={tr("Xatosi bor gap")} hint={tr("O‘quvchiga shu gap tahrirlash uchun beriladi.")}>
+              <Input value={q.incorrect} onChange={(e) => onChange({ incorrect: e.target.value })} placeholder={tr("She don't like coffee.")} />
             </Field>
-            <Field label="To‘g‘ri variantlar" hint="Har birini yangi qatorga yozing.">
-              <Textarea rows={2} value={(q.accepted[0] ?? []).join("\n")} onChange={(e) => onChange({ accepted: [e.target.value.split("\n")] })} placeholder="She doesn't like coffee." />
+            <Field label={tr("To‘g‘ri variantlar")} hint={tr("Har birini yangi qatorga yozing.")}>
+              <Textarea rows={2} value={(q.accepted[0] ?? []).join("\n")} onChange={(e) => onChange({ accepted: [e.target.value.split("\n")] })} placeholder={tr("She doesn't like coffee.")} />
             </Field>
           </div>
         ) : null}
 
         {q.type === "arrange_words" ? (
           <div className="space-y-3">
-            <Field label="To‘g‘ri gap" hint={`O‘quvchiga so‘zlar aralashtirib beriladi (${q.words.length} ta so‘z).`}>
-              <Input value={q.words.join(" ")} onChange={(e) => onChange({ words: e.target.value.split(/\s+/) })} placeholder="I have never been to London" />
+            <Field label={tr("To‘g‘ri gap")} hint={tr("O‘quvchiga so‘zlar aralashtirib beriladi ({0} ta so‘z).", q.words.length)}>
+              <Input value={q.words.join(" ")} onChange={(e) => onChange({ words: e.target.value.split(/\s+/) })} placeholder={tr("I have never been to London")} />
             </Field>
-            <Field label="Boshqa to‘g‘ri tartiblar (ixtiyoriy)" hint="Har birini yangi qatorga yozing.">
+            <Field label={tr("Boshqa to‘g‘ri tartiblar (ixtiyoriy)")} hint={tr("Har birini yangi qatorga yozing.")}>
               <Textarea rows={2} value={(q.accepted[0] ?? []).join("\n")} onChange={(e) => onChange({ accepted: [e.target.value.split("\n")] })} />
             </Field>
           </div>
@@ -519,21 +520,21 @@ export function QuestionCard({ q, index, count, onChange, onMove, onDelete, onDu
 
         {q.type === "irregular_verb" ? (
           <div className="grid gap-3 sm:grid-cols-3">
-            <Field label="Asosiy shakl (V1)">
+            <Field label={tr("Asosiy shakl (V1)")}>
               <Input value={q.base} onChange={(e) => onChange({ base: e.target.value })} placeholder="go" />
             </Field>
-            <Field label="Past Simple (V2)" hint="Vergul bilan: was, were">
+            <Field label={tr("Past Simple (V2)")} hint={tr("Vergul bilan: was, were")}>
               <Input value={(q.accepted[0] ?? []).join(", ")} onChange={(e) => onChange({ accepted: [e.target.value.split(","), q.accepted[1] ?? []] })} placeholder="went" />
             </Field>
-            <Field label="Past Participle (V3)" hint="Vergul bilan">
+            <Field label={tr("Past Participle (V3)")} hint={tr("Vergul bilan")}>
               <Input value={(q.accepted[1] ?? []).join(", ")} onChange={(e) => onChange({ accepted: [q.accepted[0] ?? [], e.target.value.split(",")] })} placeholder="gone" />
             </Field>
           </div>
         ) : null}
 
-        {q.type === "essay" ? <p className="text-[12.5px] text-muted">Erkin javoblar o‘qituvchi tomonidan qo‘lda baholanadi.</p> : null}
+        {q.type === "essay" ? <p className="text-[12.5px] text-muted">{tr("Erkin javoblar o‘qituvchi tomonidan qo‘lda baholanadi.")}</p> : null}
 
-        <Field label="Tushuntirish (natijada ko‘rsatiladi)">
+        <Field label={tr("Tushuntirish (natijada ko‘rsatiladi)")}>
           <Textarea rows={2} value={q.explanation} onChange={(e) => onChange({ explanation: e.target.value })} />
         </Field>
       </CardBody>
@@ -566,35 +567,35 @@ function CsvImportDialog({ open, onClose, onImport }: { open: boolean; onClose: 
     <Dialog
       open={open}
       onClose={onClose}
-      title="Savollarni CSV’dan import qilish"
-      description="Ustunlar: type, prompt, points, options, answers, extra, explanation. Namunani yuklab, to‘ldiring."
+      title={tr("Savollarni CSV’dan import qilish")}
+      description={tr("Ustunlar: type, prompt, points, options, answers, extra, explanation. Namunani yuklab, to‘ldiring.")}
       footer={
         <>
-          <Button variant="secondary" onClick={onClose}>Bekor qilish</Button>
+          <Button variant="secondary" onClick={onClose}>{tr("Bekor qilish")}</Button>
           <Button disabled={!parsed || !parsed.questions.length || parsed.errors.length > 0} onClick={() => parsed && onImport(parsed.questions)}>
-            Qo‘shish{parsed?.questions.length ? ` (${parsed.questions.length})` : ""}
+            {tr("Qo‘shish")}{parsed?.questions.length ? ` (${parsed.questions.length})` : ""}
           </Button>
         </>
       }
     >
       <div className="space-y-3">
         <div className="flex flex-wrap gap-2">
-          <Button variant="secondary" size="sm" onClick={template}><Download /> Namuna CSV</Button>
+          <Button variant="secondary" size="sm" onClick={template}><Download /> {tr("Namuna CSV")}</Button>
           <label className="inline-flex h-8 cursor-pointer items-center gap-1.5 rounded-lg border border-border bg-surface px-3 text-[13px] font-semibold hover:bg-surface-2">
-            <FileUp className="size-4" aria-hidden /> Fayl tanlash
+            <FileUp className="size-4" aria-hidden /> {tr("Fayl tanlash")}
             <input type="file" accept=".csv,text/csv" hidden onChange={async (e) => { const f = e.target.files?.[0]; e.target.value = ""; if (f) setText(await f.text()); }} />
           </label>
         </div>
-        <Textarea rows={7} value={text} onChange={(e) => setText(e.target.value)} placeholder={QUESTION_CSV_EXAMPLE.split("\n").slice(0, 3).join("\n")} aria-label="CSV matni" className="font-mono text-[12.5px]" spellCheck={false} />
+        <Textarea rows={7} value={text} onChange={(e) => setText(e.target.value)} placeholder={QUESTION_CSV_EXAMPLE.split("\n").slice(0, 3).join("\n")} aria-label={tr("CSV matni")} className="font-mono text-[12.5px]" spellCheck={false} />
         {parsed ? (
           parsed.errors.length ? (
-            <Alert tone="danger" title={`${parsed.errors.length} ta xato — tuzatib qayta urining`}>
+            <Alert tone="danger" title={tr("{0} ta xato — tuzatib qayta urining", parsed.errors.length)}>
               <ul className="max-h-40 space-y-0.5 overflow-y-auto text-[12.5px]">
-                {parsed.errors.map((e, i) => <li key={i}>{e.line}-qator: {e.message}</li>)}
+                {parsed.errors.map((e, i) => <li key={i}>{tr("{0}-qator: {1}", e.line, e.message)}</li>)}
               </ul>
             </Alert>
           ) : (
-            <Alert tone="success">{parsed.questions.length} ta savol tayyor.</Alert>
+            <Alert tone="success">{tr("{0} ta savol tayyor.", parsed.questions.length)}</Alert>
           )
         ) : null}
       </div>

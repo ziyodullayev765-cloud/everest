@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { parseCsv } from "./utils";
+import { tr } from "@/lib/i18n/tr";
 
 export const wordInput = z.object({
   english: z.string().trim().min(1, "Inglizcha so‘z kerak").max(120),
@@ -24,12 +25,12 @@ export function parseWordCsv(text: string, existing: string[] = []): { rows: Wor
   const errors: { line: number; message: string }[] = [];
   const duplicates: string[] = [];
   const rows: WordInput[] = [];
-  if (!all.length) return { rows, duplicates, errors: [{ line: 1, message: "Fayl bo‘sh." }] };
+  if (!all.length) return { rows, duplicates, errors: [{ line: 1, message: tr("Fayl bo‘sh.") }] };
   const head = all[0].map((h) => h.trim().toLowerCase());
   const hasHeader = head.includes("english");
   const idx = (n: string, fallback: number) => (hasHeader ? head.indexOf(n) : fallback);
   const cols = { english: idx("english", 0), uzbek: idx("uzbek", 1), example: idx("example", 2), exampleUz: idx("example_uz", 3), phonetic: idx("phonetic", 4), partOfSpeech: idx("part_of_speech", 5), difficulty: idx("difficulty", 6) };
-  if (hasHeader && cols.uzbek < 0) return { rows, duplicates, errors: [{ line: 1, message: "“uzbek” ustuni kerak." }] };
+  if (hasHeader && cols.uzbek < 0) return { rows, duplicates, errors: [{ line: 1, message: tr("“uzbek” ustuni kerak.") }] };
   const seen = new Set(existing.map((e) => e.trim().toLowerCase()));
   const body = hasHeader ? all.slice(1) : all;
   if (body.length > 1000) errors.push({ line: 1, message: "Bir martada ko‘pi bilan 1000 ta so‘z." });

@@ -6,12 +6,13 @@ import { formatDateTime } from "@/lib/dates";
 import { Card, CardBody, CardHeader } from "@/components/ui/card";
 import { Avatar } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
+import { tr } from "@/lib/i18n/tr";
 
 export async function FollowUpCard({ user, base }: { user: SessionUser; base: string }) {
   const rows = await followUps(user);
   return (
     <Card>
-      <CardHeader title="E’tibor kerak" icon={<UserRoundSearch />} description="Faollik va muddatlar asosida" />
+      <CardHeader title={tr("E’tibor kerak")} icon={<UserRoundSearch />} description={tr("Faollik va muddatlar asosida")} />
       <CardBody className="pt-2">
         {rows.length ? (
           <ul className="-mx-2">
@@ -28,7 +29,7 @@ export async function FollowUpCard({ user, base }: { user: SessionUser; base: st
             ))}
           </ul>
         ) : (
-          <p className="py-3 text-[13.5px] text-muted">Hamma o‘quvchilar faol.</p>
+          <p className="py-3 text-[13.5px] text-muted">{tr("Hamma o‘quvchilar faol.")}</p>
         )}
       </CardBody>
     </Card>
@@ -39,7 +40,7 @@ export async function RecentQuizzesCard({ user, base }: { user: SessionUser; bas
   const rows = await recentQuizzes(user);
   return (
     <Card>
-      <CardHeader title="So‘nggi quizlar" icon={<Sparkles />} />
+      <CardHeader title={tr("So‘nggi quizlar")} icon={<Sparkles />} />
       <CardBody className="pt-2">
         {rows.length ? (
           <ul className="-mx-2">
@@ -52,13 +53,13 @@ export async function RecentQuizzesCard({ user, base }: { user: SessionUser; bas
                       {r.title} · {formatDateTime(r.submittedAt)}
                     </span>
                   </span>
-                  {r.percent != null ? <span className="text-[13px] font-bold tabular">{r.percent}%</span> : <Badge tone="violet">tekshiruvda</Badge>}
+                  {r.percent != null ? <span className="text-[13px] font-bold tabular">{r.percent}%</span> : <Badge tone="violet">{tr("tekshiruvda")}</Badge>}
                 </Link>
               </li>
             ))}
           </ul>
         ) : (
-          <p className="py-3 text-[13.5px] text-muted">Hali quiz yakunlanmagan.</p>
+          <p className="py-3 text-[13.5px] text-muted">{tr("Hali quiz yakunlanmagan.")}</p>
         )}
       </CardBody>
     </Card>

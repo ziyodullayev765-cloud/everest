@@ -13,6 +13,7 @@ import { RichText } from "@/components/ui/rich-text";
 import { toast } from "@/components/ui/toast";
 import { t } from "@/lib/i18n";
 import { QuestionEditorSingle } from "./question-single";
+import { tr } from "@/lib/i18n/tr";
 
 type Item = { id: string; type: string; prompt: string; points: number; subjectName: string; ownerName: string; mine: boolean; options: { label: string; isCorrect: boolean }[] };
 
@@ -25,7 +26,7 @@ export function BankManager({ subjects, defaultSubject, items, canDeleteAll }: {
     <>
       <div className="mb-4 flex justify-end">
         <Button onClick={() => setOpen(true)}>
-          <Plus /> Savol qo‘shish
+          <Plus /> {tr("Savol qo‘shish")}
         </Button>
       </div>
       {items.length ? (
@@ -36,7 +37,7 @@ export function BankManager({ subjects, defaultSubject, items, canDeleteAll }: {
                 <div className="min-w-0 flex-1">
                   <div className="mb-1 flex flex-wrap items-center gap-2 text-[12px] text-muted">
                     <Badge tone="primary">{t.questionType[q.type as "essay"]}</Badge>
-                    {q.subjectName} · {q.points} ball · {q.ownerName}
+                    {tr("{0} · {1} ball · {2}", q.subjectName, q.points, q.ownerName)}
                   </div>
                   <RichText text={q.prompt} className="text-[14px] font-semibold" />
                   {q.options.length ? (
@@ -53,7 +54,7 @@ export function BankManager({ subjects, defaultSubject, items, canDeleteAll }: {
                   <Button
                     variant="ghost"
                     size="icon"
-                    aria-label="O‘chirish"
+                    aria-label={tr("O‘chirish")}
                     loading={pending}
                     onClick={() =>
                       start(async () => {
@@ -72,12 +73,12 @@ export function BankManager({ subjects, defaultSubject, items, canDeleteAll }: {
         </div>
       ) : (
         <Card>
-          <EmptyState icon={<Library />} title="Bank bo‘sh" description="Bu yerga qo‘shilgan savollarni istalgan quizga qayta qo‘shish mumkin." />
+          <EmptyState icon={<Library />} title={tr("Bank bo‘sh")} description={tr("Bu yerga qo‘shilgan savollarni istalgan quizga qayta qo‘shish mumkin.")} />
         </Card>
       )}
-      <Dialog open={open} onClose={() => setOpen(false)} title="Bankka savol qo‘shish" className="sm:max-w-2xl">
+      <Dialog open={open} onClose={() => setOpen(false)} title={tr("Bankka savol qo‘shish")} className="sm:max-w-2xl">
         <div className="mb-4">
-          <Select value={subject} onChange={(e) => setSubject(e.target.value)} aria-label="Kategoriya">
+          <Select value={subject} onChange={(e) => setSubject(e.target.value)} aria-label={tr("Kategoriya")}>
             {subjects.map((s) => (
               <option key={s.id} value={s.id}>
                 {s.name}
@@ -89,7 +90,7 @@ export function BankManager({ subjects, defaultSubject, items, canDeleteAll }: {
           onSave={async (q) => {
             const r = await addToBankAction(subject, q);
             if (r.ok) {
-              toast.success("Qo‘shildi");
+              toast.success(tr("Qo‘shildi"));
               setOpen(false);
               router.refresh();
             } else toast.error(r.error);

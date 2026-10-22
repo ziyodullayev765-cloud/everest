@@ -1,3 +1,4 @@
+import { currentLocale, tr } from "@/lib/i18n/tr";
 export const DEFAULT_TZ = "Asia/Tashkent";
 
 /** YYYY-MM-DD of a moment in the given time zone. */
@@ -28,10 +29,22 @@ export function lastNDays(today: string, n: number) {
  * Uzbek names are spelled out here instead of relying on Intl: browser ICU data for "uz" is uneven
  * (Chromium renders short months as "M10"), and server and client must print the same text.
  */
-const MONTHS = ["yanvar", "fevral", "mart", "aprel", "may", "iyun", "iyul", "avgust", "sentabr", "oktabr", "noyabr", "dekabr"];
-const MONTHS_SHORT = ["yan", "fev", "mar", "apr", "may", "iyn", "iyl", "avg", "sen", "okt", "noy", "dek"];
-const WEEKDAYS = ["yakshanba", "dushanba", "seshanba", "chorshanba", "payshanba", "juma", "shanba"];
-const WEEKDAYS_SHORT = ["Ya", "Du", "Se", "Ch", "Pa", "Ju", "Sh"];
+const NAMES = {
+  uz: {
+    months: ["yanvar", "fevral", "mart", "aprel", "may", "iyun", "iyul", "avgust", "sentabr", "oktabr", "noyabr", "dekabr"],
+    monthsShort: ["yan", "fev", "mar", "apr", "may", "iyn", "iyl", "avg", "sen", "okt", "noy", "dek"],
+    weekdays: ["yakshanba", "dushanba", "seshanba", "chorshanba", "payshanba", "juma", "shanba"],
+    weekdaysShort: ["Ya", "Du", "Se", "Ch", "Pa", "Ju", "Sh"],
+  },
+  en: {
+    months: ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
+    monthsShort: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+    weekdays: ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
+    weekdaysShort: ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"],
+  },
+};
+const names = () => NAMES[currentLocale()];
+const en = () => currentLocale() === "en";
 const TZ_OFFSET_MS = 5 * 3600_000; // Asia/Tashkent, no DST
 
 /** Wall-clock parts in Tashkent. */
@@ -43,26 +56,27 @@ const hhmm = (p: { h: number; min: number }) => `${String(p.h).padStart(2, "0")}
 
 export const formatDate = (d: Date | string) => {
   const p = parts(d);
-  return `${p.d}-${MONTHS[p.m]}, ${p.y}`;
+  return en() ? `${p.d} ${names().months[p.m]} ${p.y}` : `${p.d}-${names().months[p.m]}, ${p.y}`;
 };
 export const formatShortDate = (d: Date | string) => {
   const p = parts(d);
-  return `${p.d}-${MONTHS_SHORT[p.m]}`;
+  return en() ? `${p.d} ${names().monthsShort[p.m]}` : `${p.d}-${names().monthsShort[p.m]}`;
 };
 export const formatDateTime = (d: Date | string) => {
   const p = parts(d);
-  return `${p.d}-${MONTHS_SHORT[p.m]}, ${hhmm(p)}`;
+  return `${formatShortDate(d)}, ${hhmm(p)}`;
 };
 export const formatTime = (d: Date | string) => hhmm(parts(d));
 /** For YYYY-MM-DD day keys. */
-export const formatWeekday = (day: string) => WEEKDAYS_SHORT[new Date(day + "T00:00:00Z").getUTCDay()];
+export const formatWeekday = (day: string) => names().weekdaysShort[new Date(day + "T00:00:00Z").getUTCDay()];
 export const formatDayShort = (day: string) => {
   const x = new Date(day + "T00:00:00Z");
-  return `${x.getUTCDate()}-${MONTHS_SHORT[x.getUTCMonth()]}`;
+  return en() ? `${x.getUTCDate()} ${names().monthsShort[x.getUTCMonth()]}` : `${x.getUTCDate()}-${names().monthsShort[x.getUTCMonth()]}`;
 };
 export const formatLongToday = (d = new Date()) => {
   const p = parts(d);
-  return `${WEEKDAYS[p.wd]}, ${p.d}-${MONTHS[p.m]}`;
+  const w = names().weekdays[p.wd];
+  return en() ? `${w}, ${p.d} ${names().months[p.m]}` : `${w}, ${p.d}-${names().months[p.m]}`;
 };
 
 /** "2 kun 4 soat qoldi" / "3 soat oldin tugadi". */
@@ -72,8 +86,9 @@ export function remaining(due: Date | string, now = new Date()) {
   const m = Math.floor(abs / 60000);
   const h = Math.floor(m / 60);
   const d = Math.floor(h / 24);
-  const text = d >= 1 ? `${d} kun${h % 24 ? ` ${h % 24} soat` : ""}` : h >= 1 ? `${h} soat${m % 60 ? ` ${m % 60} daqiqa` : ""}` : `${Math.max(1, m)} daqiqa`;
-  return { overdue: ms < 0, hours: ms / 3600000, text: ms < 0 ? `${text} oldin tugadi` : `${text} qoldi` };
+  const [dd, hh, mm] = en() ? ["d", "h", "min"] : ["kun", "soat", "daqiqa"];
+  const text = d >= 1 ? `${d} ${dd}${h % 24 ? ` ${h % 24} ${hh}` : ""}` : h >= 1 ? `${h} ${hh}${m % 60 ? ` ${m % 60} ${mm}` : ""}` : `${Math.max(1, m)} ${mm}`;
+  return { overdue: ms < 0, hours: ms / 3600000, text: ms < 0 ? tr("{0} oldin tugadi", text) : en() ? `${text} left` : `${text} qoldi` };
 }
 
 /** Converts a value from <input type="datetime-local"> (interpreted in Tashkent time) to a Date. */

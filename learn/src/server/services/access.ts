@@ -3,6 +3,7 @@ import { and, eq, inArray, isNull, or, sql, type AnyColumn, type SQL } from "dri
 import { db, schema, type Executor } from "../db";
 import { isAdmin, isStudent, isTeacher, type Actor } from "../auth/rbac";
 import { forbidden, notFound } from "../errors";
+import { tr } from "@/lib/i18n/tr";
 
 /**
  * Data-scoped authorisation. Teachers only see classes they are assigned to (optionally per subject)
@@ -62,7 +63,7 @@ export async function assertStudentCanSee(studentId: string, assignmentId: strin
     .from(schema.assignments)
     .where(and(eq(schema.assignments.id, assignmentId), isLive, targetsStudent(studentId)))
     .limit(1);
-  if (!rows[0]) throw notFound("Vazifa topilmadi.");
+  if (!rows[0]) throw notFound(tr("Vazifa topilmadi."));
   return rows[0];
 }
 
@@ -94,7 +95,7 @@ export async function canManageAssignment(a: Actor, assignmentId: string, ex: Ex
 
 export async function assertCanManageAssignment(a: Actor, assignmentId: string, ex: Executor = db) {
   const rows = await ex.select().from(schema.assignments).where(eq(schema.assignments.id, assignmentId)).limit(1);
-  if (!rows[0]) throw notFound("Vazifa topilmadi.");
+  if (!rows[0]) throw notFound(tr("Vazifa topilmadi."));
   if (!(await canManageAssignment(a, assignmentId, ex))) throw forbidden();
   return rows[0];
 }
@@ -124,7 +125,7 @@ export async function assertCanGrade(a: Actor, assignmentId: string, studentId: 
     .from(schema.assignments)
     .where(and(eq(schema.assignments.id, assignmentId), targetsStudent(studentId)))
     .limit(1);
-  if (!r[0]) throw notFound("O‘quvchi bu vazifaga biriktirilmagan.");
+  if (!r[0]) throw notFound(tr("O‘quvchi bu vazifaga biriktirilmagan."));
   return asg;
 }
 

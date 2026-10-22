@@ -4,6 +4,7 @@ import { Star, TriangleAlert, Volume2 } from "lucide-react";
 import { wordFlagAction } from "@/app/actions/vocab";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/components/ui/toast";
+import { tr } from "@/lib/i18n/tr";
 
 export function WordFlags({ wordId, audioFileId, english, favorite, difficult }: { wordId: string; audioFileId: string | null; english: string; favorite: boolean; difficult: boolean }) {
   const [fav, setFav] = useState(favorite);
@@ -28,14 +29,14 @@ export function WordFlags({ wordId, audioFileId, english, favorite, difficult }:
     <div className="flex shrink-0">
       {audioFileId ? <audio ref={audio} src={`/api/files/${audioFileId}`} preload="none" /> : null}
       {audioFileId || tts ? (
-        <Button variant="ghost" size="icon" onClick={play} aria-label={audioFileId ? "Talaffuz" : "Talaffuz (brauzer ovozi)"}>
+        <Button variant="ghost" size="icon" onClick={play} aria-label={audioFileId ? tr("Talaffuz") : tr("Talaffuz (brauzer ovozi)")}>
           <Volume2 />
         </Button>
       ) : null}
-      <Button variant="ghost" size="icon" onClick={() => flag("difficult", !hard)} aria-pressed={hard} aria-label="Qiyin so‘z" className={hard ? "text-danger" : ""}>
+      <Button variant="ghost" size="icon" onClick={() => flag("difficult", !hard)} aria-pressed={hard} aria-label={tr("Qiyin so‘z")} className={hard ? "text-danger" : ""}>
         <TriangleAlert />
       </Button>
-      <Button variant="ghost" size="icon" onClick={() => flag("favorite", !fav)} aria-pressed={fav} aria-label="Sevimli" className={fav ? "text-warning" : ""}>
+      <Button variant="ghost" size="icon" onClick={() => flag("favorite", !fav)} aria-pressed={fav} aria-label={tr("Sevimli")} className={fav ? "text-warning" : ""}>
         <Star className={fav ? "fill-current" : ""} />
       </Button>
     </div>

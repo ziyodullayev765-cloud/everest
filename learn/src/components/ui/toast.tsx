@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
+import { tr } from "@/lib/i18n/tr";
 import { CheckCircle2, Info, XCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -8,9 +9,9 @@ let seq = 0;
 const listeners = new Set<(t: Toast) => void>();
 
 export const toast = {
-  success: (message: string) => emit("success", message),
-  error: (message: string) => emit("error", message),
-  info: (message: string) => emit("info", message),
+  success: (message: string) => emit("success", tr(message)),
+  error: (message: string) => emit("error", tr(message)),
+  info: (message: string) => emit("info", tr(message)),
 };
 function emit(tone: Toast["tone"], message: string) {
   const t = { id: ++seq, tone, message };

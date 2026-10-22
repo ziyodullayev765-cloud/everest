@@ -2,6 +2,7 @@
 import { Moon, Sun, Monitor } from "lucide-react";
 import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
+import { tr } from "@/lib/i18n/tr";
 
 /** Applied before first paint (inlined in <head>) so there is no theme flash. */
 export const themeScript = `(function(){try{var t=localStorage.getItem('theme')||'system';var d=t==='dark'||(t==='system'&&matchMedia('(prefers-color-scheme: dark)').matches);document.documentElement.classList.toggle('dark',d);}catch(e){}})();`;
@@ -37,12 +38,12 @@ export function ThemeSwitcher({ className }: { className?: string }) {
     apply(m);
   };
   const opts: { m: Mode; icon: typeof Sun; label: string }[] = [
-    { m: "light", icon: Sun, label: "Yorug‘" },
-    { m: "dark", icon: Moon, label: "Qorong‘i" },
-    { m: "system", icon: Monitor, label: "Tizim" },
+    { m: "light", icon: Sun, label: tr("Yorug‘") },
+    { m: "dark", icon: Moon, label: tr("Qorong‘i") },
+    { m: "system", icon: Monitor, label: tr("Tizim") },
   ];
   return (
-    <div className={cn("inline-flex rounded-xl border border-border bg-surface-2 p-1", className)} role="radiogroup" aria-label="Mavzu">
+    <div className={cn("inline-flex rounded-xl border border-border bg-surface-2 p-1", className)} role="radiogroup" aria-label={tr("Mavzu")}>
       {opts.map(({ m, icon: Icon, label }) => (
         <button
           key={m}

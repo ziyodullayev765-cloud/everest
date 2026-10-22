@@ -4,6 +4,7 @@ import { CheckCircle2, CloudDownload, Loader2, Trash2 } from "lucide-react";
 import { offlineSupported, removeFiles, savedFileIds, saveFiles } from "@/lib/offline";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/components/ui/toast";
+import { tr } from "@/lib/i18n/tr";
 
 const mb = (b: number) => `${(b / 1024 / 1024).toFixed(1)} MB`;
 
@@ -22,17 +23,17 @@ export function SaveOffline({ files }: { files: { id: string; size: number }[] }
   if (state === "saved")
     return (
       <div className="flex flex-wrap items-center gap-2 rounded-2xl border-2 border-primary/30 bg-primary-soft px-3 py-2 text-[13.5px] font-bold text-primary">
-        <CheckCircle2 className="size-4" aria-hidden /> Telefonda saqlangan — internetsiz ochiladi
+        <CheckCircle2 className="size-4" aria-hidden /> {tr("Telefonda saqlangan — internetsiz ochiladi")}
         <button
           type="button"
           className="ml-auto inline-flex items-center gap-1 text-[12.5px] text-muted hover:text-danger"
           onClick={async () => {
             await removeFiles(files.map((f) => f.id));
             setState("none");
-            toast.success("Telefondan o‘chirildi");
+            toast.success(tr("Telefondan o‘chirildi"));
           }}
         >
-          <Trash2 className="size-3.5" aria-hidden /> O‘chirish
+          <Trash2 className="size-3.5" aria-hidden /> {tr("O‘chirish")}
         </button>
       </div>
     );
@@ -46,15 +47,15 @@ export function SaveOffline({ files }: { files: { id: string; size: number }[] }
         try {
           await saveFiles(files, (l, t) => setPct(t ? Math.round((l / t) * 100) : 0));
           setState("saved");
-          toast.success("Kitob telefonga saqlandi");
+          toast.success(tr("Kitob telefonga saqlandi"));
         } catch (e) {
           setState("none");
-          toast.error((e as Error).message || "Saqlab bo‘lmadi. Telefonda joy yetarlimi?");
+          toast.error((e as Error).message || tr("Saqlab bo‘lmadi. Telefonda joy yetarlimi?"));
         }
       }}
     >
       {state === "saving" ? <Loader2 className="animate-spin" /> : <CloudDownload />}
-      {state === "saving" ? `Saqlanmoqda… ${pct}%` : `Offline saqlash (${mb(total)})`}
+      {state === "saving" ? tr("Saqlanmoqda… {0}%", pct) : tr("Offline saqlash ({0})", mb(total))}
     </Button>
   );
 }

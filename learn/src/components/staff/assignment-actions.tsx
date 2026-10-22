@@ -6,6 +6,7 @@ import { assignmentStatusAction, duplicateAssignmentAction } from "@/app/actions
 import { Button, LinkButton } from "@/components/ui/button";
 import { Dialog } from "@/components/ui/dialog";
 import { toast } from "@/components/ui/toast";
+import { tr } from "@/lib/i18n/tr";
 
 export function AssignmentActions({ id, base, status, canDuplicate }: { id: string; base: string; status: string; canDuplicate: boolean }) {
   const [pending, start] = useTransition();
@@ -23,7 +24,7 @@ export function AssignmentActions({ id, base, status, canDuplicate }: { id: stri
   return (
     <>
       <LinkButton href={`${base}/assignments/${id}/preview`} variant="secondary" size="sm">
-        <Eye /> Ko‘rib chiqish
+        <Eye /> {tr("Ko‘rib chiqish")}
       </LinkButton>
       {canDuplicate ? (
         <Button
@@ -34,46 +35,46 @@ export function AssignmentActions({ id, base, status, canDuplicate }: { id: stri
             start(async () => {
               const r = await duplicateAssignmentAction(id);
               if (r.ok) {
-                toast.success("Nusxa yaratildi");
+                toast.success(tr("Nusxa yaratildi"));
                 router.push(`${base}/assignments/${r.data.id}`);
               } else toast.error(r.error);
             })
           }
         >
-          <Copy /> Nusxa
+          <Copy /> {tr("Nusxa")}
         </Button>
       ) : null}
       {status === "draft" ? (
-        <Button size="sm" onClick={() => act("publish", "E’lon qilindi")} loading={pending}>
-          <Send /> E’lon qilish
+        <Button size="sm" onClick={() => act("publish", tr("E’lon qilindi"))} loading={pending}>
+          <Send /> {tr("E’lon qilish")}
         </Button>
       ) : null}
       {status === "scheduled" ? (
-        <Button variant="secondary" size="sm" onClick={() => act("unpublish", "Qoralamaga qaytarildi")} loading={pending}>
-          <Undo2 /> Rejani bekor qilish
+        <Button variant="secondary" size="sm" onClick={() => act("unpublish", tr("Qoralamaga qaytarildi"))} loading={pending}>
+          <Undo2 /> {tr("Rejani bekor qilish")}
         </Button>
       ) : null}
       {status === "archived" ? (
         <Button variant="secondary" size="sm" onClick={() => act("restore", "Tiklandi")} loading={pending}>
-          <RotateCcw /> Tiklash
+          <RotateCcw /> {tr("Tiklash")}
         </Button>
       ) : (
         <Button variant="ghost" size="sm" onClick={() => setConfirmArchive(true)}>
-          <Archive /> Arxivlash
+          <Archive /> {tr("Arxivlash")}
         </Button>
       )}
       <Dialog
         open={confirmArchive}
         onClose={() => setConfirmArchive(false)}
-        title="Vazifani arxivlaysizmi?"
-        description="O‘quvchilar ro‘yxatidan yashiriladi. Topshirilgan ishlar va baholar o‘chirilmaydi — istalgan vaqtda tiklash mumkin."
+        title={tr("Vazifani arxivlaysizmi?")}
+        description={tr("O‘quvchilar ro‘yxatidan yashiriladi. Topshirilgan ishlar va baholar o‘chirilmaydi — istalgan vaqtda tiklash mumkin.")}
         footer={
           <>
             <Button variant="secondary" onClick={() => setConfirmArchive(false)}>
-              Bekor qilish
+              {tr("Bekor qilish")}
             </Button>
             <Button variant="danger" onClick={() => act("archive", "Arxivlandi")} loading={pending}>
-              Arxivlash
+              {tr("Arxivlash")}
             </Button>
           </>
         }

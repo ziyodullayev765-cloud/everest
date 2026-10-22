@@ -4,6 +4,7 @@ import type { HomeworkItem, HomeworkKind, ItemProgress } from "@/server/db/schem
 import { RichText } from "@/components/ui/rich-text";
 import { cn } from "@/lib/utils";
 import { t } from "@/lib/i18n";
+import { tr } from "@/lib/i18n/tr";
 
 export const KIND_ICON: Record<HomeworkKind, typeof BookOpen> = {
   reading: BookOpen,
@@ -34,7 +35,7 @@ export function HomeworkItemsList({ items, books, progress, bookHref = (id: stri
           <b className="text-text tabular">
             {done} / {items.length}
           </b>{" "}
-          bajarildi
+          {tr("bajarildi")}
         </div>
       ) : null}
       <ol className="space-y-2">
@@ -64,7 +65,7 @@ export function HomeworkItemsList({ items, books, progress, bookHref = (id: stri
                   {it.note ? <RichText text={it.note} className="mt-1.5 text-[13px] text-text-2" /> : null}
                   {p?.text ? <div className="mt-2 rounded-lg bg-surface px-3 py-2 text-[13.5px]"><RichText text={p.text} /></div> : null}
                 </div>
-                {progress ? p?.done ? <CheckCircle2 className="size-5 shrink-0 text-success" aria-label="Bajarilgan" /> : <Circle className="size-5 shrink-0 text-border-strong" aria-label="Bajarilmagan" /> : null}
+                {progress ? p?.done ? <CheckCircle2 className="size-5 shrink-0 text-success" aria-label={tr("Bajarilgan")} /> : <Circle className="size-5 shrink-0 text-border-strong" aria-label={tr("Bajarilmagan")} /> : null}
               </div>
             </li>
           );

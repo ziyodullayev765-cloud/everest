@@ -1,6 +1,7 @@
 "use client";
 import { formatDayShort as shortDate, formatWeekday as weekday } from "@/lib/dates";
 import { Bar, BarChart, CartesianGrid, Line, LineChart, ComposedChart, ResponsiveContainer, Tooltip, XAxis, YAxis, Cell } from "recharts";
+import { tr } from "@/lib/i18n/tr";
 
 type Day = { day: string; tasks: number; quizzes: number; words?: number; avg: number | null };
 
@@ -26,7 +27,7 @@ export function WeeklyActivityChart({ data: raw }: { data: Day[] }) {
   const data = raw.map((d) => ({ ...d, vocab: Math.floor((d.words ?? 0) / 10) }));
   const today = data[data.length - 1]?.day;
   return (
-    <div className="h-56 w-full" role="img" aria-label="So‘nggi 7 kunlik faollik: bajarilgan vazifalar, quizlar va o‘rtacha ball">
+    <div className="h-56 w-full" role="img" aria-label={tr("So‘nggi 7 kunlik faollik: bajarilgan vazifalar, quizlar va o‘rtacha ball")}>
       <ResponsiveContainer width="100%" height="100%">
         <ComposedChart data={data} margin={{ top: 8, right: 4, left: -22, bottom: 0 }}>
           <CartesianGrid vertical={false} stroke="var(--chart-grid)" />
@@ -50,7 +51,7 @@ export function WeeklyActivityChart({ data: raw }: { data: Day[] }) {
 
 export function TrendLine({ data }: { data: { week: string; average: number }[] }) {
   return (
-    <div className="h-52 w-full" role="img" aria-label="Haftalar bo‘yicha o‘rtacha baho">
+    <div className="h-52 w-full" role="img" aria-label={tr("Haftalar bo‘yicha o‘rtacha baho")}>
       <ResponsiveContainer width="100%" height="100%">
         <LineChart data={data} margin={{ top: 10, right: 8, left: -22, bottom: 0 }}>
           <CartesianGrid vertical={false} stroke="var(--chart-grid)" />
@@ -67,7 +68,7 @@ export function TrendLine({ data }: { data: { week: string; average: number }[] 
 export function DailyBars({ data: raw }: { data: Day[] }) {
   const data = raw.map((d) => ({ ...d, vocab: Math.floor((d.words ?? 0) / 10) }));
   return (
-    <div className="h-44 w-full" role="img" aria-label="Kunlik faollik">
+    <div className="h-44 w-full" role="img" aria-label={tr("Kunlik faollik")}>
       <ResponsiveContainer width="100%" height="100%">
         <BarChart data={data} margin={{ top: 6, right: 4, left: -22, bottom: 0 }}>
           <CartesianGrid vertical={false} stroke="var(--chart-grid)" />

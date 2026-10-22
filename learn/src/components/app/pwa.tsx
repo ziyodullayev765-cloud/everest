@@ -2,6 +2,7 @@
 import { useEffect, useState, useSyncExternalStore } from "react";
 import { RefreshCw, WifiOff } from "lucide-react";
 import { startWarm } from "@/lib/offline";
+import { tr } from "@/lib/i18n/tr";
 
 /** Registers /sw.js (production only) and offers a reload when a new version is waiting. */
 export function ServiceWorkerRegistrar() {
@@ -32,9 +33,9 @@ export function ServiceWorkerRegistrar() {
     <div className="fixed inset-x-0 top-[calc(env(safe-area-inset-top)+8px)] z-[80] flex justify-center px-4">
       <div className="flex items-center gap-3 rounded-xl border border-border bg-surface px-4 py-2.5 text-sm shadow-pop">
         <RefreshCw className="size-4 text-primary" aria-hidden />
-        Yangi versiya tayyor
+        {tr("Yangi versiya tayyor")}
         <button className="rounded-lg bg-primary px-3 py-1 text-[13px] font-semibold text-primary-fg" onClick={() => waiting.postMessage({ type: "SKIP_WAITING" })}>
-          Yangilash
+          {tr("Yangilash")}
         </button>
       </div>
     </div>
@@ -58,7 +59,7 @@ export function OfflineIndicator() {
     <div className="fixed inset-x-0 top-0 z-[75] pt-safe">
       <div className="mx-auto flex w-fit items-center gap-2 rounded-b-xl bg-text px-4 py-2 text-[13px] font-semibold text-bg shadow-pop" role="status">
         <WifiOff className="size-4" aria-hidden />
-        Internet aloqasi yo‘q — saqlash va topshirish aloqa tiklanganda ishlaydi
+        {tr("Internet aloqasi yo‘q — saqlash va topshirish aloqa tiklanganda ishlaydi")}
       </div>
     </div>
   );

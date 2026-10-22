@@ -3,8 +3,9 @@ import { notFound } from "next/navigation";
 import { pageUser } from "@/server/auth/guards";
 import { can } from "@/server/auth/rbac";
 import { BankPage } from "@/components/staff/grading-pages";
+import { tr } from "@/lib/i18n/tr";
 
-export const metadata: Metadata = { title: "Savollar banki" };
+export const metadata: Metadata = { get title() { return tr("Savollar banki"); } };
 
 export default async function Page({ searchParams }: { searchParams: Promise<Record<string, string>> }) {
   const user = await pageUser("teacher");

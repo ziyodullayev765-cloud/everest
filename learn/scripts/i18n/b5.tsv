@@ -1,0 +1,301 @@
+1380	Security
+1381	For security only the course administrator resets passwords. Ask your teacher or the administrator — they’ll give you a one-time reset link.
+1382	Good evening
+1383	Good afternoon
+1384	Good morning
+1385	Add staff
+1386	Welcome
+1387	Welcome, {0}
+1388	Final
+1389	You’re changing a final grade — a reason is required and is written to the audit log.
+1390	Until the final grade is given
+1391	Graded as final
+1392	Work with a final grade can’t be returned.
+1393	Write the reason for changing the final grade (at least 5 characters).
+1394	No permission to change the final grade.
+1395	Finished
+1396	Finished
+1397	Finished Listening exercises
+1398	Finished Reading exercises
+1399	Change final grades
+1400	Finished grammar topics
+1401	Finished learning exercises (each once)
+1402	Finished quizzes (each once)
+1403	Finish
+1404	Finish and publish
+1405	More
+1406	Play again
+1407	Just {0} {1} more — and this achievement is yours.
+1408	New
+1409	New group
+1410	Create a new account or change the filters.
+1411	New code created
+1412	New word list
+1413	New student
+1414	New password
+1415	The new password must differ from the old one.
+1416	Set a new password
+1417	Repeat the new password
+1418	You’ll be notified when a new quiz is published.
+1419	New record!
+1420	New list
+1421	New word
+1422	No new words
+1423	New words
+1424	New assignment
+1425	Pre-filled when a new assignment is created
+1426	Create a new assignment or change the filters.
+1427	We’ll let you know here about new assignments, grades and announcements.
+1428	A new version is ready
+1429	A new version will be submitted.
+1430	New staff member
+1431	New achievement
+1432	New achievement!
+1433	Update
+1434	No deadlines in the coming days.
+1435	No upcoming deadline.
+1436	Upcoming deadlines
+1437	Created
+1438	Create
+1439	Create, publish, schedule and archive.
+1440	Hide
+1441	Good
+1442	Good try!
+1443	Good try. Work on your mistakes and you can improve the result.
+1444	Total: {0} / {1} points
+1445	Close
+1446	Light
+1447	Accent colour in light mode
+1448	Feedback on my writing
+1449	Written answer
+1450	Skill
+1451	By skill
+1452	No
+1453	Send
+1454	Download
+1455	Uploaded file not found.
+1456	Loading
+1457	Loading…
+1458	Upload
+1459	The upload didn’t start.
+1460	At the top right
+1461	Up
+1462	Achievement
+1463	The achievement unlocks automatically when its condition is met. XP is given once.
+1464	Achievement condition
+1465	Achievement not found.
+1466	Achievement turned off for now
+1467	Achievement turned on
+1468	Achievements
+1469	Achievements unlock automatically from real results. Here you set the name, icon, condition and XP reward.
+1470	How do achievements work?
+1471	Back to achievements
+1472	Edit achievement
+1473	Great game!
+1474	write the correct sentence in the answers column
+1475	write true or false in the answers column
+1476	has audio
+1477	is split automatically.
+1478	gave a grade
+1479	no grade
+1480	grade {0}%
+1481	graded skills
+1482	exported the gradebook
+1483	finalised a grade
+1484	points
+1485	across all grades
+1486	icon (or menu → “Install Everest”).
+1487	reviewed for several weeks
+1488	empty
+1489	works in the browser. Open this page in Safari.
+1490	in the browser.
+1491	of
+1492	the extra column needs the incorrect sentence and the answers column the correct version
+1493	sent an announcement
+1494	created a category
+1495	archived a category
+1496	edited a category
+1497	restored a category
+1498	active assignments
+1499	created a user
+1500	edited a user
+1501	started a group challenge
+1502	created a group
+1503	removed a student from a group
+1504	added a student to a group
+1505	changed groups
+1506	archived a group
+1507	edited a group
+1508	restored a group
+1509	not signed in yet
+1510	no quiz yet
+1511	not finished yet
+1512	none yet
+1513	deactivated an account
+1514	reactivated an account
+1516	On iPhone, adding to the home screen works most reliably in
+1517	returned work for revision
+1518	not answered
+1519	failed sign-in attempt
+1520	joined a group with a code
+1521	needs more practice
+1522	e.g. ali.valiyev
+1523	max {0} points
+1524	max {0} {1}
+1525	open the menu.
+1526	and confirm.
+1527	choose it.
+1528	wrong
+1529	options: left=right|left=right (at least 2)
+1530	removed
+1531	assigned a teacher
+1532	unassigned a teacher
+1533	imported students from CSV
+1534	install
+1535	last week:
+1536	created a password reset link
+1537	changed their password
+1538	reset a password
+1539	changed platform settings
+1540	removed a join code
+1541	created a join code
+1542	paste it.
+1543	graded quiz answers manually
+1544	saved quiz questions
+1545	added a question to the bank
+1547	no assignments in this period
+1548	listening
+1549	sessions. Still
+1550	exercises
+1551	topics
+1552	to go.
+1553	quizzes
+1554	reading
+1555	questions · total
+1556	words
+1557	tests
+1558	assignments
+1559	if the prompt appears — tap it. Otherwise, at the top right, tap
+1560	signed out
+1561	signed in
+1562	items done
+1563	correct
+1564	button and confirm.
+1565	button.
+1567	assignments
+1568	copied an assignment
+1569	created an assignment
+1570	archived an assignment
+1571	published an assignment
+1572	moved an assignment back to draft
+1573	edited an assignment
+1574	restored an assignment
+1575	changed a final grade
+1576	or Excel columns. To add an example, use
+1577	none
+1578	{0} / {1} XP
+1579	{0} / {1} done
+1580	{0} / {1} points
+1581	{0} / {1} on the first attempt
+1582	{0} XP
+1583	{0} points
+1584	Received {0}
+1585	Submitted {0}{1}
+1586	Member since {0}.
+1587	{0} min
+1588	{0} min {1} s
+1589	Remove {0}
+1590	You joined {0}
+1591	{0}-day streak
+1592	{0} on time · {1} late
+1593	{0} students
+1594	{0} wrong
+1595	Ended {0} ago
+1596	{0} removed
+1597	{0} read
+1598	{0} students
+1599	{0} learned
+1600	{0} mastery
+1601	{0} added!
+1602	{0}
+1603	{0} grades
+1604	{0} grades · average {1}
+1605	{0} assigned
+1606	Answers are needed for {0} blanks (separate with #)
+1607	{0} accounts
+1608	{0} answers · {1}% correct
+1609	{0} pending
+1610	{0} target groups/students
+1611	{0} sessions
+1612	{0} unread
+1613	{0} students added
+1614	{0} lines couldn’t be parsed — they won’t be added
+1615	{0} lists
+1616	{0} questions added
+1617	{0} questions added — don’t forget to save
+1618	{0} questions ready.
+1619	{0} questions · {1} seconds each. Fast, correct answers earn more points; answers in a row earn a bonus!
+1620	{0} words
+1621	{0} words waiting
+1622	{0} words ·
+1623	of {0} words
+1624	Add {0} words
+1625	{0} words are due for review
+1626	{0} reviews
+1627	{0} items
+1628	{0} tracks
+1629	{0} attempts
+1630	{0} errors — nothing was imported
+1631	{0} errors — fix them and try again
+1632	{0} new words
+1633	{0} reviews
+1634	{0} overdue
+1635	{0} mastered
+1636	{0} to review
+1637	{0} final
+1638	{0} being checked
+1639	{0} correct
+1640	Match for {0}
+1641	Uploading {0}
+1642	{0} · {1} points
+1643	{0} · {1} points · {2}
+1644	{0} · {1} points · {2} · {3}
+1645	{0} · {1} students
+1646	{0} — done
+1647	{0} — a learning app for an English course. Language: English.
+1648	{0} — zoom in
+1649	{0} — text
+1650	{0} — remove
+1651	{0} — edit
+1652	{0} ≥ {1} · +{2} XP
+1653	{0}% · this period
+1654	{0}, set a new password for your account.
+1655	Blank {0}
+1656	Answers for blank {0}
+1657	Question {0} · {1}
+1658	Item {0} · 
+1659	Attempt {0} · {1}
+1660	Version {0} · {1}
+1661	Version {0} · {1}{2}
+1662	{0}. {1} · {2} points
+1663	{0}/7 days
+1665	· V2: ____ · V3: ____
+1666	· due {0}
+1667	· image, audio, PDF, DOCX, PPTX, TXT
+1668	· {0} students
+1672	“Small steps every day lead to big results!”
+1675	“Install”
+1676	“An organised system — effective learning.”
+1677	“A good teacher is the greatest motivation.”
+1678	A “uzbek” column is required.
+1679	“{0}” is already in this list.
+1680	Enter points for the “{0}” criterion.
+1681	Delete “{0}”? Students’ history is kept.
+1682	At most {1} points for “{0}”.
+1683	• Your answers are saved automatically — you can continue even if the page closes.
+1684	• Results: {0}.
+1685	• You can’t go back to the previous question.
+1686	• The timer doesn’t stop once it starts. When time is up, the answers are submitted automatically.
+1687	−{0} points → final {1}
+1688	✓ earned
+1689	🤫 Private section

@@ -9,6 +9,7 @@ import { audit } from "./audit";
 import { manageableClassIds, studentClassIds } from "./access";
 import { notify } from "./notifications";
 import { enforce } from "./rate-limit";
+import { tr } from "@/lib/i18n/tr";
 
 const classInput = z.object({
   name: z.string().trim().min(1, "Guruh nomi kerak").max(60),
@@ -81,16 +82,16 @@ export async function setJoinCode(actor: Actor, id: string, enabled: boolean) {
       if (!isUniqueViolation(e)) throw e;
     }
   }
-  throw new AppError("conflict", "Kod yaratilmadi, qayta urinib ko‘ring.");
+  throw new AppError("conflict", tr("Kod yaratilmadi, qayta urinib ko‘ring."));
 }
 
 export async function joinByCode(actor: Actor, codeRaw: string) {
-  if (!isStudent(actor)) throw forbidden("Faqat o‘quvchilar kod orqali qo‘shiladi.");
+  if (!isStudent(actor)) throw forbidden(tr("Faqat o‘quvchilar kod orqali qo‘shiladi."));
   await enforce(`join:${actor.id}`, 10, 3600);
   const code = codeRaw.trim().toUpperCase();
-  if (!/^[A-Z0-9]{6}$/.test(code)) throw invalid("Kod 6 ta belgidan iborat.");
+  if (!/^[A-Z0-9]{6}$/.test(code)) throw invalid(tr("Kod 6 ta belgidan iborat."));
   const [c] = await db.select().from(schema.classes).where(and(eq(schema.classes.joinCode, code), isNull(schema.classes.archivedAt)));
-  if (!c) throw invalid("Bunday kod topilmadi.");
+  if (!c) throw invalid(tr("Bunday kod topilmadi."));
   await db.insert(schema.classStudents).values({ classId: c.id, studentId: actor.id }).onConflictDoNothing();
   await audit(actor.id, "class.join", "class", c.id);
   return c;
@@ -131,7 +132,7 @@ export async function enroll(actor: Actor, classId: string, studentIds: string[]
 export async function assignTeacher(actor: Actor, classId: string, teacherId: string) {
   requireAdmin(actor);
   const [t] = await db.select().from(schema.users).where(eq(schema.users.id, teacherId));
-  if (!t || t.role !== "teacher") throw invalid("O‘qituvchi topilmadi.");
+  if (!t || t.role !== "teacher") throw invalid(tr("O‘qituvchi topilmadi."));
   await db.insert(schema.classTeachers).values({ classId, teacherId }).onConflictDoNothing();
   await audit(actor.id, "class.assign_teacher", "class", classId, { teacherId });
 }

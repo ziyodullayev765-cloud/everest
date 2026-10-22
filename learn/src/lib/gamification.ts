@@ -1,3 +1,4 @@
+import { tr } from "@/lib/i18n/tr";
 /**
  * Transparent XP rules. XP is motivational only and is stored in a separate ledger — it never
  * touches grades. Every award has a unique source key, so retries and resubmissions cannot repeat it.
@@ -21,12 +22,12 @@ export const DEFAULT_XP_RULES: XpRules = {
 };
 
 export const XP_RULE_LABELS: Record<keyof XpRules, string> = {
-  submitOnTime: "Vazifani muddatida topshirish (har bir vazifa uchun bir marta)",
-  submitLate: "Vazifani kechikib topshirish (bir marta)",
-  quizCompleted: "Quizni birinchi marta yakunlash",
-  quizPerTenPercent: "Birinchi urinishdagi har 10% natija uchun",
-  quizPerfectBonus: "Birinchi urinishda 100% natija bonusi",
-  materialRead: "O‘quv materialini o‘qib chiqish (bir marta)",
+  get submitOnTime() { return tr("Vazifani muddatida topshirish (har bir vazifa uchun bir marta)"); },
+  get submitLate() { return tr("Vazifani kechikib topshirish (bir marta)"); },
+  get quizCompleted() { return tr("Quizni birinchi marta yakunlash"); },
+  get quizPerTenPercent() { return tr("Birinchi urinishdagi har 10% natija uchun"); },
+  get quizPerfectBonus() { return tr("Birinchi urinishda 100% natija bonusi"); },
+  get materialRead() { return tr("O‘quv materialini o‘qib chiqish (bir marta)"); },
 };
 
 /** XP awarded for a quiz. Only the first submitted attempt counts, so retakes can't farm XP. */

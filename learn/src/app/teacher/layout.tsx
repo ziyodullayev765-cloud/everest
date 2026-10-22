@@ -7,8 +7,9 @@ import { unreadCount } from "@/server/services/notifications";
 import { getSettings } from "@/server/services/settings";
 import { can } from "@/server/auth/rbac";
 import { t } from "@/lib/i18n";
+import { tr } from "@/lib/i18n/tr";
 
-export const metadata: Metadata = { title: { default: "O‘qituvchi", template: "%s · O‘qituvchi" } };
+export const metadata: Metadata = { title: { get default() { return tr("O‘qituvchi"); }, get template() { return tr("%s · O‘qituvchi"); } } };
 
 export default async function TeacherLayout({ children }: { children: React.ReactNode }) {
   const user = await pageUser("teacher");
@@ -27,7 +28,7 @@ export default async function TeacherLayout({ children }: { children: React.Reac
       ],
     },
     {
-      title: "Hisob",
+      title: tr("Hisob"),
       items: [
         { href: "/teacher/notifications", label: t.nav.notifications, icon: "notifications" },
         { href: "/teacher/profile", label: t.nav.profile, icon: "profile" },

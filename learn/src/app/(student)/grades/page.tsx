@@ -14,8 +14,9 @@ import { PageHeader, StatCard } from "@/components/ui/page";
 import { Card, CardBody, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { EmptyState } from "@/components/ui/feedback";
+import { tr } from "@/lib/i18n/tr";
 
-export const metadata: Metadata = { title: "Baholar" };
+export const metadata: Metadata = { get title() { return tr("Baholar"); } };
 
 export default async function GradesPage() {
   const user = await pageUser("student");
@@ -26,21 +27,21 @@ export default async function GradesPage() {
 
   return (
     <>
-      <PageHeader title="Baholar" description="Barcha baholaringiz, o‘qituvchi izohlari va baholash holati." />
+      <PageHeader title={tr("Baholar")} description={tr("Barcha baholaringiz, o‘qituvchi izohlari va baholash holati.")} />
       {grades.length === 0 ? (
         <Card>
-          <EmptyState icon={<Star />} title="Hali baho yo‘q" description="Topshirgan ishlaringiz baholangach, ular shu yerda ko‘rinadi." />
+          <EmptyState icon={<Star />} title={tr("Hali baho yo‘q")} description={tr("Topshirgan ishlaringiz baholangach, ular shu yerda ko‘rinadi.")} />
         </Card>
       ) : (
         <div className="space-y-6">
           <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
-            <StatCard label="O‘rtacha" value={fmtPercent(avg)} icon={<Star />} hint="barcha baholar bo‘yicha" />
-            <StatCard label="Baholar soni" value={grades.length} icon={<Star />} tone="info" hint={`${finals.length} tasi yakuniy`} />
-            <StatCard label="Dastlabki" value={grades.length - finals.length} icon={<Star />} tone="warning" hint="hali yakunlanmagan" />
-            <StatCard label="Kategoriyalar" value={bySubject.length} icon={<Star />} tone="violet" hint="baholangan yo‘nalishlar" />
+            <StatCard label={tr("O‘rtacha")} value={fmtPercent(avg)} icon={<Star />} hint={tr("barcha baholar bo‘yicha")} />
+            <StatCard label={tr("Baholar soni")} value={grades.length} icon={<Star />} tone="info" hint={tr("{0} tasi yakuniy", finals.length)} />
+            <StatCard label={tr("Dastlabki")} value={grades.length - finals.length} icon={<Star />} tone="warning" hint={tr("hali yakunlanmagan")} />
+            <StatCard label={tr("Kategoriyalar")} value={bySubject.length} icon={<Star />} tone="violet" hint={tr("baholangan yo‘nalishlar")} />
           </div>
           <Card>
-            <CardHeader title="Baholash shkalasi" description="Foiz natija quyidagi baholarga aylantiriladi" />
+            <CardHeader title={tr("Baholash shkalasi")} description={tr("Foiz natija quyidagi baholarga aylantiriladi")} />
             <CardBody className="flex flex-wrap gap-2 pt-3">
               {[...settings.grading.scale].sort((a, b) => b.min - a.min).map((b) => (
                 <span key={b.label} className="inline-flex items-center gap-2 rounded-xl border border-border px-3 py-1.5 text-[13px]">
@@ -60,7 +61,7 @@ export default async function GradesPage() {
                       {subject}
                     </span>
                   }
-                  description={`${list.length} ta baho · o‘rtacha ${fmtPercent(sAvg)}`}
+                  description={tr("{0} ta baho · o‘rtacha {1}", list.length, fmtPercent(sAvg))}
                 />
                 <CardBody className="pt-2">
                   <ul className="-mx-2 divide-y divide-border">
@@ -77,7 +78,7 @@ export default async function GradesPage() {
                               {t.assignmentType[g.type as AssignmentType]} · {formatDate(g.gradedAt)}
                               {g.feedbackCount ? (
                                 <span className="inline-flex items-center gap-1 text-info">
-                                  <MessageSquareText className="size-3" aria-hidden /> izoh
+                                  <MessageSquareText className="size-3" aria-hidden /> {tr("izoh")}
                                 </span>
                               ) : null}
                             </span>

@@ -14,8 +14,9 @@ import { Badge } from "@/components/ui/badge";
 import { Alert, Ring } from "@/components/ui/feedback";
 import { LinkButton } from "@/components/ui/button";
 import { RichText } from "@/components/ui/rich-text";
+import { tr } from "@/lib/i18n/tr";
 
-export const metadata: Metadata = { title: "Quiz natijasi" };
+export const metadata: Metadata = { get title() { return tr("Quiz natijasi"); } };
 
 type Ans = { optionId?: string; optionIds?: string[]; text?: string; blanks?: string[]; matches?: Record<string, string> } | null;
 
@@ -28,7 +29,7 @@ export default async function ResultsPage({ params }: { params: Promise<{ id: st
   return (
     <div className="mx-auto max-w-3xl">
       <Celebrate show={!!r.passed} />
-      <PageHeader back={{ href: `/quizzes/${id}`, label: "Quiz" }} eyebrow={`${r.attempt.attemptNo}-urinish · ${formatDateTime(r.attempt.submittedAt!)}`} title={r.assignment.title} />
+      <PageHeader back={{ href: `/quizzes/${id}`, label: tr("Quiz") }} eyebrow={tr("{0}-urinish · {1}", r.attempt.attemptNo, formatDateTime(r.attempt.submittedAt!))} title={r.assignment.title} />
 
       <Card className="mb-5 overflow-hidden">
         <CardBody className="flex flex-col items-center gap-6 sm:flex-row sm:items-center">
@@ -40,38 +41,38 @@ export default async function ResultsPage({ params }: { params: Promise<{ id: st
             <Ring value={r.percent ?? 0} size={120} stroke={10}>
               <div>
                 <div className="text-[26px] leading-none font-bold tabular">{Math.round(r.percent ?? 0)}%</div>
-                <div className="mt-1 text-[11.5px] text-muted">natija</div>
+                <div className="mt-1 text-[11.5px] text-muted">{tr("natija")}</div>
               </div>
             </Ring>
           )}
           <div className="min-w-0 flex-1 text-center sm:text-left">
             {pending ? (
               <>
-                <h2 className="text-[19px] font-bold">Javoblaringiz tekshirilmoqda</h2>
-                <p className="mt-1 text-[14px] text-muted">Ba’zi savollarni o‘qituvchi baholaydi. Natija tayyor bo‘lganda bildirishnoma olasiz.</p>
+                <h2 className="text-[19px] font-bold">{tr("Javoblaringiz tekshirilmoqda")}</h2>
+                <p className="mt-1 text-[14px] text-muted">{tr("Ba’zi savollarni o‘qituvchi baholaydi. Natija tayyor bo‘lganda bildirishnoma olasiz.")}</p>
               </>
             ) : (
               <>
                 <div className="flex flex-wrap items-center justify-center gap-2 sm:justify-start">
                   <h2 className="text-[19px] font-bold tabular">
-                    {fmtNumber(Number(r.score), 2)} / {fmtNumber(r.maxScore, 2)} ball
+                    {tr("{0} / {1} ball", fmtNumber(Number(r.score), 2), fmtNumber(r.maxScore, 2))}
                   </h2>
-                  {r.passed ? <Badge tone="success">O‘tdi</Badge> : <Badge tone="warning">O‘tish bali: {r.assignment.passingPercent}%</Badge>}
+                  {r.passed ? <Badge tone="success">{tr("O‘tdi")}</Badge> : <Badge tone="warning">{tr("O‘tish bali: {0}%", r.assignment.passingPercent)}</Badge>}
                 </div>
-                <p className="mt-1 text-[14px] text-muted">{r.passed ? "Ajoyib natija! Shu ruhda davom eting." : "Yaxshi urinish. Xatolar ustida ishlab, natijani yaxshilash mumkin."}</p>
+                <p className="mt-1 text-[14px] text-muted">{r.passed ? tr("Ajoyib natija! Shu ruhda davom eting.") : tr("Yaxshi urinish. Xatolar ustida ishlab, natijani yaxshilash mumkin.")}</p>
               </>
             )}
             {r.review && r.correctCount != null ? (
               <div className="mt-4 flex flex-wrap justify-center gap-2 sm:justify-start">
                 <Badge tone="success">
-                  <CheckCircle2 className="size-3.5" /> {r.correctCount} to‘g‘ri
+                  <CheckCircle2 className="size-3.5" /> {tr("{0} to‘g‘ri", r.correctCount)}
                 </Badge>
                 <Badge tone="danger">
-                  <XCircle className="size-3.5" /> {r.incorrectCount} noto‘g‘ri
+                  <XCircle className="size-3.5" /> {tr("{0} noto‘g‘ri", r.incorrectCount)}
                 </Badge>
                 {r.total - (r.correctCount ?? 0) - (r.incorrectCount ?? 0) > 0 ? (
                   <Badge tone="violet">
-                    <MinusCircle className="size-3.5" /> {r.total - (r.correctCount ?? 0) - (r.incorrectCount ?? 0)} tekshiruvda
+                    <MinusCircle className="size-3.5" /> {tr("{0} tekshiruvda", r.total - (r.correctCount ?? 0) - (r.incorrectCount ?? 0))}
                   </Badge>
                 ) : null}
               </div>
@@ -84,13 +85,13 @@ export default async function ResultsPage({ params }: { params: Promise<{ id: st
         <div className="mb-5 grid gap-3 sm:grid-cols-2">
           {r.durationMs != null ? (
             <div className="rounded-3xl border-2 border-border bg-surface px-5 py-4 shadow-card">
-              <div className="text-[12px] text-muted">Sarflangan vaqt</div>
+              <div className="text-[12px] text-muted">{tr("Sarflangan vaqt")}</div>
               <div className="mt-0.5 text-[18px] font-bold tabular">{fmtDuration(r.durationMs)}</div>
             </div>
           ) : null}
           {r.history.length > 1 ? (
             <div className="rounded-3xl border-2 border-border bg-surface px-5 py-4 shadow-card">
-              <div className="text-[12px] text-muted">Urinishlar</div>
+              <div className="text-[12px] text-muted">{tr("Urinishlar")}</div>
               <ol className="mt-1.5 flex flex-wrap gap-1.5">
                 {r.history.map((h, i) => {
                   const prev = i > 0 ? r.history[i - 1].percent : null;
@@ -110,16 +111,16 @@ export default async function ResultsPage({ params }: { params: Promise<{ id: st
 
       {r.transcript ? (
         <details className="mb-5 rounded-3xl border-2 border-border bg-surface px-5 py-4 shadow-card">
-          <summary className="cursor-pointer text-[14px] font-bold">Listening transkripti</summary>
+          <summary className="cursor-pointer text-[14px] font-bold">{tr("Listening transkripti")}</summary>
           <div className="prose-text mt-3 text-[14.5px] text-text-2">{r.transcript}</div>
         </details>
       ) : null}
 
       {!r.review ? (
-        <Alert tone="info" title="Javoblar hozircha yopiq">
+        <Alert tone="info" title={tr("Javoblar hozircha yopiq")}>
           <span className="inline-flex items-center gap-1.5">
             <EyeOff className="size-4" aria-hidden />
-            {r.assignment.reviewMode === "never" ? "O‘qituvchi bu quiz uchun javoblarni ko‘rsatmaslikni tanlagan." : r.assignment.reviewMode === "after_due" ? "To‘g‘ri javoblar muddat tugagandan keyin ochiladi." : "Javoblar baholash yakunlangandan keyin ochiladi."}
+            {r.assignment.reviewMode === "never" ? tr("O‘qituvchi bu quiz uchun javoblarni ko‘rsatmaslikni tanlagan.") : r.assignment.reviewMode === "after_due" ? tr("To‘g‘ri javoblar muddat tugagandan keyin ochiladi.") : tr("Javoblar baholash yakunlangandan keyin ochiladi.")}
           </span>
         </Alert>
       ) : (
@@ -132,10 +133,10 @@ export default async function ResultsPage({ params }: { params: Promise<{ id: st
               <li key={q.id} className="rounded-3xl border-2 border-border bg-surface p-5 shadow-card">
                 <div className="mb-2 flex items-center justify-between gap-2 text-[12.5px]">
                   <span className="font-semibold text-muted">
-                    {i + 1}-savol · {t.questionType[q.type]}
+                    {tr("{0}-savol · {1}", i + 1, t.questionType[q.type])}
                   </span>
                   <Badge tone={tone} className="tabular">
-                    {it.pointsAwarded == null ? "Tekshirilmoqda" : `${fmtNumber(Number(it.pointsAwarded), 2)} / ${q.points}`}
+                    {it.pointsAwarded == null ? tr("Tekshirilmoqda") : `${fmtNumber(Number(it.pointsAwarded), 2)} / ${q.points}`}
                   </Badge>
                 </div>
                 <RichText text={q.type === "fill_blank" ? q.prompt.replace(/_{3,}/g, "____") : q.prompt} className="text-[15px] font-semibold" />
@@ -144,7 +145,7 @@ export default async function ResultsPage({ params }: { params: Promise<{ id: st
                 </div>
                 {ai && it.isCorrect === false ? (
                   <Link href={`/tutor?kind=mistake&text=${encodeURIComponent(mistakeText(q, a))}`} className="mt-3 inline-flex items-center gap-1.5 text-[12.5px] font-semibold text-violet hover:underline">
-                    <Bot className="size-3.5" aria-hidden /> AI yordamchidan tushuntirish so‘rash
+                    <Bot className="size-3.5" aria-hidden /> {tr("AI yordamchidan tushuntirish so‘rash")}
                   </Link>
                 ) : null}
                 {it.explanation ? (
@@ -161,9 +162,9 @@ export default async function ResultsPage({ params }: { params: Promise<{ id: st
 
       <div className="mt-6 flex flex-wrap justify-center gap-2">
         <LinkButton href={`/quizzes/${id}`} variant="secondary">
-          Quiz sahifasi
+          {tr("Quiz sahifasi")}
         </LinkButton>
-        <LinkButton href="/results">Natijalarim</LinkButton>
+        <LinkButton href="/results">{tr("Natijalarim")}</LinkButton>
       </div>
     </div>
   );
@@ -175,23 +176,23 @@ type Q = Awaited<ReturnType<typeof attemptResult>>["items"][number]["question"];
 /** Question + the student's own answer, as text for the tutor (no names or ids). */
 function mistakeText(q: Q, a: Ans) {
   const given = a?.text ?? a?.blanks?.join(" / ") ?? (a?.optionId ? q.options.find((o) => o.id === a.optionId)?.label : undefined) ?? a?.optionIds?.map((id) => q.options.find((o) => o.id === id)?.label).join(", ") ?? "";
-  return [`Savol: ${q.prompt}`, q.incorrect ? `Xato gap: ${q.incorrect}` : "", q.base ? `Fe’l: ${q.base}` : "", q.options.length ? `Variantlar: ${q.options.map((o) => o.label).join(" | ")}` : "", `Mening javobim: ${given || "(bo‘sh)"}`].filter(Boolean).join("\n").slice(0, 3900);
+  return [`Savol: ${q.prompt}`, q.incorrect ? tr("Xato gap: {0}", q.incorrect) : "", q.base ? tr("Fe’l: {0}", q.base) : "", q.options.length ? `Variantlar: ${q.options.map((o) => o.label).join(" | ")}` : "", tr("Mening javobim: {0}", given || "(bo‘sh)")].filter(Boolean).join("\n").slice(0, 3900);
 }
 
 function fmtDuration(ms: number) {
   const s = Math.max(0, Math.round(ms / 1000));
   const m = Math.floor(s / 60);
-  return m ? `${m} daq ${s % 60} soniya` : `${s} soniya`;
+  return m ? tr("{0} daq {1} soniya", m, s % 60) : `${s} soniya`;
 }
 
 function TextAnswer({ a, correct }: { a: Ans; correct: Correct }) {
   return (
     <>
       <div className="rounded-xl bg-surface-2 px-3.5 py-2.5 text-[14px]">
-        <span className="text-[12px] text-muted">Sizning javobingiz: </span>
-        {a?.text?.trim() ? <span className="prose-text">{a.text}</span> : <i className="text-muted">javob berilmagan</i>}
+        <span className="text-[12px] text-muted">{tr("Sizning javobingiz:")} </span>
+        {a?.text?.trim() ? <span className="prose-text">{a.text}</span> : <i className="text-muted">{tr("javob berilmagan")}</i>}
       </div>
-      {correct?.accepted?.[0]?.length ? <div className="text-[13px] text-success">To‘g‘ri javob: {correct.accepted[0].join(" / ")}</div> : null}
+      {correct?.accepted?.[0]?.length ? <div className="text-[13px] text-success">{tr("To‘g‘ri javob: {0}", correct.accepted[0].join(" / "))}</div> : null}
     </>
   );
 }
@@ -213,9 +214,9 @@ function AnswerReview({ q, a, correct }: { q: Q; a: Ans; correct: Correct }) {
                 isRight ? "border-success/30 bg-success-soft" : isChosen && correct ? "border-danger/30 bg-danger-soft" : isChosen ? "border-primary/40 bg-primary-soft" : "border-border",
               )}
             >
-              {isRight ? <CheckCircle2 className="size-4 shrink-0 text-success" aria-label="To‘g‘ri javob" /> : isChosen && correct ? <XCircle className="size-4 shrink-0 text-danger" aria-label="Noto‘g‘ri" /> : <span className="size-4 shrink-0" />}
+              {isRight ? <CheckCircle2 className="size-4 shrink-0 text-success" aria-label={tr("To‘g‘ri javob")} /> : isChosen && correct ? <XCircle className="size-4 shrink-0 text-danger" aria-label={tr("Noto‘g‘ri")} /> : <span className="size-4 shrink-0" />}
               <RichText text={o.label} as="span" className="flex-1" />
-              {isChosen ? <span className="text-[12px] font-semibold text-muted">Sizning javobingiz</span> : null}
+              {isChosen ? <span className="text-[12px] font-semibold text-muted">{tr("Sizning javobingiz")}</span> : null}
             </div>
           );
         })}
@@ -234,11 +235,11 @@ function AnswerReview({ q, a, correct }: { q: Q; a: Ans; correct: Correct }) {
   if (q.type === "irregular_verb")
     return (
       <div className="space-y-1.5 text-[14px]">
-        <div className="text-muted">V1: <b className="text-text">{q.base}</b></div>
+        <div className="text-muted">{tr("V1:")} <b className="text-text">{q.base}</b></div>
         {["V2", "V3"].map((label, i) => (
           <div key={label} className="flex flex-wrap gap-x-3">
             <span className="text-muted">{label}:</span>
-            <span>{a?.blanks?.[i]?.trim() || <i className="text-muted">bo‘sh</i>}</span>
+            <span>{a?.blanks?.[i]?.trim() || <i className="text-muted">{tr("bo‘sh")}</i>}</span>
             {correct?.accepted?.[i] ? <span className="text-success">→ {correct.accepted[i].join(" / ")}</span> : null}
           </div>
         ))}
@@ -250,7 +251,7 @@ function AnswerReview({ q, a, correct }: { q: Q; a: Ans; correct: Correct }) {
         {Array.from({ length: q.blanks }).map((_, i) => (
           <div key={i} className="flex flex-wrap gap-x-3 text-[14px]">
             <span className="text-muted">{i + 1}.</span>
-            <span>{a?.blanks?.[i]?.trim() || <i className="text-muted">bo‘sh</i>}</span>
+            <span>{a?.blanks?.[i]?.trim() || <i className="text-muted">{tr("bo‘sh")}</i>}</span>
             {correct?.accepted?.[i] ? <span className="text-success">→ {correct.accepted[i].join(" / ")}</span> : null}
           </div>
         ))}
@@ -265,8 +266,8 @@ function AnswerReview({ q, a, correct }: { q: Q; a: Ans; correct: Correct }) {
         const ok = correct ? correct.matches[l.id] === given : null;
         return (
           <div key={l.id} className={cn("flex flex-wrap items-center gap-2 rounded-xl border px-3.5 py-2 text-[14px]", ok === true ? "border-success/30 bg-success-soft" : ok === false ? "border-danger/30 bg-danger-soft" : "border-border")}>
-            <b className="font-semibold">{l.label}</b> → <span>{given ? rightLabel(given) : <i className="text-muted">tanlanmagan</i>}</span>
-            {ok === false && correct ? <span className="text-success">(to‘g‘ri: {rightLabel(correct.matches[l.id])})</span> : null}
+            <b className="font-semibold">{l.label}</b> → <span>{given ? rightLabel(given) : <i className="text-muted">{tr("tanlanmagan")}</i>}</span>
+            {ok === false && correct ? <span className="text-success">{tr("(to‘g‘ri: {0})", rightLabel(correct.matches[l.id]))}</span> : null}
           </div>
         );
       })}

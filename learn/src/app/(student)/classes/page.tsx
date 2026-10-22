@@ -7,15 +7,16 @@ import { PageHeader } from "@/components/ui/page";
 import { Card } from "@/components/ui/card";
 import { EmptyState } from "@/components/ui/feedback";
 import { JoinClass } from "./join-class";
+import { tr } from "@/lib/i18n/tr";
 
-export const metadata: Metadata = { title: "Guruhlarim" };
+export const metadata: Metadata = { get title() { return tr("Guruhlarim"); } };
 
 export default async function ClassesPage() {
   const user = await pageUser("student");
   const classes = await studentClasses(user.id);
   return (
     <div className="mx-auto max-w-3xl">
-      <PageHeader title="Guruhlarim" description="Guruhlaringiz, o‘qituvchilar va e’lonlar." />
+      <PageHeader title={tr("Guruhlarim")} description={tr("Guruhlaringiz, o‘qituvchilar va e’lonlar.")} />
       <div className="space-y-5">
         {classes.length ? (
           <Card className="overflow-hidden">
@@ -36,7 +37,7 @@ export default async function ClassesPage() {
           </Card>
         ) : (
           <Card>
-            <EmptyState icon={<UsersRound />} title="Hali guruhga qo‘shilmagansiz" description="Administrator sizni guruhga qo‘shadi yoki o‘qituvchi bergan kod orqali qo‘shiling." />
+            <EmptyState icon={<UsersRound />} title={tr("Hali guruhga qo‘shilmagansiz")} description={tr("Administrator sizni guruhga qo‘shadi yoki o‘qituvchi bergan kod orqali qo‘shiling.")} />
           </Card>
         )}
         <JoinClass />

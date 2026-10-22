@@ -13,6 +13,7 @@ import { toast } from "@/components/ui/toast";
 import { uploadFile } from "@/components/app/uploader";
 import { LEVELS } from "@/lib/course";
 import { parseWordList } from "@/lib/word-csv";
+import { tr } from "@/lib/i18n/tr";
 
 type Word = { id: string; english: string; uzbek: string; example: string; exampleUz: string; phonetic: string; partOfSpeech: string; difficulty: number; audioFileId: string | null; imageFileId: string | null };
 type ListMeta = { id: string; title: string; description: string; level: string; topic: string; status: string };
@@ -35,19 +36,19 @@ function useRun() {
 function MetaFields({ v, set }: { v: Omit<ListMeta, "id" | "status">; set: (p: Partial<ListMeta>) => void }) {
   return (
     <>
-      <Field label="Nomi" required>
-        <Input value={v.title} onChange={(e) => set({ title: e.target.value })} placeholder="Unit 3 — Travel" maxLength={120} />
+      <Field label={tr("Nomi")} required>
+        <Input value={v.title} onChange={(e) => set({ title: e.target.value })} placeholder={tr("Unit 3 — Travel")} maxLength={120} />
       </Field>
       <div className="grid grid-cols-2 gap-4">
-        <Field label="Daraja">
+        <Field label={tr("Daraja")}>
           <Input value={v.level} onChange={(e) => set({ level: e.target.value })} list="wl-levels" placeholder="A2" maxLength={40} />
         </Field>
-        <Field label="Mavzu">
-          <Input value={v.topic} onChange={(e) => set({ topic: e.target.value })} placeholder="Travel" maxLength={120} />
+        <Field label={tr("Mavzu")}>
+          <Input value={v.topic} onChange={(e) => set({ topic: e.target.value })} placeholder={tr("Travel")} maxLength={120} />
         </Field>
       </div>
       <datalist id="wl-levels">{LEVELS.map((l) => <option key={l} value={l} />)}</datalist>
-      <Field label="Izoh">
+      <Field label={tr("Izoh")}>
         <Textarea rows={2} value={v.description} onChange={(e) => set({ description: e.target.value })} maxLength={2000} />
       </Field>
     </>
@@ -62,23 +63,23 @@ export function NewWordListButton({ base }: { base: string }) {
   return (
     <>
       <Button onClick={() => setOpen(true)}>
-        <Plus /> Yangi ro‘yxat
+        <Plus /> {tr("Yangi ro‘yxat")}
       </Button>
-      <Dialog open={open} onClose={() => setOpen(false)} title="Yangi lug‘at ro‘yxati">
+      <Dialog open={open} onClose={() => setOpen(false)} title={tr("Yangi lug‘at ro‘yxati")}>
         <form
           className="space-y-4"
           onSubmit={(e) => {
             e.preventDefault();
-            run(() => saveWordListAction(null, v), "Ro‘yxat yaratildi", (d) => router.push(`${base}/vocabulary/${d.id}`));
+            run(() => saveWordListAction(null, v), tr("Ro‘yxat yaratildi"), (d) => router.push(`${base}/vocabulary/${d.id}`));
           }}
         >
           <MetaFields v={v} set={(p) => setV((x) => ({ ...x, ...p }))} />
           <div className="flex justify-end gap-2">
             <Button type="button" variant="secondary" onClick={() => setOpen(false)}>
-              Bekor qilish
+              {tr("Bekor qilish")}
             </Button>
             <Button type="submit" loading={pending}>
-              Yaratish
+              {tr("Yaratish")}
             </Button>
           </div>
         </form>
@@ -113,31 +114,31 @@ function WordForm({ initial, onSave, onCancel, pending }: { initial: typeof empt
       }}
     >
       <div className="grid gap-3 sm:grid-cols-2">
-        <Field label="Inglizcha" required>
+        <Field label={tr("Inglizcha")} required>
           <Input value={w.english} onChange={(e) => set({ english: e.target.value })} placeholder="journey" maxLength={120} autoCapitalize="none" spellCheck={false} />
         </Field>
-        <Field label="O‘zbekcha" required hint="Bir nechta ma’noni vergul bilan yozing">
-          <Input value={w.uzbek} onChange={(e) => set({ uzbek: e.target.value })} placeholder="sayohat, safar" maxLength={200} />
+        <Field label={tr("O‘zbekcha")} required hint={tr("Bir nechta ma’noni vergul bilan yozing")}>
+          <Input value={w.uzbek} onChange={(e) => set({ uzbek: e.target.value })} placeholder={tr("sayohat, safar")} maxLength={200} />
         </Field>
-        <Field label="Misol (EN)">
-          <Input value={w.example} onChange={(e) => set({ example: e.target.value })} placeholder="It was a long journey." maxLength={500} />
+        <Field label={tr("Misol (EN)")}>
+          <Input value={w.example} onChange={(e) => set({ example: e.target.value })} placeholder={tr("It was a long journey.")} maxLength={500} />
         </Field>
-        <Field label="Misol tarjimasi">
+        <Field label={tr("Misol tarjimasi")}>
           <Input value={w.exampleUz} onChange={(e) => set({ exampleUz: e.target.value })} maxLength={500} />
         </Field>
       </div>
       <div className="grid grid-cols-3 gap-3">
-        <Field label="Transkripsiya">
+        <Field label={tr("Transkripsiya")}>
           <Input value={w.phonetic} onChange={(e) => set({ phonetic: e.target.value })} placeholder="/ˈdʒɜːni/" maxLength={80} />
         </Field>
-        <Field label="So‘z turkumi">
+        <Field label={tr("So‘z turkumi")}>
           <Input value={w.partOfSpeech} onChange={(e) => set({ partOfSpeech: e.target.value })} placeholder="noun" maxLength={30} />
         </Field>
-        <Field label="Qiyinlik">
+        <Field label={tr("Qiyinlik")}>
           <Select value={w.difficulty} onChange={(e) => set({ difficulty: Number(e.target.value) })}>
-            <option value={1}>Oson</option>
-            <option value={2}>O‘rta</option>
-            <option value={3}>Qiyin</option>
+            <option value={1}>{tr("Oson")}</option>
+            <option value={2}>{tr("O‘rta")}</option>
+            <option value={3}>{tr("Qiyin")}</option>
           </Select>
         </Field>
       </div>
@@ -146,15 +147,15 @@ function WordForm({ initial, onSave, onCancel, pending }: { initial: typeof empt
           const id = k === "audio" ? w.audioFileId : w.imageFileId;
           return id ? (
             <Badge key={k} tone="primary" className="gap-1.5">
-              {k === "audio" ? "Audio biriktirildi" : "Rasm biriktirildi"}
-              <button type="button" onClick={() => set(k === "audio" ? { audioFileId: null } : { imageFileId: null })} aria-label="Olib tashlash">
+              {k === "audio" ? tr("Audio biriktirildi") : tr("Rasm biriktirildi")}
+              <button type="button" onClick={() => set(k === "audio" ? { audioFileId: null } : { imageFileId: null })} aria-label={tr("Olib tashlash")}>
                 <X className="size-3" />
               </button>
             </Badge>
           ) : (
             <label key={k} className="inline-flex h-8 cursor-pointer items-center gap-1.5 rounded-lg border border-dashed border-border-strong px-3 text-[12.5px] font-semibold text-text-2 hover:border-primary hover:text-primary">
               {k === "audio" ? <Music className="size-3.5" aria-hidden /> : <ImagePlus className="size-3.5" aria-hidden />}
-              {up === k ? "Yuklanmoqda…" : k === "audio" ? "Talaffuz audiosi" : "Rasm"}
+              {up === k ? tr("Yuklanmoqda…") : k === "audio" ? tr("Talaffuz audiosi") : tr("Rasm")}
               <input
                 type="file"
                 hidden
@@ -171,11 +172,11 @@ function WordForm({ initial, onSave, onCancel, pending }: { initial: typeof empt
         <div className="ml-auto flex gap-2">
           {onCancel ? (
             <Button type="button" variant="secondary" size="sm" onClick={onCancel}>
-              Bekor qilish
+              {tr("Bekor qilish")}
             </Button>
           ) : null}
           <Button type="submit" size="sm" loading={pending} disabled={!w.english.trim() || !w.uzbek.trim() || !!up}>
-            <Save /> Saqlash
+            <Save /> {tr("Saqlash")}
           </Button>
         </div>
       </div>
@@ -199,21 +200,21 @@ export function WordListEditor({ list, words, canEdit }: { list: ListMeta; words
       {canEdit ? (
         <Card>
           <CardHeader
-            title="Ro‘yxat"
+            title={tr("Ro‘yxat")}
             action={
               <div className="flex flex-wrap gap-2">
                 {list.status !== "published" ? (
-                  <Button size="sm" loading={pending} onClick={() => run(() => wordListStatusAction(list.id, "published"), "E’lon qilindi")}>
-                    <Send /> E’lon qilish
+                  <Button size="sm" loading={pending} onClick={() => run(() => wordListStatusAction(list.id, "published"), tr("E’lon qilindi"))}>
+                    <Send /> {tr("E’lon qilish")}
                   </Button>
                 ) : (
-                  <Button size="sm" variant="secondary" loading={pending} onClick={() => run(() => wordListStatusAction(list.id, "draft"), "Qoralamaga qaytarildi")}>
-                    <RotateCcw /> Qoralamaga
+                  <Button size="sm" variant="secondary" loading={pending} onClick={() => run(() => wordListStatusAction(list.id, "draft"), tr("Qoralamaga qaytarildi"))}>
+                    <RotateCcw /> {tr("Qoralamaga")}
                   </Button>
                 )}
                 {list.status !== "archived" ? (
                   <Button size="sm" variant="ghost" loading={pending} onClick={() => run(() => wordListStatusAction(list.id, "archived"), "Arxivlandi")}>
-                    <Archive /> Arxivlash
+                    <Archive /> {tr("Arxivlash")}
                   </Button>
                 ) : null}
               </div>
@@ -223,26 +224,26 @@ export function WordListEditor({ list, words, canEdit }: { list: ListMeta; words
             <MetaFields v={meta} set={(p) => setMeta((x) => ({ ...x, ...p }))} />
             <div className="flex justify-end">
               <Button variant="secondary" size="sm" loading={pending} onClick={() => run(() => saveWordListAction(list.id, meta), "Saqlandi")}>
-                <Save /> Saqlash
+                <Save /> {tr("Saqlash")}
               </Button>
             </div>
           </CardBody>
         </Card>
       ) : (
-        <Alert tone="info">Bu ro‘yxatni faqat muallif yoki administrator tahrirlaydi. Siz uni o‘z guruhlaringizga biriktirishingiz mumkin.</Alert>
+        <Alert tone="info">{tr("Bu ro‘yxatni faqat muallif yoki administrator tahrirlaydi. Siz uni o‘z guruhlaringizga biriktirishingiz mumkin.")}</Alert>
       )}
 
       <Card className="overflow-hidden">
         <CardHeader
-          title={`So‘zlar (${words.length})`}
+          title={tr("So‘zlar ({0})", words.length)}
           action={
             canEdit ? (
               <div className="flex flex-wrap gap-2">
                 <Button size="sm" onClick={() => setCsvOpen(true)}>
-                  <ListPlus /> Ko‘plab qo‘shish
+                  <ListPlus /> {tr("Ko‘plab qo‘shish")}
                 </Button>
                 <Button size="sm" variant="secondary" onClick={() => setAdding(true)}>
-                  <Plus /> Bitta so‘z
+                  <Plus /> {tr("Bitta so‘z")}
                 </Button>
               </div>
             ) : null
@@ -255,14 +256,14 @@ export function WordListEditor({ list, words, canEdit }: { list: ListMeta; words
               initial={emptyWord}
               pending={pending}
               onCancel={words.length ? () => setAdding(false) : undefined}
-              onSave={(w) => run(() => saveWordAction(list.id, null, w), "So‘z qo‘shildi", () => setFormKey((k) => k + 1))}
+              onSave={(w) => run(() => saveWordAction(list.id, null, w), tr("So‘z qo‘shildi"), () => setFormKey((k) => k + 1))}
             />
           </div>
         ) : null}
         {words.length > 8 ? (
           <div className="relative border-b border-border px-5 py-3">
             <Search className="pointer-events-none absolute top-1/2 left-8 size-4 -translate-y-1/2 text-muted" aria-hidden />
-            <Input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Qidirish" className="pl-9" aria-label="So‘z qidirish" />
+            <Input value={q} onChange={(e) => setQ(e.target.value)} placeholder={tr("Qidirish")} className="pl-9" aria-label={tr("So‘z qidirish")} />
           </div>
         ) : null}
         <ul className="divide-y divide-border">
@@ -277,22 +278,22 @@ export function WordListEditor({ list, words, canEdit }: { list: ListMeta; words
                   <div className="flex flex-wrap items-baseline gap-x-2">
                     <span className="font-bold">{w.english}</span>
                     {w.phonetic ? <span className="text-[12px] text-muted">{w.phonetic}</span> : null}
-                    {w.audioFileId ? <Music className="size-3.5 text-violet" aria-label="audio bor" /> : null}
+                    {w.audioFileId ? <Music className="size-3.5 text-violet" aria-label={tr("audio bor")} /> : null}
                   </div>
                   <div className="text-[13.5px] text-text-2">{w.uzbek}</div>
                   {w.example ? <div className="text-[12.5px] text-muted italic">{w.example}</div> : null}
                 </div>
                 {canEdit ? (
                   <div className="flex shrink-0">
-                    <Button variant="ghost" size="icon" onClick={() => setEditing(w.id)} aria-label={`${w.english} — tahrirlash`}>
+                    <Button variant="ghost" size="icon" onClick={() => setEditing(w.id)} aria-label={tr("{0} — tahrirlash", w.english)}>
                       <Pencil />
                     </Button>
                     <Button
                       variant="ghost"
                       size="icon"
                       className="hover:text-danger"
-                      aria-label={`${w.english} — o‘chirish`}
-                      onClick={() => confirm(`“${w.english}” o‘chirilsinmi? O‘quvchilar tarixi saqlanadi.`) && run(() => removeWordAction(list.id, w.id), "O‘chirildi")}
+                      aria-label={tr("{0} — o‘chirish", w.english)}
+                      onClick={() => confirm(tr("“{0}” o‘chirilsinmi? O‘quvchilar tarixi saqlanadi.", w.english)) && run(() => removeWordAction(list.id, w.id), tr("O‘chirildi"))}
                     >
                       <Trash2 />
                     </Button>
@@ -301,7 +302,7 @@ export function WordListEditor({ list, words, canEdit }: { list: ListMeta; words
               </li>
             ),
           )}
-          {!words.length && !adding ? <li className="px-5 py-8 text-center text-[13.5px] text-muted">Hali so‘z yo‘q.</li> : null}
+          {!words.length && !adding ? <li className="px-5 py-8 text-center text-[13.5px] text-muted">{tr("Hali so‘z yo‘q.")}</li> : null}
         </ul>
       </Card>
 
@@ -325,13 +326,13 @@ function WordBulkDialog({ open, onClose, listId, existing }: { open: boolean; on
     <Dialog
       open={open}
       onClose={onClose}
-      title="So‘zlarni ko‘plab qo‘shish"
-      description="Har qatorga bitta so‘z yozing yoki ro‘yxatni nusxalab qo‘ying. Takroriy so‘zlar o‘tkazib yuboriladi."
+      title={tr("So‘zlarni ko‘plab qo‘shish")}
+      description={tr("Har qatorga bitta so‘z yozing yoki ro‘yxatni nusxalab qo‘ying. Takroriy so‘zlar o‘tkazib yuboriladi.")}
       className="max-w-2xl"
       footer={
         <>
           <Button variant="secondary" onClick={onClose}>
-            Bekor qilish
+            {tr("Bekor qilish")}
           </Button>
           <Button
             disabled={!preview || !preview.rows.length}
@@ -339,22 +340,22 @@ function WordBulkDialog({ open, onClose, listId, existing }: { open: boolean; on
             onClick={() =>
               run(() => importWordsAction(listId, preview && preview.errors.length ? toLines(preview.rows) : text, preview && preview.errors.length ? false : swap), undefined, (r) => {
                 if (r.errors.length) return toast.error(`${r.errors[0].line}-qator: ${r.errors[0].message}`);
-                toast.success(`${r.added} ta so‘z qo‘shildi${r.duplicates.length ? `, ${r.duplicates.length} ta takroriy o‘tkazib yuborildi` : ""}`);
+                toast.success(tr("{0} ta so‘z qo‘shildi{1}", r.added, r.duplicates.length ? tr(", {0} ta takroriy o‘tkazib yuborildi", r.duplicates.length) : ""));
                 setText("");
                 onClose();
               })
             }
           >
-            {preview?.rows.length ? `${preview.rows.length} ta so‘zni qo‘shish` : "Qo‘shish"}
+            {preview?.rows.length ? tr("{0} ta so‘zni qo‘shish", preview.rows.length) : tr("Qo‘shish")}
           </Button>
         </>
       }
     >
       <div className="space-y-3">
-        <Textarea rows={8} value={text} onChange={(e) => setText(e.target.value)} placeholder={EXAMPLE} aria-label="So‘zlar ro‘yxati" className="font-mono text-[13px]" spellCheck={false} autoFocus />
+        <Textarea rows={8} value={text} onChange={(e) => setText(e.target.value)} placeholder={EXAMPLE} aria-label={tr("So‘zlar ro‘yxati")} className="font-mono text-[13px]" spellCheck={false} autoFocus />
         <div className="flex flex-wrap items-center gap-2">
           <label className="inline-flex h-8 cursor-pointer items-center gap-1.5 rounded-lg border border-border bg-surface px-3 text-[13px] font-semibold hover:bg-surface-2">
-            <FileUp className="size-4" aria-hidden /> Fayldan (CSV / TXT)
+            <FileUp className="size-4" aria-hidden /> {tr("Fayldan (CSV / TXT)")}
             <input
               type="file"
               accept=".csv,.txt,text/csv,text/plain"
@@ -366,33 +367,33 @@ function WordBulkDialog({ open, onClose, listId, existing }: { open: boolean; on
               }}
             />
           </label>
-          <Checkbox checked={swap} onChange={setSwap} label="Qatorlar o‘zbekcha so‘z bilan boshlanadi" />
+          <Checkbox checked={swap} onChange={setSwap} label={tr("Qatorlar o‘zbekcha so‘z bilan boshlanadi")} />
         </div>
         <p className="text-[12px] leading-relaxed text-muted">
-          Ajratuvchi: <code>-</code> <code>—</code> <code>:</code> <code>=</code> yoki Excel ustunlari. Misol qo‘shish uchun <code>|</code> qo‘ying. <code>(n)</code>, <code>(v)</code> va <code>/transkripsiya/</code> avtomatik ajratiladi.
+          {tr("Ajratuvchi:")} <code>-</code> <code>—</code> <code>:</code> <code>=</code> {tr("yoki Excel ustunlari. Misol qo‘shish uchun")} <code>|</code> {tr("qo‘ying.")} <code>{tr("(n)")}</code>, <code>{tr("(v)")}</code> {tr("va")} <code>{tr("/transkripsiya/")}</code> {tr("avtomatik ajratiladi.")}
         </p>
         {preview ? (
           <>
             {preview.errors.length ? (
-              <Alert tone="warning" title={`${preview.errors.length} ta qator tushunilmadi — ular qo‘shilmaydi`}>
+              <Alert tone="warning" title={tr("{0} ta qator tushunilmadi — ular qo‘shilmaydi", preview.errors.length)}>
                 <ul className="max-h-28 space-y-0.5 overflow-y-auto text-[12.5px]">
                   {preview.errors.slice(0, 30).map((e, i) => (
                     <li key={i}>
-                      {e.line}-qator: {e.message}
+                      {tr("{0}-qator: {1}", e.line, e.message)}
                     </li>
                   ))}
                 </ul>
               </Alert>
             ) : null}
-            {preview.duplicates.length ? <p className="text-[12.5px] text-muted">Takroriy (o‘tkazib yuboriladi): {preview.duplicates.slice(0, 8).join(", ")}{preview.duplicates.length > 8 ? "…" : ""}</p> : null}
+            {preview.duplicates.length ? <p className="text-[12.5px] text-muted">{tr("Takroriy (o‘tkazib yuboriladi): {0}{1}", preview.duplicates.slice(0, 8).join(", "), preview.duplicates.length > 8 ? "…" : "")}</p> : null}
             {preview.rows.length ? (
               <div className="max-h-60 overflow-y-auto rounded-xl border border-border">
                 <table className="w-full text-[13px]">
                   <thead className="sticky top-0 bg-surface-2 text-left text-[11.5px] text-muted">
                     <tr>
-                      <th className="px-3 py-2 font-semibold">English</th>
-                      <th className="px-3 py-2 font-semibold">O‘zbekcha</th>
-                      <th className="hidden px-3 py-2 font-semibold sm:table-cell">Misol</th>
+                      <th className="px-3 py-2 font-semibold">{tr("English")}</th>
+                      <th className="px-3 py-2 font-semibold">{tr("O‘zbekcha")}</th>
+                      <th className="hidden px-3 py-2 font-semibold sm:table-cell">{tr("Misol")}</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-border">
@@ -432,20 +433,20 @@ export function WordListTargets({ listId, published, classes, students, initialC
   const filtered = students.filter((s) => !q || s.displayName.toLowerCase().includes(q.toLowerCase())).slice(0, 60);
   return (
     <Card>
-      <CardHeader title="Kimlarga" icon={<Users />} description={published ? "Biriktirilganlarga bildirishnoma yuboriladi." : "Ro‘yxat e’lon qilinganda o‘quvchilarga ko‘rinadi."} />
+      <CardHeader title={tr("Kimlarga")} icon={<Users />} description={published ? tr("Biriktirilganlarga bildirishnoma yuboriladi.") : tr("Ro‘yxat e’lon qilinganda o‘quvchilarga ko‘rinadi.")} />
       <CardBody className="space-y-5">
         <div>
-          <div className="mb-2 text-[13px] font-semibold text-text-2">Guruhlar</div>
+          <div className="mb-2 text-[13px] font-semibold text-text-2">{tr("Guruhlar")}</div>
           <div className="grid gap-2 sm:grid-cols-2">
             {classes.map((c) => (
-              <Checkbox key={c.id} checked={classIds.includes(c.id)} onChange={(on) => setClassIds((x) => toggle(x, c.id, on))} className="rounded-xl border border-border p-3" label={<span>{c.name} <span className="text-muted">· {c.students} o‘quvchi</span></span>} />
+              <Checkbox key={c.id} checked={classIds.includes(c.id)} onChange={(on) => setClassIds((x) => toggle(x, c.id, on))} className="rounded-xl border border-border p-3" label={<span>{c.name} <span className="text-muted">{tr("· {0} o‘quvchi", c.students)}</span></span>} />
             ))}
-            {!classes.length ? <p className="text-[13px] text-muted">Sizga biriktirilgan guruh yo‘q.</p> : null}
+            {!classes.length ? <p className="text-[13px] text-muted">{tr("Sizga biriktirilgan guruh yo‘q.")}</p> : null}
           </div>
         </div>
         <div>
-          <div className="mb-2 text-[13px] font-semibold text-text-2">Alohida o‘quvchilar</div>
-          <Input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Ism bo‘yicha qidirish" aria-label="O‘quvchi qidirish" className="mb-2" />
+          <div className="mb-2 text-[13px] font-semibold text-text-2">{tr("Alohida o‘quvchilar")}</div>
+          <Input value={q} onChange={(e) => setQ(e.target.value)} placeholder={tr("Ism bo‘yicha qidirish")} aria-label={tr("O‘quvchi qidirish")} className="mb-2" />
           <div className="grid max-h-72 gap-1.5 overflow-y-auto sm:grid-cols-2">
             {filtered.map((s) => (
               <Checkbox key={s.id} checked={studentIds.includes(s.id)} onChange={(on) => setStudentIds((x) => toggle(x, s.id, on))} label={<span>{s.displayName} <span className="text-muted">{s.className}</span></span>} />
@@ -454,7 +455,7 @@ export function WordListTargets({ listId, published, classes, students, initialC
         </div>
         <div className="flex justify-end">
           <Button loading={pending} onClick={() => run(() => wordListTargetsAction(listId, { classIds, studentIds }), "Saqlandi")}>
-            <Save /> Saqlash
+            <Save /> {tr("Saqlash")}
           </Button>
         </div>
       </CardBody>

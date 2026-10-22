@@ -3,14 +3,15 @@
  * Every server action and route handler goes through these — hiding a button is never the control.
  */
 import type { Role } from "../db/schema";
+import { tr } from "@/lib/i18n/tr";
 
 export type Actor = { id: string; role: Role; permissions: string[]; displayName?: string };
 
 export const PERMISSIONS = {
-  "assignments.create": "Vazifa va quiz yaratish",
-  "grades.edit_final": "Yakunlangan baholarni o‘zgartirish",
-  "classes.all": "Barcha guruhlarga kirish",
-  "reports.export": "Hisobotlarni eksport qilish",
+  get "assignments.create"() { return tr("Vazifa va quiz yaratish"); },
+  get "grades.edit_final"() { return tr("Yakunlangan baholarni o‘zgartirish"); },
+  get "classes.all"() { return tr("Barcha guruhlarga kirish"); },
+  get "reports.export"() { return tr("Hisobotlarni eksport qilish"); },
 } as const;
 export type Permission = keyof typeof PERMISSIONS;
 

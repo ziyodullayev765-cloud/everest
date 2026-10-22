@@ -10,6 +10,7 @@ import { LEVELS } from "@/lib/course";
 import { Card, CardBody, CardHeader } from "@/components/ui/card";
 import { Alert } from "@/components/ui/feedback";
 import { toast } from "@/components/ui/toast";
+import { tr } from "@/lib/i18n/tr";
 
 function useRun() {
   const [pending, start] = useTransition();
@@ -21,7 +22,7 @@ function useRun() {
         toast.success(msg);
         after?.();
         router.refresh();
-      } else toast.error(r.error ?? "Xatolik");
+      } else toast.error(r.error ?? tr("Xatolik"));
     });
   return { pending, run };
 }
@@ -33,9 +34,9 @@ export function ClassForm({ cls }: { cls?: { id: string; name: string; level: st
   return (
     <>
       <Button variant={cls ? "secondary" : "primary"} size={cls ? "sm" : "md"} onClick={() => setOpen(true)}>
-        {cls ? "Tahrirlash" : <><Plus /> Yangi guruh</>}
+        {cls ? tr("Tahrirlash") : <><Plus /> {tr("Yangi guruh")}</>}
       </Button>
-      <Dialog open={open} onClose={() => setOpen(false)} title={cls ? "Guruhni tahrirlash" : "Yangi guruh"}>
+      <Dialog open={open} onClose={() => setOpen(false)} title={cls ? tr("Guruhni tahrirlash") : tr("Yangi guruh")}>
         <form
           className="space-y-4"
           onSubmit={(e) => {
@@ -43,15 +44,15 @@ export function ClassForm({ cls }: { cls?: { id: string; name: string; level: st
             run(() => (cls ? updateClassAction(cls.id, f) : createClassAction(f)), "Saqlandi", () => setOpen(false));
           }}
         >
-          <Field label="Nomi" required><Input value={f.name} onChange={(e) => setF({ ...f, name: e.target.value })} placeholder="Intermediate 1" required /></Field>
-          <Field label="Daraja" hint="Kurs darajasi — rasmiy CEFR sertifikati emas.">
-            <Input value={f.level} onChange={(e) => setF({ ...f, level: e.target.value })} list="group-levels" placeholder="Intermediate (B1)" />
+          <Field label={tr("Nomi")} required><Input value={f.name} onChange={(e) => setF({ ...f, name: e.target.value })} placeholder={tr("Intermediate 1")} required /></Field>
+          <Field label={tr("Daraja")} hint={tr("Kurs darajasi — rasmiy CEFR sertifikati emas.")}>
+            <Input value={f.level} onChange={(e) => setF({ ...f, level: e.target.value })} list="group-levels" placeholder={tr("Intermediate (B1)")} />
           </Field>
           <datalist id="group-levels">{LEVELS.map((l) => <option key={l} value={l} />)}</datalist>
-          <Field label="Izoh"><Textarea rows={2} value={f.description} onChange={(e) => setF({ ...f, description: e.target.value })} placeholder="Dars kunlari, maqsad (masalan, IELTS 6.5)" /></Field>
+          <Field label={tr("Izoh")}><Textarea rows={2} value={f.description} onChange={(e) => setF({ ...f, description: e.target.value })} placeholder={tr("Dars kunlari, maqsad (masalan, IELTS 6.5)")} /></Field>
           <div className="flex justify-end gap-2">
-            <Button type="button" variant="secondary" onClick={() => setOpen(false)}>Bekor qilish</Button>
-            <Button type="submit" loading={pending}>Saqlash</Button>
+            <Button type="button" variant="secondary" onClick={() => setOpen(false)}>{tr("Bekor qilish")}</Button>
+            <Button type="submit" loading={pending}>{tr("Saqlash")}</Button>
           </div>
         </form>
       </Dialog>
@@ -73,58 +74,58 @@ export function ClassManager({ cls, students, teachers, allStudents, allTeachers
   }, [allStudents, q, students]);
   return (
     <div className="space-y-5">
-      {cls.archivedAt ? <Alert tone="warning">Guruh arxivlangan. O‘qituvchilar va o‘quvchilar uni faol ro‘yxatda ko‘rmaydi, tarix saqlanadi.</Alert> : null}
+      {cls.archivedAt ? <Alert tone="warning">{tr("Guruh arxivlangan. O‘qituvchilar va o‘quvchilar uni faol ro‘yxatda ko‘rmaydi, tarix saqlanadi.")}</Alert> : null}
       <Card>
-        <CardHeader title="Sozlamalar" action={<ClassForm cls={cls} />} />
+        <CardHeader title={tr("Sozlamalar")} action={<ClassForm cls={cls} />} />
         <CardBody className="flex flex-wrap items-center gap-3 pt-3">
           {cls.joinCode ? (
             <>
-              <span className="text-[13px] text-muted">Qo‘shilish kodi:</span>
+              <span className="text-[13px] text-muted">{tr("Qo‘shilish kodi:")}</span>
               <code className="rounded-lg bg-surface-2 px-3 py-1.5 text-[15px] font-bold tracking-[0.2em]">{cls.joinCode}</code>
-              <Button variant="ghost" size="sm" loading={pending} onClick={() => run(() => joinCodeAction(cls.id, true), "Yangi kod yaratildi")}><RotateCcw /> Yangilash</Button>
-              <Button variant="ghost" size="sm" loading={pending} onClick={() => run(() => joinCodeAction(cls.id, false), "Kod o‘chirildi")}><X /> O‘chirish</Button>
+              <Button variant="ghost" size="sm" loading={pending} onClick={() => run(() => joinCodeAction(cls.id, true), tr("Yangi kod yaratildi"))}><RotateCcw /> {tr("Yangilash")}</Button>
+              <Button variant="ghost" size="sm" loading={pending} onClick={() => run(() => joinCodeAction(cls.id, false), tr("Kod o‘chirildi"))}><X /> {tr("O‘chirish")}</Button>
             </>
           ) : !cls.archivedAt ? (
-            <Button variant="secondary" size="sm" loading={pending} onClick={() => run(() => joinCodeAction(cls.id, true), "Kod yaratildi")}><KeyRound /> Qo‘shilish kodi yaratish</Button>
+            <Button variant="secondary" size="sm" loading={pending} onClick={() => run(() => joinCodeAction(cls.id, true), tr("Kod yaratildi"))}><KeyRound /> {tr("Qo‘shilish kodi yaratish")}</Button>
           ) : null}
           <span className="flex-1" />
-          <Button variant={cls.archivedAt ? "secondary" : "ghost"} size="sm" loading={pending} onClick={() => run(() => archiveClassAction(cls.id, !cls.archivedAt), cls.archivedAt ? "Tiklandi" : "Arxivlandi")}>
-            {cls.archivedAt ? <><RotateCcw /> Tiklash</> : <><Archive /> Arxivlash</>}
+          <Button variant={cls.archivedAt ? "secondary" : "ghost"} size="sm" loading={pending} onClick={() => run(() => archiveClassAction(cls.id, !cls.archivedAt), cls.archivedAt ? tr("Tiklandi") : tr("Arxivlandi"))}>
+            {cls.archivedAt ? <><RotateCcw /> {tr("Tiklash")}</> : <><Archive /> {tr("Arxivlash")}</>}
           </Button>
         </CardBody>
       </Card>
 
       <Card>
-        <CardHeader title={`O‘qituvchilar (${teachers.length})`} />
+        <CardHeader title={tr("O‘qituvchilar ({0})", teachers.length)} />
         <CardBody className="space-y-3 pt-3">
           <ul className="space-y-2">
             {teachers.map((x) => (
               <li key={x.id} className="flex items-center justify-between rounded-xl border border-border px-3 py-2 text-[13.5px]">
                 <span className="font-semibold">{x.displayName}</span>
-                <Button variant="ghost" size="icon" aria-label="Ajratish" onClick={() => run(() => unassignTeacherAction(x.id), "Ajratildi")}><X /></Button>
+                <Button variant="ghost" size="icon" aria-label={tr("Ajratish")} onClick={() => run(() => unassignTeacherAction(x.id), "Ajratildi")}><X /></Button>
               </li>
             ))}
           </ul>
           <div className="grid gap-2 sm:grid-cols-[1fr_auto]">
-            <Select value={t.teacherId} onChange={(e) => setT({ ...t, teacherId: e.target.value })} aria-label="O‘qituvchi">
+            <Select value={t.teacherId} onChange={(e) => setT({ ...t, teacherId: e.target.value })} aria-label={tr("O‘qituvchi")}>
               {allTeachers.map((x) => <option key={x.id} value={x.id}>{x.displayName}</option>)}
             </Select>
-            <Button variant="secondary" disabled={!t.teacherId} onClick={() => run(() => assignTeacherAction(cls.id, t.teacherId), "Biriktirildi")}><Plus /> Biriktirish</Button>
+            <Button variant="secondary" disabled={!t.teacherId} onClick={() => run(() => assignTeacherAction(cls.id, t.teacherId), "Biriktirildi")}><Plus /> {tr("Biriktirish")}</Button>
           </div>
         </CardBody>
       </Card>
 
       <Card>
-        <CardHeader title={`O‘quvchilar (${students.length})`} action={<Button size="sm" onClick={() => setAddOpen(true)}><UserPlus /> Qo‘shish</Button>} />
+        <CardHeader title={tr("O‘quvchilar ({0})", students.length)} action={<Button size="sm" onClick={() => setAddOpen(true)}><UserPlus /> {tr("Qo‘shish")}</Button>} />
         <CardBody className="pt-2">
           <ul className="divide-y divide-border">
             {students.map((s) => (
               <li key={s.id} className="flex items-center justify-between gap-2 py-2 text-[13.5px]">
                 <a href={`/admin/students/${s.id}`} className="min-w-0 truncate font-semibold hover:text-primary">{s.displayName} <span className="font-normal text-muted">@{s.username}</span></a>
-                <Button variant="ghost" size="sm" onClick={() => run(() => enrollAction(cls.id, [s.id], false), "Guruhdan chiqarildi")}><UserMinus /> Chiqarish</Button>
+                <Button variant="ghost" size="sm" onClick={() => run(() => enrollAction(cls.id, [s.id], false), tr("Guruhdan chiqarildi"))}><UserMinus /> {tr("Chiqarish")}</Button>
               </li>
             ))}
-            {!students.length ? <li className="py-4 text-center text-[13px] text-muted">O‘quvchi yo‘q.</li> : null}
+            {!students.length ? <li className="py-4 text-center text-[13px] text-muted">{tr("O‘quvchi yo‘q.")}</li> : null}
           </ul>
         </CardBody>
       </Card>
@@ -132,17 +133,17 @@ export function ClassManager({ cls, students, teachers, allStudents, allTeachers
       <Dialog
         open={addOpen}
         onClose={() => setAddOpen(false)}
-        title="O‘quvchilarni qo‘shish"
+        title={tr("O‘quvchilarni qo‘shish")}
         footer={
           <>
-            <Button variant="secondary" onClick={() => setAddOpen(false)}>Bekor qilish</Button>
-            <Button disabled={!picked.length} loading={pending} onClick={() => run(() => enrollAction(cls.id, picked, true), `${picked.length} ta o‘quvchi qo‘shildi`, () => { setAddOpen(false); setPicked([]); })}>Qo‘shish ({picked.length})</Button>
+            <Button variant="secondary" onClick={() => setAddOpen(false)}>{tr("Bekor qilish")}</Button>
+            <Button disabled={!picked.length} loading={pending} onClick={() => run(() => enrollAction(cls.id, picked, true), tr("{0} ta o‘quvchi qo‘shildi", picked.length), () => { setAddOpen(false); setPicked([]); })}>{tr("Qo‘shish ({0})", picked.length)}</Button>
           </>
         }
       >
         <div className="relative mb-3">
           <Search className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted" aria-hidden />
-          <Input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Qidirish" className="pl-9" />
+          <Input value={q} onChange={(e) => setQ(e.target.value)} placeholder={tr("Qidirish")} className="pl-9" />
         </div>
         <div className="max-h-[45dvh] space-y-1 overflow-y-auto">
           {candidates.map((s) => (

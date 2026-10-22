@@ -7,6 +7,7 @@ import { getSettings } from "@/server/services/settings";
 import { t } from "@/lib/i18n";
 import { tutorEnabled } from "@/server/services/tutor";
 import { AchievementUnlock } from "@/components/student/achievement-unlock";
+import { tr } from "@/lib/i18n/tr";
 
 export default async function StudentLayout({ children }: { children: React.ReactNode }) {
   const user = await pageUser("student");
@@ -14,14 +15,14 @@ export default async function StudentLayout({ children }: { children: React.Reac
   const tabs = [
     { href: "/", label: t.nav.home, icon: "home", exact: true },
     { href: "/assignments", label: t.nav.homework, icon: "assignments" },
-    { href: "/vocabulary", label: "So‘zlar", icon: "words" },
+    { href: "/vocabulary", label: tr("So‘zlar"), icon: "words" },
     { href: "/quizzes", label: t.nav.quizzes, icon: "quizzes" },
     { href: "/profile", label: t.nav.profile, icon: "profile" },
   ];
   const sections: NavSection[] = [
     { items: tabs.slice(0, 4) },
     {
-      title: "Mashq",
+      title: tr("Mashq"),
       items: [
         { href: "/grammar", label: t.nav.grammar, icon: "grammar" },
         { href: "/reading", label: t.nav.reading, icon: "reading" },
@@ -30,7 +31,7 @@ export default async function StudentLayout({ children }: { children: React.Reac
       ],
     },
     {
-      title: "Shaxsiy",
+      title: tr("Shaxsiy"),
       items: [
         { href: "/results", label: t.nav.progress, icon: "results" },
         { href: "/grades", label: t.nav.grades, icon: "grades" },

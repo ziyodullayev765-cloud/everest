@@ -8,6 +8,7 @@ import { randomToken, sha256 } from "../crypto";
 import { env } from "../env";
 import { AppError, forbidden } from "../errors";
 import type { Role } from "../db/schema";
+import { tr } from "@/lib/i18n/tr";
 
 const SESSION_DAYS = 14;
 const TOUCH_AFTER_MS = 60 * 60 * 1000;
@@ -100,7 +101,7 @@ export const getCurrentUser = cache(async (): Promise<SessionUser | null> => {
 
 export async function requireUser(): Promise<SessionUser> {
   const u = await getCurrentUser();
-  if (!u) throw new AppError("unauthenticated", "Iltimos, tizimga kiring.");
+  if (!u) throw new AppError("unauthenticated", tr("Iltimos, tizimga kiring."));
   return u;
 }
 

@@ -2,8 +2,9 @@ import type { Metadata } from "next";
 import { pageUser } from "@/server/auth/guards";
 import { gameBest, gameCards } from "@/server/services/vocabulary";
 import { VocabGame } from "./vocab-game";
+import { tr } from "@/lib/i18n/tr";
 
-export const metadata: Metadata = { title: "So‘z o‘yini" };
+export const metadata: Metadata = { get title() { return tr("So‘z o‘yini"); } };
 export const dynamic = "force-dynamic";
 
 export default async function GamePage({ searchParams }: { searchParams: Promise<{ list?: string }> }) {

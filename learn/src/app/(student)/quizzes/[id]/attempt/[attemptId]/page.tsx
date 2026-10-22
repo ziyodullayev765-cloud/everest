@@ -3,8 +3,9 @@ import { redirect } from "next/navigation";
 import { orNotFound, pageUser } from "@/server/auth/guards";
 import { attemptView } from "@/server/services/quiz";
 import { QuizPlayer } from "./quiz-player";
+import { tr } from "@/lib/i18n/tr";
 
-export const metadata: Metadata = { title: "Quiz" };
+export const metadata: Metadata = { get title() { return tr("Quiz"); } };
 export const dynamic = "force-dynamic";
 
 export default async function AttemptPage({ params }: { params: Promise<{ id: string; attemptId: string }> }) {

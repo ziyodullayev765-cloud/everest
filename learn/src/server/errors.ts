@@ -1,3 +1,4 @@
+import { tr } from "@/lib/i18n/tr";
 /** Errors that are safe to show to users. Anything else is logged and replaced with a generic message. */
 export class AppError extends Error {
   constructor(
@@ -12,7 +13,7 @@ export class AppError extends Error {
   }
 }
 
-export const forbidden = (msg = "Bu amal uchun ruxsat yo‘q.") => new AppError("forbidden", msg);
+export const forbidden = (msg = tr("Bu amal uchun ruxsat yo‘q.")) => new AppError("forbidden", msg);
 export const notFound = (msg = "Topilmadi.") => new AppError("not_found", msg);
 export const invalid = (msg: string, fields?: Record<string, string>) => new AppError("invalid", msg, fields);
 

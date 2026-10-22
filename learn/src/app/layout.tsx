@@ -7,6 +7,7 @@ import { themeScript } from "@/components/app/theme";
 import { NoZoom, OfflineIndicator, ServiceWorkerRegistrar } from "@/components/app/pwa";
 import { Toaster } from "@/components/ui/toast";
 import { requestLocale } from "@/server/locale";
+import { tr } from "@/lib/i18n/tr";
 
 /** Rounded, friendly typeface (self-hosted; latin subset covers Uzbek Latin incl. ʻ and ‘). */
 const nunito = localFont({
@@ -17,11 +18,11 @@ const nunito = localFont({
 });
 
 export const metadata: Metadata = {
-  title: { default: "Everest Ta’lim", template: "%s · Everest" },
-  description: "O‘quvchilar, o‘qituvchilar va ma’muriyat uchun zamonaviy ta’lim platformasi",
-  applicationName: "Everest Ta’lim",
+  title: { get default() { return tr("Everest Ta’lim"); }, get template() { return tr("%s · Everest"); } },
+  get description() { return tr("O‘quvchilar, o‘qituvchilar va ma’muriyat uchun zamonaviy ta’lim platformasi"); },
+  get applicationName() { return tr("Everest Ta’lim"); },
   manifest: "/manifest.webmanifest",
-  appleWebApp: { capable: true, title: "Everest", statusBarStyle: "default" },
+  appleWebApp: { capable: true, get title() { return tr("Everest"); }, statusBarStyle: "default" },
   formatDetection: { telephone: false },
   icons: {
     icon: [

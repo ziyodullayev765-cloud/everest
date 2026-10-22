@@ -5,6 +5,7 @@ import type { PDFDocumentProxy } from "pdfjs-dist/legacy/build/pdf.mjs";
 import { cn, fmtSize } from "@/lib/utils";
 import { Button, buttonClass } from "@/components/ui/button";
 import { toast } from "@/components/ui/toast";
+import { tr } from "@/lib/i18n/tr";
 
 type FileRef = { id: string; name: string; size?: number };
 
@@ -39,7 +40,7 @@ export function PdfReader({ file, onClose }: { file: FileRef; onClose: () => voi
         setDoc(loaded);
       } catch (e) {
         console.error("[pdf]", e);
-        if (!cancelled) setError("PDF faylni ochib bo‘lmadi. Internet aloqasini tekshirib, qayta urinib ko‘ring.");
+        if (!cancelled) setError(tr("PDF faylni ochib bo‘lmadi. Internet aloqasini tekshirib, qayta urinib ko‘ring."));
       }
     })();
     return () => {
@@ -98,18 +99,18 @@ export function PdfReader({ file, onClose }: { file: FileRef; onClose: () => voi
   return (
     <div className="fixed inset-0 z-[90] flex flex-col bg-surface-3" role="dialog" aria-modal="true" aria-label={file.name}>
       <div className="flex items-center gap-2 border-b border-border bg-surface px-2 pt-[calc(env(safe-area-inset-top)+8px)] pb-2">
-        <Button variant="ghost" size="icon" onClick={() => history.back()} aria-label="Yopish">
+        <Button variant="ghost" size="icon" onClick={() => history.back()} aria-label={tr("Yopish")}>
           <X />
         </Button>
         <div className="min-w-0 flex-1">
           <div className="truncate text-[13.5px] font-bold">{file.name}</div>
-          <div className="text-[11.5px] text-muted tabular">{doc ? `${page} / ${doc.numPages} bet` : "Yuklanmoqda…"}</div>
+          <div className="text-[11.5px] text-muted tabular">{doc ? `${page} / ${doc.numPages} bet` : tr("Yuklanmoqda…")}</div>
         </div>
-        <Button variant="ghost" size="icon" onClick={() => setZoom((z) => Math.max(1, +(z - 0.25).toFixed(2)))} disabled={zoom <= 1} aria-label="Kichiklashtirish">
+        <Button variant="ghost" size="icon" onClick={() => setZoom((z) => Math.max(1, +(z - 0.25).toFixed(2)))} disabled={zoom <= 1} aria-label={tr("Kichiklashtirish")}>
           <Minus />
         </Button>
         <span className="w-10 text-center text-[12px] text-muted tabular">{Math.round(zoom * 100)}%</span>
-        <Button variant="ghost" size="icon" onClick={() => setZoom((z) => Math.min(3, +(z + 0.25).toFixed(2)))} disabled={zoom >= 3} aria-label="Kattalashtirish">
+        <Button variant="ghost" size="icon" onClick={() => setZoom((z) => Math.min(3, +(z + 0.25).toFixed(2)))} disabled={zoom >= 3} aria-label={tr("Kattalashtirish")}>
           <Plus />
         </Button>
         <DownloadButton file={file} compact />
@@ -124,7 +125,7 @@ export function PdfReader({ file, onClose }: { file: FileRef; onClose: () => voi
           </div>
         ) : !doc || !width ? (
           <div className="grid h-full place-items-center text-muted">
-            <Loader2 className="size-6 animate-spin" aria-label="Yuklanmoqda" />
+            <Loader2 className="size-6 animate-spin" aria-label={tr("Yuklanmoqda")} />
           </div>
         ) : (
           <div className="mx-auto flex flex-col items-center gap-3 px-3 py-3" style={{ width: pageW + 24 }}>
@@ -148,7 +149,7 @@ function PdfPage({ id, doc, n, width, height, root }: { id: string; doc: PDFDocu
   useEffect(() => {
     const el = box.current;
     if (!el) return;
-    const io = new IntersectionObserver(([e]) => setNear(e.isIntersecting), { root: root.current, rootMargin: "150% 0px" });
+    const io = new IntersectionObserver(([e]) => setNear(e.isIntersecting), { root: root.current, rootMargin: tr("150% 0px") });
     io.observe(el);
     return () => io.disconnect();
   }, [root]);
@@ -201,7 +202,7 @@ export async function downloadFile(file: FileRef) {
     a.remove();
     setTimeout(() => URL.revokeObjectURL(url), 60_000);
   } catch {
-    toast.error("Faylni yuklab bo‘lmadi. Qayta urinib ko‘ring.");
+    toast.error(tr("Faylni yuklab bo‘lmadi. Qayta urinib ko‘ring."));
   }
 }
 
@@ -213,18 +214,18 @@ export function DownloadButton({ file, compact, className }: { file: FileRef; co
     setBusy(false);
   };
   return compact ? (
-    <Button variant="ghost" size="icon" onClick={go} disabled={busy} aria-label="Yuklab olish">
+    <Button variant="ghost" size="icon" onClick={go} disabled={busy} aria-label={tr("Yuklab olish")}>
       {busy ? <Loader2 className="animate-spin" /> : <Download />}
     </Button>
   ) : (
     <button type="button" onClick={go} disabled={busy} className={cn(buttonClass("secondary", "lg"), className)}>
-      {busy ? <Loader2 className="animate-spin" /> : <Download />} Yuklab olish{file.size ? ` · ${fmtSize(file.size)}` : ""}
+      {busy ? <Loader2 className="animate-spin" /> : <Download />} {tr("Yuklab olish")}{file.size ? ` · ${fmtSize(file.size)}` : ""}
     </button>
   );
 }
 
 /** "Read the book" button + reader, for server-rendered pages. */
-export function PdfOpenButton({ file, label = "Kitobni o‘qish", withDownload }: { file: FileRef; label?: string; withDownload?: boolean }) {
+export function PdfOpenButton({ file, label = tr("Kitobni o‘qish"), withDownload }: { file: FileRef; label?: string; withDownload?: boolean }) {
   const [open, setOpen] = useState(false);
   const close = useCallback(() => setOpen(false), []);
   return (

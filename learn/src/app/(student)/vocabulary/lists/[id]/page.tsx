@@ -9,13 +9,14 @@ import { EmptyState } from "@/components/ui/feedback";
 import { BookA, Gamepad2, Layers, Puzzle, Sparkles } from "lucide-react";
 import { formatDate } from "@/lib/dates";
 import { WordFlags } from "./word-flags";
+import { tr } from "@/lib/i18n/tr";
 
-export const metadata: Metadata = { title: "So‘zlar ro‘yxati" };
+export const metadata: Metadata = { get title() { return tr("So‘zlar ro‘yxati"); } };
 
 const STATE: Record<string, { label: string; tone: "neutral" | "primary" | "success" | "warning" }> = {
-  learning: { label: "O‘rganilmoqda", tone: "warning" },
-  review: { label: "Takrorlanmoqda", tone: "primary" },
-  mastered: { label: "Puxta", tone: "success" },
+  learning: { get label() { return tr("O‘rganilmoqda"); }, tone: "warning" },
+  review: { get label() { return tr("Takrorlanmoqda"); }, tone: "primary" },
+  mastered: { get label() { return tr("Puxta"); }, tone: "success" },
 };
 
 export default async function ListPage({ params }: { params: Promise<{ id: string }> }) {
@@ -26,22 +27,22 @@ export default async function ListPage({ params }: { params: Promise<{ id: strin
   return (
     <div className="mx-auto max-w-4xl">
       <PageHeader
-        back={{ href: "/vocabulary", label: "Lug‘at" }}
+        back={{ href: "/vocabulary", label: tr("Lug‘at") }}
         title={list.title}
-        description={[list.level, list.topic, `${words.length} ta so‘z`].filter(Boolean).join(" · ")}
+        description={[list.level, list.topic, tr("{0} ta so‘z", words.length)].filter(Boolean).join(" · ")}
         actions={
           <>
             <LinkButton href={`/vocabulary/session?mode=daily&list=${id}`}>
-              <Sparkles /> Mashq qilish
+              <Sparkles /> {tr("Mashq qilish")}
             </LinkButton>
             <LinkButton href={`/vocabulary/session?mode=learn&list=${id}&kind=flashcard`} variant="secondary">
-              <Layers /> Kartochkalar
+              <Layers /> {tr("Kartochkalar")}
             </LinkButton>
             <LinkButton href={`/vocabulary/session?mode=learn&list=${id}&kind=match`} variant="secondary">
-              <Puzzle /> Moslash
+              <Puzzle /> {tr("Moslash")}
             </LinkButton>
             <LinkButton href={`/vocabulary/game?list=${id}`} variant="secondary">
-              <Gamepad2 /> O‘yin
+              <Gamepad2 /> {tr("O‘yin")}
             </LinkButton>
           </>
         }
@@ -64,8 +65,8 @@ export default async function ListPage({ params }: { params: Promise<{ id: strin
                     <div className="text-[14px] text-text-2">{w.uzbek}</div>
                     {w.example ? <div className="mt-1 text-[13px] text-muted italic">{w.example}</div> : null}
                     <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
-                      {st ? <Badge tone={st.tone}>{st.label}</Badge> : <Badge>Yangi</Badge>}
-                      {due ? <Badge tone="warning">Takrorlash vaqti</Badge> : w.progress?.reps ? <span className="text-[11.5px] text-muted">keyingi: {formatDate(w.progress.dueAt)}</span> : null}
+                      {st ? <Badge tone={st.tone}>{st.label}</Badge> : <Badge>{tr("Yangi")}</Badge>}
+                      {due ? <Badge tone="warning">{tr("Takrorlash vaqti")}</Badge> : w.progress?.reps ? <span className="text-[11.5px] text-muted">{tr("keyingi: {0}", formatDate(w.progress.dueAt))}</span> : null}
                     </div>
                   </div>
                   <WordFlags wordId={w.id} audioFileId={w.audioFileId} english={w.english} favorite={!!w.progress?.favorite} difficult={!!w.progress?.difficult} />
@@ -76,7 +77,7 @@ export default async function ListPage({ params }: { params: Promise<{ id: strin
         </Card>
       ) : (
         <Card>
-          <EmptyState icon={<BookA />} title="Ro‘yxat bo‘sh" />
+          <EmptyState icon={<BookA />} title={tr("Ro‘yxat bo‘sh")} />
         </Card>
       )}
     </div>

@@ -10,6 +10,7 @@ import { play } from "@/lib/sfx";
 import { Button } from "@/components/ui/button";
 import { Confetti } from "@/components/app/confetti";
 import { Medal } from "./medal";
+import { tr } from "@/lib/i18n/tr";
 
 type Unlock = { code: string; title: string; description: string; icon: string; category: string; xpReward: number; earnedAt: string };
 
@@ -63,7 +64,7 @@ export function AchievementUnlock() {
       <div className="w-full max-w-sm animate-pop overflow-hidden rounded-[28px] bg-surface text-center shadow-pop">
         <div className="relative bg-gradient-to-b from-[#0d5c3a] to-[#0f6e45] px-6 pt-7 pb-6 text-white">
           <span aria-hidden className="pointer-events-none absolute top-10 left-1/2 size-48 -translate-x-1/2 rounded-full bg-white/15 blur-2xl" />
-          <div className="relative text-[12px] font-extrabold tracking-[0.18em] text-white/80 uppercase">Yangi yutuq!</div>
+          <div className="relative text-[12px] font-extrabold tracking-[0.18em] text-white/80 uppercase">{tr("Yangi yutuq!")}</div>
           <div className="relative mx-auto mt-3 w-fit">
             <Medal icon={a.icon} category={a.category} size={112} />
           </div>
@@ -75,17 +76,17 @@ export function AchievementUnlock() {
           <div className="flex items-center justify-center gap-4 text-[13px]">
             {a.xpReward > 0 ? (
               <span className="inline-flex items-center gap-1.5 rounded-full bg-[#fdf1dc] px-3 py-1.5 font-black text-[#9a6a00]">
-                <Star className="size-4 fill-[#f5b50b] text-[#f5b50b]" aria-hidden /> +{a.xpReward} XP
+                <Star className="size-4 fill-[#f5b50b] text-[#f5b50b]" aria-hidden /> {tr("+{0} XP", a.xpReward)}
               </span>
             ) : null}
             <span className="font-semibold text-muted">{formatDate(a.earnedAt)}</span>
           </div>
           <div className="flex flex-col gap-2">
             <Button size="lg" onClick={next} autoFocus>
-              {queue.length > 1 ? "Keyingisi" : "Ajoyib!"}
+              {queue.length > 1 ? tr("Keyingisi") : tr("Ajoyib!")}
             </Button>
             <Link href="/achievements" onClick={next} className="text-[13.5px] font-extrabold text-primary">
-              Barcha yutuqlar
+              {tr("Barcha yutuqlar")}
             </Link>
           </div>
         </div>

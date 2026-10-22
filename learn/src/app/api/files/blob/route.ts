@@ -5,6 +5,7 @@ import { assertSameOrigin } from "@/server/http";
 import { AppError } from "@/server/errors";
 import { ALLOWED_MIME, IMAGE_MIME, blobEnabled, blobMaxBytes, blobPrefix } from "@/server/services/files";
 import { enforce } from "@/server/services/rate-limit";
+import { tr } from "@/lib/i18n/tr";
 
 /**
  * POST /api/files/blob — issues a short-lived client token so the browser can upload a large file
@@ -14,17 +15,17 @@ import { enforce } from "@/server/services/rate-limit";
 export async function POST(req: Request) {
   try {
     assertSameOrigin(req);
-    if (!blobEnabled()) throw new AppError("invalid", "Katta fayllar ombori sozlanmagan.");
+    if (!blobEnabled()) throw new AppError("invalid", tr("Katta fayllar ombori sozlanmagan."));
     const user = await getCurrentUser();
-    if (!user) throw new AppError("unauthenticated", "Tizimga kiring.");
+    if (!user) throw new AppError("unauthenticated", tr("Tizimga kiring."));
     const body = (await req.json()) as HandleUploadBody;
-    if (body.type !== "blob.generate-client-token") throw new AppError("invalid", "Noto‘g‘ri so‘rov.");
+    if (body.type !== "blob.generate-client-token") throw new AppError("invalid", tr("Noto‘g‘ri so‘rov."));
     await enforce(`upload:${user.id}`, 120, 3600);
     const result = await handleUpload({
       body,
       request: req,
       onBeforeGenerateToken: async (pathname, clientPayload) => {
-        if (!pathname.startsWith(blobPrefix(user)) || pathname.includes("..")) throw new AppError("forbidden", "Ruxsat yo‘q.");
+        if (!pathname.startsWith(blobPrefix(user)) || pathname.includes("..")) throw new AppError("forbidden", tr("Ruxsat yo‘q."));
         const imagesOnly = clientPayload === "imagesOnly";
         return {
           allowedContentTypes: imagesOnly ? IMAGE_MIME : [...ALLOWED_MIME, "audio/x-m4a", "audio/mp3", "audio/x-wav", "application/octet-stream"],
@@ -38,6 +39,6 @@ export async function POST(req: Request) {
   } catch (e) {
     if (e instanceof AppError) return NextResponse.json({ error: e.message }, { status: e.status });
     console.error("[blob-token]", e);
-    return NextResponse.json({ error: "Yuklash boshlanmadi." }, { status: 400 });
+    return NextResponse.json({ error: tr("Yuklash boshlanmadi.") }, { status: 400 });
   }
 }

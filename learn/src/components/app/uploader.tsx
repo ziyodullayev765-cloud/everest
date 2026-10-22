@@ -8,6 +8,7 @@ import { toast } from "@/components/ui/toast";
 export type UploadedFile = { id: string; name: string; mime: string; size: number };
 
 import { fmtSize } from "@/lib/utils";
+import { tr } from "@/lib/i18n/tr";
 export { fmtSize };
 
 type UploadConfig = { mode: "blob"; prefix: string; maxBytes: number } | { mode: "db"; maxBytes: number };
@@ -93,7 +94,7 @@ export function FileChip({ f, onRemove, href = true }: { f: UploadedFile; onRemo
         <div className="flex min-w-0 flex-1 items-center gap-2.5">{inner}</div>
       )}
       {onRemove ? (
-        <button type="button" onClick={onRemove} className="grid size-7 place-items-center rounded-lg text-muted hover:bg-surface-2 hover:text-danger" aria-label={`${f.name} faylini olib tashlash`}>
+        <button type="button" onClick={onRemove} className="grid size-7 place-items-center rounded-lg text-muted hover:bg-surface-2 hover:text-danger" aria-label={tr("{0} faylini olib tashlash", f.name)}>
           <X className="size-4" />
         </button>
       ) : null}
@@ -102,7 +103,7 @@ export function FileChip({ f, onRemove, href = true }: { f: UploadedFile; onRemo
   );
 }
 
-export function Uploader({ files, onChange, max = 10, disabled, visibility, imagesOnly, label = "Fayl biriktirish", accept }: { files: UploadedFile[]; onChange: (f: UploadedFile[]) => void; max?: number; disabled?: boolean; visibility?: "public" | "private"; imagesOnly?: boolean; label?: string; accept?: string }) {
+export function Uploader({ files, onChange, max = 10, disabled, visibility, imagesOnly, label = tr("Fayl biriktirish"), accept }: { files: UploadedFile[]; onChange: (f: UploadedFile[]) => void; max?: number; disabled?: boolean; visibility?: "public" | "private"; imagesOnly?: boolean; label?: string; accept?: string }) {
   const input = useRef<HTMLInputElement>(null);
   const [busy, setBusy] = useState(0);
   const [pct, setPct] = useState<number | null>(null);
@@ -111,7 +112,7 @@ export function Uploader({ files, onChange, max = 10, disabled, visibility, imag
     if (!list?.length) return;
     const room = max - files.length;
     const picked = [...list].slice(0, room);
-    if (list.length > room) toast.error(`Ko‘pi bilan ${max} ta fayl.`);
+    if (list.length > room) toast.error(tr("Ko‘pi bilan {0} ta fayl.", max));
     let current = files;
     for (const f of picked) {
       setBusy((b) => b + 1);
@@ -154,7 +155,7 @@ export function Uploader({ files, onChange, max = 10, disabled, visibility, imag
         >
           {busy ? <Loader2 className="size-4 animate-spin" aria-hidden /> : <Paperclip className="size-4" aria-hidden />}
           {busy ? `Yuklanmoqda…${pct != null ? ` ${pct}%` : ""}` : label}
-          <span className="hidden font-normal text-muted sm:inline">· rasm, audio, PDF, DOCX, PPTX, TXT</span>
+          <span className="hidden font-normal text-muted sm:inline">{tr("· rasm, audio, PDF, DOCX, PPTX, TXT")}</span>
         </button>
       ) : null}
       <input

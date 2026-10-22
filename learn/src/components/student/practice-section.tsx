@@ -11,13 +11,14 @@ import { Card, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { EmptyState, Progress } from "@/components/ui/feedback";
 import { StatusBadge } from "./status";
+import { tr } from "@/lib/i18n/tr";
 
 type Area = "grammar" | "reading" | "listening";
 
 const META: Record<Area, { title: string; description: string; empty: string; icon: typeof PenLine }> = {
-  grammar: { title: "Grammatika", description: "Mavzular bo‘yicha qoida, misollar va mashqlar. O‘zlashtirish darajasi urinishlaringizdan hisoblanadi.", empty: "Ustozingiz grammatika mashqlarini qo‘shganda shu yerda mavzular bo‘yicha chiqadi.", icon: PenLine },
-  reading: { title: "Reading", description: "Inglizcha matnlar va tushunish savollari.", empty: "Ustozingiz reading matnlarini qo‘shganda shu yerda chiqadi.", icon: BookOpenText },
-  listening: { title: "Listening", description: "Audio yozuvlar va tinglab tushunish savollari.", empty: "Ustozingiz listening mashqlarini qo‘shganda shu yerda chiqadi.", icon: Headphones },
+  grammar: { get title() { return tr("Grammatika"); }, get description() { return tr("Mavzular bo‘yicha qoida, misollar va mashqlar. O‘zlashtirish darajasi urinishlaringizdan hisoblanadi."); }, get empty() { return tr("Ustozingiz grammatika mashqlarini qo‘shganda shu yerda mavzular bo‘yicha chiqadi."); }, icon: PenLine },
+  reading: { get title() { return tr("Reading"); }, get description() { return tr("Inglizcha matnlar va tushunish savollari."); }, get empty() { return tr("Ustozingiz reading matnlarini qo‘shganda shu yerda chiqadi."); }, icon: BookOpenText },
+  listening: { get title() { return tr("Listening"); }, get description() { return tr("Audio yozuvlar va tinglab tushunish savollari."); }, get empty() { return tr("Ustozingiz listening mashqlarini qo‘shganda shu yerda chiqadi."); }, icon: Headphones },
 };
 
 function belongs(r: StudentAssignmentRow, area: Area) {
@@ -34,10 +35,10 @@ export function mastery(rows: StudentAssignmentRow[]) {
 }
 
 function masteryLabel(m: number | null) {
-  if (m == null) return { label: "Boshlanmagan", tone: "neutral" as const };
-  if (m >= 85) return { label: "O‘zlashtirilgan", tone: "success" as const };
-  if (m >= 60) return { label: "Yaxshi", tone: "primary" as const };
-  return { label: "Mashq kerak", tone: "warning" as const };
+  if (m == null) return { label: tr("Boshlanmagan"), tone: "neutral" as const };
+  if (m >= 85) return { label: tr("O‘zlashtirilgan"), tone: "success" as const };
+  if (m >= 60) return { label: tr("Yaxshi"), tone: "primary" as const };
+  return { label: tr("Mashq kerak"), tone: "warning" as const };
 }
 
 const hrefOf = (r: StudentAssignmentRow) => (isQuizType(r.type) ? `/quizzes/${r.id}` : `/assignments/${r.id}`);
@@ -51,7 +52,7 @@ function Row({ r }: { r: StudentAssignmentRow }) {
           <span className="mt-0.5 flex flex-wrap items-center gap-1.5 text-[12px] text-muted">
             <span>{t.assignmentType[r.type]}</span>
             {r.level ? <span>· {r.level}</span> : null}
-            {r.dueAt ? <span>· muddat {formatDate(r.dueAt)}</span> : null}
+            {r.dueAt ? <span>{tr("· muddat {0}", formatDate(r.dueAt))}</span> : null}
           </span>
         </span>
         {r.bestPercent != null ? <span className="text-[13px] font-bold tabular">{r.bestPercent}%</span> : null}
@@ -73,7 +74,7 @@ export async function PracticeSection({ studentId, area, level }: { studentId: s
     <>
       <PageHeader title={m.title} description={m.description} />
       {levels.length > 1 ? (
-        <nav className="scrollbar-none -mx-4 mb-5 flex gap-2 overflow-x-auto px-4 sm:mx-0 sm:px-0" aria-label="Darajalar">
+        <nav className="scrollbar-none -mx-4 mb-5 flex gap-2 overflow-x-auto px-4 sm:mx-0 sm:px-0" aria-label={tr("Darajalar")}>
           {[["", "Barchasi"], ...levels.map((l) => [l, l])].map(([k, l]) => (
             <Link key={k} href={k ? `${base}?level=${encodeURIComponent(k)}` : base} className={cn("shrink-0 rounded-full border px-3.5 py-1.5 text-[13px] font-semibold", (level ?? "") === k ? "border-primary bg-primary-soft text-primary-soft-fg" : "border-border bg-surface text-text-2 hover:bg-surface-2")}>
               {l}
@@ -89,7 +90,7 @@ export async function PracticeSection({ studentId, area, level }: { studentId: s
       <div className="mx-auto max-w-4xl">
         {header}
         <Card>
-          <EmptyState icon={<m.icon />} title="Hozircha mashq yo‘q" description={m.empty} />
+          <EmptyState icon={<m.icon />} title={tr("Hozircha mashq yo‘q")} description={m.empty} />
         </Card>
       </div>
     );
@@ -120,7 +121,7 @@ export async function PracticeSection({ studentId, area, level }: { studentId: s
             <Card key={topic} className="overflow-hidden">
               <CardHeader
                 title={topic}
-                description={`${list.length} ta mashg‘ulot`}
+                description={tr("{0} ta mashg‘ulot", list.length)}
                 action={
                   <span className="flex items-center gap-2">
                     {mm != null ? <span className="text-[13px] font-bold tabular">{mm}%</span> : null}
@@ -130,7 +131,7 @@ export async function PracticeSection({ studentId, area, level }: { studentId: s
               />
               {mm != null ? (
                 <div className="px-5 pb-2">
-                  <Progress value={mm} tone={mm >= 60 ? "primary" : "warning"} label={`${topic} o‘zlashtirilishi`} />
+                  <Progress value={mm} tone={mm >= 60 ? "primary" : "warning"} label={tr("{0} o‘zlashtirilishi", topic)} />
                 </div>
               ) : null}
               <ul className="divide-y divide-border border-t border-border">

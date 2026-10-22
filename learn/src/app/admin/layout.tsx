@@ -6,8 +6,9 @@ import { logoutAction } from "@/app/actions/auth";
 import { unreadCount } from "@/server/services/notifications";
 import { getSettings } from "@/server/services/settings";
 import { t } from "@/lib/i18n";
+import { tr } from "@/lib/i18n/tr";
 
-export const metadata: Metadata = { title: { default: "Boshqaruv", template: "%s · Boshqaruv" } };
+export const metadata: Metadata = { title: { default: "Boshqaruv", get template() { return tr("%s · Boshqaruv"); } } };
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const user = await pageUser("admin", "super_admin");
@@ -15,7 +16,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   const sections: NavSection[] = [
     { items: [{ href: "/admin", label: t.nav.overview, icon: "dashboard", exact: true }] },
     {
-      title: "Odamlar",
+      title: tr("Odamlar"),
       items: [
         { href: "/admin/students", label: t.nav.students, icon: "students" },
         { href: "/admin/teachers", label: t.nav.teachers, icon: "teachers" },
@@ -23,7 +24,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
       ],
     },
     {
-      title: "O‘quv jarayoni",
+      title: tr("O‘quv jarayoni"),
       items: [
         { href: "/admin/assignments", label: t.nav.content, icon: "builder" },
         { href: "/admin/vocabulary", label: t.nav.vocabulary, icon: "vocabulary" },
@@ -35,7 +36,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
       ],
     },
     {
-      title: "Tizim",
+      title: tr("Tizim"),
       items: [
         { href: "/admin/settings", label: t.nav.settings, icon: "settings" },
         { href: "/admin/audit", label: t.nav.audit, icon: "audit" },

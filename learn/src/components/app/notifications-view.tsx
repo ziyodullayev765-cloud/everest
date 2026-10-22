@@ -7,6 +7,7 @@ import { PageHeader } from "@/components/ui/page";
 import { Card } from "@/components/ui/card";
 import { EmptyState } from "@/components/ui/feedback";
 import { MarkAllRead, MarkOneRead } from "./notification-actions";
+import { tr } from "@/lib/i18n/tr";
 
 const ICON: Record<string, typeof Bell> = { new_assignment: ClipboardList, deadline: CalendarClock, submission: Inbox, grade: Star, feedback: MessageSquareText, weekly_summary: BarChart3, announcement: Megaphone, system: Award };
 
@@ -15,7 +16,7 @@ export async function NotificationsView({ userId }: { userId: string }) {
   const unread = items.filter((n) => !n.readAt).length;
   return (
     <div className="mx-auto max-w-3xl">
-      <PageHeader title="Bildirishnomalar" description={unread ? `${unread} ta o‘qilmagan` : "Barchasi o‘qilgan"} actions={unread ? <MarkAllRead /> : null} />
+      <PageHeader title={tr("Bildirishnomalar")} description={unread ? tr("{0} ta o‘qilmagan", unread) : tr("Barchasi o‘qilgan")} actions={unread ? <MarkAllRead /> : null} />
       <Card className="overflow-hidden">
         {items.length ? (
           <ul className="divide-y divide-border">
@@ -31,7 +32,7 @@ export async function NotificationsView({ userId }: { userId: string }) {
                     {n.body ? <span className="mt-0.5 block text-[13px] text-muted">{n.body}</span> : null}
                     <span className="mt-1 block text-[12px] text-muted">{formatDateTime(n.createdAt)}</span>
                   </span>
-                  {!n.readAt ? <span className="mt-2 size-2 shrink-0 rounded-full bg-primary" aria-label="O‘qilmagan" /> : null}
+                  {!n.readAt ? <span className="mt-2 size-2 shrink-0 rounded-full bg-primary" aria-label={tr("O‘qilmagan")} /> : null}
                 </>
               );
               return (
@@ -50,7 +51,7 @@ export async function NotificationsView({ userId }: { userId: string }) {
             })}
           </ul>
         ) : (
-          <EmptyState icon={<Bell />} title="Bildirishnomalar yo‘q" description="Yangi vazifalar, baholar va e’lonlar haqida shu yerda xabar beramiz." />
+          <EmptyState icon={<Bell />} title={tr("Bildirishnomalar yo‘q")} description={tr("Yangi vazifalar, baholar va e’lonlar haqida shu yerda xabar beramiz.")} />
         )}
       </Card>
     </div>

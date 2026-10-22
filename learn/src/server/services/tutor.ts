@@ -6,6 +6,7 @@ import { db, schema } from "../db";
 import { isStudent, type Actor } from "../auth/rbac";
 import { AppError, forbidden } from "../errors";
 import { enforce } from "./rate-limit";
+import { tr } from "@/lib/i18n/tr";
 
 /**
  * Optional AI English tutor. Enabled only when ANTHROPIC_API_KEY is set on the server; the key never
@@ -17,12 +18,12 @@ const MODEL = "claude-opus-5-5";
 const dailyLimit = () => Math.max(1, Number(process.env.TUTOR_DAILY_LIMIT ?? 20));
 
 export const TUTOR_KINDS = {
-  grammar: "Grammatikani tushuntirish",
-  mistake: "Xatoimni tushuntirish",
-  writing: "Yozganimga fikr",
-  vocabulary: "So‘zni kontekstda tushunish",
-  practice: "Qo‘shimcha mashq",
-  next: "Keyin nimani o‘rganay?",
+  get grammar() { return tr("Grammatikani tushuntirish"); },
+  get mistake() { return tr("Xatoimni tushuntirish"); },
+  get writing() { return tr("Yozganimga fikr"); },
+  get vocabulary() { return tr("So‘zni kontekstda tushunish"); },
+  get practice() { return tr("Qo‘shimcha mashq"); },
+  get next() { return tr("Keyin nimani o‘rganay?"); },
 } as const;
 export type TutorKind = keyof typeof TUTOR_KINDS;
 
@@ -35,12 +36,12 @@ You help students learn; you do not do graded homework for them. If a message lo
 Only discuss learning English. Politely decline other topics.`;
 
 const PROMPTS: Record<TutorKind, (text: string, extra: string) => string> = {
-  grammar: (t) => `Explain this English grammar topic or question simply, with 3–4 example sentences and a common mistake to avoid:\n\n${t}`,
-  mistake: (t, extra) => `A student answered an exercise. Explain why the answer is wrong (or right), what the correct form is, and the rule behind it.\n\nExercise and answers:\n${t}${extra ? `\n\nStudent's question: ${extra}` : ""}`,
-  writing: (t) => `Give feedback on this piece of student writing: list the most important mistakes with corrections (original → corrected) and a short explanation each, then one or two tips to improve. Do not rewrite the whole text.\n\n${t}`,
+  grammar: (t) => tr("Explain this English grammar topic or question simply, with 3–4 example sentences and a common mistake to avoid:\n\n{0}", t),
+  mistake: (t, extra) => tr("A student answered an exercise. Explain why the answer is wrong (or right), what the correct form is, and the rule behind it.\n\nExercise and answers:\n{0}{1}", t, extra ? tr("\n\nStudent's question: {0}", extra) : ""),
+  writing: (t) => tr("Give feedback on this piece of student writing: list the most important mistakes with corrections (original → corrected) and a short explanation each, then one or two tips to improve. Do not rewrite the whole text.\n\n{0}", t),
   vocabulary: (t, extra) => `Explain the meaning of this English word or phrase in context, give its Uzbek translation, and 3 natural example sentences.\n\nWord/phrase: ${t}${extra ? `\nContext: ${extra}` : ""}`,
-  practice: (t) => `Create 5 short practice exercises (with an answer key at the end) for this topic. Note that these are extra practice, not an official test.\n\nTopic: ${t}`,
-  next: (t) => `Based on this summary of a student's recent results, suggest what to practise next (2–4 concrete items, with why).\n\n${t}`,
+  practice: (t) => tr("Create 5 short practice exercises (with an answer key at the end) for this topic. Note that these are extra practice, not an official test.\n\nTopic: {0}", t),
+  next: (t) => tr("Based on this summary of a student's recent results, suggest what to practise next (2–4 concrete items, with why).\n\n{0}", t),
 };
 
 const input = z.object({
@@ -63,11 +64,11 @@ const getClient = () => (client ??= new Anthropic());
 
 export async function askTutor(actor: Actor, raw: unknown): Promise<{ text: string; remaining: number }> {
   if (!isStudent(actor)) throw forbidden();
-  if (!tutorEnabled()) throw new AppError("unavailable", "AI yordamchi sozlanmagan.");
+  if (!tutorEnabled()) throw new AppError("unavailable", tr("AI yordamchi sozlanmagan."));
   const v = input.parse(raw);
   await enforce(`tutor:${actor.id}`, 6, 60);
   const usage = await tutorUsage(actor.id);
-  if (usage.used >= usage.limit) throw new AppError("rate_limited", `Bugungi limit tugadi (${usage.limit} ta savol). Ertaga qayta urinib ko‘ring.`);
+  if (usage.used >= usage.limit) throw new AppError("rate_limited", tr("Bugungi limit tugadi ({0} ta savol). Ertaga qayta urinib ko‘ring.", usage.limit));
 
   const prompt = PROMPTS[v.kind](v.text, v.extra);
   let text = "";
@@ -94,15 +95,15 @@ export async function askTutor(actor: Actor, raw: unknown): Promise<{ text: stri
     }
   } catch (e) {
     await logRequest(actor.id, v.kind, prompt.length, 0, false);
-    if (e instanceof Anthropic.RateLimitError) throw new AppError("rate_limited", "AI xizmati hozir band. Birozdan so‘ng qayta urinib ko‘ring.");
+    if (e instanceof Anthropic.RateLimitError) throw new AppError("rate_limited", tr("AI xizmati hozir band. Birozdan so‘ng qayta urinib ko‘ring."));
     if (e instanceof Anthropic.APIError) {
       console.error("[tutor]", e.status, e.message);
-      throw new AppError("unavailable", "AI xizmatidan javob olinmadi. Keyinroq urinib ko‘ring.");
+      throw new AppError("unavailable", tr("AI xizmatidan javob olinmadi. Keyinroq urinib ko‘ring."));
     }
     throw e;
   }
   await logRequest(actor.id, v.kind, prompt.length, text.length, ok);
-  if (!ok) throw new AppError("unavailable", "Bu savolga javob berilmadi. Savolni boshqacha yozib ko‘ring.");
+  if (!ok) throw new AppError("unavailable", tr("Bu savolga javob berilmadi. Savolni boshqacha yozib ko‘ring."));
   return { text, remaining: Math.max(0, usage.limit - usage.used - 1) };
 }
 

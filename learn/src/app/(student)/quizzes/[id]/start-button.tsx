@@ -6,6 +6,7 @@ import { startQuizAction } from "@/app/actions/student";
 import { Button } from "@/components/ui/button";
 import { Dialog } from "@/components/ui/dialog";
 import { toast } from "@/components/ui/toast";
+import { tr } from "@/lib/i18n/tr";
 
 export function StartQuizButton({ assignmentId, label, confirmTimed }: { assignmentId: string; label: string; confirmTimed?: number | null }) {
   const [pending, start] = useTransition();
@@ -29,15 +30,15 @@ export function StartQuizButton({ assignmentId, label, confirmTimed }: { assignm
       <Dialog
         open={ask}
         onClose={() => setAsk(false)}
-        title="Tayyormisiz?"
-        description={`Sizda ${confirmTimed} daqiqa bo‘ladi. Taymer boshlangandan keyin to‘xtamaydi.`}
+        title={tr("Tayyormisiz?")}
+        description={tr("Sizda {0} daqiqa bo‘ladi. Taymer boshlangandan keyin to‘xtamaydi.", confirmTimed)}
         footer={
           <>
             <Button variant="secondary" onClick={() => setAsk(false)}>
-              Keyinroq
+              {tr("Keyinroq")}
             </Button>
             <Button onClick={go} loading={pending}>
-              Boshlash
+              {tr("Boshlash")}
             </Button>
           </>
         }

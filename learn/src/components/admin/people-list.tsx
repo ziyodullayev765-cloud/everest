@@ -14,6 +14,7 @@ import { Avatar } from "@/components/ui/avatar";
 import { FilterBar } from "@/components/staff/filter-bar";
 import { PeopleToolbar } from "./people-toolbar";
 import { GraduationCap } from "lucide-react";
+import { tr } from "@/lib/i18n/tr";
 
 export async function PeopleList({ user, kind, sp }: { user: SessionUser; kind: "student" | "staff"; sp: { q?: string; status?: string; class?: string } }) {
   const [rows, classes] = await Promise.all([listUsers(user, { role: kind, q: sp.q, status: sp.status || "active", classId: sp.class }), listClasses(user)]);
@@ -21,15 +22,15 @@ export async function PeopleList({ user, kind, sp }: { user: SessionUser; kind: 
   return (
     <>
       <PageHeader
-        title={kind === "student" ? "O‘quvchilar" : "O‘qituvchilar va xodimlar"}
-        description={`${rows.length} ta hisob`}
+        title={kind === "student" ? tr("O‘quvchilar") : tr("O‘qituvchilar va xodimlar")}
+        description={tr("{0} ta hisob", rows.length)}
         actions={<PeopleToolbar kind={kind} classes={classes.map((c) => ({ id: c.id, name: c.name }))} canCreateAdmins={user.role === "super_admin"} />}
       />
       <FilterBar
         fields={[
-          { name: "q", type: "search", placeholder: kind === "student" ? "Ism, login yoki ID" : "Ism yoki login" },
-          { name: "status", label: "Holat", options: [["active", "Faol"], ["deactivated", "Faol emas"]] },
-          ...(kind === "student" ? [{ name: "class", label: "Guruh", options: [["", "Barcha guruhlar"], ...classes.map((c) => [c.id, c.name] as [string, string])] as [string, string][] }] : []),
+          { name: "q", type: "search", placeholder: kind === "student" ? tr("Ism, login yoki ID") : tr("Ism yoki login") },
+          { name: "status", label: tr("Holat"), options: [["active", "Faol"], ["deactivated", tr("Faol emas")]] },
+          ...(kind === "student" ? [{ name: "class", label: tr("Guruh"), options: [["", tr("Barcha guruhlar")], ...classes.map((c) => [c.id, c.name] as [string, string])] as [string, string][] }] : []),
         ]}
       />
       {rows.length ? (
@@ -41,21 +42,21 @@ export async function PeopleList({ user, kind, sp }: { user: SessionUser; kind: 
                   <Avatar name={u.displayName} size={36} />
                   <span className="min-w-0 flex-1">
                     <span className="block truncate text-[14px] font-bold">
-                      {u.displayName} {u.status === "deactivated" ? <Badge className="ml-1">Faol emas</Badge> : null}
+                      {u.displayName} {u.status === "deactivated" ? <Badge className="ml-1">{tr("Faol emas")}</Badge> : null}
                     </span>
                     <span className="block truncate text-[12.5px] text-muted">
                       @{u.username}
-                      {u.studentCode ? ` · ID ${u.studentCode}` : ""}
+                      {u.studentCode ? tr(" · ID {0}", u.studentCode) : ""}
                       {u.classNames ? ` · ${u.classNames}` : ""}
                     </span>
                   </span>
                   <span className="hidden flex-wrap justify-end gap-1 md:flex">
                     {kind === "staff" ? <Badge tone={u.role === "teacher" ? "info" : "violet"}>{t.role[u.role]}</Badge> : null}
                     {u.permissions.map((p) => (
-                      <Badge key={p}>{PERMISSIONS[p as keyof typeof PERMISSIONS] ?? p}</Badge>
+                      <Badge key={p}>{tr(PERMISSIONS[p as keyof typeof PERMISSIONS] ?? p)}</Badge>
                     ))}
                   </span>
-                  <span className="hidden w-28 shrink-0 text-right text-[12px] text-muted sm:block">{u.lastLoginAt ? `kirgan ${formatDate(u.lastLoginAt)}` : "hali kirmagan"}</span>
+                  <span className="hidden w-28 shrink-0 text-right text-[12px] text-muted sm:block">{u.lastLoginAt ? `kirgan ${formatDate(u.lastLoginAt)}` : tr("hali kirmagan")}</span>
                   <ChevronRight className="size-4 shrink-0 text-muted" aria-hidden />
                 </Link>
               </li>
@@ -64,7 +65,7 @@ export async function PeopleList({ user, kind, sp }: { user: SessionUser; kind: 
         </Card>
       ) : (
         <Card>
-          <EmptyState icon={<GraduationCap />} title="Hech kim topilmadi" description="Yangi hisob yarating yoki saralashni o‘zgartiring." />
+          <EmptyState icon={<GraduationCap />} title={tr("Hech kim topilmadi")} description={tr("Yangi hisob yarating yoki saralashni o‘zgartiring.")} />
         </Card>
       )}
     </>

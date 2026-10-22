@@ -13,6 +13,7 @@ import { enforce } from "./rate-limit";
 import { gradeFor, matchesAnswer, schedule, type SrsGrade } from "@/lib/srs";
 import { GAME_ROUND, gameScore } from "@/lib/game";
 import { parseWordList, wordInput, type WordImportResult, type WordInput } from "@/lib/word-csv";
+import { tr } from "@/lib/i18n/tr";
 export type { WordImportResult } from "@/lib/word-csv";
 
 const TZ = "Asia/Tashkent";
@@ -36,9 +37,9 @@ const listInput = z.object({
 async function loadList(actor: Actor, id: string, forEdit: boolean, ex: Executor = db) {
   requireStaff(actor);
   const [l] = await ex.select().from(schema.wordLists).where(eq(schema.wordLists.id, id));
-  if (!l) throw notFound("Ro‘yxat topilmadi.");
-  if (forEdit && !isAdmin(actor) && l.createdBy !== actor.id) throw forbidden("Bu ro‘yxatni faqat muallif yoki administrator tahrirlaydi.");
-  if (!forEdit && !isAdmin(actor) && l.createdBy !== actor.id && l.status !== "published") throw notFound("Ro‘yxat topilmadi.");
+  if (!l) throw notFound(tr("Ro‘yxat topilmadi."));
+  if (forEdit && !isAdmin(actor) && l.createdBy !== actor.id) throw forbidden(tr("Bu ro‘yxatni faqat muallif yoki administrator tahrirlaydi."));
+  if (!forEdit && !isAdmin(actor) && l.createdBy !== actor.id && l.status !== "published") throw notFound(tr("Ro‘yxat topilmadi."));
   return l;
 }
 
@@ -95,7 +96,7 @@ export async function setWordListStatus(actor: Actor, id: string, status: "draft
   const l = await loadList(actor, id, true);
   if (status === "published") {
     const n = (await db.select({ n: sql<number>`count(*)::int` }).from(schema.words).where(and(eq(schema.words.listId, id), isNull(schema.words.archivedAt))))[0]?.n ?? 0;
-    if (!n) throw invalid("E’lon qilishdan oldin kamida bitta so‘z qo‘shing.");
+    if (!n) throw invalid(tr("E’lon qilishdan oldin kamida bitta so‘z qo‘shing."));
   }
   await db.update(schema.wordLists).set({ status, updatedAt: new Date() }).where(eq(schema.wordLists.id, id));
   await audit(actor.id, `vocab.list_${status}`, "word_list", id);
@@ -111,7 +112,7 @@ async function assertWordFiles(actor: Actor, v: WordInput, current?: { audioFile
   ] as const) {
     if (!fid) continue;
     const [f] = await db.select({ mime: schema.files.mime }).from(schema.files).where(eq(schema.files.id, fid));
-    if (!f?.mime.startsWith(kind)) throw invalid(kind === "audio/" ? "Talaffuz uchun audio fayl tanlang." : "Rasm faylini tanlang.");
+    if (!f?.mime.startsWith(kind)) throw invalid(kind === "audio/" ? tr("Talaffuz uchun audio fayl tanlang.") : tr("Rasm faylini tanlang."));
   }
 }
 
@@ -121,7 +122,7 @@ export async function saveWord(actor: Actor, listId: string, wordId: string | nu
   try {
     if (wordId) {
       const [cur] = await db.select().from(schema.words).where(and(eq(schema.words.id, wordId), eq(schema.words.listId, listId)));
-      if (!cur) throw notFound("So‘z topilmadi.");
+      if (!cur) throw notFound(tr("So‘z topilmadi."));
       await assertWordFiles(actor, v, cur);
       await db.update(schema.words).set(v).where(eq(schema.words.id, wordId));
     } else {
@@ -130,7 +131,7 @@ export async function saveWord(actor: Actor, listId: string, wordId: string | nu
       await db.insert(schema.words).values({ ...v, listId, position: pos });
     }
   } catch (e) {
-    if (isUniqueViolation(e)) throw invalid(`“${v.english}” bu ro‘yxatda allaqachon bor.`);
+    if (isUniqueViolation(e)) throw invalid(tr("“{0}” bu ro‘yxatda allaqachon bor.", v.english));
     throw e;
   }
   await db.update(schema.wordLists).set({ updatedAt: new Date() }).where(eq(schema.wordLists.id, listId));
@@ -149,7 +150,7 @@ export async function importWords(actor: Actor, listId: string, text: string, sw
   await loadList(actor, listId, true);
   await enforce(`vocab-import:${actor.id}`, 30, 3600);
   const existing = await db.select({ e: schema.words.english }).from(schema.words).where(and(eq(schema.words.listId, listId), isNull(schema.words.archivedAt)));
-  if (text.length > 300_000) throw invalid("Matn juda katta.");
+  if (text.length > 300_000) throw invalid(tr("Matn juda katta."));
   const { rows, duplicates, errors } = parseWordList(text, existing.map((x) => x.e), swap);
   if (errors.length) return { added: 0, duplicates, errors };
   if (rows.length) {
@@ -235,7 +236,7 @@ export async function studentListIds(studentId: string, ex: Executor = db) {
 async function assertWordVisible(studentId: string, wordId: string) {
   const ids = await studentListIds(studentId);
   const [w] = ids.length ? await db.select().from(schema.words).where(and(eq(schema.words.id, wordId), inArray(schema.words.listId, ids))) : [];
-  if (!w) throw notFound("So‘z topilmadi.");
+  if (!w) throw notFound(tr("So‘z topilmadi."));
   return w;
 }
 
@@ -273,7 +274,7 @@ export async function vocabOverview(actor: Actor) {
 
 export async function studentWordList(actor: Actor, listId: string) {
   requireStudentActor(actor);
-  if (!(await studentListIds(actor.id)).includes(listId)) throw notFound("Ro‘yxat topilmadi.");
+  if (!(await studentListIds(actor.id)).includes(listId)) throw notFound(tr("Ro‘yxat topilmadi."));
   const [list] = await db.select().from(schema.wordLists).where(eq(schema.wordLists.id, listId));
   const words = await db
     .select({ w: schema.words, p: schema.vocabProgress })
@@ -379,7 +380,7 @@ export async function recordReview(actor: Actor, input: unknown) {
   let correct: boolean;
   let grade: SrsGrade;
   if (v.kind === "flashcard") {
-    if (v.grade == null) throw invalid("Bahoni tanlang.");
+    if (v.grade == null) throw invalid(tr("Bahoni tanlang."));
     grade = v.grade as SrsGrade;
     correct = grade > 0;
   } else {
@@ -491,7 +492,7 @@ export async function finishGame(actor: Actor, input: unknown) {
   const visible = await studentListIds(actor.id);
   const wordIds = [...new Set(v.answers.map((a) => a.wordId))];
   const words = visible.length ? await db.select({ id: schema.words.id }).from(schema.words).where(and(inArray(schema.words.id, wordIds), inArray(schema.words.listId, visible))) : [];
-  if (words.length !== wordIds.length) throw notFound("So‘z topilmadi.");
+  if (words.length !== wordIds.length) throw notFound(tr("So‘z topilmadi."));
   const { score, bestStreak, correct } = gameScore(v.answers);
   const prevBest = await db
     .select({ s: sql<number>`coalesce(max(${schema.vocabGames.score}), 0)::int` })

@@ -173,6 +173,27 @@ describe("validation", () => {
   });
 });
 
+describe("english interface", async () => {
+  const { registerLocaleGetter, tr } = await import("@/lib/i18n/tr");
+  const { formatDate, remaining } = await import("@/lib/dates");
+  const { t } = await import("@/lib/i18n");
+  it("translates UI text, dictionary entries and dates; falls back to Uzbek", () => {
+    registerLocaleGetter(() => "en");
+    try {
+      expect(tr("Saqlash")).toBe("Save");
+      expect(tr("{0} ta so‘z", 5)).toBe("5 words");
+      expect(t.nav.home).toBe("Home");
+      expect(formatDate(new Date("2026-10-21T19:30:00Z"))).toBe("22 October 2026");
+      expect(remaining(new Date(Date.now() + 26 * 3600_000)).text).toBe("1 d 2 h left");
+      expect(tr("Bunday matn lug‘atda yo‘q")).toBe("Bunday matn lug‘atda yo‘q");
+    } finally {
+      registerLocaleGetter(() => "uz");
+    }
+    expect(tr("Saqlash")).toBe("Saqlash");
+    expect(t.nav.home).toBe("Bosh sahifa");
+  });
+});
+
 describe("uzbek date formatting", async () => {
   const { formatDate, formatDateTime, formatLongToday, formatWeekday, formatDayShort } = await import("@/lib/dates");
   it("formats in Tashkent time with Uzbek names", () => {

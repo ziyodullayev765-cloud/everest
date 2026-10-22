@@ -11,6 +11,7 @@ import { getSettings } from "./settings";
 import { ACH_CATEGORIES, DEFAULT_ACHIEVEMENTS, MEDAL_ICONS, METRIC_KEYS, progressOf, slugCode, unlockedCodes, type AchievementDef, type Metrics } from "@/lib/achievements";
 import { addDays, computeStreak } from "@/lib/gamification";
 import { localDay } from "@/lib/dates";
+import { tr } from "@/lib/i18n/tr";
 
 const TZ = "Asia/Tashkent";
 const GRAMMAR_CODES = sql`('GRAMMAR','SENTENCE','FILL','IRREG')`;
@@ -147,7 +148,7 @@ export async function studentAchievements(userId: string): Promise<{ list: Stude
   const at = new Map(earned.map((e) => [e.code, e.earnedAt]));
   const list = defs
     .filter((a) => a.active || at.has(a.code))
-    .map((a) => ({ ...a, earnedAt: at.get(a.code) ?? null, progress: at.has(a.code) ? { value: a.threshold, target: a.threshold, ratio: 1 } : progressOf(a, metrics) }));
+    .map((a) => ({ ...a, title: tr(a.title), description: tr(a.description), earnedAt: at.get(a.code) ?? null, progress: at.has(a.code) ? { value: a.threshold, target: a.threshold, ratio: 1 } : progressOf(a, metrics) }));
   return { list, metrics };
 }
 
@@ -159,7 +160,8 @@ export async function recentAchievements(userId: string, limit = 3) {
     .innerJoin(schema.achievements, eq(schema.achievements.code, schema.userAchievements.code))
     .where(eq(schema.userAchievements.userId, userId))
     .orderBy(desc(schema.userAchievements.earnedAt))
-    .limit(limit);
+    .limit(limit)
+    .then((rows) => rows.map((r) => ({ ...r, title: tr(r.title) })));
 }
 
 /** Unlocks the student hasn't been shown yet (for the celebration popup). */
@@ -170,7 +172,8 @@ export async function unseenAchievements(userId: string) {
     .innerJoin(schema.achievements, eq(schema.achievements.code, schema.userAchievements.code))
     .where(and(eq(schema.userAchievements.userId, userId), isNull(schema.userAchievements.seenAt)))
     .orderBy(asc(schema.userAchievements.earnedAt))
-    .limit(5);
+    .limit(5)
+    .then((rows) => rows.map((r) => ({ ...r, title: tr(r.title), description: tr(r.description) })));
 }
 
 export async function markAchievementsSeen(userId: string, codes: string[]) {
@@ -213,7 +216,7 @@ export async function saveAchievement(actor: Actor, code: string | null, raw: Ac
   await ensureAchievements();
   if (code) {
     const r = await db.update(schema.achievements).set({ ...v, updatedAt: new Date() }).where(eq(schema.achievements.code, code)).returning({ code: schema.achievements.code });
-    if (!r.length) throw notFound("Yutuq topilmadi.");
+    if (!r.length) throw notFound(tr("Yutuq topilmadi."));
     await audit(actor.id, "achievement.update", "achievement", null, { code });
     return code;
   }
@@ -228,13 +231,13 @@ export async function saveAchievement(actor: Actor, code: string | null, raw: Ac
       if (!isUniqueViolation(e)) throw e;
     }
   }
-  throw invalid("Bu nomdagi yutuqlar juda ko‘p.");
+  throw invalid(tr("Bu nomdagi yutuqlar juda ko‘p."));
 }
 
 export async function setAchievementActive(actor: Actor, code: string, active: boolean) {
   requireAdmin(actor);
   const r = await db.update(schema.achievements).set({ active, updatedAt: new Date() }).where(eq(schema.achievements.code, code)).returning({ code: schema.achievements.code });
-  if (!r.length) throw notFound("Yutuq topilmadi.");
+  if (!r.length) throw notFound(tr("Yutuq topilmadi."));
   await audit(actor.id, active ? "achievement.enable" : "achievement.disable", "achievement", null, { code });
 }
 
@@ -242,7 +245,7 @@ export async function achievementEarners(actor: Actor, code: string) {
   requireAdmin(actor);
   await ensureAchievements();
   const [def] = await db.select().from(schema.achievements).where(eq(schema.achievements.code, code));
-  if (!def) throw notFound("Yutuq topilmadi.");
+  if (!def) throw notFound(tr("Yutuq topilmadi."));
   const rows = await db
     .select({ id: schema.users.id, name: schema.users.displayName, username: schema.users.username, earnedAt: schema.userAchievements.earnedAt })
     .from(schema.userAchievements)

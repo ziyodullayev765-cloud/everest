@@ -1,40 +1,41 @@
+import { tr } from "@/lib/i18n/tr";
 /**
  * Achievement catalogue. Rules are data (stored in the `achievements` table and editable by admins);
  * these defaults seed it. Every metric is computed from real learning records, and counts are over
  * distinct assignments / words / days, so resubmitting the same work can never unlock more.
  */
 export const ACH_CATEGORIES = [
-  { key: "reading", label: "O‘qish", color: "#1ea55a", dark: "#137a40", light: "#e3f6ea" },
-  { key: "quiz", label: "Quiz", color: "#8a56e2", dark: "#5f33b0", light: "#efe7fc" },
-  { key: "vocab", label: "So‘zlar", color: "#1a96e0", dark: "#0f68a3", light: "#e2f2fc" },
-  { key: "grammar", label: "Grammatika", color: "#f59e0b", dark: "#b86e00", light: "#fdf1dc" },
-  { key: "activity", label: "Faollik", color: "#14b8a6", dark: "#0b7d72", light: "#dcf6f2" },
+  { key: "reading", get label() { return tr("O‘qish"); }, color: "#1ea55a", dark: "#137a40", light: "#e3f6ea" },
+  { key: "quiz", get label() { return tr("Quiz"); }, color: "#8a56e2", dark: "#5f33b0", light: "#efe7fc" },
+  { key: "vocab", get label() { return tr("So‘zlar"); }, color: "#1a96e0", dark: "#0f68a3", light: "#e2f2fc" },
+  { key: "grammar", get label() { return tr("Grammatika"); }, color: "#f59e0b", dark: "#b86e00", light: "#fdf1dc" },
+  { key: "activity", get label() { return tr("Faollik"); }, color: "#14b8a6", dark: "#0b7d72", light: "#dcf6f2" },
 ] as const;
 
 export type AchCategory = (typeof ACH_CATEGORIES)[number]["key"];
 export const categoryOf = (k: string) => ACH_CATEGORIES.find((c) => c.key === k) ?? ACH_CATEGORIES[0];
 
 export const METRICS = {
-  lessons_done: { label: "Yakunlangan o‘quv mashqlari (har biri bir marta)", unit: "ta mashq" },
-  reading_done: { label: "Yakunlangan Reading mashqlari", unit: "ta reading" },
-  listening_done: { label: "Yakunlangan Listening mashqlari", unit: "ta listening" },
-  reading_listening_done: { label: "Reading va Listening mashqlari jami", unit: "ta mashq" },
-  quizzes_done: { label: "Yakunlangan quizlar (har biri bir marta)", unit: "ta quiz" },
-  quizzes_90: { label: "Kamida 90% natija olingan quizlar", unit: "ta quiz" },
-  quizzes_100: { label: "100% natija olingan quizlar", unit: "ta quiz" },
-  words_learned: { label: "O‘rganilgan so‘zlar (kamida bir marta to‘g‘ri topilgan)", unit: "ta so‘z" },
-  words_recalled: { label: "Takrorlashda qayta eslangan so‘zlar (2 xil kunda to‘g‘ri)", unit: "ta so‘z" },
-  grammar_topics_done: { label: "Yakunlangan grammatika mavzulari", unit: "ta mavzu" },
-  grammar_topics_mastered: { label: "Kamida 80% bilan o‘zlashtirilgan grammatika mavzulari", unit: "ta mavzu" },
-  grammar_quizzes_90: { label: "Kamida 90% olingan grammatika testlari", unit: "ta test" },
-  tense_quiz_passed: { label: "O‘tilgan zamonlar (tense) testlari", unit: "ta test" },
-  streak_best: { label: "Eng uzun ketma-ket kunlar (streak)", unit: "kun" },
-  active_days_30: { label: "So‘nggi 30 kundagi faol kunlar", unit: "kun" },
-  weeks_goal_met: { label: "Haftalik shaxsiy maqsad bajarilgan haftalar", unit: "hafta" },
-  goal_days_30: { label: "So‘nggi 30 kunda kunlik maqsad bajarilgan kunlar", unit: "kun" },
-  on_time: { label: "Muddatida topshirilgan vazifalar", unit: "ta vazifa" },
-  xp: { label: "To‘plangan XP", unit: "XP" },
-  avg_percent_5: { label: "O‘rtacha baho, % (kamida 5 ta baho bo‘lsa)", unit: "%" },
+  lessons_done: { get label() { return tr("Yakunlangan o‘quv mashqlari (har biri bir marta)"); }, get unit() { return tr("ta mashq"); } },
+  reading_done: { get label() { return tr("Yakunlangan Reading mashqlari"); }, get unit() { return tr("ta reading"); } },
+  listening_done: { get label() { return tr("Yakunlangan Listening mashqlari"); }, get unit() { return tr("ta listening"); } },
+  reading_listening_done: { get label() { return tr("Reading va Listening mashqlari jami"); }, get unit() { return tr("ta mashq"); } },
+  quizzes_done: { get label() { return tr("Yakunlangan quizlar (har biri bir marta)"); }, get unit() { return tr("ta quiz"); } },
+  quizzes_90: { get label() { return tr("Kamida 90% natija olingan quizlar"); }, get unit() { return tr("ta quiz"); } },
+  quizzes_100: { get label() { return tr("100% natija olingan quizlar"); }, get unit() { return tr("ta quiz"); } },
+  words_learned: { get label() { return tr("O‘rganilgan so‘zlar (kamida bir marta to‘g‘ri topilgan)"); }, get unit() { return tr("ta so‘z"); } },
+  words_recalled: { get label() { return tr("Takrorlashda qayta eslangan so‘zlar (2 xil kunda to‘g‘ri)"); }, get unit() { return tr("ta so‘z"); } },
+  grammar_topics_done: { get label() { return tr("Yakunlangan grammatika mavzulari"); }, get unit() { return tr("ta mavzu"); } },
+  grammar_topics_mastered: { get label() { return tr("Kamida 80% bilan o‘zlashtirilgan grammatika mavzulari"); }, get unit() { return tr("ta mavzu"); } },
+  grammar_quizzes_90: { get label() { return tr("Kamida 90% olingan grammatika testlari"); }, get unit() { return tr("ta test"); } },
+  tense_quiz_passed: { get label() { return tr("O‘tilgan zamonlar (tense) testlari"); }, get unit() { return tr("ta test"); } },
+  streak_best: { get label() { return tr("Eng uzun ketma-ket kunlar (streak)"); }, unit: "kun" },
+  active_days_30: { get label() { return tr("So‘nggi 30 kundagi faol kunlar"); }, unit: "kun" },
+  weeks_goal_met: { get label() { return tr("Haftalik shaxsiy maqsad bajarilgan haftalar"); }, unit: "hafta" },
+  goal_days_30: { get label() { return tr("So‘nggi 30 kunda kunlik maqsad bajarilgan kunlar"); }, unit: "kun" },
+  on_time: { get label() { return tr("Muddatida topshirilgan vazifalar"); }, get unit() { return tr("ta vazifa"); } },
+  xp: { get label() { return tr("To‘plangan XP"); }, unit: "XP" },
+  avg_percent_5: { get label() { return tr("O‘rtacha baho, % (kamida 5 ta baho bo‘lsa)"); }, unit: "%" },
 } as const;
 
 export type MetricKey = keyof typeof METRICS;

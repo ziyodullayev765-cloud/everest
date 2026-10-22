@@ -7,6 +7,7 @@ import { questionInput } from "@/lib/validation/assignment";
 import { insertQuestions } from "./assignments";
 import { assertCanManageAssignment } from "./access";
 import { audit } from "./audit";
+import { tr } from "@/lib/i18n/tr";
 
 /** Bank questions are shared by staff of the same subject; only the owner (or an admin) deletes them. */
 export async function listBank(actor: Actor, subjectId?: string) {
@@ -22,7 +23,7 @@ export async function listBank(actor: Actor, subjectId?: string) {
   const opts = qs.length
     ? await db.select().from(schema.questionOptions).where(inArray(schema.questionOptions.questionId, qs.map((x) => x.q.id))).orderBy(asc(schema.questionOptions.position))
     : [];
-  return qs.map((x) => ({ ...x.q, subjectName: x.subject, ownerName: x.owner, options: opts.filter((o) => o.questionId === x.q.id) }));
+  return qs.map((x) => ({ ...x.q, subjectName: tr(x.subject), ownerName: x.owner, options: opts.filter((o) => o.questionId === x.q.id) }));
 }
 
 export async function addToBank(actor: Actor, subjectId: string, input: unknown) {
@@ -44,9 +45,9 @@ export async function deleteFromBank(actor: Actor, questionId: string) {
 /** Copies bank questions into a quiz (the bank entry stays untouched). */
 export async function copyFromBank(actor: Actor, assignmentId: string, questionIds: string[]) {
   await assertCanManageAssignment(actor, assignmentId);
-  if (!questionIds.length) throw invalid("Savol tanlanmagan.");
+  if (!questionIds.length) throw invalid(tr("Savol tanlanmagan."));
   const attempts = await db.select({ n: sql<number>`count(*)::int` }).from(schema.quizAttempts).where(eq(schema.quizAttempts.assignmentId, assignmentId));
-  if ((attempts[0]?.n ?? 0) > 0) throw new AppError("closed", "Quiz boshlangan — savol qo‘shib bo‘lmaydi.");
+  if ((attempts[0]?.n ?? 0) > 0) throw new AppError("closed", tr("Quiz boshlangan — savol qo‘shib bo‘lmaydi."));
   await db.transaction(async (tx) => {
     const src = await tx.select().from(schema.questions).where(and(inArray(schema.questions.id, questionIds), isNull(schema.questions.assignmentId)));
     const max = await tx.select({ p: sql<number>`coalesce(max(position), -1)::int` }).from(schema.questions).where(eq(schema.questions.assignmentId, assignmentId));

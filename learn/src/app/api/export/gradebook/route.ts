@@ -3,6 +3,7 @@ import { getCurrentUser } from "@/server/auth/session";
 import { gradebookCsv } from "@/server/services/grades";
 import { AppError } from "@/server/errors";
 import { toCsv } from "@/lib/utils";
+import { tr } from "@/lib/i18n/tr";
 
 /** GET /api/export/gradebook?class=<uuid>&subject=<uuid?> → CSV (requires reports.export). */
 export async function GET(req: Request) {
@@ -11,8 +12,8 @@ export async function GET(req: Request) {
   const subjectId = url.searchParams.get("subject") || undefined;
   try {
     const user = await getCurrentUser();
-    if (!user) throw new AppError("unauthenticated", "Tizimga kiring.");
-    if (!/^[0-9a-f-]{36}$/i.test(classId)) throw new AppError("invalid", "Guruh noto‘g‘ri.");
+    if (!user) throw new AppError("unauthenticated", tr("Tizimga kiring."));
+    if (!/^[0-9a-f-]{36}$/i.test(classId)) throw new AppError("invalid", tr("Guruh noto‘g‘ri."));
     const { filename, rows } = await gradebookCsv(user, classId, subjectId);
     return new NextResponse(toCsv(rows), {
       headers: {
@@ -24,6 +25,6 @@ export async function GET(req: Request) {
   } catch (e) {
     if (e instanceof AppError) return NextResponse.json({ ok: false, error: e.message }, { status: e.status });
     console.error("[export]", e);
-    return NextResponse.json({ ok: false, error: "Server xatosi" }, { status: 500 });
+    return NextResponse.json({ ok: false, error: tr("Server xatosi") }, { status: 500 });
   }
 }

@@ -2,6 +2,7 @@
 import { LogOut } from "lucide-react";
 import { logoutAction } from "@/app/actions/auth";
 import { clearSavedFiles } from "@/lib/offline";
+import { tr } from "@/lib/i18n/tr";
 
 export function LogoutButton() {
   return (
@@ -10,7 +11,7 @@ export function LogoutButton() {
         <span className="grid size-9 place-items-center rounded-xl bg-danger/10">
           <LogOut className="size-[18px]" aria-hidden />
         </span>
-        Chiqish
+        {tr("Chiqish")}
       </button>
     </form>
   );

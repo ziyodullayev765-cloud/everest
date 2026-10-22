@@ -13,14 +13,15 @@ import { Badge } from "@/components/ui/badge";
 import { Alert } from "@/components/ui/feedback";
 import { RichText } from "@/components/ui/rich-text";
 import { StartQuizButton } from "./start-button";
+import { tr } from "@/lib/i18n/tr";
 
-export const metadata: Metadata = { title: "Quiz" };
+export const metadata: Metadata = { get title() { return tr("Quiz"); } };
 
 const REVIEW: Record<string, string> = {
-  never: "Javoblar ko‘rsatilmaydi",
-  after_submit: "Topshirgandan so‘ng",
-  after_due: "Muddat tugagandan so‘ng",
-  after_grading: "Baholangandan so‘ng",
+  get never() { return tr("Javoblar ko‘rsatilmaydi"); },
+  get after_submit() { return tr("Topshirgandan so‘ng"); },
+  get after_due() { return tr("Muddat tugagandan so‘ng"); },
+  get after_grading() { return tr("Baholangandan so‘ng"); },
 };
 
 export default async function QuizOverviewPage({ params }: { params: Promise<{ id: string }> }) {
@@ -30,12 +31,12 @@ export default async function QuizOverviewPage({ params }: { params: Promise<{ i
   const a = o.assignment;
   const r = a.dueAt ? remaining(a.dueAt) : null;
   const facts = [
-    { icon: ListOrdered, label: "Savollar", value: `${o.questionCount} ta` },
-    { icon: Trophy, label: "Jami ball", value: fmtNumber(o.totalPoints, 2) },
-    { icon: Timer, label: "Vaqt", value: a.timeLimitMinutes ? `${a.timeLimitMinutes} daqiqa` : "Cheklanmagan" },
-    { icon: RotateCcw, label: "Urinishlar", value: `${o.attempts.length} / ${a.maxAttempts}` },
-    { icon: Target, label: "O‘tish bali", value: `${a.passingPercent}%` },
-    { icon: CalendarClock, label: "Muddat", value: a.dueAt ? formatDateTime(a.dueAt) : t.common.noDeadline },
+    { icon: ListOrdered, label: tr("Savollar"), value: tr("{0} ta", o.questionCount) },
+    { icon: Trophy, label: tr("Jami ball"), value: fmtNumber(o.totalPoints, 2) },
+    { icon: Timer, label: tr("Vaqt"), value: a.timeLimitMinutes ? tr("{0} daqiqa", a.timeLimitMinutes) : tr("Cheklanmagan") },
+    { icon: RotateCcw, label: tr("Urinishlar"), value: `${o.attempts.length} / ${a.maxAttempts}` },
+    { icon: Target, label: tr("O‘tish bali"), value: `${a.passingPercent}%` },
+    { icon: CalendarClock, label: tr("Muddat"), value: a.dueAt ? formatDateTime(a.dueAt) : t.common.noDeadline },
   ];
   return (
     <div className="mx-auto max-w-3xl">
@@ -69,28 +70,28 @@ export default async function QuizOverviewPage({ params }: { params: Promise<{ i
             {a.instructions ? (
               <div className="rounded-xl border border-border p-4">
                 <div className="mb-1.5 flex items-center gap-1.5 text-[13px] font-bold">
-                  <HelpCircle className="size-4 text-primary" aria-hidden /> Ko‘rsatmalar
+                  <HelpCircle className="size-4 text-primary" aria-hidden /> {tr("Ko‘rsatmalar")}
                 </div>
                 <RichText text={a.instructions} className="text-[14px] text-text-2" />
               </div>
             ) : null}
             <ul className="space-y-1 text-[13px] text-muted">
-              <li>• Javoblaringiz avtomatik saqlanadi — sahifa yopilsa ham davom ettirishingiz mumkin.</li>
-              {a.timeLimitMinutes ? <li>• Vaqt boshlangandan keyin to‘xtamaydi. Vaqt tugaganda javoblar avtomatik topshiriladi.</li> : null}
-              {!a.allowBackNavigation ? <li>• Oldingi savolga qaytib bo‘lmaydi.</li> : null}
-              <li>• Natijalar: {REVIEW[a.reviewMode]}.</li>
+              <li>{tr("• Javoblaringiz avtomatik saqlanadi — sahifa yopilsa ham davom ettirishingiz mumkin.")}</li>
+              {a.timeLimitMinutes ? <li>{tr("• Vaqt boshlangandan keyin to‘xtamaydi. Vaqt tugaganda javoblar avtomatik topshiriladi.")}</li> : null}
+              {!a.allowBackNavigation ? <li>{tr("• Oldingi savolga qaytib bo‘lmaydi.")}</li> : null}
+              <li>{tr("• Natijalar: {0}.", REVIEW[a.reviewMode])}</li>
             </ul>
           </CardBody>
         </Card>
 
         {o.openAttempt ? (
-          <Alert tone="warning" title="Tugallanmagan urinish bor">
-            Siz {o.openAttempt.attemptNo}-urinishni boshlagansiz. Davom ettiring{o.openAttempt.expiresAt ? " — vaqt ketmoqda" : ""}.
+          <Alert tone="warning" title={tr("Tugallanmagan urinish bor")}>
+            {tr("Siz {0}-urinishni boshlagansiz. Davom ettiring{1}.", o.openAttempt.attemptNo, o.openAttempt.expiresAt ? tr(" — vaqt ketmoqda") : "")}
           </Alert>
         ) : o.blocker ? (
           <Alert tone="info">{o.blocker}</Alert>
         ) : o.isLateWindow ? (
-          <Alert tone="warning">Muddat o‘tgan — urinish kechikkan deb belgilanadi{a.latePenaltyPercent ? ` (−${a.latePenaltyPercent}%)` : ""}.</Alert>
+          <Alert tone="warning">{tr("Muddat o‘tgan — urinish kechikkan deb belgilanadi")}{a.latePenaltyPercent ? ` (−${a.latePenaltyPercent}%)` : ""}.</Alert>
         ) : null}
 
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -102,15 +103,15 @@ export default async function QuizOverviewPage({ params }: { params: Promise<{ i
             <span />
           )}
           {o.openAttempt ? (
-            <StartQuizButton assignmentId={a.id} label="Davom ettirish" />
+            <StartQuizButton assignmentId={a.id} label={tr("Davom ettirish")} />
           ) : o.canStart ? (
-            <StartQuizButton assignmentId={a.id} label={o.attempts.length ? "Qayta urinish" : "Quizni boshlash"} confirmTimed={a.timeLimitMinutes} />
+            <StartQuizButton assignmentId={a.id} label={o.attempts.length ? tr("Qayta urinish") : tr("Quizni boshlash")} confirmTimed={a.timeLimitMinutes} />
           ) : null}
         </div>
 
         {o.attempts.length ? (
           <Card>
-            <CardHeader title="Urinishlarim" />
+            <CardHeader title={tr("Urinishlarim")} />
             <CardBody className="pt-2">
               <ul className="-mx-2 divide-y divide-border">
                 {o.attempts.map((at) => {
@@ -120,11 +121,11 @@ export default async function QuizOverviewPage({ params }: { params: Promise<{ i
                     <li key={at.id}>
                       <Link href={href} className="flex items-center gap-3 rounded-xl px-2 py-3 hover:bg-surface-2">
                         <span className="grid size-9 place-items-center rounded-lg bg-surface-2 text-[13px] font-bold tabular">{at.attemptNo}</span>
-                        <span className="min-w-0 flex-1 text-[13px] text-muted">{formatDateTime(at.submittedAt ?? at.startedAt)}{at.isLate ? " · kechikkan" : ""}</span>
+                        <span className="min-w-0 flex-1 text-[13px] text-muted">{formatDateTime(at.submittedAt ?? at.startedAt)}{at.isLate ? tr(" · kechikkan") : ""}</span>
                         {at.status === "in_progress" ? (
-                          <Badge tone="warning">Jarayonda</Badge>
+                          <Badge tone="warning">{tr("Jarayonda")}</Badge>
                         ) : pct == null ? (
-                          <Badge tone="violet">Tekshirilmoqda</Badge>
+                          <Badge tone="violet">{tr("Tekshirilmoqda")}</Badge>
                         ) : (
                           <span className="text-[14px] font-bold tabular">
                             {fmtNumber(Number(at.score), 2)} / {fmtNumber(Number(at.maxScore), 2)} <span className="font-normal text-muted">({Math.round(pct)}%)</span>
@@ -138,8 +139,8 @@ export default async function QuizOverviewPage({ params }: { params: Promise<{ i
               </ul>
               {o.grade ? (
                 <p className="mt-3 border-t border-border pt-3 text-[13px] text-muted">
-                  Rasmiy baho: <b className="text-text tabular">{fmtNumber(o.grade.points, 2)} / {fmtNumber(o.grade.maxPoints, 2)}</b> ({o.grade.scaleLabel}) · {t.gradeStatus[o.grade.status]}
-                  {a.maxAttempts > 1 ? " · eng yaxshi urinish hisoblanadi" : ""}
+                  {tr("Rasmiy baho:")} <b className="text-text tabular">{fmtNumber(o.grade.points, 2)} / {fmtNumber(o.grade.maxPoints, 2)}</b> ({o.grade.scaleLabel}) · {t.gradeStatus[o.grade.status]}
+                  {a.maxAttempts > 1 ? tr(" · eng yaxshi urinish hisoblanadi") : ""}
                 </p>
               ) : null}
             </CardBody>

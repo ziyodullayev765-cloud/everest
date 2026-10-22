@@ -20,9 +20,10 @@ import { ListeningPlayer, MediaGallery } from "@/components/app/media";
 import { Glossary } from "@/components/vocab/glossary";
 import { HomeworkItemsList } from "@/components/app/homework-items";
 import { MarkReadButton } from "./mark-read";
+import { tr } from "@/lib/i18n/tr";
 
 export async function generateMetadata(): Promise<Metadata> {
-  return { title: "Vazifa" };
+  return { title: tr("Vazifa") };
 }
 
 export default async function AssignmentDetail({ params }: { params: Promise<{ id: string }> }) {
@@ -57,8 +58,8 @@ export default async function AssignmentDetail({ params }: { params: Promise<{ i
       <div className="grid grid-cols-1 gap-5 lg:grid-cols-[1fr_300px]">
         <div className="min-w-0 space-y-5">
           {d.status === "returned" ? (
-            <Alert tone="warning" title="O‘qituvchi ishni qayta ishlashga qaytardi">
-              Izohni o‘qing va ishingizni yangilab, qayta topshiring.
+            <Alert tone="warning" title={tr("O‘qituvchi ishni qayta ishlashga qaytardi")}>
+              {tr("Izohni o‘qing va ishingizni yangilab, qayta topshiring.")}
             </Alert>
           ) : null}
           {a.description || a.instructions ? (
@@ -67,7 +68,7 @@ export default async function AssignmentDetail({ params }: { params: Promise<{ i
                 {a.description ? <RichText text={a.description} className="text-[15px] text-text-2" /> : null}
                 {a.instructions ? (
                   <div>
-                    <h2 className="mb-2 text-[13px] font-bold tracking-[0.04em] text-muted uppercase">Ko‘rsatmalar</h2>
+                    <h2 className="mb-2 text-[13px] font-bold tracking-[0.04em] text-muted uppercase">{tr("Ko‘rsatmalar")}</h2>
                     <RichText text={a.instructions} className="text-[14.5px] text-text" />
                   </div>
                 ) : null}
@@ -77,7 +78,7 @@ export default async function AssignmentDetail({ params }: { params: Promise<{ i
 
           {a.passage ? (
             <Card>
-              <CardHeader title="Reading matni" icon={<BookOpen />} description={[a.level, a.topic].filter(Boolean).join(" · ") || undefined} />
+              <CardHeader title={tr("Reading matni")} icon={<BookOpen />} description={[a.level, a.topic].filter(Boolean).join(" · ") || undefined} />
               <CardBody className="pt-3">
                 <div className="prose-text text-[15.5px] leading-[1.75]">{a.passage}</div>
                 {glossary.length ? <Glossary items={glossary} /> : null}
@@ -87,16 +88,16 @@ export default async function AssignmentDetail({ params }: { params: Promise<{ i
 
           {a.audioFileId ? (
             <Card>
-              <CardHeader title="Listening" icon={<Headphones />} />
+              <CardHeader title={tr("Listening")} icon={<Headphones />} />
               <CardBody className="space-y-3 pt-3">
                 <ListeningPlayer fileId={a.audioFileId} limit={a.replayLimit} storageKey={`asg:${a.id}`} />
                 {a.transcript && (a.transcriptMode === "always" || (a.transcriptMode === "after_submit" && submitted)) ? (
                   <details className="rounded-xl bg-surface-2 px-4 py-3 text-[14px]">
-                    <summary className="cursor-pointer font-semibold">Transkript</summary>
+                    <summary className="cursor-pointer font-semibold">{tr("Transkript")}</summary>
                     <div className="prose-text mt-2 text-text-2">{a.transcript}</div>
                   </details>
                 ) : a.transcript && a.transcriptMode === "after_submit" ? (
-                  <p className="text-[12.5px] text-muted">Transkript ishni topshirganingizdan keyin ochiladi.</p>
+                  <p className="text-[12.5px] text-muted">{tr("Transkript ishni topshirganingizdan keyin ochiladi.")}</p>
                 ) : null}
               </CardBody>
             </Card>
@@ -104,7 +105,7 @@ export default async function AssignmentDetail({ params }: { params: Promise<{ i
 
           {a.type === "homework" && a.items.length ? (
             <Card>
-              <CardHeader title="Topshiriqlar" icon={<ListTodo />} description={`${a.items.length} ta topshiriq`} />
+              <CardHeader title={tr("Topshiriqlar")} icon={<ListTodo />} description={tr("{0} ta topshiriq", a.items.length)} />
               <CardBody className="pt-3">
                 <HomeworkItemsList items={a.items} books={d.books} progress={d.submission && d.submission.version > 0 ? d.submission.itemProgress : null} />
               </CardBody>
@@ -113,7 +114,7 @@ export default async function AssignmentDetail({ params }: { params: Promise<{ i
 
           {d.attachments.length ? (
             <Card>
-              <CardHeader title="Materiallar" description="Doska rasmi, audio va fayllar" icon={<Link2 />} />
+              <CardHeader title={tr("Materiallar")} description={tr("Doska rasmi, audio va fayllar")} icon={<Link2 />} />
               <CardBody className="pt-3">
                 <MediaGallery files={d.attachments} />
               </CardBody>
@@ -122,7 +123,7 @@ export default async function AssignmentDetail({ params }: { params: Promise<{ i
 
           {a.links.length ? (
             <Card>
-              <CardHeader title="Havolalar" icon={<ExternalLink />} />
+              <CardHeader title={tr("Havolalar")} icon={<ExternalLink />} />
               <CardBody className="grid gap-2 pt-3 sm:grid-cols-2">
                 {a.links.map((l) => (
                   <a key={l.url} href={l.url} target="_blank" rel="noopener noreferrer nofollow" className="flex items-center gap-2.5 rounded-xl border border-border bg-surface p-2 pr-3 hover:border-border-strong">
@@ -141,7 +142,7 @@ export default async function AssignmentDetail({ params }: { params: Promise<{ i
 
           {a.rubric.length ? (
             <Card>
-              <CardHeader title="Baholash mezonlari" icon={<Scale />} />
+              <CardHeader title={tr("Baholash mezonlari")} icon={<Scale />} />
               <CardBody className="pt-3">
                 <ul className="divide-y divide-border">
                   {a.rubric.map((c) => (
@@ -152,7 +153,7 @@ export default async function AssignmentDetail({ params }: { params: Promise<{ i
                       </div>
                       <div className="shrink-0 text-[13px] text-text-2 tabular">
                         {d.grade?.rubricScores?.[c.id] != null && d.grade.status === "final" ? <b className="text-text">{d.grade.rubricScores[c.id]} / </b> : null}
-                        {c.maxPoints} ball
+                        {tr("{0} ball", c.maxPoints)}
                       </div>
                     </li>
                   ))}
@@ -164,12 +165,11 @@ export default async function AssignmentDetail({ params }: { params: Promise<{ i
           {isWorkType(a.type) && submitted ? (
             <Card>
               <CardHeader
-                title="Mening ishim"
+                title={tr("Mening ishim")}
                 icon={<FileText />}
                 description={
                   <>
-                    {d.submission!.version > 1 ? `${d.submission!.version}-topshiriq · ` : ""}
-                    {formatDateTime(d.submission!.submittedAt!)} da topshirilgan{d.submission!.isLate ? " · kechikkan" : ""}
+                    {tr("{0} {1} da topshirilgan{2}", d.submission!.version > 1 ? tr("{0}-topshiriq · ", d.submission!.version) : "", formatDateTime(d.submission!.submittedAt!), d.submission!.isLate ? tr(" · kechikkan") : "")}
                   </>
                 }
               />
@@ -182,7 +182,7 @@ export default async function AssignmentDetail({ params }: { params: Promise<{ i
 
           {d.feedback.length ? (
             <Card>
-              <CardHeader title="O‘qituvchi izohlari" icon={<MessageSquareText />} />
+              <CardHeader title={tr("O‘qituvchi izohlari")} icon={<MessageSquareText />} />
               <CardBody className="space-y-3 pt-3">
                 {d.feedback.map((f) => (
                   <div key={f.id} className={f.kind === "revision_request" ? "rounded-xl border border-warning/25 bg-warning-soft p-4" : "rounded-xl bg-surface-2 p-4"}>
@@ -203,7 +203,7 @@ export default async function AssignmentDetail({ params }: { params: Promise<{ i
             <Card className="overflow-hidden">
               <div className="bg-primary-soft px-5 py-4">
                 <div className="flex items-center justify-between">
-                  <span className="text-[13px] font-semibold text-primary-soft-fg">Baho</span>
+                  <span className="text-[13px] font-semibold text-primary-soft-fg">{tr("Baho")}</span>
                   <Badge tone={d.grade.status === "final" ? "success" : "warning"}>{t.gradeStatus[d.grade.status]}</Badge>
                 </div>
                 <div className="mt-2 flex items-baseline gap-2 tabular">
@@ -213,21 +213,21 @@ export default async function AssignmentDetail({ params }: { params: Promise<{ i
                 </div>
                 <div className="mt-1 text-[13px] text-muted tabular">{fmtNumber(d.grade.percent, 1)}%</div>
               </div>
-              {d.grade.latePenaltyApplied > 0 ? <p className="px-5 py-3 text-[12.5px] text-muted">Kechikish uchun −{fmtNumber(d.grade.latePenaltyApplied, 2)} ball hisobga olingan.</p> : null}
-              {d.grade.status === "provisional" ? <p className="px-5 py-3 text-[12.5px] text-muted">Bu dastlabki baho — o‘qituvchi uni hali yakunlamagan.</p> : null}
+              {d.grade.latePenaltyApplied > 0 ? <p className="px-5 py-3 text-[12.5px] text-muted">{tr("Kechikish uchun −{0} ball hisobga olingan.", fmtNumber(d.grade.latePenaltyApplied, 2))}</p> : null}
+              {d.grade.status === "provisional" ? <p className="px-5 py-3 text-[12.5px] text-muted">{tr("Bu dastlabki baho — o‘qituvchi uni hali yakunlamagan.")}</p> : null}
             </Card>
           ) : null}
 
           <Card>
             <CardBody className="space-y-3.5 text-[13.5px]">
-              <Meta icon={<User />} label="O‘qituvchi" value={d.authorName} />
-              <Meta icon={<CalendarClock />} label="Muddat" value={a.dueAt ? formatDateTime(a.dueAt) : t.common.noDeadline} extra={r && !submitted ? <span className={r.overdue ? "text-danger" : r.hours < 24 ? "text-warning" : "text-muted"} suppressHydrationWarning>{r.text}</span> : null} />
-              {a.type !== "material" ? <Meta icon={<Scale />} label="Maksimal ball" value={`${fmtNumber(a.maxScore, 2)} ball`} /> : null}
-              {a.publishedAt ? <Meta icon={<CheckCircle2 />} label="E’lon qilingan" value={formatDate(a.publishedAt)} /> : null}
+              <Meta icon={<User />} label={tr("O‘qituvchi")} value={d.authorName} />
+              <Meta icon={<CalendarClock />} label={tr("Muddat")} value={a.dueAt ? formatDateTime(a.dueAt) : t.common.noDeadline} extra={r && !submitted ? <span className={r.overdue ? "text-danger" : r.hours < 24 ? "text-warning" : "text-muted"} suppressHydrationWarning>{r.text}</span> : null} />
+              {a.type !== "material" ? <Meta icon={<Scale />} label={tr("Maksimal ball")} value={tr("{0} ball", fmtNumber(a.maxScore, 2))} /> : null}
+              {a.publishedAt ? <Meta icon={<CheckCircle2 />} label={tr("E’lon qilingan")} value={formatDate(a.publishedAt)} /> : null}
               {isWorkType(a.type) ? (
                 <div className="rounded-xl bg-surface-2 px-3 py-2.5 text-[12.5px] leading-relaxed text-muted">
-                  {a.allowLate ? `Kechikib topshirish mumkin${a.latePenaltyPercent ? ` (−${a.latePenaltyPercent}% ball)` : ""}${a.lateCutoffAt ? `, ${formatDateTime(a.lateCutoffAt)} gacha` : ""}.` : "Muddatdan keyin topshirib bo‘lmaydi."}{" "}
-                  {a.allowResubmission ? `Qayta topshirish: ${a.maxResubmissions} marta.` : "Qayta topshirish yo‘q."}
+                  {a.allowLate ? tr("Kechikib topshirish mumkin{0}{1}.", a.latePenaltyPercent ? tr(" (−{0}% ball)", a.latePenaltyPercent) : "", a.lateCutoffAt ? tr(", {0} gacha", formatDateTime(a.lateCutoffAt)) : "") : tr("Muddatdan keyin topshirib bo‘lmaydi.")}{" "}
+                  {a.allowResubmission ? tr("Qayta topshirish: {0} marta.", a.maxResubmissions) : tr("Qayta topshirish yo‘q.")}
                 </div>
               ) : null}
             </CardBody>
@@ -235,14 +235,14 @@ export default async function AssignmentDetail({ params }: { params: Promise<{ i
 
           {a.type === "material" ? (
             d.status === "read" ? (
-              <Alert tone="success">Siz bu materialni o‘qib chiqdingiz.</Alert>
+              <Alert tone="success">{tr("Siz bu materialni o‘qib chiqdingiz.")}</Alert>
             ) : (
               <MarkReadButton assignmentId={a.id} />
             )
           ) : isWorkType(a.type) ? (
             ed.canEdit ? (
               <LinkButton href={`/assignments/${a.id}/submit`} size="lg" className="w-full">
-                {d.status === "returned" ? "Qayta ishlash" : submitted ? "Qayta topshirish" : d.status === "in_progress" ? "Davom ettirish" : win.late ? "Kechikib topshirish" : "Bajarishni boshlash"}
+                {d.status === "returned" ? tr("Qayta ishlash") : submitted ? tr("Qayta topshirish") : d.status === "in_progress" ? tr("Davom ettirish") : win.late ? tr("Kechikib topshirish") : tr("Bajarishni boshlash")}
               </LinkButton>
             ) : !submitted ? (
               <Alert tone="danger">{ed.reason}</Alert>

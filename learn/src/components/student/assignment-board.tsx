@@ -8,11 +8,12 @@ import { STATUS_META } from "./status";
 import { EmptyState } from "@/components/ui/feedback";
 import { Input, Select } from "@/components/ui/form";
 import { cn } from "@/lib/utils";
+import { tr } from "@/lib/i18n/tr";
 
 type Deadline = "all" | "today" | "week" | "overdue" | "none";
 const DONE: StudentStatus[] = ["submitted", "reviewing", "graded", "read"];
 
-export function AssignmentBoard({ rows, initialView = "active", emptyTitle = "Hozircha vazifa yo‘q", emptyText, showSearch = true, narrow }: { narrow?: boolean; rows: StudentAssignmentRow[]; initialView?: "active" | "done" | "all"; emptyTitle?: string; emptyText?: string; showSearch?: boolean }) {
+export function AssignmentBoard({ rows, initialView = "active", emptyTitle = tr("Hozircha vazifa yo‘q"), emptyText, showSearch = true, narrow }: { narrow?: boolean; rows: StudentAssignmentRow[]; initialView?: "active" | "done" | "all"; emptyTitle?: string; emptyText?: string; showSearch?: boolean }) {
   const [view, setView] = useState(initialView);
   const [subject, setSubject] = useState("");
   const [status, setStatus] = useState<"" | StudentStatus>("");
@@ -71,31 +72,31 @@ export function AssignmentBoard({ rows, initialView = "active", emptyTitle = "Ho
           {showSearch ? (
             <div className="relative col-span-2 sm:w-52">
               <Search className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted" aria-hidden />
-              <Input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Qidirish" className="h-10 pl-9" aria-label="Vazifa nomi bo‘yicha qidirish" />
+              <Input value={q} onChange={(e) => setQ(e.target.value)} placeholder={tr("Qidirish")} className="h-10 pl-9" aria-label={tr("Vazifa nomi bo‘yicha qidirish")} />
             </div>
           ) : null}
-          <Select value={subject} onChange={(e) => setSubject(e.target.value)} aria-label="Kategoriya" className="h-10 sm:w-40">
-            <option value="">Barcha kategoriyalar</option>
+          <Select value={subject} onChange={(e) => setSubject(e.target.value)} aria-label={tr("Kategoriya")} className="h-10 sm:w-40">
+            <option value="">{tr("Barcha kategoriyalar")}</option>
             {subjects.map(([id, name]) => (
               <option key={id} value={id}>
                 {name}
               </option>
             ))}
           </Select>
-          <Select value={status} onChange={(e) => setStatus(e.target.value as StudentStatus | "")} aria-label="Holat" className="h-10 sm:w-40">
-            <option value="">Barcha holatlar</option>
+          <Select value={status} onChange={(e) => setStatus(e.target.value as StudentStatus | "")} aria-label={tr("Holat")} className="h-10 sm:w-40">
+            <option value="">{tr("Barcha holatlar")}</option>
             {(Object.keys(STATUS_META) as StudentStatus[]).map((s) => (
               <option key={s} value={s}>
                 {STATUS_META[s].label}
               </option>
             ))}
           </Select>
-          <Select value={deadline} onChange={(e) => setDeadline(e.target.value as Deadline)} aria-label="Muddat" className="col-span-2 h-10 sm:col-span-1 sm:w-40">
-            <option value="all">Har qanday muddat</option>
-            <option value="today">Bugun</option>
-            <option value="week">7 kun ichida</option>
-            <option value="overdue">Muddati o‘tgan</option>
-            <option value="none">Muddatsiz</option>
+          <Select value={deadline} onChange={(e) => setDeadline(e.target.value as Deadline)} aria-label={tr("Muddat")} className="col-span-2 h-10 sm:col-span-1 sm:w-40">
+            <option value="all">{tr("Har qanday muddat")}</option>
+            <option value="today">{tr("Bugun")}</option>
+            <option value="week">{tr("7 kun ichida")}</option>
+            <option value="overdue">{tr("Muddati o‘tgan")}</option>
+            <option value="none">{tr("Muddatsiz")}</option>
           </Select>
         </div>
       </div>
@@ -107,7 +108,7 @@ export function AssignmentBoard({ rows, initialView = "active", emptyTitle = "Ho
         </div>
       ) : (
         <div className="rounded-2xl border border-dashed border-border-strong bg-surface/60">
-          <EmptyState icon={<ClipboardList />} title={rows.length ? "Mos vazifa topilmadi" : emptyTitle} description={rows.length ? "Saralash shartlarini o‘zgartirib ko‘ring." : emptyText} />
+          <EmptyState icon={<ClipboardList />} title={rows.length ? tr("Mos vazifa topilmadi") : emptyTitle} description={rows.length ? tr("Saralash shartlarini o‘zgartirib ko‘ring.") : emptyText} />
         </div>
       )}
     </div>

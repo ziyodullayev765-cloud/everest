@@ -4,6 +4,7 @@ import { formatDate, formatDateTime } from "@/lib/dates";
 import { Card, CardBody, CardHeader } from "@/components/ui/card";
 import { EmptyState, Progress } from "@/components/ui/feedback";
 import { RichText } from "@/components/ui/rich-text";
+import { tr } from "@/lib/i18n/tr";
 
 export function ClassPageView({ data, staffTools }: { data: Awaited<ReturnType<typeof classPage>>; staffTools?: React.ReactNode }) {
   return (
@@ -11,7 +12,7 @@ export function ClassPageView({ data, staffTools }: { data: Awaited<ReturnType<t
       <div className="min-w-0 space-y-5">
         {staffTools}
         <Card>
-          <CardHeader title="E’lonlar" icon={<Megaphone />} />
+          <CardHeader title={tr("E’lonlar")} icon={<Megaphone />} />
           <CardBody className="pt-3">
             {data.announcements.length ? (
               <ul className="space-y-3">
@@ -26,28 +27,28 @@ export function ClassPageView({ data, staffTools }: { data: Awaited<ReturnType<t
                 ))}
               </ul>
             ) : (
-              <EmptyState icon={<Megaphone />} title="E’lonlar yo‘q" className="py-6" />
+              <EmptyState icon={<Megaphone />} title={tr("E’lonlar yo‘q")} className="py-6" />
             )}
           </CardBody>
         </Card>
       </div>
       <aside className="space-y-5">
         <Card>
-          <CardHeader title="O‘qituvchilar" icon={<Users />} description={`${data.studentCount} nafar o‘quvchi`} />
+          <CardHeader title={tr("O‘qituvchilar")} icon={<Users />} description={tr("{0} nafar o‘quvchi", data.studentCount)} />
           <CardBody className="pt-3">
             <ul className="space-y-2.5 text-[13.5px]">
               {data.teachers.map((t, i) => (
                 <li key={i} className="flex items-center justify-between gap-2">
                   <span className="font-semibold">{t.name}</span>
-                  <span className="text-[12.5px] text-muted">Ustoz</span>
+                  <span className="text-[12.5px] text-muted">{tr("Ustoz")}</span>
                 </li>
               ))}
-              {!data.teachers.length ? <li className="text-muted">Biriktirilmagan</li> : null}
+              {!data.teachers.length ? <li className="text-muted">{tr("Biriktirilmagan")}</li> : null}
             </ul>
           </CardBody>
         </Card>
         <Card>
-          <CardHeader title="Guruh musobaqalari" icon={<Target />} description="Umumiy natija — hech kim alohida ko‘rsatilmaydi" />
+          <CardHeader title={tr("Guruh musobaqalari")} icon={<Target />} description={tr("Umumiy natija — hech kim alohida ko‘rsatilmaydi")} />
           <CardBody className="space-y-4 pt-3">
             {data.challenges.length ? (
               data.challenges.map((c) => (
@@ -59,11 +60,11 @@ export function ClassPageView({ data, staffTools }: { data: Awaited<ReturnType<t
                     </span>
                   </div>
                   <Progress value={(c.progress / c.target) * 100} label={c.title} />
-                  <div className="mt-1 text-[11.5px] text-muted">{c.endsAt < new Date() ? "Yakunlangan" : `${formatDate(c.endsAt)} gacha`}</div>
+                  <div className="mt-1 text-[11.5px] text-muted">{c.endsAt < new Date() ? tr("Yakunlangan") : `${formatDate(c.endsAt)} gacha`}</div>
                 </div>
               ))
             ) : (
-              <p className="text-[13px] text-muted">Faol musobaqa yo‘q.</p>
+              <p className="text-[13px] text-muted">{tr("Faol musobaqa yo‘q.")}</p>
             )}
           </CardBody>
         </Card>

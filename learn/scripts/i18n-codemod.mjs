@@ -28,7 +28,7 @@ function isCodeish(s) {
   const x = s.trim();
   if (!x || !LETTER.test(x)) return true;
   if (/^(\/|https?:|#|@|\.|mailto:|data:|blob:|image\/|audio\/|application\/|text\/|video\/)/.test(x)) return true;
-  if (/^[a-z0-9_.:\/\-\[\]*?=&%$]+$/.test(x)) return true; // identifiers, keys, paths, mime
+  if (/^[a-z0-9_.:\/\-\[\]*?=&%$]+$/.test(x) && !/^(hozir|bor|yo‘q|biriktirilmagan|muddatsiz)$/.test(x)) return true; // identifiers, keys, paths, mime
   if (/\b(select|insert|update|delete|from|where|returning)\b.*\b(from|into|set|where|values)\b/i.test(x)) return true;
   const toks = x.split(/\s+/);
   if (toks.every((t) => /^[!a-z0-9:\[\]()\/.%#_,&>~*+-]+$/.test(t)) && toks.some((t) => /[-:\[]/.test(t))) return true; // tailwind
@@ -42,6 +42,8 @@ function uiStrength(s) {
   if (UZ_MARK.test(x)) return 2;
   if (/\s/.test(x) && /[A-Za-z]{2,}/.test(x)) return 2;
   if (/^[A-ZÀ-Ž][a-zà-ž‘’ʻ'-]{1,}[.!?…:]?$/.test(x)) return 1;
+  // lowercase Uzbek words (shown values like "biriktirilmagan", "hozir")
+  if (/^[a-z‘’ʻ' -]{3,}$/.test(x) && /(lmagan|lgan|moqda|ilgan|siz|lar|dan|ga|hozir|yo‘q|bor|kun|ta|ball|marta|soat|daqiqa)\b/.test(x)) return 1;
   return 0;
 }
 
@@ -197,7 +199,7 @@ for (const file of walkDir(ROOT)) {
         }
         const lead = tpl.match(/^\s*/)[0], trail = tpl.match(/\s*$/)[0];
         let core = tpl.slice(lead.length, tpl.length - trail.length).replace(/\s*\n\s*/g, " ");
-        if (core && LETTER.test(core.replace(/\{\d+\}/g, "")) && !isCodeish(core.replace(/\{\d+\}/g, "x"))) {
+        if (core && LETTER.test(core.replace(/\{\d+\}/g, "")) && /[a-zA-Z‘’ʻ]{2,}/.test(core)) {
           // Only the text core is replaced; surrounding whitespace stays in the source, so JSX spacing is unchanged.
           const first = run[0], last = run[run.length - 1];
           const start = (ts.isJsxText(first) ? first.pos : first.getStart(sf)) + lead.length;
@@ -244,6 +246,11 @@ for (const file of walkDir(ROOT)) {
 const uzSrc = fs.readFileSync(path.join(ROOT, "lib/i18n/uz.ts"), "utf8");
 for (const m of uzSrc.matchAll(/:\s*"([^"]+)"/g)) keys.add(m[1]);
 
-if (!DRY) fs.writeFileSync("scripts/i18n-keys.json", JSON.stringify([...keys].sort(), null, 1));
+if (!DRY) {
+  // Append new keys; existing indexes (used by scripts/i18n/*.tsv) must never move.
+  const old = fs.existsSync("scripts/i18n-keys.json") ? JSON.parse(fs.readFileSync("scripts/i18n-keys.json", "utf8")) : [];
+  const have = new Set(old);
+  fs.writeFileSync("scripts/i18n-keys.json", JSON.stringify([...old, ...[...keys].filter((k) => !have.has(k)).sort()], null, 1));
+}
 console.log(`files ${changedFiles}, edits ${edits}, keys ${keys.size}`);
 if (moduleLevelLeft.length) console.log(`module-level strings left as is: ${moduleLevelLeft.length}\n` + moduleLevelLeft.slice(0, 80).join("\n"));

@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { Music, X } from "lucide-react";
 import { FileChip, fmtSize, type UploadedFile } from "./uploader";
+import { tr } from "@/lib/i18n/tr";
 
 /** Audio track with native controls (streams via the authorised, Range-capable file route). */
 export function AudioPlayer({ file, title }: { file: Pick<UploadedFile, "id" | "name" | "size">; title?: string }) {
@@ -15,7 +16,7 @@ export function AudioPlayer({ file, title }: { file: Pick<UploadedFile, "id" | "
         {file.size ? <span className="shrink-0 text-[11.5px] text-muted">{fmtSize(file.size)}</span> : null}
       </div>
       <audio controls preload="metadata" src={`/api/files/${file.id}`} className="w-full" controlsList="nodownload">
-        Brauzeringiz audioni qo‘llab-quvvatlamaydi.
+        {tr("Brauzeringiz audioni qo‘llab-quvvatlamaydi.")}
       </audio>
     </div>
   );
@@ -32,7 +33,7 @@ export function MediaGallery({ files }: { files: UploadedFile[] }) {
       {images.length ? (
         <div className={images.length === 1 ? "" : "grid grid-cols-2 gap-2 sm:grid-cols-3"}>
           {images.map((f) => (
-            <button key={f.id} type="button" onClick={() => setOpen(f)} className="group block w-full overflow-hidden rounded-xl border border-border bg-surface-2" aria-label={`${f.name} — kattalashtirish`}>
+            <button key={f.id} type="button" onClick={() => setOpen(f)} className="group block w-full overflow-hidden rounded-xl border border-border bg-surface-2" aria-label={tr("{0} — kattalashtirish", f.name)}>
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={`/api/files/${f.id}`} alt={f.name} loading="lazy" className={images.length === 1 ? "max-h-[28rem] w-full object-contain" : "aspect-[4/3] w-full object-cover transition group-hover:scale-[1.02]"} />
             </button>
@@ -51,7 +52,7 @@ export function MediaGallery({ files }: { files: UploadedFile[] }) {
       ) : null}
       {open ? (
         <div className="fixed inset-0 z-[90] flex items-center justify-center bg-black/90 p-3 pt-safe pb-safe" role="dialog" aria-modal="true" aria-label={open.name} onClick={() => setOpen(null)}>
-          <button className="absolute top-[calc(env(safe-area-inset-top)+12px)] right-3 grid size-10 place-items-center rounded-full bg-white/15 text-white" aria-label="Yopish">
+          <button className="absolute top-[calc(env(safe-area-inset-top)+12px)] right-3 grid size-10 place-items-center rounded-full bg-white/15 text-white" aria-label={tr("Yopish")}>
             <X className="size-5" />
           </button>
           {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -86,10 +87,10 @@ export function ListeningPlayer({ fileId, limit, storageKey, title = "Listening"
           <Music className="size-4" aria-hidden />
         </span>
         <span className="min-w-0 flex-1 truncate font-semibold">{title}</span>
-        {limit ? <span className="shrink-0 text-[12px] text-muted tabular">Qolgan tinglash: {left}</span> : null}
+        {limit ? <span className="shrink-0 text-[12px] text-muted tabular">{tr("Qolgan tinglash: {0}", left)}</span> : null}
       </div>
       {blocked ? (
-        <p className="rounded-lg bg-surface-2 px-3 py-2.5 text-[13px] text-muted">Tinglash chegarasi tugadi.</p>
+        <p className="rounded-lg bg-surface-2 px-3 py-2.5 text-[13px] text-muted">{tr("Tinglash chegarasi tugadi.")}</p>
       ) : (
         <audio
           controls
@@ -112,7 +113,7 @@ export function ListeningPlayer({ fileId, limit, storageKey, title = "Listening"
           }}
           onEnded={() => setCounted(false)}
         >
-          Brauzeringiz audioni qo‘llab-quvvatlamaydi.
+          {tr("Brauzeringiz audioni qo‘llab-quvvatlamaydi.")}
         </audio>
       )}
     </div>

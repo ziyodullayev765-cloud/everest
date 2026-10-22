@@ -12,14 +12,15 @@ import { Card, CardBody, CardHeader } from "@/components/ui/card";
 import { EmptyState, Progress } from "@/components/ui/feedback";
 import { LinkButton } from "@/components/ui/button";
 import { DailyBars, TrendLine } from "@/components/student/charts";
+import { tr } from "@/lib/i18n/tr";
 
-export const metadata: Metadata = { title: "Natijalarim" };
+export const metadata: Metadata = { get title() { return tr("Natijalarim"); } };
 
 const RANGES = [
-  { k: "7", label: "7 kun" },
-  { k: "30", label: "30 kun" },
-  { k: "90", label: "3 oy" },
-  { k: "365", label: "1 yil" },
+  { k: "7", get label() { return tr("7 kun"); } },
+  { k: "30", get label() { return tr("30 kun"); } },
+  { k: "90", get label() { return tr("3 oy"); } },
+  { k: "365", get label() { return tr("1 yil"); } },
 ];
 
 export default async function ResultsPage({ searchParams }: { searchParams: Promise<{ r?: string }> }) {
@@ -35,10 +36,10 @@ export default async function ResultsPage({ searchParams }: { searchParams: Prom
   return (
     <>
       <PageHeader
-        title="Natijalarim"
-        description="Shaxsiy o‘sishingiz. Bu ma’lumotlar faqat sizga va ustozlaringizga ko‘rinadi."
+        title={tr("Natijalarim")}
+        description={tr("Shaxsiy o‘sishingiz. Bu ma’lumotlar faqat sizga va ustozlaringizga ko‘rinadi.")}
         actions={
-          <nav className="inline-flex rounded-xl border border-border bg-surface-2 p-1" aria-label="Davr">
+          <nav className="inline-flex rounded-xl border border-border bg-surface-2 p-1" aria-label={tr("Davr")}>
             {RANGES.map((x) => (
               <Link key={x.k} href={`/results?r=${x.k}`} aria-current={String(days) === x.k ? "true" : undefined} className={cn("rounded-lg px-3 py-1.5 text-[13px] font-semibold text-muted", String(days) === x.k && "bg-surface text-text shadow-soft")}>
                 {x.label}
@@ -50,33 +51,33 @@ export default async function ResultsPage({ searchParams }: { searchParams: Prom
 
       {/* Weekly report */}
       <Card className="mb-6">
-        <CardHeader title="Haftalik hisobot" description="Joriy hafta va o‘tgan hafta (dushanbadan boshlab)" icon={<TrendingUp />} />
+        <CardHeader title={tr("Haftalik hisobot")} description={tr("Joriy hafta va o‘tgan hafta (dushanbadan boshlab)")} icon={<TrendingUp />} />
         <CardBody className="grid grid-cols-2 gap-3 pt-4 md:grid-cols-5">
-          <Compare label="Vazifalar" now={thisWeek.tasks} prev={lastWeek.tasks} />
-          <Compare label="Quizlar" now={thisWeek.quizzes} prev={lastWeek.quizzes} />
-          <Compare label="So‘z takrorlash" now={thisWeek.words} prev={lastWeek.words} />
-          <Compare label="O‘rtacha baho" now={thisWeek.average} prev={lastWeek.average} pct />
-          <Compare label="Quiz aniqligi" now={thisWeek.accuracy} prev={lastWeek.accuracy} pct />
+          <Compare label={tr("Vazifalar")} now={thisWeek.tasks} prev={lastWeek.tasks} />
+          <Compare label={tr("Quizlar")} now={thisWeek.quizzes} prev={lastWeek.quizzes} />
+          <Compare label={tr("So‘z takrorlash")} now={thisWeek.words} prev={lastWeek.words} />
+          <Compare label={tr("O‘rtacha baho")} now={thisWeek.average} prev={lastWeek.average} pct />
+          <Compare label={tr("Quiz aniqligi")} now={thisWeek.accuracy} prev={lastWeek.accuracy} pct />
         </CardBody>
         <p className="px-5 pb-5 text-[13.5px] text-muted">{summarySentence(thisWeek, lastWeek)}</p>
       </Card>
 
       {empty ? (
         <Card>
-          <EmptyState icon={<BarChart3 />} title="Bu davrda hali ma’lumot yo‘q" description="Vazifa va quizlarni topshirganingizdan so‘ng grafiklar avtomatik to‘ladi." action={<LinkButton href="/assignments">Vazifalarga o‘tish</LinkButton>} />
+          <EmptyState icon={<BarChart3 />} title={tr("Bu davrda hali ma’lumot yo‘q")} description={tr("Vazifa va quizlarni topshirganingizdan so‘ng grafiklar avtomatik to‘ladi.")} action={<LinkButton href="/assignments">{tr("Vazifalarga o‘tish")}</LinkButton>} />
         </Card>
       ) : (
         <div className="space-y-6">
           <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-            <StatCard label="Vazifalar bajarilishi" value={`${cva.completed} / ${cva.assigned}`} icon={<CheckCircle2 />} tone="info" hint={cva.assigned ? `${Math.round((100 * cva.completed) / cva.assigned)}% · shu davr` : "shu davrda vazifa yo‘q"} />
-            <StatCard label="Quiz o‘rtachasi" value={fmtPercent(r.quizAverage)} icon={<Target />} tone="violet" hint={`${r.quizCount} ta urinish`} />
-            <StatCard label="Rasmiy baholar" value={fmtPercent(r.averageGrade)} icon={<Star />} hint={`${r.gradedCount} ta baho`} />
-            <StatCard label="Muddatida topshirish" value={fmtPercent(r.punctuality.rate)} icon={<Clock />} tone="success" hint={`${r.punctuality.onTime} muddatida · ${r.punctuality.late} kech`} />
+            <StatCard label={tr("Vazifalar bajarilishi")} value={`${cva.completed} / ${cva.assigned}`} icon={<CheckCircle2 />} tone="info" hint={cva.assigned ? tr("{0}% · shu davr", Math.round((100 * cva.completed) / cva.assigned)) : tr("shu davrda vazifa yo‘q")} />
+            <StatCard label={tr("Quiz o‘rtachasi")} value={fmtPercent(r.quizAverage)} icon={<Target />} tone="violet" hint={tr("{0} ta urinish", r.quizCount)} />
+            <StatCard label={tr("Rasmiy baholar")} value={fmtPercent(r.averageGrade)} icon={<Star />} hint={tr("{0} ta baho", r.gradedCount)} />
+            <StatCard label={tr("Muddatida topshirish")} value={fmtPercent(r.punctuality.rate)} icon={<Clock />} tone="success" hint={tr("{0} muddatida · {1} kech", r.punctuality.onTime, r.punctuality.late)} />
           </div>
 
           <div className="grid gap-6 lg:grid-cols-2">
             <Card>
-              <CardHeader title="Yo‘nalishlar bo‘yicha" description="Rasmiy baho va mashq natijasi alohida" />
+              <CardHeader title={tr("Yo‘nalishlar bo‘yicha")} description={tr("Rasmiy baho va mashq natijasi alohida")} />
               <CardBody className="pt-3">
                 {r.areas.length ? (
                   <ul className="space-y-3.5">
@@ -85,8 +86,8 @@ export default async function ResultsPage({ searchParams }: { searchParams: Prom
                         <div className="mb-1 flex flex-wrap justify-between gap-x-3 text-[13.5px]">
                           <span className="font-semibold">{a.label}</span>
                           <span className="text-muted tabular">
-                            {a.official != null ? `baho ${Math.round(a.official)}%` : "baho yo‘q"}
-                            {a.practice != null ? ` · mashq ${Math.round(a.practice)}%` : ""}
+                            {a.official != null ? tr("baho {0}%", Math.round(a.official)) : tr("baho yo‘q")}
+                            {a.practice != null ? tr(" · mashq {0}%", Math.round(a.practice)) : ""}
                           </span>
                         </div>
                         <Progress value={a.official ?? a.practice ?? 0} tone={(a.official ?? a.practice ?? 0) >= 60 ? "primary" : "warning"} label={a.label} />
@@ -94,46 +95,46 @@ export default async function ResultsPage({ searchParams }: { searchParams: Prom
                     ))}
                   </ul>
                 ) : (
-                  <p className="py-8 text-center text-[13.5px] text-muted">Bu davrda baholangan ish yoki mashq yo‘q.</p>
+                  <p className="py-8 text-center text-[13.5px] text-muted">{tr("Bu davrda baholangan ish yoki mashq yo‘q.")}</p>
                 )}
               </CardBody>
             </Card>
             <Card>
-              <CardHeader title="Vaqt bo‘yicha natija" description="Haftalik o‘rtacha baho" />
-              <CardBody>{r.overTime.length > 1 ? <TrendLine data={r.overTime} /> : <p className="py-8 text-center text-[13.5px] text-muted">Trend uchun kamida ikki haftalik baho kerak.</p>}</CardBody>
+              <CardHeader title={tr("Vaqt bo‘yicha natija")} description={tr("Haftalik o‘rtacha baho")} />
+              <CardBody>{r.overTime.length > 1 ? <TrendLine data={r.overTime} /> : <p className="py-8 text-center text-[13.5px] text-muted">{tr("Trend uchun kamida ikki haftalik baho kerak.")}</p>}</CardBody>
             </Card>
           </div>
 
           <div className="grid gap-6 lg:grid-cols-3">
             <Card>
-              <CardHeader title="Lug‘at" icon={<BookA />} action={<LinkButton href="/vocabulary" variant="ghost" size="sm">Ochish</LinkButton>} />
+              <CardHeader title={tr("Lug‘at")} icon={<BookA />} action={<LinkButton href="/vocabulary" variant="ghost" size="sm">{tr("Ochish")}</LinkButton>} />
               <CardBody className="grid grid-cols-2 gap-3 pt-3 text-[13px]">
-                <Mini label="O‘rganilgan" value={r.vocab.learned} />
-                <Mini label="Puxta" value={r.vocab.mastered} />
-                <Mini label="Takrorlash kerak" value={r.vocab.due} />
-                <Mini label="Aniqlik (davr)" value={r.vocab.accuracy == null ? "—" : `${Math.round(r.vocab.accuracy)}%`} />
-                <p className="col-span-2 text-[12px] text-muted">Shu davrda {r.vocab.reviews} marta takrorlandi.</p>
+                <Mini label={tr("O‘rganilgan")} value={r.vocab.learned} />
+                <Mini label={tr("Puxta")} value={r.vocab.mastered} />
+                <Mini label={tr("Takrorlash kerak")} value={r.vocab.due} />
+                <Mini label={tr("Aniqlik (davr)")} value={r.vocab.accuracy == null ? "—" : `${Math.round(r.vocab.accuracy)}%`} />
+                <p className="col-span-2 text-[12px] text-muted">{tr("Shu davrda {0} marta takrorlandi.", r.vocab.reviews)}</p>
               </CardBody>
             </Card>
             <Card>
-              <CardHeader title="So‘nggi baholar" icon={<Star />} action={<LinkButton href="/grades" variant="ghost" size="sm">Barchasi</LinkButton>} />
+              <CardHeader title={tr("So‘nggi baholar")} icon={<Star />} action={<LinkButton href="/grades" variant="ghost" size="sm">{tr("Barchasi")}</LinkButton>} />
               <CardBody className="pt-2">
                 {r.recentGrades.length ? (
                   <ul className="divide-y divide-border">
                     {r.recentGrades.map((g) => (
                       <li key={g.id} className="flex items-center justify-between gap-3 py-2 text-[13.5px]">
                         <span className="min-w-0 truncate">{g.title}</span>
-                        <span className="shrink-0 font-bold tabular">{Math.round(g.percent)}%{g.status !== "final" ? <span className="ml-1 text-[11px] font-normal text-muted">dastlabki</span> : null}</span>
+                        <span className="shrink-0 font-bold tabular">{Math.round(g.percent)}%{g.status !== "final" ? <span className="ml-1 text-[11px] font-normal text-muted">{tr("dastlabki")}</span> : null}</span>
                       </li>
                     ))}
                   </ul>
                 ) : (
-                  <p className="py-6 text-center text-[13px] text-muted">Hali baho yo‘q.</p>
+                  <p className="py-6 text-center text-[13px] text-muted">{tr("Hali baho yo‘q.")}</p>
                 )}
               </CardBody>
             </Card>
             <Card>
-              <CardHeader title="O‘tkazib yuborilgan" icon={<Clock />} description="Muddati o‘tgan, topshirilmagan" />
+              <CardHeader title={tr("O‘tkazib yuborilgan")} icon={<Clock />} description={tr("Muddati o‘tgan, topshirilmagan")} />
               <CardBody className="pt-2">
                 {r.missed.length ? (
                   <ul className="divide-y divide-border">
@@ -146,14 +147,14 @@ export default async function ResultsPage({ searchParams }: { searchParams: Prom
                     ))}
                   </ul>
                 ) : (
-                  <p className="py-6 text-center text-[13px] text-muted">Muddati o‘tgan ish yo‘q.</p>
+                  <p className="py-6 text-center text-[13px] text-muted">{tr("Muddati o‘tgan ish yo‘q.")}</p>
                 )}
               </CardBody>
             </Card>
           </div>
 
           <Card>
-            <CardHeader title="Kunlik faollik" description="Topshirilgan vazifalar, yakunlangan quizlar va so‘z takrorlash" />
+            <CardHeader title={tr("Kunlik faollik")} description={tr("Topshirilgan vazifalar, yakunlangan quizlar va so‘z takrorlash")} />
             <CardBody>
               <DailyBars data={r.daily} />
             </CardBody>
@@ -161,22 +162,22 @@ export default async function ResultsPage({ searchParams }: { searchParams: Prom
 
           <div className="grid gap-6 lg:grid-cols-3">
             <Card>
-              <CardHeader title="Kuchli tomonlar" icon={<Sparkles />} description="O‘rtacha 80% va undan yuqori" />
+              <CardHeader title={tr("Kuchli tomonlar")} icon={<Sparkles />} description={tr("O‘rtacha 80% va undan yuqori")} />
               <CardBody className="pt-3">
-                {r.strong.length ? <AreaList items={r.strong} tone="primary" /> : <p className="text-[13.5px] text-muted">Hozircha yo‘q — davom eting!</p>}
+                {r.strong.length ? <AreaList items={r.strong} tone="primary" /> : <p className="text-[13.5px] text-muted">{tr("Hozircha yo‘q — davom eting!")}</p>}
               </CardBody>
             </Card>
             <Card>
-              <CardHeader title="Ko‘proq mashq qiling" icon={<Target />} description="O‘rtacha 60% dan past" />
+              <CardHeader title={tr("Ko‘proq mashq qiling")} icon={<Target />} description={tr("O‘rtacha 60% dan past")} />
               <CardBody className="pt-3">
-                {r.needsPractice.length ? <AreaList items={r.needsPractice} tone="warning" /> : <p className="text-[13.5px] text-muted">{r.vocab.due ? `Lug‘atda ${r.vocab.due} ta so‘z takrorlashni kutmoqda.` : "Barcha yo‘nalishlarda yaxshi natija."}</p>}
+                {r.needsPractice.length ? <AreaList items={r.needsPractice} tone="warning" /> : <p className="text-[13.5px] text-muted">{r.vocab.due ? tr("Lug‘atda {0} ta so‘z takrorlashni kutmoqda.", r.vocab.due) : tr("Barcha yo‘nalishlarda yaxshi natija.")}</p>}
               </CardBody>
             </Card>
             <Card id="goals">
-              <CardHeader title="Shaxsiy maqsadlar" action={<LinkButton href="/profile/settings#goals" variant="ghost" size="sm">Sozlash</LinkButton>} />
+              <CardHeader title={tr("Shaxsiy maqsadlar")} action={<LinkButton href="/profile/settings#goals" variant="ghost" size="sm">{tr("Sozlash")}</LinkButton>} />
               <CardBody className="space-y-4 pt-3 text-[13.5px]">
-                <Goal label="Haftalik vazifalar" value={thisWeek.tasks + thisWeek.quizzes} target={profile.weeklyTaskGoal} />
-                <p className="text-[12.5px] text-muted">Maqsadni profilingizda o‘zgartirishingiz mumkin.</p>
+                <Goal label={tr("Haftalik vazifalar")} value={thisWeek.tasks + thisWeek.quizzes} target={profile.weeklyTaskGoal} />
+                <p className="text-[12.5px] text-muted">{tr("Maqsadni profilingizda o‘zgartirishingiz mumkin.")}</p>
               </CardBody>
             </Card>
           </div>
@@ -189,10 +190,10 @@ export default async function ResultsPage({ searchParams }: { searchParams: Prom
 function summarySentence(a: { tasks: number; quizzes: number; words: number; average: number | null }, b: { tasks: number; quizzes: number; words: number; average: number | null }) {
   const now = a.tasks + a.quizzes;
   const prev = b.tasks + b.quizzes;
-  if (now === 0 && prev === 0 && !a.words && !b.words) return "Bu va o‘tgan haftada faollik yo‘q. Bugun kichik qadamdan boshlang!";
-  if (now > prev) return `Bu hafta o‘tgan haftadan ${now - prev} ta ko‘proq ish bajardingiz — zo‘r sur’at!`;
-  if (now === prev) return "Barqaror sur’at: o‘tgan hafta bilan bir xil faollik.";
-  return `O‘tgan haftada ${prev} ta ish bor edi. Hafta hali tugamadi — maqsadingizga yetishingiz mumkin.`;
+  if (now === 0 && prev === 0 && !a.words && !b.words) return tr("Bu va o‘tgan haftada faollik yo‘q. Bugun kichik qadamdan boshlang!");
+  if (now > prev) return tr("Bu hafta o‘tgan haftadan {0} ta ko‘proq ish bajardingiz — zo‘r sur’at!", now - prev);
+  if (now === prev) return tr("Barqaror sur’at: o‘tgan hafta bilan bir xil faollik.");
+  return tr("O‘tgan haftada {0} ta ish bor edi. Hafta hali tugamadi — maqsadingizga yetishingiz mumkin.", prev);
 }
 
 function Compare({ label, now, prev, pct }: { label: string; now: number | null; prev: number | null; pct?: boolean }) {
@@ -208,7 +209,7 @@ function Compare({ label, now, prev, pct }: { label: string; now: number | null;
           {delta == null ? "" : pct ? `${Math.abs(Math.round(delta))}%` : Math.abs(delta)}
         </span>
       </div>
-      <div className="text-[11.5px] text-muted">o‘tgan hafta: {prev == null ? "—" : pct ? `${Math.round(prev)}%` : prev}</div>
+      <div className="text-[11.5px] text-muted">{tr("o‘tgan hafta:")} {prev == null ? "—" : pct ? `${Math.round(prev)}%` : prev}</div>
     </div>
   );
 }

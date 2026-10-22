@@ -1,9 +1,11 @@
 import type { ReactNode } from "react";
+import { trNode } from "@/lib/i18n/node";
 import Link from "next/link";
 import { ChevronLeft } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export function PageHeader({ title, description, actions, back, eyebrow, className }: { title: ReactNode; description?: ReactNode; actions?: ReactNode; back?: { href: string; label: string }; eyebrow?: ReactNode; className?: string }) {
+  title = trNode(title); description = trNode(description);
   return (
     <header className={cn("mb-6 animate-fade-up", className)}>
       {back ? (
@@ -24,6 +26,7 @@ export function PageHeader({ title, description, actions, back, eyebrow, classNa
 }
 
 export function StatCard({ label, value, hint, icon, tone = "primary", className }: { label: ReactNode; value: ReactNode; hint?: ReactNode; icon: ReactNode; tone?: "primary" | "info" | "warning" | "violet" | "danger" | "success"; className?: string }) {
+  label = trNode(label); hint = trNode(hint);
   const tones = {
     primary: "bg-primary-soft text-primary-soft-fg",
     info: "bg-info-soft text-info",

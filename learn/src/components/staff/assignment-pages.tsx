@@ -27,6 +27,7 @@ import { AssignmentBuilder, type BuilderValue } from "./assignment-builder";
 import { QuestionEditor, type EditQuestion } from "./question-editor";
 import { AssignmentActions } from "./assignment-actions";
 import { FilterBar } from "./filter-bar";
+import { tr } from "@/lib/i18n/tr";
 
 export const PUBLISH_TONE: Record<string, Tone> = { draft: "neutral", scheduled: "info", published: "success", archived: "warning" };
 
@@ -35,16 +36,16 @@ export async function AssignmentListPage({ user, base, sp }: { user: SessionUser
   return (
     <>
       <PageHeader
-        title="Vazifa va quizlar"
-        description="Yaratish, e’lon qilish, rejalashtirish va arxivlash."
-        actions={can(user, "assignments.create") ? <LinkButton href={`${base}/assignments/new`}><Plus /> Yangi vazifa</LinkButton> : null}
+        title={tr("Vazifa va quizlar")}
+        description={tr("Yaratish, e’lon qilish, rejalashtirish va arxivlash.")}
+        actions={can(user, "assignments.create") ? <LinkButton href={`${base}/assignments/new`}><Plus /> {tr("Yangi vazifa")}</LinkButton> : null}
       />
       <FilterBar
         fields={[
-          { name: "q", type: "search", placeholder: "Sarlavha bo‘yicha qidirish" },
-          { name: "status", label: "Holat", options: [["", "Faol (arxivsiz)"], ["draft", "Qoralama"], ["scheduled", "Rejalashtirilgan"], ["published", "E’lon qilingan"], ["archived", "Arxiv"]] },
-          { name: "type", label: "Turi", options: [["", "Barcha turlar"], ["work", "Vazifalar"], ["quiz", "Quizlar"]] },
-          { name: "subject", label: "Kategoriya", options: [["", "Barcha kategoriyalar"], ...subjects.map((s) => [s.id, s.name] as [string, string])] },
+          { name: "q", type: "search", placeholder: tr("Sarlavha bo‘yicha qidirish") },
+          { name: "status", label: tr("Holat"), options: [["", tr("Faol (arxivsiz)")], ["draft", "Qoralama"], ["scheduled", "Rejalashtirilgan"], ["published", tr("E’lon qilingan")], ["archived", "Arxiv"]] },
+          { name: "type", label: tr("Turi"), options: [["", tr("Barcha turlar")], ["work", "Vazifalar"], ["quiz", "Quizlar"]] },
+          { name: "subject", label: tr("Kategoriya"), options: [["", tr("Barcha kategoriyalar")], ...subjects.map((s) => [s.id, s.name] as [string, string])] },
         ]}
       />
       {rows.length ? (
@@ -53,11 +54,11 @@ export async function AssignmentListPage({ user, base, sp }: { user: SessionUser
             <table className="w-full min-w-[760px] text-left text-[13.5px]">
               <thead className="border-b border-border bg-surface-2/60 text-[12px] text-muted">
                 <tr>
-                  <th className="px-5 py-3 font-semibold">Vazifa</th>
-                  <th className="px-3 py-3 font-semibold">Holat</th>
-                  <th className="px-3 py-3 font-semibold">Muddat</th>
-                  <th className="px-3 py-3 font-semibold">Topshirgan</th>
-                  <th className="px-3 py-3 font-semibold">Tekshirish</th>
+                  <th className="px-5 py-3 font-semibold">{tr("Vazifa")}</th>
+                  <th className="px-3 py-3 font-semibold">{tr("Holat")}</th>
+                  <th className="px-3 py-3 font-semibold">{tr("Muddat")}</th>
+                  <th className="px-3 py-3 font-semibold">{tr("Topshirgan")}</th>
+                  <th className="px-3 py-3 font-semibold">{tr("Tekshirish")}</th>
                   <th className="px-5 py-3" />
                 </tr>
               </thead>
@@ -79,10 +80,10 @@ export async function AssignmentListPage({ user, base, sp }: { user: SessionUser
                     </td>
                     <td className="px-3 py-3 text-muted">{a.dueAt ? formatDateTime(a.dueAt) : "—"}</td>
                     <td className="px-3 py-3 tabular">{a.submittedCount}</td>
-                    <td className="px-3 py-3">{a.pendingCount ? <Badge tone="violet">{a.pendingCount} ta</Badge> : <span className="text-muted">—</span>}</td>
+                    <td className="px-3 py-3">{a.pendingCount ? <Badge tone="violet">{tr("{0} ta", a.pendingCount)}</Badge> : <span className="text-muted">—</span>}</td>
                     <td className="px-5 py-3 text-right">
                       <LinkButton href={`${base}/submissions?assignment=${a.id}`} variant="ghost" size="sm">
-                        Ishlar
+                        {tr("Ishlar")}
                       </LinkButton>
                     </td>
                   </tr>
@@ -93,7 +94,7 @@ export async function AssignmentListPage({ user, base, sp }: { user: SessionUser
         </Card>
       ) : (
         <Card>
-          <EmptyState icon={<FileText />} title="Vazifa topilmadi" description="Yangi vazifa yarating yoki saralashni o‘zgartiring." action={can(user, "assignments.create") ? <LinkButton href={`${base}/assignments/new`}><Plus /> Yangi vazifa</LinkButton> : null} />
+          <EmptyState icon={<FileText />} title={tr("Vazifa topilmadi")} description={tr("Yangi vazifa yarating yoki saralashni o‘zgartiring.")} action={can(user, "assignments.create") ? <LinkButton href={`${base}/assignments/new`}><Plus /> {tr("Yangi vazifa")}</LinkButton> : null} />
         </Card>
       )}
     </>
@@ -148,7 +149,7 @@ export async function NewAssignmentPage({ user, base }: { user: SessionUser; bas
   };
   return (
     <div className="mx-auto max-w-4xl">
-      <PageHeader back={{ href: `${base}/assignments`, label: "Vazifalar" }} title="Yangi vazifa" />
+      <PageHeader back={{ href: `${base}/assignments`, label: tr("Vazifalar") }} title={tr("Yangi vazifa")} />
       <AssignmentBuilder base={base} id={null} initial={initial} initialAttachments={[]} initialAudio={null} status={null} hasWork={false} {...data} />
     </div>
   );
@@ -227,7 +228,7 @@ export async function EditAssignmentPage({ user, base, id, tab }: { user: Sessio
   return (
     <div className="mx-auto max-w-4xl">
       <PageHeader
-        back={{ href: `${base}/assignments`, label: "Vazifalar" }}
+        back={{ href: `${base}/assignments`, label: tr("Vazifalar") }}
         eyebrow={
           <span className="flex items-center gap-2">
             <Badge tone={PUBLISH_TONE[a.status]}>{t.publishStatus[a.status]}</Badge> {t.assignmentType[a.type]}
@@ -237,10 +238,10 @@ export async function EditAssignmentPage({ user, base, id, tab }: { user: Sessio
         actions={<AssignmentActions id={a.id} base={base} status={a.status} canDuplicate={can(user, "assignments.create")} />}
       />
       {quiz ? (
-        <nav className="mb-5 inline-flex rounded-xl border border-border bg-surface-2 p-1" aria-label="Bo‘limlar">
+        <nav className="mb-5 inline-flex rounded-xl border border-border bg-surface-2 p-1" aria-label={tr("Bo‘limlar")}>
           {[
             ["details", "Sozlamalar"],
-            ["questions", `Savollar (${e.questions.length})`],
+            ["questions", tr("Savollar ({0})", e.questions.length)],
           ].map(([k, l]) => (
             <Link key={k} href={`${base}/assignments/${a.id}${k === "questions" ? "?tab=questions" : ""}`} className={cn("rounded-lg px-4 py-1.5 text-[13.5px] font-semibold text-muted", current === k && "bg-surface text-text shadow-soft")} aria-current={current === k ? "page" : undefined}>
               {l}
@@ -263,14 +264,14 @@ export async function PreviewAssignmentPage({ user, base, id }: { user: SessionU
   const a = e.assignment;
   return (
     <div className="mx-auto max-w-3xl">
-      <PageHeader back={{ href: `${base}/assignments/${id}`, label: "Tahrirlash" }} eyebrow={<Badge tone="info"><Eye className="size-3.5" /> O‘quvchi ko‘rinishi (ko‘rib chiqish)</Badge>} title={a.title} />
+      <PageHeader back={{ href: `${base}/assignments/${id}`, label: tr("Tahrirlash") }} eyebrow={<Badge tone="info"><Eye className="size-3.5" /> {tr("O‘quvchi ko‘rinishi (ko‘rib chiqish)")}</Badge>} title={a.title} />
       <div className="space-y-4">
         <Card>
           <CardBody className="space-y-4">
             <div className="flex flex-wrap gap-4 text-[13px] text-muted">
-              <span className="inline-flex items-center gap-1.5"><CalendarClock className="size-4" /> {a.dueAt ? formatDateTime(a.dueAt) : "Muddatsiz"}</span>
-              <span className="inline-flex items-center gap-1.5"><Users className="size-4" /> {e.targets.length} ta maqsadli guruh/o‘quvchi</span>
-              {a.type !== "material" ? <span>max {Number(a.maxScore)} ball</span> : null}
+              <span className="inline-flex items-center gap-1.5"><CalendarClock className="size-4" /> {a.dueAt ? formatDateTime(a.dueAt) : tr("Muddatsiz")}</span>
+              <span className="inline-flex items-center gap-1.5"><Users className="size-4" /> {tr("{0} ta maqsadli guruh/o‘quvchi", e.targets.length)}</span>
+              {a.type !== "material" ? <span>{tr("max {0} ball", Number(a.maxScore))}</span> : null}
             </div>
             {a.description ? <RichText text={a.description} className="text-text-2" /> : null}
             {a.instructions ? <RichText text={a.instructions} /> : null}
@@ -279,7 +280,7 @@ export async function PreviewAssignmentPage({ user, base, id }: { user: SessionU
         </Card>
         {e.questions.map((q, i) => (
           <Card key={q.id}>
-            <CardHeader title={`${i + 1}-savol`} description={`${t.questionType[q.type]} · ${Number(q.points)} ball`} />
+            <CardHeader title={`${i + 1}-savol`} description={tr("{0} · {1} ball", t.questionType[q.type], Number(q.points))} />
             <CardBody className="space-y-2 pt-3">
               <RichText text={q.prompt} className="font-semibold" />
               {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -288,14 +289,14 @@ export async function PreviewAssignmentPage({ user, base, id }: { user: SessionU
                 <div key={o.id} className="rounded-xl border border-border px-3.5 py-2.5 text-[14px]"><RichText text={o.label} as="span" /></div>
               ))}
               {(q.config as QuestionConfig).pairs?.map((p) => (
-                <div key={p.id} className="grid grid-cols-2 gap-2 text-[14px]"><span className="rounded-xl border border-border px-3 py-2">{p.left}</span><span className="rounded-xl border border-dashed border-border px-3 py-2 text-muted">Tanlang…</span></div>
+                <div key={p.id} className="grid grid-cols-2 gap-2 text-[14px]"><span className="rounded-xl border border-border px-3 py-2">{p.left}</span><span className="rounded-xl border border-dashed border-border px-3 py-2 text-muted">{tr("Tanlang…")}</span></div>
               ))}
-              {(q.config as QuestionConfig).audioFileId ? <AudioPlayer file={{ id: (q.config as QuestionConfig).audioFileId!, name: "Audio", size: 0 }} title="Savol audiosi" /> : null}
+              {(q.config as QuestionConfig).audioFileId ? <AudioPlayer file={{ id: (q.config as QuestionConfig).audioFileId!, name: "Audio", size: 0 }} title={tr("Savol audiosi")} /> : null}
               {q.type === "arrange_words" ? (
                 <div className="flex flex-wrap gap-2">{[...((q.config as QuestionConfig).words ?? [])].sort().map((w, k) => <span key={k} className="rounded-lg border border-border px-3 py-1.5 text-[14px]">{w}</span>)}</div>
               ) : null}
               {q.type === "grammar_correction" ? <div className="rounded-xl bg-danger-soft/60 px-3.5 py-2.5 text-[14px]">{(q.config as QuestionConfig).incorrect}</div> : null}
-              {q.type === "irregular_verb" ? <div className="text-[14px]">V1: <b>{(q.config as QuestionConfig).base}</b> · V2: ____ · V3: ____</div> : null}
+              {q.type === "irregular_verb" ? <div className="text-[14px]">{tr("V1:")} <b>{(q.config as QuestionConfig).base}</b> {tr("· V2: ____ · V3: ____")}</div> : null}
               {["short_answer", "essay", "fill_blank", "translation", "grammar_correction"].includes(q.type) ? <div className="h-11 rounded-xl border border-dashed border-border" aria-hidden /> : null}
             </CardBody>
           </Card>

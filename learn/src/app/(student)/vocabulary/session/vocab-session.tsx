@@ -11,6 +11,7 @@ import { toast } from "@/components/ui/toast";
 import { Confetti } from "@/components/app/confetti";
 import { buzz, play } from "@/lib/sfx";
 import { cn } from "@/lib/utils";
+import { tr } from "@/lib/i18n/tr";
 
 export type Kind = "auto" | "flashcard" | "choice" | "typing" | "match";
 type Step = { card: SessionCard; kind: Exclude<Kind, "auto" | "match">; retry: boolean };
@@ -39,10 +40,10 @@ export function VocabSession({ cards, kind, backHref }: { cards: SessionCard[]; 
         <div className="mx-auto mb-4 grid size-14 place-items-center rounded-2xl bg-primary-soft text-primary">
           <Check className="size-7" aria-hidden />
         </div>
-        <h1 className="text-[20px] font-bold">Hozircha mashq qiladigan so‘z yo‘q</h1>
-        <p className="mt-2 text-[14px] text-muted">Takrorlash vaqti kelganda so‘zlar shu yerda paydo bo‘ladi.</p>
+        <h1 className="text-[20px] font-bold">{tr("Hozircha mashq qiladigan so‘z yo‘q")}</h1>
+        <p className="mt-2 text-[14px] text-muted">{tr("Takrorlash vaqti kelganda so‘zlar shu yerda paydo bo‘ladi.")}</p>
         <LinkButton href={backHref} variant="secondary" className="mt-6">
-          Orqaga
+          {tr("Orqaga")}
         </LinkButton>
       </div>
     );
@@ -86,16 +87,16 @@ export function VocabSession({ cards, kind, backHref }: { cards: SessionCard[]; 
         <div className="mx-auto mb-4 grid size-16 place-items-center rounded-2xl bg-primary-soft text-primary">
           <PartyPopper className="size-8" aria-hidden />
         </div>
-        <h1 className="text-[22px] font-bold">Mashg‘ulot yakunlandi</h1>
+        <h1 className="text-[22px] font-bold">{tr("Mashg‘ulot yakunlandi")}</h1>
         <p className="mt-2 text-[15px] text-muted tabular">
-          {done.total} ta javob · {done.total ? Math.round((100 * done.correct) / done.total) : 0}% to‘g‘ri
+          {tr("{0} ta javob · {1}% to‘g‘ri", done.total, done.total ? Math.round((100 * done.correct) / done.total) : 0)}
         </p>
         <div className="mt-6 flex justify-center gap-2">
           <LinkButton href={backHref} variant="secondary">
-            Lug‘atga qaytish
+            {tr("Lug‘atga qaytish")}
           </LinkButton>
           <Button onClick={() => location.reload()}>
-            <RotateCcw /> Yana
+            <RotateCcw /> {tr("Yana")}
           </Button>
         </div>
       </div>
@@ -104,17 +105,17 @@ export function VocabSession({ cards, kind, backHref }: { cards: SessionCard[]; 
   return (
     <div className={cn("mx-auto max-w-xl", outcome && "pb-48 sm:pb-32")}>
       <div className="mb-5 flex items-center gap-3">
-        <Link href={backHref} className="grid size-10 shrink-0 place-items-center rounded-xl text-muted hover:bg-surface-2 hover:text-text" aria-label="Chiqish">
+        <Link href={backHref} className="grid size-10 shrink-0 place-items-center rounded-xl text-muted hover:bg-surface-2 hover:text-text" aria-label={tr("Chiqish")}>
           <ChevronLeft className="size-5" />
         </Link>
-        <Progress value={(100 * pos) / total} className="flex-1" label="Mashg‘ulot jarayoni" />
+        <Progress value={(100 * pos) / total} className="flex-1" label={tr("Mashg‘ulot jarayoni")} />
         <span className="w-14 text-right text-[12.5px] text-muted tabular">
           {pos + 1}/{total}
         </span>
       </div>
 
       <section key={`${step.card.id}-${pos}`} className="animate-fade-up rounded-3xl border-2 border-border bg-surface p-6 sm:p-8">
-        <CardTop card={step.card} label={step.retry ? "Qayta" : step.card.isNew ? "Yangi so‘z" : "Takrorlash"} />
+        <CardTop card={step.card} label={step.retry ? tr("Qayta") : step.card.isNew ? tr("Yangi so‘z") : tr("Takrorlash")} />
         {step.kind === "flashcard" ? (
           <Flashcard card={step.card} busy={busy} onGrade={async (g) => (await record({ grade: g })) && next()} />
         ) : step.kind === "choice" ? (
@@ -134,7 +135,7 @@ export function VocabSession({ cards, kind, backHref }: { cards: SessionCard[]; 
                 {outcome.correct ? <Check className="size-6" strokeWidth={3} /> : <X className="size-6" strokeWidth={3} />}
               </span>
               <div className="min-w-0 text-[15px]">
-                <div className={cn("text-[19px] font-black", outcome.correct ? "text-primary-soft-fg" : "text-danger")}>{outcome.correct ? PRAISE[pos % PRAISE.length] : "To‘g‘ri javob:"}</div>
+                <div className={cn("text-[19px] font-black", outcome.correct ? "text-primary-soft-fg" : "text-danger")}>{outcome.correct ? tr(PRAISE[pos % PRAISE.length]) : tr("To‘g‘ri javob:")}</div>
                 <div className="text-text-2">
                   <b>{outcome.english}</b> — {outcome.uzbek}
                 </div>
@@ -142,7 +143,7 @@ export function VocabSession({ cards, kind, backHref }: { cards: SessionCard[]; 
               </div>
             </div>
             <Button size="lg" variant={outcome.correct ? "primary" : "danger"} className="w-full sm:w-44" onClick={next} autoFocus>
-              Davom etish <ArrowRight />
+              {tr("Davom etish")} <ArrowRight />
             </Button>
           </div>
         </div>
@@ -169,14 +170,14 @@ function Pronounce({ card }: { card: SessionCard }) {
     return (
       <>
         <audio ref={audio} src={`/api/files/${card.audioFileId}`} preload="none" />
-        <Button variant="soft" size="icon" onClick={() => audio.current?.play()} aria-label="Talaffuzni eshitish">
+        <Button variant="soft" size="icon" onClick={() => audio.current?.play()} aria-label={tr("Talaffuzni eshitish")}>
           <Volume2 />
         </Button>
       </>
     );
   if (!tts) return null;
   return (
-    <Button variant="ghost" size="icon" onClick={() => speak(card.english)} aria-label="Talaffuz (brauzer ovozi)" title="Brauzer ovozi bilan talaffuz">
+    <Button variant="ghost" size="icon" onClick={() => speak(card.english)} aria-label={tr("Talaffuz (brauzer ovozi)")} title={tr("Brauzer ovozi bilan talaffuz")}>
       <Volume2 />
     </Button>
   );
@@ -195,10 +196,10 @@ function CardTop({ card, label }: { card: SessionCard; label: string }) {
     <div className="mb-6 flex items-center justify-between gap-2">
       <span className="rounded-full bg-surface-2 px-2.5 py-1 text-[11.5px] font-bold tracking-[0.04em] text-muted uppercase">{label}</span>
       <div className="flex">
-        <Button variant="ghost" size="icon" onClick={() => flag("difficult", !hard)} aria-pressed={hard} aria-label="Qiyin so‘z deb belgilash" className={hard ? "text-danger" : ""}>
+        <Button variant="ghost" size="icon" onClick={() => flag("difficult", !hard)} aria-pressed={hard} aria-label={tr("Qiyin so‘z deb belgilash")} className={hard ? "text-danger" : ""}>
           <TriangleAlert />
         </Button>
-        <Button variant="ghost" size="icon" onClick={() => flag("favorite", !fav)} aria-pressed={fav} aria-label="Sevimlilarga qo‘shish" className={fav ? "text-warning" : ""}>
+        <Button variant="ghost" size="icon" onClick={() => flag("favorite", !fav)} aria-pressed={fav} aria-label={tr("Sevimlilarga qo‘shish")} className={fav ? "text-warning" : ""}>
           <Star className={fav ? "fill-current" : ""} />
         </Button>
       </div>
@@ -236,10 +237,10 @@ function Flashcard({ card, busy, onGrade }: { card: SessionCard; busy: boolean; 
           </div>
           <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
             {([
-              [0, "Esladim emas", "border-danger/40 text-danger"],
-              [1, "Qiyin", "border-warning/40 text-warning"],
-              [2, "Esladim", "border-primary/40 text-primary"],
-              [3, "Juda oson", "border-success/40 text-success"],
+              [0, tr("Esladim emas"), "border-danger/40 text-danger"],
+              [1, tr("Qiyin"), "border-warning/40 text-warning"],
+              [2, tr("Esladim"), "border-primary/40 text-primary"],
+              [3, tr("Juda oson"), "border-success/40 text-success"],
             ] as const).map(([g, l, c]) => (
               <button key={g} type="button" disabled={busy} onClick={() => onGrade(g)} className={cn("h-12 rounded-2xl border-2 border-b-4 bg-surface text-[14px] font-extrabold transition hover:bg-surface-2 active:translate-y-[2px] active:border-b-2 disabled:opacity-50", c)}>
                 {l}
@@ -249,7 +250,7 @@ function Flashcard({ card, busy, onGrade }: { card: SessionCard; busy: boolean; 
         </div>
       ) : (
         <Button size="lg" className="mt-8 w-full" onClick={() => setShown(true)}>
-          Tarjimani ko‘rsatish
+          {tr("Tarjimani ko‘rsatish")}
         </Button>
       )}
     </div>
@@ -262,7 +263,7 @@ function Choice({ card, busy, outcome, onAnswer }: { card: SessionCard; busy: bo
   return (
     <div>
       <WordHead card={card} />
-      <p className="mt-6 mb-3 text-center text-[13px] text-muted">To‘g‘ri tarjimani tanlang</p>
+      <p className="mt-6 mb-3 text-center text-[13px] text-muted">{tr("To‘g‘ri tarjimani tanlang")}</p>
       <div className="space-y-2.5">
         {options.map((o) => {
           const right = outcome && o === outcome.uzbek;
@@ -286,7 +287,7 @@ function Choice({ card, busy, outcome, onAnswer }: { card: SessionCard; busy: bo
           );
         })}
       </div>
-      {options.length < 2 ? <p className="mt-2 text-[12.5px] text-muted">Variantlar kam — ro‘yxatda boshqa so‘zlar qo‘shilgach to‘liq test bo‘ladi.</p> : null}
+      {options.length < 2 ? <p className="mt-2 text-[12.5px] text-muted">{tr("Variantlar kam — ro‘yxatda boshqa so‘zlar qo‘shilgach to‘liq test bo‘ladi.")}</p> : null}
     </div>
   );
 }
@@ -301,7 +302,7 @@ function Typing({ card, busy, outcome, onAnswer }: { card: SessionCard; busy: bo
       }}
     >
       <div className="text-center">
-        <p className="text-[13px] text-muted">Inglizcha yozing</p>
+        <p className="text-[13px] text-muted">{tr("Inglizcha yozing")}</p>
         <h1 className="mt-1 text-[26px] leading-tight font-bold">{card.uzbek}</h1>
         {card.exampleUz ? <p className="mt-2 text-[13.5px] text-muted">{card.exampleUz}</p> : null}
       </div>
@@ -314,7 +315,7 @@ function Typing({ card, busy, outcome, onAnswer }: { card: SessionCard; busy: bo
         autoCapitalize="none"
         autoCorrect="off"
         spellCheck={false}
-        aria-label="Inglizcha so‘z"
+        aria-label={tr("Inglizcha so‘z")}
         className={cn(
           "mt-6 h-14 w-full rounded-2xl border bg-surface px-4 text-center text-[20px] font-bold focus:ring-4 focus:ring-[var(--ring)] focus:outline-none",
           outcome ? (outcome.correct ? "border-success" : "border-danger") : "border-border-strong focus:border-primary",
@@ -322,7 +323,7 @@ function Typing({ card, busy, outcome, onAnswer }: { card: SessionCard; busy: bo
       />
       {!outcome ? (
         <Button type="submit" size="lg" className="mt-4 w-full" disabled={!v.trim()} loading={busy}>
-          Tekshirish
+          {tr("Tekshirish")}
         </Button>
       ) : null}
     </form>
@@ -372,12 +373,12 @@ function MatchBoard({ cards, backHref }: { cards: SessionCard[]; backHref: strin
         <div className="mx-auto mb-4 grid size-16 place-items-center rounded-2xl bg-primary-soft text-primary">
           <PartyPopper className="size-8" aria-hidden />
         </div>
-        <h1 className="text-[22px] font-bold">Moslash yakunlandi</h1>
+        <h1 className="text-[22px] font-bold">{tr("Moslash yakunlandi")}</h1>
         <p className="mt-2 text-[15px] text-muted tabular">
-          {stats.correct} / {stats.total} birinchi urinishda
+          {tr("{0} / {1} birinchi urinishda", stats.correct, stats.total)}
         </p>
         <LinkButton href={backHref} variant="secondary" className="mt-6">
-          Lug‘atga qaytish
+          {tr("Lug‘atga qaytish")}
         </LinkButton>
       </div>
     );
@@ -386,12 +387,12 @@ function MatchBoard({ cards, backHref }: { cards: SessionCard[]; backHref: strin
   return (
     <div className="mx-auto max-w-2xl">
       <div className="mb-5 flex items-center gap-3">
-        <Link href={backHref} className="grid size-10 shrink-0 place-items-center rounded-xl text-muted hover:bg-surface-2 hover:text-text" aria-label="Chiqish">
+        <Link href={backHref} className="grid size-10 shrink-0 place-items-center rounded-xl text-muted hover:bg-surface-2 hover:text-text" aria-label={tr("Chiqish")}>
           <ChevronLeft className="size-5" />
         </Link>
-        <Progress value={(100 * round) / rounds.length} className="flex-1" label="Moslash jarayoni" />
+        <Progress value={(100 * round) / rounds.length} className="flex-1" label={tr("Moslash jarayoni")} />
       </div>
-      <p className="mb-4 text-center text-[13.5px] text-muted">Chapdan so‘zni, o‘ngdan uning ma’nosini tanlang</p>
+      <p className="mb-4 text-center text-[13.5px] text-muted">{tr("Chapdan so‘zni, o‘ngdan uning ma’nosini tanlang")}</p>
       <div className="grid grid-cols-2 gap-3">
         <div className="space-y-2.5">
           {set.map((c) => (
@@ -436,7 +437,7 @@ function MatchBoard({ cards, backHref }: { cards: SessionCard[]; backHref: strin
             setMissed([]);
           }}
         >
-          Davom etish <ArrowRight />
+          {tr("Davom etish")} <ArrowRight />
         </Button>
       ) : null}
     </div>

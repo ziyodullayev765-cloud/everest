@@ -17,6 +17,7 @@ import { evaluateAchievements } from "./achievements";
 import { notify, teachersFor } from "./notifications";
 import { getSettings, type PlatformSettings } from "./settings";
 import { audit } from "./audit";
+import { tr } from "@/lib/i18n/tr";
 
 const GRACE_MS = 15_000;
 
@@ -26,13 +27,13 @@ type QWithOptions = Awaited<ReturnType<typeof questionsWithOptions>>[number];
 const matchToken = (attemptId: string, pairId: string) => keyedHash(`match:${attemptId}:${pairId}`).slice(0, 12);
 
 function requireStudent(actor: Actor) {
-  if (actor.role !== "student") throw forbidden("Quizni faqat o‘quvchilar topshiradi.");
+  if (actor.role !== "student") throw forbidden(tr("Quizni faqat o‘quvchilar topshiradi."));
 }
 
 async function loadAttemptForStudent(studentId: string, attemptId: string, ex: Executor = db) {
   const rows = await ex.select().from(schema.quizAttempts).where(eq(schema.quizAttempts.id, attemptId)).limit(1);
   const att = rows[0];
-  if (!att || att.studentId !== studentId) throw notFound("Urinish topilmadi.");
+  if (!att || att.studentId !== studentId) throw notFound(tr("Urinish topilmadi."));
   return att;
 }
 
@@ -68,9 +69,9 @@ export async function quizOverview(actor: Actor, assignmentId: string) {
   const used = fresh.length;
   let blocker: string | null = null;
   if (!open) {
-    if (!win.open) blocker = "Quiz muddati tugagan.";
-    else if (used >= asg.maxAttempts) blocker = "Urinishlar soni tugagan.";
-    else if ((qs[0]?.n ?? 0) === 0) blocker = "Quizda hali savollar yo‘q.";
+    if (!win.open) blocker = tr("Quiz muddati tugagan.");
+    else if (used >= asg.maxAttempts) blocker = tr("Urinishlar soni tugagan.");
+    else if ((qs[0]?.n ?? 0) === 0) blocker = tr("Quizda hali savollar yo‘q.");
   }
   const grade = (await db.select().from(schema.grades).where(and(eq(schema.grades.assignmentId, assignmentId), eq(schema.grades.studentId, actor.id))))[0] ?? null;
   return {
@@ -95,9 +96,9 @@ function isExpired(a: { expiresAt: Date | null }, now = Date.now()) {
 export async function startAttempt(actor: Actor, assignmentId: string) {
   requireStudent(actor);
   const asg = await assertStudentCanSee(actor.id, assignmentId);
-  if (!isQuizType(asg.type)) throw invalid("Bu quiz emas.");
+  if (!isQuizType(asg.type)) throw invalid(tr("Bu quiz emas."));
   const qs = await questionsWithOptions(assignmentId);
-  if (qs.length === 0) throw new AppError("closed", "Quizda hali savollar yo‘q.");
+  if (qs.length === 0) throw new AppError("closed", tr("Quizda hali savollar yo‘q."));
 
   return db.transaction(async (tx) => {
     // Serialise per student+quiz so two tabs can't open two attempts.
@@ -109,10 +110,10 @@ export async function startAttempt(actor: Actor, assignmentId: string) {
       .orderBy(desc(schema.quizAttempts.attemptNo));
     const open = existing.find((a) => a.status === "in_progress");
     if (open && !isExpired(open)) return { attemptId: open.id, resumed: true };
-    if (open) throw new AppError("conflict", "Oldingi urinish vaqti tugagan. Sahifani yangilang.");
+    if (open) throw new AppError("conflict", tr("Oldingi urinish vaqti tugagan. Sahifani yangilang."));
     const win = submissionWindow(asg);
-    if (!win.open) throw new AppError("closed", "Quiz muddati tugagan.");
-    if (existing.length >= asg.maxAttempts) throw new AppError("closed", "Urinishlar soni tugagan.");
+    if (!win.open) throw new AppError("closed", tr("Quiz muddati tugagan."));
+    if (existing.length >= asg.maxAttempts) throw new AppError("closed", tr("Urinishlar soni tugagan."));
 
     const attemptId = crypto.randomUUID();
     const questionOrder = asg.shuffleQuestions ? seededShuffle(qs.map((q) => q.id), attemptId) : qs.map((q) => q.id);
@@ -236,7 +237,7 @@ const answerSchema = z.union([
 
 function validateAnswerShape(q: QWithOptions, attemptId: string, raw: unknown) {
   const parsed = answerSchema.safeParse(raw);
-  if (!parsed.success) throw invalid("Javob formati noto‘g‘ri.");
+  if (!parsed.success) throw invalid(tr("Javob formati noto‘g‘ri."));
   const a = parsed.data as Record<string, unknown>;
   const optionIds = new Set(q.options.map((o) => o.id));
   const pairs = (q.config as QuestionConfig).pairs ?? [];
@@ -248,21 +249,21 @@ function validateAnswerShape(q: QWithOptions, attemptId: string, raw: unknown) {
     (q.type === "matching" &&
       !!a.matches &&
       Object.entries(a.matches as Record<string, string>).every(([l, r]) => pairs.some((p) => p.id === l) && pairs.some((p) => matchToken(attemptId, p.id) === r)));
-  if (!ok) throw invalid("Javob bu savolga mos emas.");
+  if (!ok) throw invalid(tr("Javob bu savolga mos emas."));
   return parsed.data;
 }
 
 export async function saveAnswer(actor: Actor, attemptId: string, questionId: string, answer: unknown) {
   requireStudent(actor);
   const att = await loadAttemptForStudent(actor.id, attemptId);
-  if (att.status !== "in_progress") throw new AppError("closed", "Urinish yakunlangan.");
+  if (att.status !== "in_progress") throw new AppError("closed", tr("Urinish yakunlangan."));
   if (isExpired(att)) {
     await submitAttempt(actor, attemptId, undefined, { expired: true });
-    throw new AppError("closed", "Vaqt tugadi. Javoblaringiz avtomatik topshirildi.");
+    throw new AppError("closed", tr("Vaqt tugadi. Javoblaringiz avtomatik topshirildi."));
   }
-  if (!att.questionOrder.includes(questionId)) throw notFound("Savol topilmadi.");
+  if (!att.questionOrder.includes(questionId)) throw notFound(tr("Savol topilmadi."));
   const q = (await questionsWithOptions(att.assignmentId)).find((x) => x.id === questionId);
-  if (!q) throw notFound("Savol topilmadi.");
+  if (!q) throw notFound(tr("Savol topilmadi."));
   const value = answer == null ? null : validateAnswerShape(q, attemptId, answer);
   await db
     .insert(schema.quizResponses)
@@ -289,7 +290,7 @@ export async function submitAttempt(actor: Actor, attemptId: string, finalAnswer
   const settings = await getSettings();
   const out = await db.transaction(async (tx) => {
     const locked = (await tx.execute<{ id: string }>(sql`select id from quiz_attempts where id = ${attemptId} and student_id = ${actor.id} for update`))[0];
-    if (!locked) throw notFound("Urinish topilmadi.");
+    if (!locked) throw notFound(tr("Urinish topilmadi."));
     const att = await loadAttemptForStudent(actor.id, attemptId, tx);
     if (att.status !== "in_progress") return { attemptId, already: true, assignmentId: att.assignmentId, needsManual: att.needsManualGrading, percent: null as number | null, firstAttempt: false };
     const [asg] = await tx.select().from(schema.assignments).where(eq(schema.assignments.id, att.assignmentId));
@@ -395,10 +396,10 @@ async function upsertQuizGrade(tx: Tx, asg: Assignment, studentId: string, chang
   const values = { points: best.pts, maxPoints: best.max, percent, scaleLabel: label, status, attemptId: best.a.id, latePenaltyApplied: best.pen, gradedBy: changedBy === studentId ? null : changedBy, gradedAt: new Date(), finalizedAt: status === "final" ? new Date() : null };
   if (!existing) {
     const [g] = await tx.insert(schema.grades).values({ assignmentId: asg.id, studentId, ...values }).returning({ id: schema.grades.id });
-    await tx.insert(schema.gradeHistory).values({ gradeId: g.id, oldPoints: null, newPoints: best.pts, oldStatus: null, newStatus: status, reason: "Avtomatik baholash", changedBy });
+    await tx.insert(schema.gradeHistory).values({ gradeId: g.id, oldPoints: null, newPoints: best.pts, oldStatus: null, newStatus: status, reason: tr("Avtomatik baholash"), changedBy });
   } else if (existing.points !== best.pts || existing.status !== status) {
     await tx.update(schema.grades).set(values).where(eq(schema.grades.id, existing.id));
-    await tx.insert(schema.gradeHistory).values({ gradeId: existing.id, oldPoints: existing.points, newPoints: best.pts, oldStatus: existing.status, newStatus: status, reason: "Avtomatik baholash: yangi urinish", changedBy });
+    await tx.insert(schema.gradeHistory).values({ gradeId: existing.id, oldPoints: existing.points, newPoints: best.pts, oldStatus: existing.status, newStatus: status, reason: tr("Avtomatik baholash: yangi urinish"), changedBy });
   }
 }
 
@@ -421,7 +422,7 @@ export function reviewAllowed(asg: Pick<Assignment, "reviewMode" | "dueAt">, att
 export async function attemptResult(actor: Actor, attemptId: string) {
   requireStudent(actor);
   const att = await loadAttemptForStudent(actor.id, attemptId);
-  if (att.status === "in_progress") throw new AppError("conflict", "Urinish hali yakunlanmagan.");
+  if (att.status === "in_progress") throw new AppError("conflict", tr("Urinish hali yakunlanmagan."));
   const asg = await assertStudentCanSee(actor.id, att.assignmentId);
   const qs = await questionsWithOptions(att.assignmentId);
   const responses = await db.select().from(schema.quizResponses).where(eq(schema.quizResponses.attemptId, attemptId));
@@ -514,7 +515,7 @@ export async function gradeAttemptManually(actor: Actor, attemptId: string, inpu
   const [att] = await db.select().from(schema.quizAttempts).where(eq(schema.quizAttempts.id, attemptId));
   if (!att) throw notFound();
   await assertCanGrade(actor, att.assignmentId, att.studentId);
-  if (att.status === "in_progress") throw new AppError("conflict", "Urinish hali yakunlanmagan.");
+  if (att.status === "in_progress") throw new AppError("conflict", tr("Urinish hali yakunlanmagan."));
   const v = manualInput.parse(input);
   const qs = await questionsWithOptions(att.assignmentId);
   const settings = await getSettings();
@@ -522,8 +523,8 @@ export async function gradeAttemptManually(actor: Actor, attemptId: string, inpu
     await tx.execute(sql`select id from quiz_attempts where id = ${attemptId} for update`);
     for (const [qid, pts] of Object.entries(v.points)) {
       const q = qs.find((x) => x.id === qid);
-      if (!q || !att.questionOrder.includes(qid)) throw invalid("Savol topilmadi.");
-      if (pts > Number(q.points)) throw invalid(`Ball ${q.points} dan oshmasligi kerak.`);
+      if (!q || !att.questionOrder.includes(qid)) throw invalid(tr("Savol topilmadi."));
+      if (pts > Number(q.points)) throw invalid(tr("Ball {0} dan oshmasligi kerak.", q.points));
       await tx
         .insert(schema.quizResponses)
         .values({ attemptId, questionId: qid, pointsAwarded: pts, isCorrect: pts >= Number(q.points), gradedBy: actor.id })

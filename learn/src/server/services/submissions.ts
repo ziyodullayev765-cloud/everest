@@ -12,6 +12,7 @@ import { awardXp } from "./gamification";
 import { evaluateAchievements } from "./achievements";
 import { notify, teachersFor } from "./notifications";
 import { getSettings } from "./settings";
+import { tr } from "@/lib/i18n/tr";
 
 const workInput = z.object({
   content: z.string().max(50_000, "Javob juda uzun (50 000 belgigacha).").default(""),
@@ -27,7 +28,7 @@ function cleanProgress(asg: { type: string; items: HomeworkItem[] }, p: ItemProg
 }
 
 function requireStudent(actor: Actor) {
-  if (actor.role !== "student") throw forbidden("Faqat o‘quvchilar topshira oladi.");
+  if (actor.role !== "student") throw forbidden(tr("Faqat o‘quvchilar topshira oladi."));
 }
 
 /** Whether the student may change their work right now, and why not. */
@@ -38,19 +39,19 @@ export function editability(
   now = new Date(),
 ): { canEdit: boolean; reason?: string; isResubmission: boolean } {
   const win = submissionWindow(asg, now);
-  if (!win.open) return { canEdit: false, reason: "Topshirish muddati tugagan.", isResubmission: false };
+  if (!win.open) return { canEdit: false, reason: tr("Topshirish muddati tugagan."), isResubmission: false };
   if (!sub || sub.status === "draft") return { canEdit: true, isResubmission: false };
   if (sub.status === "returned") return { canEdit: true, isResubmission: true };
-  if (grade?.status === "final") return { canEdit: false, reason: "Ish yakuniy baholangan.", isResubmission: false };
-  if (!asg.allowResubmission) return { canEdit: false, reason: "Bu vazifani qayta topshirib bo‘lmaydi.", isResubmission: false };
-  if (sub.version - 1 >= asg.maxResubmissions) return { canEdit: false, reason: "Qayta topshirish imkoniyati tugagan.", isResubmission: false };
+  if (grade?.status === "final") return { canEdit: false, reason: tr("Ish yakuniy baholangan."), isResubmission: false };
+  if (!asg.allowResubmission) return { canEdit: false, reason: tr("Bu vazifani qayta topshirib bo‘lmaydi."), isResubmission: false };
+  if (sub.version - 1 >= asg.maxResubmissions) return { canEdit: false, reason: tr("Qayta topshirish imkoniyati tugagan."), isResubmission: false };
   return { canEdit: true, isResubmission: true };
 }
 
 export async function saveDraft(actor: Actor, assignmentId: string, input: unknown) {
   requireStudent(actor);
   const asg = await assertStudentCanSee(actor.id, assignmentId);
-  if (!isWorkType(asg.type)) throw invalid("Bu vazifa turi uchun qoralama yo‘q.");
+  if (!isWorkType(asg.type)) throw invalid(tr("Bu vazifa turi uchun qoralama yo‘q."));
   const v = workInput.parse(input);
   const itemProgress = cleanProgress(asg, v.itemProgress);
   await assertOwnFilesOrExisting(actor.id, assignmentId, v.fileIds);
@@ -60,9 +61,9 @@ export async function saveDraft(actor: Actor, assignmentId: string, input: unkno
       select id, status, version from submissions where assignment_id = ${assignmentId} and student_id = ${actor.id} for update`))[0];
     const grade = (await tx.select().from(schema.grades).where(and(eq(schema.grades.assignmentId, assignmentId), eq(schema.grades.studentId, actor.id))))[0] ?? null;
     const ed = editability(asg, existing ?? null, grade);
-    if (!ed.canEdit) throw new AppError("closed", ed.reason ?? "O‘zgartirib bo‘lmaydi.");
+    if (!ed.canEdit) throw new AppError("closed", ed.reason ?? tr("O‘zgartirib bo‘lmaydi."));
     // The submitted version is what teachers grade — it is never overwritten by a draft.
-    if (existing?.status === "submitted" || existing?.status === "graded") throw new AppError("closed", "Ish topshirilgan. O‘zgartirish uchun «Qayta topshirish» tugmasidan foydalaning.");
+    if (existing?.status === "submitted" || existing?.status === "graded") throw new AppError("closed", tr("Ish topshirilgan. O‘zgartirish uchun «Qayta topshirish» tugmasidan foydalaning."));
     let id = existing?.id;
     if (!id) {
       const [row] = await tx.insert(schema.submissions).values({ assignmentId, studentId: actor.id, content: v.content, itemProgress }).returning({ id: schema.submissions.id });
@@ -87,12 +88,12 @@ async function assertOwnFilesOrExisting(studentId: string, assignmentId: string,
 export async function submitWork(actor: Actor, assignmentId: string, input: unknown) {
   requireStudent(actor);
   const asg = await assertStudentCanSee(actor.id, assignmentId);
-  if (!isWorkType(asg.type)) throw invalid("Bu vazifa quiz orqali bajariladi.");
+  if (!isWorkType(asg.type)) throw invalid(tr("Bu vazifa quiz orqali bajariladi."));
   const v = workInput.parse(input);
-  if (asg.type === "file_upload" && v.fileIds.length === 0) throw invalid("Kamida bitta fayl biriktiring.");
-  if (asg.type === "written" && v.content.trim().length === 0 && v.fileIds.length === 0) throw invalid("Javob matnini yozing.");
+  if (asg.type === "file_upload" && v.fileIds.length === 0) throw invalid(tr("Kamida bitta fayl biriktiring."));
+  if (asg.type === "written" && v.content.trim().length === 0 && v.fileIds.length === 0) throw invalid(tr("Javob matnini yozing."));
   const itemProgress = cleanProgress(asg, v.itemProgress);
-  if (asg.type === "homework" && !Object.values(itemProgress).some((p) => p.done)) throw invalid("Kamida bitta topshiriqni bajarilgan deb belgilang.");
+  if (asg.type === "homework" && !Object.values(itemProgress).some((p) => p.done)) throw invalid(tr("Kamida bitta topshiriqni bajarilgan deb belgilang."));
   await assertOwnFilesOrExisting(actor.id, assignmentId, v.fileIds);
   const settings = await getSettings();
 
@@ -107,7 +108,7 @@ export async function submitWork(actor: Actor, assignmentId: string, input: unkn
     }
     const grade = (await tx.select().from(schema.grades).where(and(eq(schema.grades.assignmentId, assignmentId), eq(schema.grades.studentId, actor.id))))[0] ?? null;
     const ed = editability(asg, existing.status === "draft" && existing.version === 0 ? null : existing, grade);
-    if (!ed.canEdit) throw new AppError("closed", ed.reason ?? "Topshirib bo‘lmaydi.");
+    if (!ed.canEdit) throw new AppError("closed", ed.reason ?? tr("Topshirib bo‘lmaydi."));
 
     const now = new Date();
     const late = submissionWindow(asg, now).late;
@@ -144,7 +145,7 @@ export async function submitWork(actor: Actor, assignmentId: string, input: unkn
 export async function markMaterialRead(actor: Actor, assignmentId: string) {
   requireStudent(actor);
   const asg = await assertStudentCanSee(actor.id, assignmentId);
-  if (asg.type !== "material") throw invalid("Bu o‘quv materiali emas.");
+  if (asg.type !== "material") throw invalid(tr("Bu o‘quv materiali emas."));
   const settings = await getSettings();
   await db.transaction(async (tx) => {
     const existing = (await tx.execute<{ id: string; version: number }>(sql`

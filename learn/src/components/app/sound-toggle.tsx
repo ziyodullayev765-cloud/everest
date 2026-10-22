@@ -4,13 +4,14 @@ import { Volume2 } from "lucide-react";
 import { Switch } from "@/components/ui/form";
 import { Card, CardBody, CardHeader } from "@/components/ui/card";
 import { play, setSoundOn, soundOn } from "@/lib/sfx";
+import { tr } from "@/lib/i18n/tr";
 
 export function SoundToggle() {
   const [on, setOn] = useState(true);
   useEffect(() => setOn(soundOn()), []);
   return (
     <Card>
-      <CardHeader title="Ovoz" icon={<Volume2 />} />
+      <CardHeader title={tr("Ovoz")} icon={<Volume2 />} />
       <CardBody className="pt-3">
         <Switch
           checked={on}
@@ -19,8 +20,8 @@ export function SoundToggle() {
             setOn(v);
             if (v) play("correct");
           }}
-          label="Ovoz effektlari"
-          description="To‘g‘ri / noto‘g‘ri javob, o‘yin va yakunlash ovozlari. Shu qurilmada saqlanadi."
+          label={tr("Ovoz effektlari")}
+          description={tr("To‘g‘ri / noto‘g‘ri javob, o‘yin va yakunlash ovozlari. Shu qurilmada saqlanadi.")}
         />
       </CardBody>
     </Card>

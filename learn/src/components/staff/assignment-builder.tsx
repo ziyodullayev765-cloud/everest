@@ -12,18 +12,19 @@ import { Uploader, type UploadedFile } from "@/components/app/uploader";
 import { cn } from "@/lib/utils";
 import { t } from "@/lib/i18n";
 import { GRAMMAR_TOPICS, LEVELS } from "@/lib/course";
+import { tr } from "@/lib/i18n/tr";
 
 const QUIZ = ["multiple_choice", "short_answer", "true_false", "timed_quiz", "practice"];
 const TYPES = [
-  { k: "homework", icon: ListTodo, d: "Bir nechta topshiriq" },
-  { k: "written", icon: FileText, d: "Matnli javob" },
-  { k: "file_upload", icon: FileUp, d: "Fayl topshirish" },
-  { k: "multiple_choice", icon: ListChecks, d: "Variantli test" },
-  { k: "short_answer", icon: ListChecks, d: "Qisqa javoblar" },
-  { k: "true_false", icon: CheckSquare, d: "Ha / yo‘q savollar" },
-  { k: "timed_quiz", icon: Timer, d: "Vaqt chegarali" },
-  { k: "practice", icon: Dumbbell, d: "Baholanmaydi" },
-  { k: "material", icon: BookOpen, d: "O‘qish uchun" },
+  { k: "homework", icon: ListTodo, get d() { return tr("Bir nechta topshiriq"); } },
+  { k: "written", icon: FileText, get d() { return tr("Matnli javob"); } },
+  { k: "file_upload", icon: FileUp, get d() { return tr("Fayl topshirish"); } },
+  { k: "multiple_choice", icon: ListChecks, get d() { return tr("Variantli test"); } },
+  { k: "short_answer", icon: ListChecks, get d() { return tr("Qisqa javoblar"); } },
+  { k: "true_false", icon: CheckSquare, get d() { return tr("Ha / yo‘q savollar"); } },
+  { k: "timed_quiz", icon: Timer, get d() { return tr("Vaqt chegarali"); } },
+  { k: "practice", icon: Dumbbell, get d() { return tr("Baholanmaydi"); } },
+  { k: "material", icon: BookOpen, get d() { return tr("O‘qish uchun"); } },
 ] as const;
 
 export type BuilderValue = {
@@ -69,11 +70,11 @@ const KINDS: HomeworkKind[] = ["reading", "vocabulary", "listening", "translatio
 const newId = () => Math.random().toString(36).slice(2, 10);
 /** The centre's usual homework, as a one-click starting point. */
 const TEMPLATE: Omit<BuilderValue["items"][number], "id">[] = [
-  { kind: "reading", title: "Barron's Reading", range: "Passage 1-2" },
-  { kind: "vocabulary", title: "B2 unit — so‘zlarni yodlash", range: "" },
-  { kind: "listening", title: "Basic Listening", range: "18-betgacha" },
-  { kind: "translation", title: "Text translation", range: "" },
-  { kind: "tapescript", title: "BBC tapescript yozish", range: "" },
+  { kind: "reading", get title() { return tr("Barron's Reading"); }, get range() { return tr("Passage 1-2"); } },
+  { kind: "vocabulary", get title() { return tr("B2 unit — so‘zlarni yodlash"); }, range: "" },
+  { kind: "listening", get title() { return tr("Basic Listening"); }, range: "18-betgacha" },
+  { kind: "translation", get title() { return tr("Text translation"); }, range: "" },
+  { kind: "tapescript", get title() { return tr("BBC tapescript yozish"); }, range: "" },
 ];
 
 type Props = {
@@ -134,8 +135,8 @@ export function AssignmentBuilder(p: Props) {
         window.scrollTo({ top: 0, behavior: "smooth" });
         return;
       }
-      if (r.data.keptDraft) toast.info("Saqlandi. Quizni e’lon qilish uchun avval savollar qo‘shing.");
-      else toast.success(mode === "draft" && !live ? "Qoralama saqlandi" : mode === "schedule" ? "Rejalashtirildi" : "Saqlandi va e’lon qilindi");
+      if (r.data.keptDraft) toast.info(tr("Saqlandi. Quizni e’lon qilish uchun avval savollar qo‘shing."));
+      else toast.success(mode === "draft" && !live ? tr("Qoralama saqlandi") : mode === "schedule" ? tr("Rejalashtirildi") : tr("Saqlandi va e’lon qilindi"));
       if (!p.id || isQuiz) router.push(`${p.base}/assignments/${r.data.id}${isQuiz ? "?tab=questions" : ""}`);
       else router.refresh();
     });
@@ -143,16 +144,16 @@ export function AssignmentBuilder(p: Props) {
   return (
     <div className="space-y-5">
       {formError ? <Alert tone="danger">{formError}</Alert> : null}
-      {live ? <Alert tone="info">Bu vazifa e’lon qilingan. O‘zgarishlar darhol o‘quvchilarga ko‘rinadi.</Alert> : null}
+      {live ? <Alert tone="info">{tr("Bu vazifa e’lon qilingan. O‘zgarishlar darhol o‘quvchilarga ko‘rinadi.")}</Alert> : null}
 
       <Card>
-        <CardHeader title="Asosiy ma’lumot" icon={<FileText />} />
+        <CardHeader title={tr("Asosiy ma’lumot")} icon={<FileText />} />
         <CardBody className="space-y-5">
-          <Field label="Sarlavha" htmlFor="title" required error={errors.title}>
-            <Input id="title" value={v.title} onChange={(e) => set("title", e.target.value)} maxLength={200} placeholder="Masalan: Present Perfect — mashqlar" />
+          <Field label={tr("Sarlavha")} htmlFor="title" required error={errors.title}>
+            <Input id="title" value={v.title} onChange={(e) => set("title", e.target.value)} maxLength={200} placeholder={tr("Masalan: Present Perfect — mashqlar")} />
           </Field>
           <div>
-            <div className="mb-2 text-[13px] font-semibold text-text-2">Turi</div>
+            <div className="mb-2 text-[13px] font-semibold text-text-2">{tr("Turi")}</div>
             <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
               {TYPES.map(({ k, icon: Icon, d }) => (
                 <button
@@ -169,12 +170,12 @@ export function AssignmentBuilder(p: Props) {
                 </button>
               ))}
             </div>
-            {p.hasWork ? <p className="mt-2 text-[12px] text-muted">O‘quvchilar ishlay boshlagani uchun turini o‘zgartirib bo‘lmaydi.</p> : null}
+            {p.hasWork ? <p className="mt-2 text-[12px] text-muted">{tr("O‘quvchilar ishlay boshlagani uchun turini o‘zgartirib bo‘lmaydi.")}</p> : null}
           </div>
           <div className="grid gap-4 sm:grid-cols-3">
-            <Field label="Kategoriya" htmlFor="subject" required error={errors.subjectId}>
+            <Field label={tr("Kategoriya")} htmlFor="subject" required error={errors.subjectId}>
               <Select id="subject" value={v.subjectId} onChange={(e) => set("subjectId", e.target.value)}>
-                <option value="">Tanlang…</option>
+                <option value="">{tr("Tanlang…")}</option>
                 {p.subjects.map((s) => (
                   <option key={s.id} value={s.id}>
                     {s.name}
@@ -182,19 +183,19 @@ export function AssignmentBuilder(p: Props) {
                 ))}
               </Select>
             </Field>
-            <Field label="Daraja" htmlFor="level" error={errors.level}>
+            <Field label={tr("Daraja")} htmlFor="level" error={errors.level}>
               <Input id="level" value={v.level} onChange={(e) => set("level", e.target.value)} list="asg-levels" placeholder="B1" maxLength={40} />
             </Field>
-            <Field label="Mavzu" htmlFor="topic" hint={code === "GRAMMAR" ? "Grammatika bo‘limida shu mavzu ostida chiqadi" : undefined} error={errors.topic}>
-              <Input id="topic" value={v.topic} onChange={(e) => set("topic", e.target.value)} list="asg-topics" placeholder="Present Perfect" maxLength={120} />
+            <Field label={tr("Mavzu")} htmlFor="topic" hint={code === "GRAMMAR" ? tr("Grammatika bo‘limida shu mavzu ostida chiqadi") : undefined} error={errors.topic}>
+              <Input id="topic" value={v.topic} onChange={(e) => set("topic", e.target.value)} list="asg-topics" placeholder={tr("Present Perfect")} maxLength={120} />
             </Field>
             <datalist id="asg-levels">{LEVELS.map((l) => <option key={l} value={l} />)}</datalist>
             <datalist id="asg-topics">{GRAMMAR_TOPICS.map((l) => <option key={l} value={l} />)}</datalist>
           </div>
-          <Field label="Qisqa tavsif" htmlFor="desc" error={errors.description}>
+          <Field label={tr("Qisqa tavsif")} htmlFor="desc" error={errors.description}>
             <Textarea id="desc" value={v.description} onChange={(e) => set("description", e.target.value)} rows={3} maxLength={5000} />
           </Field>
-          <Field label="Ko‘rsatmalar" htmlFor="instr" hint="Havolalar avtomatik bosiladigan bo‘ladi. Grammatika uchun qoida va misollarni shu yerga yozing." error={errors.instructions}>
+          <Field label={tr("Ko‘rsatmalar")} htmlFor="instr" hint={tr("Havolalar avtomatik bosiladigan bo‘ladi. Grammatika uchun qoida va misollarni shu yerga yozing.")} error={errors.instructions}>
             <Textarea id="instr" value={v.instructions} onChange={(e) => set("instructions", e.target.value)} rows={7} maxLength={20000} />
           </Field>
         </CardBody>
@@ -203,12 +204,12 @@ export function AssignmentBuilder(p: Props) {
       {v.type === "homework" ? (
         <Card>
           <CardHeader
-            title="Topshiriqlar"
+            title={tr("Topshiriqlar")}
             icon={<ListTodo />}
-            description="O‘quvchi har birini alohida belgilaydi. Tarjima va tapescript uchun matn yozadi."
+            description={tr("O‘quvchi har birini alohida belgilaydi. Tarjima va tapescript uchun matn yozadi.")}
             action={
               <Button variant="secondary" size="sm" onClick={() => set("items", [...v.items, ...TEMPLATE.map((x) => ({ ...x, id: newId() }))])}>
-                <Wand2 /> Namuna
+                <Wand2 /> {tr("Namuna")}
               </Button>
             }
           />
@@ -220,7 +221,7 @@ export function AssignmentBuilder(p: Props) {
                 <div key={it.id} className="space-y-2 rounded-xl border border-border p-3">
                   <div className="flex items-center gap-2">
                     <span className="grid size-7 shrink-0 place-items-center rounded-lg bg-surface-2 text-[12.5px] font-bold tabular">{i + 1}</span>
-                    <Select value={it.kind} onChange={(e) => upd({ kind: e.target.value as HomeworkKind })} aria-label="Turi" className="h-9">
+                    <Select value={it.kind} onChange={(e) => upd({ kind: e.target.value as HomeworkKind })} aria-label={tr("Turi")} className="h-9">
                       {KINDS.map((k) => (
                         <option key={k} value={k}>
                           {t.homeworkKind[k]}
@@ -228,25 +229,25 @@ export function AssignmentBuilder(p: Props) {
                       ))}
                     </Select>
                     <div className="ml-auto flex shrink-0">
-                      <Button variant="ghost" size="icon" className="size-8" disabled={i === 0} onClick={() => { const n = [...v.items]; [n[i - 1], n[i]] = [n[i], n[i - 1]]; set("items", n); }} aria-label="Yuqoriga"><ArrowUp /></Button>
-                      <Button variant="ghost" size="icon" className="size-8" disabled={i === v.items.length - 1} onClick={() => { const n = [...v.items]; [n[i + 1], n[i]] = [n[i], n[i + 1]]; set("items", n); }} aria-label="Pastga"><ArrowDown /></Button>
-                      <Button variant="ghost" size="icon" className="size-8 hover:text-danger" onClick={() => set("items", v.items.filter((_, j) => j !== i))} aria-label="O‘chirish"><Trash2 /></Button>
+                      <Button variant="ghost" size="icon" className="size-8" disabled={i === 0} onClick={() => { const n = [...v.items]; [n[i - 1], n[i]] = [n[i], n[i - 1]]; set("items", n); }} aria-label={tr("Yuqoriga")}><ArrowUp /></Button>
+                      <Button variant="ghost" size="icon" className="size-8" disabled={i === v.items.length - 1} onClick={() => { const n = [...v.items]; [n[i + 1], n[i]] = [n[i], n[i + 1]]; set("items", n); }} aria-label={tr("Pastga")}><ArrowDown /></Button>
+                      <Button variant="ghost" size="icon" className="size-8 hover:text-danger" onClick={() => set("items", v.items.filter((_, j) => j !== i))} aria-label={tr("O‘chirish")}><Trash2 /></Button>
                     </div>
                   </div>
                   <div className="grid gap-2 sm:grid-cols-[1.4fr_1fr]">
-                    <Input value={it.title} onChange={(e) => upd({ title: e.target.value })} placeholder="Masalan: Barron's Reading" aria-label="Topshiriq nomi" maxLength={200} />
-                    <Input value={it.range ?? ""} onChange={(e) => upd({ range: e.target.value })} placeholder="Passage 1-2 / 18-betgacha" aria-label="Oraliq" maxLength={120} />
+                    <Input value={it.title} onChange={(e) => upd({ title: e.target.value })} placeholder={tr("Masalan: Barron's Reading")} aria-label={tr("Topshiriq nomi")} maxLength={200} />
+                    <Input value={it.range ?? ""} onChange={(e) => upd({ range: e.target.value })} placeholder={tr("Passage 1-2 / 18-betgacha")} aria-label={tr("Oraliq")} maxLength={120} />
                   </div>
                   <div className="grid gap-2 sm:grid-cols-[1fr_1.4fr]">
-                    <Select value={it.bookId ?? ""} onChange={(e) => { const b = p.books.find((x) => x.id === e.target.value); upd({ bookId: e.target.value || null, ...(b && !it.title.trim() ? { title: b.title } : {}) }); }} aria-label="Kitob">
-                      <option value="">Kitob biriktirilmagan</option>
+                    <Select value={it.bookId ?? ""} onChange={(e) => { const b = p.books.find((x) => x.id === e.target.value); upd({ bookId: e.target.value || null, ...(b && !it.title.trim() ? { title: b.title } : {}) }); }} aria-label={tr("Kitob")}>
+                      <option value="">{tr("Kitob biriktirilmagan")}</option>
                       {p.books.map((b) => (
                         <option key={b.id} value={b.id}>
                           {b.title}
                         </option>
                       ))}
                     </Select>
-                    <Input value={it.note ?? ""} onChange={(e) => upd({ note: e.target.value })} placeholder="Izoh (ixtiyoriy)" aria-label="Izoh" maxLength={2000} />
+                    <Input value={it.note ?? ""} onChange={(e) => upd({ note: e.target.value })} placeholder={tr("Izoh (ixtiyoriy)")} aria-label={tr("Izoh")} maxLength={2000} />
                   </div>
                 </div>
               );
@@ -258,17 +259,17 @@ export function AssignmentBuilder(p: Props) {
                 </Button>
               ))}
             </div>
-            {!p.books.length ? <p className="text-[12.5px] text-muted">Kitob biriktirish uchun avval Admin → Kutubxona bo‘limiga kitob qo‘shing.</p> : null}
+            {!p.books.length ? <p className="text-[12.5px] text-muted">{tr("Kitob biriktirish uchun avval Admin → Kutubxona bo‘limiga kitob qo‘shing.")}</p> : null}
           </CardBody>
         </Card>
       ) : null}
 
       {reading ? (
         <Card>
-          <CardHeader title="Reading matni" icon={<BookOpen />} description="O‘quvchi savollardan oldin shu matnni o‘qiydi." />
+          <CardHeader title={tr("Reading matni")} icon={<BookOpen />} description={tr("O‘quvchi savollardan oldin shu matnni o‘qiydi.")} />
           <CardBody>
-            <Field label="Matn" htmlFor="passage" error={errors.passage}>
-              <Textarea id="passage" value={v.passage} onChange={(e) => set("passage", e.target.value)} rows={10} maxLength={20000} placeholder="English text…" spellCheck={false} />
+            <Field label={tr("Matn")} htmlFor="passage" error={errors.passage}>
+              <Textarea id="passage" value={v.passage} onChange={(e) => set("passage", e.target.value)} rows={10} maxLength={20000} placeholder={tr("English text…")} spellCheck={false} />
             </Field>
           </CardBody>
         </Card>
@@ -276,22 +277,22 @@ export function AssignmentBuilder(p: Props) {
 
       {listening ? (
         <Card>
-          <CardHeader title="Listening" icon={<Headphones />} description="Audio, tinglash soni va transkript." />
+          <CardHeader title={tr("Listening")} icon={<Headphones />} description={tr("Audio, tinglash soni va transkript.")} />
           <CardBody className="space-y-4">
-            <Uploader files={audio} onChange={setAudio} max={1} accept="audio/mpeg,audio/mp4,audio/x-m4a,audio/wav,audio/ogg,audio/webm,audio/aac" label="Audio fayl" />
+            <Uploader files={audio} onChange={setAudio} max={1} accept="audio/mpeg,audio/mp4,audio/x-m4a,audio/wav,audio/ogg,audio/webm,audio/aac" label={tr("Audio fayl")} />
             <div className="grid gap-4 sm:grid-cols-2">
-              <Field label="Tinglash chegarasi" htmlFor="replay" hint="Bo‘sh — cheksiz. Brauzerda hisoblanadi.">
+              <Field label={tr("Tinglash chegarasi")} htmlFor="replay" hint={tr("Bo‘sh — cheksiz. Brauzerda hisoblanadi.")}>
                 <Input id="replay" type="number" min={1} max={20} value={v.replayLimit} onChange={(e) => set("replayLimit", e.target.value === "" ? "" : Number(e.target.value))} />
               </Field>
-              <Field label="Transkript ko‘rinishi" htmlFor="tmode">
+              <Field label={tr("Transkript ko‘rinishi")} htmlFor="tmode">
                 <Select id="tmode" value={v.transcriptMode} onChange={(e) => set("transcriptMode", e.target.value as BuilderValue["transcriptMode"])}>
-                  <option value="after_submit">Topshirgandan keyin</option>
-                  <option value="always">Doim ko‘rinadi</option>
-                  <option value="never">Ko‘rsatilmaydi</option>
+                  <option value="after_submit">{tr("Topshirgandan keyin")}</option>
+                  <option value="always">{tr("Doim ko‘rinadi")}</option>
+                  <option value="never">{tr("Ko‘rsatilmaydi")}</option>
                 </Select>
               </Field>
             </div>
-            <Field label="Transkript" htmlFor="transcript">
+            <Field label={tr("Transkript")} htmlFor="transcript">
               <Textarea id="transcript" value={v.transcript} onChange={(e) => set("transcript", e.target.value)} rows={6} maxLength={20000} spellCheck={false} />
             </Field>
           </CardBody>
@@ -300,35 +301,35 @@ export function AssignmentBuilder(p: Props) {
 
       {!reading || !listening ? (
         <div className="flex flex-wrap gap-2">
-          {!reading ? <Button variant="secondary" size="sm" onClick={() => setShowReading(true)}><Plus /> Reading matni</Button> : null}
-          {!listening ? <Button variant="secondary" size="sm" onClick={() => setShowListening(true)}><Plus /> Listening audio</Button> : null}
+          {!reading ? <Button variant="secondary" size="sm" onClick={() => setShowReading(true)}><Plus /> {tr("Reading matni")}</Button> : null}
+          {!listening ? <Button variant="secondary" size="sm" onClick={() => setShowListening(true)}><Plus /> {tr("Listening audio")}</Button> : null}
         </div>
       ) : null}
 
       <Card>
-        <CardHeader title="Materiallar" icon={<Link2 />} description="Doska rasmi, audio yozuvlar, fayllar. Faqat shu vazifani ko‘ra oladiganlarga ochiladi." />
+        <CardHeader title={tr("Materiallar")} icon={<Link2 />} description={tr("Doska rasmi, audio yozuvlar, fayllar. Faqat shu vazifani ko‘ra oladiganlarga ochiladi.")} />
         <CardBody className="space-y-4">
-          <Uploader files={files} onChange={setFiles} max={30} label="Doska rasmi, audio yoki fayl biriktirish" />
+          <Uploader files={files} onChange={setFiles} max={30} label={tr("Doska rasmi, audio yoki fayl biriktirish")} />
           <div className="space-y-2">
             {v.links.map((l, i) => (
               <div key={i} className="grid gap-2 sm:grid-cols-[1fr_1.4fr_auto]">
-                <Input value={l.title} onChange={(e) => set("links", v.links.map((x, j) => (j === i ? { ...x, title: e.target.value } : x)))} placeholder="Havola nomi" aria-label="Havola nomi" />
+                <Input value={l.title} onChange={(e) => set("links", v.links.map((x, j) => (j === i ? { ...x, title: e.target.value } : x)))} placeholder={tr("Havola nomi")} aria-label={tr("Havola nomi")} />
                 <Input value={l.url} onChange={(e) => set("links", v.links.map((x, j) => (j === i ? { ...x, url: e.target.value } : x)))} placeholder="https://…" inputMode="url" aria-label="URL" />
-                <Button variant="ghost" size="icon" onClick={() => set("links", v.links.filter((_, j) => j !== i))} aria-label="Havolani o‘chirish">
+                <Button variant="ghost" size="icon" onClick={() => set("links", v.links.filter((_, j) => j !== i))} aria-label={tr("Havolani o‘chirish")}>
                   <Trash2 />
                 </Button>
               </div>
             ))}
             {errors["links.0.url"] || errors["links"] ? <p className="text-[12.5px] text-danger">{errors["links.0.url"] ?? errors.links}</p> : null}
             <Button variant="secondary" size="sm" onClick={() => set("links", [...v.links, { title: "", url: "" }])}>
-              <Plus /> Havola qo‘shish
+              <Plus /> {tr("Havola qo‘shish")}
             </Button>
           </div>
         </CardBody>
       </Card>
 
       <Card>
-        <CardHeader title="Kimlar uchun" icon={<Users />} description="Guruhlar va/yoki alohida o‘quvchilar" />
+        <CardHeader title={tr("Kimlar uchun")} icon={<Users />} description={tr("Guruhlar va/yoki alohida o‘quvchilar")} />
         <CardBody className="space-y-4">
           {errors.classIds ? <p className="text-[12.5px] text-danger">{errors.classIds}</p> : null}
           <div className="grid gap-2 sm:grid-cols-3">
@@ -338,17 +339,17 @@ export function AssignmentBuilder(p: Props) {
                   <input type="checkbox" className="size-4 accent-[var(--primary)]" checked={v.classIds.includes(c.id)} onChange={(e) => set("classIds", e.target.checked ? [...v.classIds, c.id] : v.classIds.filter((x) => x !== c.id))} />
                   <span className="font-semibold">{c.name}</span>
                 </span>
-                <span className="text-[12px] text-muted">{c.students} o‘q.</span>
+                <span className="text-[12px] text-muted">{tr("{0} o‘q.", c.students)}</span>
               </label>
             ))}
-            {!p.classes.length ? <p className="text-[13px] text-muted">Sizga biriktirilgan guruh yo‘q.</p> : null}
+            {!p.classes.length ? <p className="text-[13px] text-muted">{tr("Sizga biriktirilgan guruh yo‘q.")}</p> : null}
           </div>
           <details className="rounded-xl border border-border px-4 py-3" open={v.studentIds.length > 0}>
-            <summary className="cursor-pointer text-[13.5px] font-semibold">Alohida o‘quvchilar ({v.studentIds.length})</summary>
+            <summary className="cursor-pointer text-[13.5px] font-semibold">{tr("Alohida o‘quvchilar ({0})", v.studentIds.length)}</summary>
             <div className="mt-3 space-y-2">
               <div className="relative">
                 <Search className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted" aria-hidden />
-                <Input value={studentQ} onChange={(e) => setStudentQ(e.target.value)} placeholder="Ism yoki guruh bo‘yicha qidirish" className="pl-9" />
+                <Input value={studentQ} onChange={(e) => setStudentQ(e.target.value)} placeholder={tr("Ism yoki guruh bo‘yicha qidirish")} className="pl-9" />
               </div>
               <div className="max-h-56 space-y-1 overflow-y-auto">
                 {filteredStudents.map((s) => (
@@ -361,40 +362,40 @@ export function AssignmentBuilder(p: Props) {
       </Card>
 
       <Card>
-        <CardHeader title="Muddat va qoidalar" icon={<CalendarClock />} description="Vaqtlar Toshkent vaqti bo‘yicha" />
+        <CardHeader title={tr("Muddat va qoidalar")} icon={<CalendarClock />} description={tr("Vaqtlar Toshkent vaqti bo‘yicha")} />
         <CardBody className="space-y-5">
           <div className="grid gap-4 sm:grid-cols-2">
-            <Field label="Topshirish muddati" htmlFor="due" hint="Bo‘sh qoldirsangiz — muddatsiz" error={errors.dueAt}>
+            <Field label={tr("Topshirish muddati")} htmlFor="due" hint={tr("Bo‘sh qoldirsangiz — muddatsiz")} error={errors.dueAt}>
               <Input id="due" type="datetime-local" value={v.dueAt} onChange={(e) => set("dueAt", e.target.value)} />
             </Field>
             {!isQuiz && v.type !== "material" ? (
-              <Field label="Maksimal ball" htmlFor="max" error={errors.maxScore}>
+              <Field label={tr("Maksimal ball")} htmlFor="max" error={errors.maxScore}>
                 <Input id="max" type="number" min={1} max={1000} step="0.5" value={v.maxScore} onChange={(e) => set("maxScore", Number(e.target.value))} />
               </Field>
             ) : isQuiz ? (
-              <Field label="Maksimal ball" hint="Savollar ballari yig‘indisidan avtomatik hisoblanadi">
+              <Field label={tr("Maksimal ball")} hint={tr("Savollar ballari yig‘indisidan avtomatik hisoblanadi")}>
                 <Input value={`${v.maxScore}`} disabled />
               </Field>
             ) : null}
           </div>
           {v.type !== "material" ? (
             <div className="space-y-3 rounded-xl bg-surface-2/60 p-4">
-              <Switch checked={v.allowLate} onChange={(x) => set("allowLate", x)} label="Kechikib topshirishga ruxsat" description="Muddatdan keyin ham qabul qilinadi va “kechikkan” deb belgilanadi" />
+              <Switch checked={v.allowLate} onChange={(x) => set("allowLate", x)} label={tr("Kechikib topshirishga ruxsat")} description={tr("Muddatdan keyin ham qabul qilinadi va “kechikkan” deb belgilanadi")} />
               {v.allowLate ? (
                 <div className="grid gap-4 sm:grid-cols-2">
-                  <Field label="Kechikish jarimasi, %" htmlFor="pen" hint="Maksimal balldan ayiriladi">
+                  <Field label={tr("Kechikish jarimasi, %")} htmlFor="pen" hint={tr("Maksimal balldan ayiriladi")}>
                     <Input id="pen" type="number" min={0} max={100} value={v.latePenaltyPercent} onChange={(e) => set("latePenaltyPercent", Number(e.target.value))} />
                   </Field>
-                  <Field label="Oxirgi chegara (ixtiyoriy)" htmlFor="cut" error={errors.lateCutoffAt}>
+                  <Field label={tr("Oxirgi chegara (ixtiyoriy)")} htmlFor="cut" error={errors.lateCutoffAt}>
                     <Input id="cut" type="datetime-local" value={v.lateCutoffAt} onChange={(e) => set("lateCutoffAt", e.target.value)} />
                   </Field>
                 </div>
               ) : null}
               {isWork ? (
                 <>
-                  <Switch checked={v.allowResubmission} onChange={(x) => set("allowResubmission", x)} label="Qayta topshirishga ruxsat" description="Yakuniy baho qo‘yilgunga qadar" />
+                  <Switch checked={v.allowResubmission} onChange={(x) => set("allowResubmission", x)} label={tr("Qayta topshirishga ruxsat")} description={tr("Yakuniy baho qo‘yilgunga qadar")} />
                   {v.allowResubmission ? (
-                    <Field label="Necha marta qayta topshirish mumkin" htmlFor="resub" className="max-w-xs">
+                    <Field label={tr("Necha marta qayta topshirish mumkin")} htmlFor="resub" className="max-w-xs">
                       <Input id="resub" type="number" min={1} max={10} value={v.maxResubmissions || 1} onChange={(e) => set("maxResubmissions", Number(e.target.value))} />
                     </Field>
                   ) : null}
@@ -407,60 +408,60 @@ export function AssignmentBuilder(p: Props) {
 
       {isQuiz ? (
         <Card>
-          <CardHeader title="Quiz sozlamalari" icon={<Settings2 />} />
+          <CardHeader title={tr("Quiz sozlamalari")} icon={<Settings2 />} />
           <CardBody className="space-y-5">
             <div className="grid gap-4 sm:grid-cols-3">
-              <Field label="Vaqt chegarasi, daqiqa" htmlFor="tl" hint={v.type === "timed_quiz" ? "Majburiy" : "Bo‘sh — cheklanmagan"}>
+              <Field label={tr("Vaqt chegarasi, daqiqa")} htmlFor="tl" hint={v.type === "timed_quiz" ? tr("Majburiy") : tr("Bo‘sh — cheklanmagan")}>
                 <Input id="tl" type="number" min={1} max={600} value={v.timeLimitMinutes} onChange={(e) => set("timeLimitMinutes", e.target.value === "" ? "" : Number(e.target.value))} />
               </Field>
-              <Field label="Urinishlar soni" htmlFor="att">
+              <Field label={tr("Urinishlar soni")} htmlFor="att">
                 <Input id="att" type="number" min={1} max={20} value={v.maxAttempts} onChange={(e) => set("maxAttempts", Number(e.target.value))} />
               </Field>
-              <Field label="O‘tish bali, %" htmlFor="pass">
+              <Field label={tr("O‘tish bali, %")} htmlFor="pass">
                 <Input id="pass" type="number" min={0} max={100} value={v.passingPercent} onChange={(e) => set("passingPercent", Number(e.target.value))} />
               </Field>
             </div>
             <div className="grid gap-x-8 gap-y-2 sm:grid-cols-2">
-              <Switch checked={v.shuffleQuestions} onChange={(x) => set("shuffleQuestions", x)} label="Savollarni aralashtirish" />
-              <Switch checked={v.shuffleOptions} onChange={(x) => set("shuffleOptions", x)} label="Variantlarni aralashtirish" />
-              <Switch checked={v.allowBackNavigation} onChange={(x) => set("allowBackNavigation", x)} label="Oldingi savolga qaytish" />
-              <Switch checked={v.showOverview} onChange={(x) => set("showOverview", x)} label="Savollar ro‘yxatini ko‘rsatish" />
+              <Switch checked={v.shuffleQuestions} onChange={(x) => set("shuffleQuestions", x)} label={tr("Savollarni aralashtirish")} />
+              <Switch checked={v.shuffleOptions} onChange={(x) => set("shuffleOptions", x)} label={tr("Variantlarni aralashtirish")} />
+              <Switch checked={v.allowBackNavigation} onChange={(x) => set("allowBackNavigation", x)} label={tr("Oldingi savolga qaytish")} />
+              <Switch checked={v.showOverview} onChange={(x) => set("showOverview", x)} label={tr("Savollar ro‘yxatini ko‘rsatish")} />
             </div>
             <div className="grid gap-4 sm:grid-cols-2">
-              <Field label="Natijalarni ko‘rish" htmlFor="rev">
+              <Field label={tr("Natijalarni ko‘rish")} htmlFor="rev">
                 <Select id="rev" value={v.reviewMode} onChange={(e) => set("reviewMode", e.target.value as BuilderValue["reviewMode"])}>
-                  <option value="after_submit">Topshirgandan so‘ng</option>
-                  <option value="after_due">Muddat tugagandan so‘ng</option>
-                  <option value="after_grading">To‘liq baholangandan so‘ng</option>
-                  <option value="never">Ko‘rsatmaslik</option>
+                  <option value="after_submit">{tr("Topshirgandan so‘ng")}</option>
+                  <option value="after_due">{tr("Muddat tugagandan so‘ng")}</option>
+                  <option value="after_grading">{tr("To‘liq baholangandan so‘ng")}</option>
+                  <option value="never">{tr("Ko‘rsatmaslik")}</option>
                 </Select>
               </Field>
               <div className="pt-6">
-                <Switch checked={v.showCorrectAnswers} onChange={(x) => set("showCorrectAnswers", x)} label="To‘g‘ri javoblarni ko‘rsatish" disabled={v.reviewMode === "never"} />
+                <Switch checked={v.showCorrectAnswers} onChange={(x) => set("showCorrectAnswers", x)} label={tr("To‘g‘ri javoblarni ko‘rsatish")} disabled={v.reviewMode === "never"} />
               </div>
             </div>
-            {v.type === "practice" ? <Alert tone="info">Mashqlar rasmiy baho yaratmaydi. Urinishlar soni kamida 5 ta bo‘ladi.</Alert> : null}
+            {v.type === "practice" ? <Alert tone="info">{tr("Mashqlar rasmiy baho yaratmaydi. Urinishlar soni kamida 5 ta bo‘ladi.")}</Alert> : null}
           </CardBody>
         </Card>
       ) : null}
 
       {isWork ? (
         <Card>
-          <CardHeader title="Baholash mezonlari (ixtiyoriy)" icon={<Scale />} description={v.rubric.length ? `Yig‘indi: ${rubricSum} / ${v.maxScore} ball` : "Rubrika qo‘shsangiz, baho mezonlar yig‘indisidan hisoblanadi"} />
+          <CardHeader title={tr("Baholash mezonlari (ixtiyoriy)")} icon={<Scale />} description={v.rubric.length ? tr("Yig‘indi: {0} / {1} ball", rubricSum, v.maxScore) : tr("Rubrika qo‘shsangiz, baho mezonlar yig‘indisidan hisoblanadi")} />
           <CardBody className="space-y-2">
             {v.rubric.map((c, i) => (
               <div key={c.id} className="grid gap-2 sm:grid-cols-[1.2fr_1.5fr_110px_auto]">
-                <Input value={c.title} onChange={(e) => set("rubric", v.rubric.map((x, j) => (j === i ? { ...x, title: e.target.value } : x)))} placeholder="Mezon" aria-label="Mezon nomi" />
-                <Input value={c.description ?? ""} onChange={(e) => set("rubric", v.rubric.map((x, j) => (j === i ? { ...x, description: e.target.value } : x)))} placeholder="Tavsif (ixtiyoriy)" aria-label="Tavsif" />
-                <Input type="number" min={0.5} step="0.5" value={c.maxPoints} onChange={(e) => set("rubric", v.rubric.map((x, j) => (j === i ? { ...x, maxPoints: Number(e.target.value) } : x)))} aria-label="Ball" />
-                <Button variant="ghost" size="icon" onClick={() => set("rubric", v.rubric.filter((_, j) => j !== i))} aria-label="Mezonni o‘chirish">
+                <Input value={c.title} onChange={(e) => set("rubric", v.rubric.map((x, j) => (j === i ? { ...x, title: e.target.value } : x)))} placeholder={tr("Mezon")} aria-label={tr("Mezon nomi")} />
+                <Input value={c.description ?? ""} onChange={(e) => set("rubric", v.rubric.map((x, j) => (j === i ? { ...x, description: e.target.value } : x)))} placeholder={tr("Tavsif (ixtiyoriy)")} aria-label={tr("Tavsif")} />
+                <Input type="number" min={0.5} step="0.5" value={c.maxPoints} onChange={(e) => set("rubric", v.rubric.map((x, j) => (j === i ? { ...x, maxPoints: Number(e.target.value) } : x)))} aria-label={tr("Ball")} />
+                <Button variant="ghost" size="icon" onClick={() => set("rubric", v.rubric.filter((_, j) => j !== i))} aria-label={tr("Mezonni o‘chirish")}>
                   <Trash2 />
                 </Button>
               </div>
             ))}
             {errors.rubric ? <p className="text-[12.5px] text-danger">{errors.rubric}</p> : null}
             <Button variant="secondary" size="sm" onClick={() => set("rubric", [...v.rubric, { id: Math.random().toString(36).slice(2, 10), title: "", maxPoints: 1 }])}>
-              <Plus /> Mezon qo‘shish
+              <Plus /> {tr("Mezon qo‘shish")}
             </Button>
           </CardBody>
         </Card>
@@ -468,14 +469,14 @@ export function AssignmentBuilder(p: Props) {
 
       {!live ? (
         <Card>
-          <CardHeader title="E’lon qilish" icon={<Send />} />
+          <CardHeader title={tr("E’lon qilish")} icon={<Send />} />
           <CardBody className="space-y-4">
             <div className="grid gap-2 sm:grid-cols-3">
               {(
                 [
-                  ["draft", "Qoralama", "Faqat siz ko‘rasiz"],
-                  ["now", "Hozir e’lon qilish", "O‘quvchilarga darhol ko‘rinadi"],
-                  ["schedule", "Rejalashtirish", "Belgilangan vaqtda"],
+                  ["draft", tr("Qoralama"), tr("Faqat siz ko‘rasiz")],
+                  ["now", tr("Hozir e’lon qilish"), tr("O‘quvchilarga darhol ko‘rinadi")],
+                  ["schedule", tr("Rejalashtirish"), tr("Belgilangan vaqtda")],
                 ] as const
               ).map(([k, l, d]) => (
                 <button key={k} type="button" onClick={() => set("publishMode", k)} className={cn("rounded-xl border p-3 text-left", v.publishMode === k ? "border-primary bg-primary-soft ring-1 ring-primary" : "border-border hover:bg-surface-2")} aria-pressed={v.publishMode === k}>
@@ -485,11 +486,11 @@ export function AssignmentBuilder(p: Props) {
               ))}
             </div>
             {v.publishMode === "schedule" ? (
-              <Field label="E’lon qilish vaqti" htmlFor="pub" error={errors.publishAt} className="max-w-xs">
+              <Field label={tr("E’lon qilish vaqti")} htmlFor="pub" error={errors.publishAt} className="max-w-xs">
                 <Input id="pub" type="datetime-local" value={v.publishAt} onChange={(e) => set("publishAt", e.target.value)} />
               </Field>
             ) : null}
-            {isQuiz && !p.id && v.publishMode !== "draft" ? <p className="text-[12.5px] text-muted">Quiz avval qoralama sifatida saqlanadi — keyingi bosqichda savollar qo‘shib, e’lon qilasiz.</p> : null}
+            {isQuiz && !p.id && v.publishMode !== "draft" ? <p className="text-[12.5px] text-muted">{tr("Quiz avval qoralama sifatida saqlanadi — keyingi bosqichda savollar qo‘shib, e’lon qilasiz.")}</p> : null}
           </CardBody>
         </Card>
       ) : null}
@@ -497,11 +498,11 @@ export function AssignmentBuilder(p: Props) {
       <div className="sticky bottom-4 z-10 flex flex-wrap justify-end gap-2 rounded-3xl border-2 border-border bg-surface/95 p-3 shadow-pop backdrop-blur">
         {!live ? (
           <Button variant="secondary" onClick={() => submit("draft")} loading={pending}>
-            <Save /> Qoralama
+            <Save /> {tr("Qoralama")}
           </Button>
         ) : null}
         <Button onClick={() => submit(live ? "now" : isQuiz && !p.id ? "draft" : v.publishMode)} loading={pending}>
-          <Send /> {live ? "O‘zgarishlarni saqlash" : isQuiz && !p.id ? "Saqlash va savollarga o‘tish" : v.publishMode === "now" ? "E’lon qilish" : v.publishMode === "schedule" ? "Rejalashtirish" : "Saqlash"}
+          <Send /> {live ? tr("O‘zgarishlarni saqlash") : isQuiz && !p.id ? tr("Saqlash va savollarga o‘tish") : v.publishMode === "now" ? tr("E’lon qilish") : v.publishMode === "schedule" ? tr("Rejalashtirish") : tr("Saqlash")}
         </Button>
       </div>
     </div>

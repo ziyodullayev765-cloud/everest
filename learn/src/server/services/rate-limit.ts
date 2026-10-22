@@ -2,6 +2,7 @@ import "server-only";
 import { sql } from "drizzle-orm";
 import { db } from "../db";
 import { AppError } from "../errors";
+import { tr } from "@/lib/i18n/tr";
 
 /**
  * Fixed-window limiter stored in Postgres so it holds across serverless instances.
@@ -19,7 +20,7 @@ export async function hit(key: string, windowSeconds: number): Promise<number> {
 
 export async function enforce(key: string, limit: number, windowSeconds: number) {
   if ((await hit(key, windowSeconds)) > limit) {
-    throw new AppError("rate_limited", "Juda ko‘p urinish. Birozdan so‘ng qayta urinib ko‘ring.");
+    throw new AppError("rate_limited", tr("Juda ko‘p urinish. Birozdan so‘ng qayta urinib ko‘ring."));
   }
 }
 

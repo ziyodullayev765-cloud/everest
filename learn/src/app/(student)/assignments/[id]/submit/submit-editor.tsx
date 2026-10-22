@@ -17,6 +17,7 @@ import type { HomeworkItem } from "@/server/db/schema";
 import { KIND_ICON, KIND_TONE } from "@/components/app/homework-items";
 import { cn } from "@/lib/utils";
 import { t } from "@/lib/i18n";
+import { tr } from "@/lib/i18n/tr";
 
 type Progress = Record<string, { done: boolean; text?: string }>;
 const TEXT_KINDS = new Set(["translation", "tapescript", "writing"]);
@@ -63,7 +64,7 @@ export function SubmitEditor(p: Props) {
       if (r.ok) {
         setSavedAt(r.data.savedAt);
         setDirty(false);
-        if (manual) toast.success("Qoralama saqlandi");
+        if (manual) toast.success(tr("Qoralama saqlandi"));
       } else if (manual) toast.error(r.error);
     },
     [p.assignmentId, p.draftAllowed],
@@ -105,17 +106,17 @@ export function SubmitEditor(p: Props) {
           <div className="mb-4 grid size-16 place-items-center rounded-full bg-success-soft text-success">
             <CheckCircle2 className="size-8" aria-hidden />
           </div>
-          <h2 className="text-[20px] font-bold tracking-[-0.01em]">Ishingiz topshirildi</h2>
+          <h2 className="text-[20px] font-bold tracking-[-0.01em]">{tr("Ishingiz topshirildi")}</h2>
           <p className="mt-1.5 text-[14px] text-muted">
-            {formatDateTime(done.submittedAt)} da qabul qilindi{done.version > 1 ? ` (${done.version}-topshiriq)` : ""}.{done.isLate ? " Muddatdan kechikib topshirildi." : ""}
+            {tr("{0} da qabul qilindi", formatDateTime(done.submittedAt))}{done.version > 1 ? ` (${done.version}-topshiriq)` : ""}.{done.isLate ? tr(" Muddatdan kechikib topshirildi.") : ""}
           </p>
-          <p className="mt-1 text-[13px] text-muted">O‘qituvchi tekshirgach, baho va izohlar shu vazifa sahifasida ko‘rinadi.</p>
+          <p className="mt-1 text-[13px] text-muted">{tr("O‘qituvchi tekshirgach, baho va izohlar shu vazifa sahifasida ko‘rinadi.")}</p>
           <div className="mt-6 flex flex-wrap justify-center gap-2">
             <Link href={`/assignments/${p.assignmentId}`} className="inline-flex h-10 items-center rounded-xl border border-border bg-surface px-4 text-sm font-semibold hover:bg-surface-2">
-              Vazifani ko‘rish
+              {tr("Vazifani ko‘rish")}
             </Link>
             <Link href="/" className="inline-flex h-10 items-center rounded-xl bg-primary px-4 text-sm font-semibold text-primary-fg hover:bg-primary-hover">
-              Bosh sahifa
+              {tr("Bosh sahifa")}
             </Link>
           </div>
         </CardBody>
@@ -125,16 +126,16 @@ export function SubmitEditor(p: Props) {
   return (
     <div className="space-y-4">
       {p.late ? (
-        <Alert tone="warning" title="Muddat o‘tgan">
-          Ish kechikkan deb belgilanadi{p.latePenaltyPercent ? ` va bahodan ${p.latePenaltyPercent}% ayriladi` : ""}.
+        <Alert tone="warning" title={tr("Muddat o‘tgan")}>
+          {tr("Ish kechikkan deb belgilanadi")}{p.latePenaltyPercent ? tr(" va bahodan {0}% ayriladi", p.latePenaltyPercent) : ""}.
         </Alert>
       ) : null}
-      {p.isResubmission ? <Alert tone="info">Bu qayta topshirish bo‘ladi. Oldingi versiya o‘qituvchi uchun saqlanib qoladi.</Alert> : null}
+      {p.isResubmission ? <Alert tone="info">{tr("Bu qayta topshirish bo‘ladi. Oldingi versiya o‘qituvchi uchun saqlanib qoladi.")}</Alert> : null}
       {error ? <Alert tone="danger">{error}</Alert> : null}
 
       {p.instructions ? (
         <details className="rounded-3xl border-2 border-border bg-surface px-5 py-3.5 shadow-soft">
-          <summary className="cursor-pointer text-[14px] font-semibold">Ko‘rsatmalarni ko‘rish</summary>
+          <summary className="cursor-pointer text-[14px] font-semibold">{tr("Ko‘rsatmalarni ko‘rish")}</summary>
           <RichText text={p.instructions} className="mt-3 text-[14px] text-text-2" />
         </details>
       ) : null}
@@ -143,9 +144,9 @@ export function SubmitEditor(p: Props) {
         <Card>
           <CardBody className="space-y-3">
             <div className="flex items-center justify-between">
-              <h2 className="text-[15px] font-bold">Topshiriqlar</h2>
+              <h2 className="text-[15px] font-bold">{tr("Topshiriqlar")}</h2>
               <span className="text-[13px] text-muted tabular">
-                {doneCount} / {p.items.length} bajarildi
+                {tr("{0} / {1} bajarildi", doneCount, p.items.length)}
               </span>
             </div>
             {p.items.map((it, n) => {
@@ -159,7 +160,7 @@ export function SubmitEditor(p: Props) {
               return (
                 <div key={it.id} className={cn("rounded-xl border p-3.5 transition", cur.done ? "border-success/40 bg-success-soft/40" : "border-border")}>
                   <label className="flex cursor-pointer items-start gap-3">
-                    <input type="checkbox" checked={cur.done} onChange={(e) => setItem({ done: e.target.checked })} className="mt-1 size-5 shrink-0 accent-[var(--primary)]" aria-label={`${it.title} — bajarildi`} />
+                    <input type="checkbox" checked={cur.done} onChange={(e) => setItem({ done: e.target.checked })} className="mt-1 size-5 shrink-0 accent-[var(--primary)]" aria-label={tr("{0} — bajarildi", it.title)} />
                     <span className={cn("grid size-9 shrink-0 place-items-center rounded-lg", KIND_TONE[it.kind])}>
                       <Icon className="size-4" aria-hidden />
                     </span>
@@ -186,8 +187,8 @@ export function SubmitEditor(p: Props) {
                       rows={5}
                       maxLength={20000}
                       className="mt-3"
-                      placeholder={it.kind === "tapescript" ? "Eshitganingizni shu yerga yozing…" : it.kind === "translation" ? "Tarjimangizni shu yerga yozing…" : "Matningizni yozing…"}
-                      aria-label={`${it.title} — matn`}
+                      placeholder={it.kind === "tapescript" ? tr("Eshitganingizni shu yerga yozing…") : it.kind === "translation" ? tr("Tarjimangizni shu yerga yozing…") : tr("Matningizni yozing…")}
+                      aria-label={tr("{0} — matn", it.title)}
                     />
                   ) : null}
                 </div>
@@ -199,7 +200,7 @@ export function SubmitEditor(p: Props) {
 
       <Card>
         <CardBody className="space-y-5">
-          <Field label={hw || p.type === "file_upload" ? "Izoh (ixtiyoriy)" : "Javobingiz"} htmlFor="content" hint="Formulalar uchun $…$ dan foydalanishingiz mumkin, masalan $x^2+1$">
+          <Field label={hw || p.type === "file_upload" ? tr("Izoh (ixtiyoriy)") : tr("Javobingiz")} htmlFor="content" hint={tr("Formulalar uchun $…$ dan foydalanishingiz mumkin, masalan $x^2+1$")}>
             <Textarea
               id="content"
               value={content}
@@ -209,10 +210,10 @@ export function SubmitEditor(p: Props) {
               }}
               rows={hw || p.type === "file_upload" ? 3 : 12}
               maxLength={50000}
-              placeholder={p.type === "file_upload" ? "O‘qituvchi uchun qisqa izoh…" : "Javobingizni shu yerga yozing…"}
+              placeholder={p.type === "file_upload" ? tr("O‘qituvchi uchun qisqa izoh…") : tr("Javobingizni shu yerga yozing…")}
             />
           </Field>
-          <Field label={p.type === "file_upload" ? "Fayllar" : hw ? "Daftar rasmi yoki audio (ixtiyoriy)" : "Fayllar (ixtiyoriy)"} required={p.type === "file_upload"}>
+          <Field label={p.type === "file_upload" ? tr("Fayllar") : hw ? tr("Daftar rasmi yoki audio (ixtiyoriy)") : tr("Fayllar (ixtiyoriy)")} required={p.type === "file_upload"}>
             <Uploader
               files={files}
               onChange={(f) => {
@@ -228,18 +229,18 @@ export function SubmitEditor(p: Props) {
         <div className="flex min-w-0 items-center gap-2 pl-1 text-[12.5px] text-muted" aria-live="polite">
           {!online ? (
             <>
-              <CloudOff className="size-4 text-warning" aria-hidden /> Oflayn — aloqa tiklanganda saqlang
+              <CloudOff className="size-4 text-warning" aria-hidden /> {tr("Oflayn — aloqa tiklanganda saqlang")}
             </>
           ) : saving ? (
             <>
-              <Loader2 className="size-4 animate-spin" aria-hidden /> Saqlanmoqda…
+              <Loader2 className="size-4 animate-spin" aria-hidden /> {tr("Saqlanmoqda…")}
             </>
           ) : savedAt && !dirty ? (
             <>
-              <CheckCircle2 className="size-4 text-success" aria-hidden /> Qoralama saqlandi
+              <CheckCircle2 className="size-4 text-success" aria-hidden /> {tr("Qoralama saqlandi")}
             </>
           ) : dirty ? (
-            "Saqlanmagan o‘zgarishlar"
+            tr("Saqlanmagan o‘zgarishlar")
           ) : (
             <span className="truncate">{p.dueAt ? `Muddat: ${formatDateTime(p.dueAt)}` : ""}</span>
           )}
@@ -247,11 +248,11 @@ export function SubmitEditor(p: Props) {
         <div className="flex shrink-0 gap-2">
           {p.draftAllowed ? (
             <Button variant="secondary" onClick={() => save(true)} disabled={!online || saving}>
-              <Save /> <span className="hidden sm:inline">Qoralama</span>
+              <Save /> <span className="hidden sm:inline">{tr("Qoralama")}</span>
             </Button>
           ) : null}
           <Button onClick={() => setConfirm(true)} disabled={!canSubmit || !online}>
-            <Send /> Topshirish
+            <Send /> {tr("Topshirish")}
           </Button>
         </div>
       </div>
@@ -259,15 +260,15 @@ export function SubmitEditor(p: Props) {
       <Dialog
         open={confirm}
         onClose={() => setConfirm(false)}
-        title="Ishni topshirasizmi?"
-        description={p.isResubmission ? "Yangi versiya yuboriladi." : "Topshirilgandan so‘ng ishni o‘zgartirib bo‘lmaydi (agar qayta topshirishga ruxsat berilmagan bo‘lsa)."}
+        title={tr("Ishni topshirasizmi?")}
+        description={p.isResubmission ? tr("Yangi versiya yuboriladi.") : tr("Topshirilgandan so‘ng ishni o‘zgartirib bo‘lmaydi (agar qayta topshirishga ruxsat berilmagan bo‘lsa).")}
         footer={
           <>
             <Button variant="secondary" onClick={() => setConfirm(false)}>
-              Bekor qilish
+              {tr("Bekor qilish")}
             </Button>
             <Button onClick={submit} loading={submitting}>
-              Ha, topshirish
+              {tr("Ha, topshirish")}
             </Button>
           </>
         }
@@ -275,13 +276,13 @@ export function SubmitEditor(p: Props) {
         <ul className="space-y-1.5 rounded-xl bg-surface-2 p-4 text-[13.5px] text-text-2">
           {hw ? (
             <li className={doneCount < p.items.length ? "text-warning" : undefined}>
-              Bajarilgan topshiriqlar: {doneCount} / {p.items.length}
+              {tr("Bajarilgan topshiriqlar: {0} / {1}", doneCount, p.items.length)}
             </li>
           ) : (
-            <li>Javob matni: {content.trim() ? `${content.trim().length} belgi` : "yo‘q"}</li>
+            <li>{tr("Javob matni:")} {content.trim() ? `${content.trim().length} belgi` : tr("yo‘q")}</li>
           )}
-          <li>Biriktirilgan fayllar: {files.length} ta</li>
-          {p.late ? <li className="text-warning">Kechikib topshirilmoqda</li> : null}
+          <li>{tr("Biriktirilgan fayllar: {0} ta", files.length)}</li>
+          {p.late ? <li className="text-warning">{tr("Kechikib topshirilmoqda")}</li> : null}
         </ul>
       </Dialog>
     </div>

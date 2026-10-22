@@ -1,11 +1,12 @@
 "use client";
 import { formatDayShort as shortDate } from "@/lib/dates";
 import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
+import { tr } from "@/lib/i18n/tr";
 
 
 export function ActivityChart({ data }: { data: { day: string; n: number }[] }) {
   return (
-    <div className="h-56" role="img" aria-label="So‘nggi 14 kundagi faollik">
+    <div className="h-56" role="img" aria-label={tr("So‘nggi 14 kundagi faollik")}>
       <ResponsiveContainer width="100%" height="100%">
         <AreaChart data={data} margin={{ top: 8, right: 4, left: -22, bottom: 0 }}>
           <defs>
@@ -22,7 +23,7 @@ export function ActivityChart({ data }: { data: { day: string; n: number }[] }) 
               active && payload?.length ? (
                 <div className="rounded-xl border border-border bg-surface px-3 py-2 text-[12.5px] shadow-pop">
                   <div className="font-bold">{shortDate(String(label))}</div>
-                  <div className="text-text-2">Faollik: <b className="tabular">{payload[0].value}</b></div>
+                  <div className="text-text-2">{tr("Faollik:")} <b className="tabular">{payload[0].value}</b></div>
                 </div>
               ) : null
             }

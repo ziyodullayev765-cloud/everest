@@ -16,8 +16,9 @@ import { hrefFor } from "@/components/student/assignment-card";
 import { WeeklyActivityChart } from "@/components/student/charts";
 import { Medal } from "@/components/student/medal";
 import { recentAchievements } from "@/server/services/achievements";
+import { currentLocale, tr } from "@/lib/i18n/tr";
 
-export const metadata: Metadata = { title: "Bosh sahifa" };
+export const metadata: Metadata = { get title() { return tr("Bosh sahifa"); } };
 
 const MOTIVATION = [
   "Little by little, a little becomes a lot. — Oz-ozdan, ko‘p bo‘ladi.",
@@ -30,11 +31,11 @@ const MOTIVATION = [
 ];
 
 const PRACTICE = [
-  { href: "/vocabulary", label: "Lug‘at", hint: "So‘zlarni takrorlash", icon: BookA, cls: "bg-info shadow-[0_5px_0_0_var(--info-shadow)] active:shadow-[0_2px_0_0_var(--info-shadow)]" },
-  { href: "/vocabulary/game", label: "O‘yin", hint: "Tezkor so‘z o‘yini", icon: Gamepad2, cls: "bg-sun !text-[#3d2a00] shadow-[0_5px_0_0_var(--sun-shadow)] active:shadow-[0_2px_0_0_var(--sun-shadow)]" },
-  { href: "/grammar", label: "Grammatika", hint: "Mavzular bo‘yicha", icon: PenLine, cls: "bg-primary shadow-[0_5px_0_0_var(--primary-shadow)] active:shadow-[0_2px_0_0_var(--primary-shadow)]" },
-  { href: "/reading", label: "Reading", hint: "Matn va savollar", icon: BookOpenText, cls: "bg-violet shadow-[0_5px_0_0_var(--violet-shadow)] active:shadow-[0_2px_0_0_var(--violet-shadow)]" },
-  { href: "/listening", label: "Listening", hint: "Tinglab tushunish", icon: Headphones, cls: "bg-danger shadow-[0_5px_0_0_var(--danger-shadow)] active:shadow-[0_2px_0_0_var(--danger-shadow)]" },
+  { href: "/vocabulary", get label() { return tr("Lug‘at"); }, get hint() { return tr("So‘zlarni takrorlash"); }, icon: BookA, cls: "bg-info shadow-[0_5px_0_0_var(--info-shadow)] active:shadow-[0_2px_0_0_var(--info-shadow)]" },
+  { href: "/vocabulary/game", get label() { return tr("O‘yin"); }, get hint() { return tr("Tezkor so‘z o‘yini"); }, icon: Gamepad2, cls: "bg-sun !text-[#3d2a00] shadow-[0_5px_0_0_var(--sun-shadow)] active:shadow-[0_2px_0_0_var(--sun-shadow)]" },
+  { href: "/grammar", get label() { return tr("Grammatika"); }, get hint() { return tr("Mavzular bo‘yicha"); }, icon: PenLine, cls: "bg-primary shadow-[0_5px_0_0_var(--primary-shadow)] active:shadow-[0_2px_0_0_var(--primary-shadow)]" },
+  { href: "/reading", get label() { return tr("Reading"); }, get hint() { return tr("Matn va savollar"); }, icon: BookOpenText, cls: "bg-violet shadow-[0_5px_0_0_var(--violet-shadow)] active:shadow-[0_2px_0_0_var(--violet-shadow)]" },
+  { href: "/listening", get label() { return tr("Listening"); }, get hint() { return tr("Tinglab tushunish"); }, icon: Headphones, cls: "bg-danger shadow-[0_5px_0_0_var(--danger-shadow)] active:shadow-[0_2px_0_0_var(--danger-shadow)]" },
 ];
 
 function greeting() {
@@ -63,20 +64,20 @@ export default async function StudentHome() {
             <h1 className="mt-1 text-[24px] leading-tight font-bold tracking-[-0.025em] text-text sm:text-[28px]">
               {greeting()}, {firstName}!
             </h1>
-            <p className="mt-1.5 text-[14px] text-muted">{MOTIVATION[dayIdx]}</p>
+            <p className="mt-1.5 text-[14px] text-muted">{currentLocale() === "en" ? MOTIVATION[dayIdx].split(" — ")[0] : MOTIVATION[dayIdx]}</p>
             <p className="mt-4 inline-flex flex-wrap items-center gap-x-2 gap-y-1 rounded-xl bg-surface-2 px-3 py-2 text-[13.5px] text-text-2">
               <CalendarRange className="size-4 text-primary" aria-hidden />
               {todayCount ? (
                 <span>
-                  Bugun muddati tugaydigan <b className="text-text">{todayCount} ta</b> vazifa bor
-                  {nextDue ? <>, eng yaqini {remaining(nextDue.dueAt!).text.replace(" qoldi", "")}dan keyin</> : null}.
+                  {tr("Bugun muddati tugaydigan")} <b className="text-text">{tr("{0} ta", todayCount)}</b> {tr("vazifa bor")}
+                  {nextDue ? <>{tr(", eng yaqini {0}dan keyin", remaining(nextDue.dueAt!).text.replace(" qoldi", ""))}</> : null}.
                 </span>
               ) : d.stats.pending ? (
                 <span>
-                  Bugungi muddatlar yo‘q. Bajarilishi kerak: <b className="text-text">{d.stats.pending} ta</b>.
+                  {tr("Bugungi muddatlar yo‘q. Bajarilishi kerak:")} <b className="text-text">{tr("{0} ta", d.stats.pending)}</b>.
                 </span>
               ) : (
-                <span>Barcha vazifalar bajarilgan — ajoyib!</span>
+                <span>{tr("Barcha vazifalar bajarilgan — ajoyib!")}</span>
               )}
             </p>
           </div>
@@ -85,15 +86,15 @@ export default async function StudentHome() {
               <Flame className={cn("size-5", d.stats.streak ? "text-warning" : "text-muted")} aria-hidden />
               <div className="leading-tight">
                 <div className="text-[17px] font-bold tabular">{d.stats.streak}</div>
-                <div className="text-[11.5px] text-muted">kun ketma-ket</div>
+                <div className="text-[11.5px] text-muted">{tr("kun ketma-ket")}</div>
               </div>
             </div>
             {gamify ? (
               <Link href="/achievements" className="flex items-center gap-2.5 rounded-3xl border-2 border-border bg-surface px-3.5 py-2.5 shadow-soft hover:border-border-strong">
                 <Zap className="size-5 text-primary" aria-hidden />
                 <div className="leading-tight">
-                  <div className="text-[17px] font-bold tabular">{d.game.level.level}-daraja</div>
-                  <div className="text-[11.5px] text-muted tabular">{fmtNumber(d.game.xp)} XP</div>
+                  <div className="text-[17px] font-bold tabular">{tr("{0}-daraja", d.game.level.level)}</div>
+                  <div className="text-[11.5px] text-muted tabular">{tr("{0} XP", fmtNumber(d.game.xp))}</div>
                 </div>
               </Link>
             ) : null}
@@ -102,7 +103,7 @@ export default async function StudentHome() {
       </section>
 
       {/* Practice tiles */}
-      <section aria-label="Mashq qilish" className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
+      <section aria-label={tr("Mashq qilish")} className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
         {PRACTICE.map(({ href, label, hint, icon: Icon, cls }) => (
           <Link key={href} href={href} className={cn("group flex flex-col gap-3 rounded-3xl p-4 text-white max-sm:last:col-span-2 transition active:translate-y-[3px]", cls)}>
             <span className="grid size-11 place-items-center rounded-2xl bg-white/25 transition group-hover:scale-105">
@@ -110,61 +111,61 @@ export default async function StudentHome() {
             </span>
             <span>
               <span className="block text-[16px] leading-tight font-black">{label}</span>
-              <span className="block text-[12.5px] font-semibold opacity-85">{href === "/vocabulary" && d.stats.vocabDue ? `${d.stats.vocabDue} ta so‘z kutmoqda` : hint}</span>
+              <span className="block text-[12.5px] font-semibold opacity-85">{href === "/vocabulary" && d.stats.vocabDue ? tr("{0} ta so‘z kutmoqda", d.stats.vocabDue) : hint}</span>
             </span>
           </Link>
         ))}
       </section>
 
       {/* Stats */}
-      <section aria-label="Ko‘rsatkichlar" className="grid grid-cols-2 gap-3 lg:grid-cols-5">
-        <StatCard label="Vazifalar bajarilishi" value={d.stats.homeworkRate == null ? "—" : `${d.stats.homeworkRate}%`} icon={<CheckCircle2 />} hint={d.overdue.length ? `${d.overdue.length} tasi muddati o‘tgan` : `${d.stats.pending} ta kutilmoqda`} />
-        <StatCard label="Quiz o‘rtachasi" value={fmtPercent(d.stats.quizAverage)} icon={<Target />} tone="violet" hint={d.stats.quizCount ? `${d.stats.quizCount} ta urinish` : "hali quiz yo‘q"} />
-        <StatCard label="O‘rganilgan so‘zlar" value={d.stats.vocabLearned} icon={<BookA />} tone="info" hint={d.stats.vocabDue ? `${d.stats.vocabDue} tasi takrorlashga` : `${d.stats.vocabMastered} tasi puxta`} />
-        <StatCard label="Ketma-ket kunlar" value={`${d.stats.streak} kun`} icon={<Flame />} tone="warning" hint={`eng yaxshisi: ${d.stats.bestStreak} kun`} />
-        <StatCard label="Haftalik maqsad" value={`${d.stats.weeklyProgress}%`} icon={<Gauge />} tone="success" hint={`${d.stats.weekDone} / ${d.stats.weeklyTaskGoal} ta`} className="col-span-2 lg:col-span-1" />
+      <section aria-label={tr("Ko‘rsatkichlar")} className="grid grid-cols-2 gap-3 lg:grid-cols-5">
+        <StatCard label={tr("Vazifalar bajarilishi")} value={d.stats.homeworkRate == null ? "—" : `${d.stats.homeworkRate}%`} icon={<CheckCircle2 />} hint={d.overdue.length ? tr("{0} tasi muddati o‘tgan", d.overdue.length) : tr("{0} ta kutilmoqda", d.stats.pending)} />
+        <StatCard label={tr("Quiz o‘rtachasi")} value={fmtPercent(d.stats.quizAverage)} icon={<Target />} tone="violet" hint={d.stats.quizCount ? tr("{0} ta urinish", d.stats.quizCount) : tr("hali quiz yo‘q")} />
+        <StatCard label={tr("O‘rganilgan so‘zlar")} value={d.stats.vocabLearned} icon={<BookA />} tone="info" hint={d.stats.vocabDue ? tr("{0} tasi takrorlashga", d.stats.vocabDue) : tr("{0} tasi puxta", d.stats.vocabMastered)} />
+        <StatCard label={tr("Ketma-ket kunlar")} value={tr("{0} kun", d.stats.streak)} icon={<Flame />} tone="warning" hint={tr("eng yaxshisi: {0} kun", d.stats.bestStreak)} />
+        <StatCard label={tr("Haftalik maqsad")} value={`${d.stats.weeklyProgress}%`} icon={<Gauge />} tone="success" hint={tr("{0} / {1} ta", d.stats.weekDone, d.stats.weeklyTaskGoal)} className="col-span-2 lg:col-span-1" />
       </section>
 
       <div className="grid grid-cols-1 gap-6 xl:grid-cols-[1fr_360px]">
         <div className="min-w-0 space-y-6">
           {/* Today's learning */}
           <Card>
-            <CardHeader title="Bugungi o‘quv" action={<LinkButton href="/assignments" variant="ghost" size="sm">Barcha vazifalar <ChevronRight /></LinkButton>} />
+            <CardHeader title={tr("Bugungi o‘quv")} action={<LinkButton href="/assignments" variant="ghost" size="sm">{tr("Barcha vazifalar")} <ChevronRight /></LinkButton>} />
             <CardBody className="space-y-1 pt-2">
               {d.stats.vocabDue ? (
-                <TodayRow href="/vocabulary/session?mode=daily" icon={<BookA />} tone="info" title={`${d.stats.vocabDue} ta so‘zni takrorlash vaqti keldi`} meta="Lug‘at · oraliq takrorlash" cta="Boshlash" />
+                <TodayRow href="/vocabulary/session?mode=daily" icon={<BookA />} tone="info" title={tr("{0} ta so‘zni takrorlash vaqti keldi", d.stats.vocabDue)} meta={tr("Lug‘at · oraliq takrorlash")} cta={tr("Boshlash")} />
               ) : null}
               {d.unfinished.slice(0, 3).map((a) => (
-                <TodayRow key={a.id} href={hrefFor(a)} icon={<PlayCircle />} tone="warning" title={a.title} meta={`${a.status === "returned" ? "Qayta ishlashga qaytarilgan" : "Boshlangan"} · ${a.subjectName}`} cta="Davom ettirish" />
+                <TodayRow key={a.id} href={hrefFor(a)} icon={<PlayCircle />} tone="warning" title={a.title} meta={`${a.status === "returned" ? tr("Qayta ishlashga qaytarilgan") : tr("Boshlangan")} · ${a.subjectName}`} cta={tr("Davom ettirish")} />
               ))}
               {d.focus
                 .filter((a) => !d.unfinished.includes(a))
                 .slice(0, 4)
                 .map((a) => (
-                  <TodayRow key={a.id} href={hrefFor(a)} icon={<ListTodo />} tone={a.dueAt && remaining(a.dueAt).hours < 24 ? "danger" : "primary"} title={a.title} meta={`${t.assignmentType[a.type]} · ${a.dueAt ? `muddat ${formatDateTime(a.dueAt)}` : "muddatsiz"}`} />
+                  <TodayRow key={a.id} href={hrefFor(a)} icon={<ListTodo />} tone={a.dueAt && remaining(a.dueAt).hours < 24 ? "danger" : "primary"} title={a.title} meta={`${t.assignmentType[a.type]} · ${a.dueAt ? `muddat ${formatDateTime(a.dueAt)}` : tr("muddatsiz")}`} />
                 ))}
               {!d.stats.vocabDue && !d.unfinished.length && !d.focus.length ? (
-                <p className="px-2 py-6 text-center text-[13.5px] text-muted">Hozircha bajariladigan ish yo‘q. Lug‘at yoki grammatika bo‘limida mashq qilishingiz mumkin.</p>
+                <p className="px-2 py-6 text-center text-[13.5px] text-muted">{tr("Hozircha bajariladigan ish yo‘q. Lug‘at yoki grammatika bo‘limida mashq qilishingiz mumkin.")}</p>
               ) : null}
             </CardBody>
           </Card>
 
           {/* Weekly activity */}
           <Card>
-            <CardHeader title="Haftalik faollik" description="So‘nggi 7 kun: vazifalar, quizlar, so‘z takrorlash va o‘rtacha ball" />
+            <CardHeader title={tr("Haftalik faollik")} description={tr("So‘nggi 7 kun: vazifalar, quizlar, so‘z takrorlash va o‘rtacha ball")} />
             <CardBody className="pt-3">
               {d.hasAnyActivity ? (
                 <>
                   <WeeklyActivityChart data={d.week} />
                   <div className="mt-3 flex flex-wrap gap-x-5 gap-y-1 text-[12.5px] text-muted">
-                    <Legend color="var(--chart-1)" label="Vazifalar" />
-                    <Legend color="var(--chart-2)" label="Quizlar" />
-                    <Legend color="var(--violet)" label="Lug‘at (10 takrorlash = 1)" />
-                    <Legend color="var(--chart-3)" label="O‘rtacha ball, %" line />
+                    <Legend color="var(--chart-1)" label={tr("Vazifalar")} />
+                    <Legend color="var(--chart-2)" label={tr("Quizlar")} />
+                    <Legend color="var(--violet)" label={tr("Lug‘at (10 takrorlash = 1)")} />
+                    <Legend color="var(--chart-3)" label={tr("O‘rtacha ball, %")} line />
                   </div>
                 </>
               ) : (
-                <EmptyState icon={<CalendarRange />} title="Faollik hali yo‘q" description="Birinchi vazifani topshirganingizdan so‘ng haftalik grafik shu yerda paydo bo‘ladi." className="py-6" />
+                <EmptyState icon={<CalendarRange />} title={tr("Faollik hali yo‘q")} description={tr("Birinchi vazifani topshirganingizdan so‘ng haftalik grafik shu yerda paydo bo‘ladi.")} className="py-6" />
               )}
             </CardBody>
           </Card>
@@ -172,7 +173,7 @@ export default async function StudentHome() {
 
         <aside className="space-y-6">
           <Card>
-            <CardHeader title="Kunlik maqsad" description="Vazifa, quiz yoki 10 ta so‘z takrorlash = 1 mashg‘ulot" action={<LinkButton href="/profile/settings#goals" variant="ghost" size="sm">O‘zgartirish</LinkButton>} />
+            <CardHeader title={tr("Kunlik maqsad")} description={tr("Vazifa, quiz yoki 10 ta so‘z takrorlash = 1 mashg‘ulot")} action={<LinkButton href="/profile/settings#goals" variant="ghost" size="sm">{tr("O‘zgartirish")}</LinkButton>} />
             <CardBody className="flex items-center gap-4">
               <Ring value={Math.min(100, (100 * d.stats.todayUnits) / d.stats.dailyGoal)} size={84} stroke={8}>
                 <span className="text-[17px] font-bold tabular">
@@ -181,19 +182,19 @@ export default async function StudentHome() {
               </Ring>
               <div className="text-[13.5px] text-muted">
                 {d.stats.todayUnits >= d.stats.dailyGoal ? (
-                  <>Bugungi maqsad bajarildi. Ajoyib!</>
+                  <>{tr("Bugungi maqsad bajarildi. Ajoyib!")}</>
                 ) : (
                   <>
-                    Bugun <b className="text-text">{d.stats.todayUnits}</b> ta mashg‘ulot. Yana <b className="text-text">{d.stats.dailyGoal - d.stats.todayUnits}</b> ta qoldi.
+                    {tr("Bugun")} <b className="text-text">{d.stats.todayUnits}</b> {tr("ta mashg‘ulot. Yana")} <b className="text-text">{d.stats.dailyGoal - d.stats.todayUnits}</b> {tr("ta qoldi.")}
                   </>
                 )}
-                <div className="mt-1 text-[12px]">Bu hafta: {d.stats.weekDone} / {d.stats.weeklyTaskGoal} ta ish.</div>
+                <div className="mt-1 text-[12px]">{tr("Bu hafta: {0} / {1} ta ish.", d.stats.weekDone, d.stats.weeklyTaskGoal)}</div>
               </div>
             </CardBody>
           </Card>
 
           <Card>
-            <CardHeader title="Yaqin muddatlar" icon={<Clock3 />} />
+            <CardHeader title={tr("Yaqin muddatlar")} icon={<Clock3 />} />
             <CardBody className="pt-3">
               {d.upcoming.length ? (
                 <ol className="space-y-1">
@@ -219,23 +220,23 @@ export default async function StudentHome() {
                   })}
                 </ol>
               ) : (
-                <p className="px-2 py-4 text-center text-[13.5px] text-muted">Yaqin kunlarda muddat yo‘q.</p>
+                <p className="px-2 py-4 text-center text-[13.5px] text-muted">{tr("Yaqin kunlarda muddat yo‘q.")}</p>
               )}
             </CardBody>
           </Card>
 
           {gamify ? (
             <Card>
-              <CardHeader title="Yutuqlar" icon={<Trophy />} action={<LinkButton href="/achievements" variant="ghost" size="sm">Barchasi</LinkButton>} />
+              <CardHeader title={tr("Yutuqlar")} icon={<Trophy />} action={<LinkButton href="/achievements" variant="ghost" size="sm">{tr("Barchasi")}</LinkButton>} />
               <CardBody className="pt-3">
                 <div className="mb-4">
                   <div className="mb-1.5 flex justify-between text-[12.5px] text-muted tabular">
-                    <span>{d.game.level.level}-daraja</span>
+                    <span>{tr("{0}-daraja", d.game.level.level)}</span>
                     <span>
-                      {fmtNumber(d.game.xp)} / {fmtNumber(d.game.level.next)} XP
+                      {tr("{0} / {1} XP", fmtNumber(d.game.xp), fmtNumber(d.game.level.next))}
                     </span>
                   </div>
-                  <Progress value={d.game.level.progress * 100} label="Keyingi darajagacha" />
+                  <Progress value={d.game.level.progress * 100} label={tr("Keyingi darajagacha")} />
                 </div>
                 {recent.length ? (
                   <div className="grid grid-cols-3 gap-2">
@@ -248,7 +249,7 @@ export default async function StudentHome() {
                   </div>
                 ) : (
                   <p className="flex items-center gap-2 text-[13px] text-muted">
-                    <Award className="size-4" aria-hidden /> Birinchi vazifani topshirib, birinchi yutuqni qo‘lga kiriting.
+                    <Award className="size-4" aria-hidden /> {tr("Birinchi vazifani topshirib, birinchi yutuqni qo‘lga kiriting.")}
                   </p>
                 )}
               </CardBody>

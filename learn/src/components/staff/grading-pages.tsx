@@ -26,6 +26,7 @@ import { HomeworkItemsList } from "@/components/app/homework-items";
 import { FilterBar } from "./filter-bar";
 import { GradeForm, QuizGradeForm, FinalizeButton } from "./grade-forms";
 import { BankManager } from "./bank-manager";
+import { tr } from "@/lib/i18n/tr";
 
 export async function SubmissionsPage({ user, base, sp }: { user: SessionUser; base: string; sp: { status?: string; class?: string; subject?: string; assignment?: string; q?: string } }) {
   const status = sp.status ?? "pending";
@@ -36,13 +37,13 @@ export async function SubmissionsPage({ user, base, sp }: { user: SessionUser; b
   ]);
   return (
     <>
-      <PageHeader title="Topshirilgan ishlar" description="Tekshirishni kutayotgan va baholangan ishlar." />
+      <PageHeader title={tr("Topshirilgan ishlar")} description={tr("Tekshirishni kutayotgan va baholangan ishlar.")} />
       <FilterBar
         fields={[
-          { name: "q", type: "search", placeholder: "O‘quvchi yoki vazifa" },
-          { name: "status", label: "Holat", options: [["pending", "Tekshirilishi kerak"], ["graded", "Yakuniy baholangan"], ["returned", "Qaytarilgan"], ["all", "Barchasi"]] },
-          { name: "class", label: "Guruh", options: [["", "Barcha guruhlar"], ...classes.map((c) => [c.id, c.name] as [string, string])] },
-          { name: "subject", label: "Kategoriya", options: [["", "Barcha kategoriyalar"], ...subjects.map((s) => [s.id, s.name] as [string, string])] },
+          { name: "q", type: "search", placeholder: tr("O‘quvchi yoki vazifa") },
+          { name: "status", label: tr("Holat"), options: [["pending", tr("Tekshirilishi kerak")], ["graded", tr("Yakuniy baholangan")], ["returned", "Qaytarilgan"], ["all", "Barchasi"]] },
+          { name: "class", label: tr("Guruh"), options: [["", tr("Barcha guruhlar")], ...classes.map((c) => [c.id, c.name] as [string, string])] },
+          { name: "subject", label: tr("Kategoriya"), options: [["", tr("Barcha kategoriyalar")], ...subjects.map((s) => [s.id, s.name] as [string, string])] },
         ]}
       />
       {rows.length ? (
@@ -61,17 +62,17 @@ export async function SubmissionsPage({ user, base, sp }: { user: SessionUser; b
                   </span>
                   <span className="hidden shrink-0 text-right text-[12px] text-muted sm:block">
                     {r.submittedAt ? formatDateTime(r.submittedAt) : ""}
-                    {r.isLate ? <span className="block text-warning">kechikkan</span> : null}
+                    {r.isLate ? <span className="block text-warning">{tr("kechikkan")}</span> : null}
                   </span>
                   <span className="w-28 shrink-0 text-right">
                     {r.gradeStatus === "final" ? (
                       <Badge tone="success" className="tabular">{fmtNumber(r.points!, 2)} / {fmtNumber(r.maxScore, 2)}</Badge>
                     ) : r.workStatus === "returned" ? (
-                      <Badge tone="warning">Qaytarilgan</Badge>
+                      <Badge tone="warning">{tr("Qaytarilgan")}</Badge>
                     ) : r.gradeStatus === "provisional" ? (
-                      <Badge tone="violet">Dastlabki {fmtNumber(r.points!, 2)}</Badge>
+                      <Badge tone="violet">{tr("Dastlabki {0}", fmtNumber(r.points!, 2))}</Badge>
                     ) : (
-                      <Badge tone="info">Tekshirish</Badge>
+                      <Badge tone="info">{tr("Tekshirish")}</Badge>
                     )}
                   </span>
                 </Link>
@@ -81,7 +82,7 @@ export async function SubmissionsPage({ user, base, sp }: { user: SessionUser; b
         </Card>
       ) : (
         <Card>
-          <EmptyState icon={<Inbox />} title={status === "pending" ? "Tekshiriladigan ish yo‘q" : "Hech narsa topilmadi"} description={status === "pending" ? "Hammasi tekshirilgan. Yangi ishlar topshirilganda bildirishnoma olasiz." : undefined} />
+          <EmptyState icon={<Inbox />} title={status === "pending" ? tr("Tekshiriladigan ish yo‘q") : tr("Hech narsa topilmadi")} description={status === "pending" ? tr("Hammasi tekshirilgan. Yangi ishlar topshirilganda bildirishnoma olasiz.") : undefined} />
         </Card>
       )}
     </>
@@ -96,10 +97,10 @@ export async function GradePage({ user, base, assignmentId, studentId }: { user:
   return (
     <div className="mx-auto max-w-5xl">
       <PageHeader
-        back={{ href: `${base}/submissions`, label: "Topshirilgan ishlar" }}
-        eyebrow={<span>{c.subject?.name} · {t.assignmentType[a.type]}{a.dueAt ? ` · muddat ${formatDateTime(a.dueAt)}` : ""}</span>}
+        back={{ href: `${base}/submissions`, label: tr("Topshirilgan ishlar") }}
+        eyebrow={<span>{c.subject?.name} · {t.assignmentType[a.type]}{a.dueAt ? tr(" · muddat {0}", formatDateTime(a.dueAt)) : ""}</span>}
         title={a.title}
-        actions={<LinkButton href={`${base}/students/${studentId}`} variant="secondary" size="sm">O‘quvchi kartasi</LinkButton>}
+        actions={<LinkButton href={`${base}/students/${studentId}`} variant="secondary" size="sm">{tr("O‘quvchi kartasi")}</LinkButton>}
       />
       <div className="grid grid-cols-1 gap-5 lg:grid-cols-[1fr_340px]">
         <div className="min-w-0 space-y-5">
@@ -108,7 +109,7 @@ export async function GradePage({ user, base, assignmentId, studentId }: { user:
               <Avatar name={c.student.displayName} size={44} />
               <div>
                 <div className="font-bold">{c.student.displayName}</div>
-                <div className="text-[12.5px] text-muted">@{c.student.username}{c.student.studentCode ? ` · ID ${c.student.studentCode}` : ""}</div>
+                <div className="text-[12.5px] text-muted">@{c.student.username}{c.student.studentCode ? tr(" · ID {0}", c.student.studentCode) : ""}</div>
               </div>
             </CardBody>
           </Card>
@@ -118,23 +119,23 @@ export async function GradePage({ user, base, assignmentId, studentId }: { user:
               <>
                 <Card>
                   <CardHeader
-                    title="Topshirilgan ish"
-                    description={<>{c.submission.version}-versiya · {formatDateTime(c.submission.submittedAt!)}{c.submission.isLate ? " · kechikkan" : ""}</>}
-                    action={c.submission.isLate ? <Badge tone="warning">Kechikkan</Badge> : <Badge tone="success">Muddatida</Badge>}
+                    title={tr("Topshirilgan ish")}
+                    description={<>{tr("{0}-versiya · {1}{2}", c.submission.version, formatDateTime(c.submission.submittedAt!), c.submission.isLate ? tr(" · kechikkan") : "")}</>}
+                    action={c.submission.isLate ? <Badge tone="warning">{tr("Kechikkan")}</Badge> : <Badge tone="success">{tr("Muddatida")}</Badge>}
                   />
                   <CardBody className="space-y-3 pt-3">
                     {a.type === "homework" ? <HomeworkItemsList items={a.items} books={c.books} progress={c.versions[0]?.itemProgress ?? {}} bookHref={(id) => `${base}/library/${id}`} /> : null}
-                    {c.versions[0]?.content ? <div className="rounded-xl bg-surface-2 p-4 text-[14.5px]"><RichText text={c.versions[0].content} /></div> : a.type === "homework" ? null : <p className="text-[13px] text-muted">Matn yo‘q.</p>}
+                    {c.versions[0]?.content ? <div className="rounded-xl bg-surface-2 p-4 text-[14.5px]"><RichText text={c.versions[0].content} /></div> : a.type === "homework" ? null : <p className="text-[13px] text-muted">{tr("Matn yo‘q.")}</p>}
                     {c.files.length ? <MediaGallery files={c.files} /> : null}
                   </CardBody>
                 </Card>
                 {c.versions.length > 1 ? (
                   <Card>
-                    <CardHeader title="Oldingi versiyalar" icon={<History />} />
+                    <CardHeader title={tr("Oldingi versiyalar")} icon={<History />} />
                     <CardBody className="space-y-2 pt-3">
                       {c.versions.slice(1).map((v) => (
                         <details key={v.id} className="rounded-xl border border-border px-4 py-2.5">
-                          <summary className="cursor-pointer text-[13.5px] font-semibold">{v.version}-versiya · {formatDateTime(v.submittedAt)}</summary>
+                          <summary className="cursor-pointer text-[13.5px] font-semibold">{tr("{0}-versiya · {1}", v.version, formatDateTime(v.submittedAt))}</summary>
                           <RichText text={v.content || "—"} className="mt-2 text-[13.5px] text-text-2" />
                         </details>
                       ))}
@@ -143,19 +144,19 @@ export async function GradePage({ user, base, assignmentId, studentId }: { user:
                 ) : null}
               </>
             ) : (
-              <Alert tone="info">O‘quvchi hali ishni topshirmagan.</Alert>
+              <Alert tone="info">{tr("O‘quvchi hali ishni topshirmagan.")}</Alert>
             )
           ) : attempts.length ? (
             attempts.map(({ attempt, items }) => (
               <Card key={attempt.id}>
                 <CardHeader
                   title={`${attempt.attemptNo}-urinish`}
-                  description={`${attempt.submittedAt ? formatDateTime(attempt.submittedAt) : "jarayonda"}${attempt.isLate ? " · kechikkan" : ""}`}
-                  action={attempt.status === "in_progress" ? <Badge tone="warning">Jarayonda</Badge> : attempt.score != null ? <Badge tone="success" className="tabular">{fmtNumber(Number(attempt.score), 2)} / {fmtNumber(Number(attempt.maxScore), 2)}</Badge> : <Badge tone="violet">Qo‘lda baholash kerak</Badge>}
+                  description={`${attempt.submittedAt ? formatDateTime(attempt.submittedAt) : "jarayonda"}${attempt.isLate ? tr(" · kechikkan") : ""}`}
+                  action={attempt.status === "in_progress" ? <Badge tone="warning">{tr("Jarayonda")}</Badge> : attempt.score != null ? <Badge tone="success" className="tabular">{fmtNumber(Number(attempt.score), 2)} / {fmtNumber(Number(attempt.maxScore), 2)}</Badge> : <Badge tone="violet">{tr("Qo‘lda baholash kerak")}</Badge>}
                 />
                 <CardBody className="pt-3">
                   {attempt.status === "in_progress" ? (
-                    <p className="text-[13px] text-muted">Urinish yakunlanmagan.</p>
+                    <p className="text-[13px] text-muted">{tr("Urinish yakunlanmagan.")}</p>
                   ) : (
                     <QuizGradeForm
                       attemptId={attempt.id}
@@ -186,16 +187,16 @@ export async function GradePage({ user, base, assignmentId, studentId }: { user:
               </Card>
             ))
           ) : (
-            <Alert tone="info">O‘quvchi hali quizni boshlamagan.</Alert>
+            <Alert tone="info">{tr("O‘quvchi hali quizni boshlamagan.")}</Alert>
           )}
 
           {c.feedback.length ? (
             <Card>
-              <CardHeader title="Izohlar tarixi" icon={<MessageSquareText />} />
+              <CardHeader title={tr("Izohlar tarixi")} icon={<MessageSquareText />} />
               <CardBody className="space-y-2.5 pt-3">
                 {c.feedback.map((f) => (
                   <div key={f.id} className={cn("rounded-xl p-3.5", f.kind === "revision_request" ? "bg-warning-soft" : "bg-surface-2")}>
-                    <div className="mb-1 text-[12px] text-muted"><b className="text-text-2">{f.author}</b> · {formatDateTime(f.createdAt)}{f.kind === "revision_request" ? " · qayta ishlash so‘rovi" : ""}</div>
+                    <div className="mb-1 text-[12px] text-muted"><b className="text-text-2">{f.author}</b> · {formatDateTime(f.createdAt)}{f.kind === "revision_request" ? tr(" · qayta ishlash so‘rovi") : ""}</div>
                     <RichText text={f.body} className="text-[13.5px]" />
                   </div>
                 ))}
@@ -220,7 +221,7 @@ export async function GradePage({ user, base, assignmentId, studentId }: { user:
           ) : null}
           {quiz && c.grade ? (
             <Card>
-              <CardHeader title="Rasmiy baho" />
+              <CardHeader title={tr("Rasmiy baho")} />
               <CardBody className="space-y-3 pt-3">
                 <div className="flex items-baseline gap-2 tabular">
                   <span className="text-[28px] font-bold">{fmtNumber(c.grade.points, 2)}</span>
@@ -233,7 +234,7 @@ export async function GradePage({ user, base, assignmentId, studentId }: { user:
           ) : null}
           {c.history.length ? (
             <Card>
-              <CardHeader title="Baho o‘zgarishlari" icon={<History />} description="O‘chirib bo‘lmaydigan audit tarixi" />
+              <CardHeader title={tr("Baho o‘zgarishlari")} icon={<History />} description={tr("O‘chirib bo‘lmaydigan audit tarixi")} />
               <CardBody className="pt-3">
                 <ol className="space-y-3 text-[13px]">
                   {c.history.map((h) => (
@@ -260,34 +261,34 @@ export async function GradebookPage({ user, base, sp }: { user: SessionUser; bas
   return (
     <>
       <PageHeader
-        title="Baholar jurnali"
-        description="Guruh bo‘yicha barcha baholar. * — dastlabki baho."
-        actions={gb && can(user, "reports.export") ? <LinkButton href={`/api/export/gradebook?class=${classId}${sp.subject ? `&subject=${sp.subject}` : ""}`} variant="secondary" prefetch={false}><Download /> CSV eksport</LinkButton> : null}
+        title={tr("Baholar jurnali")}
+        description={tr("Guruh bo‘yicha barcha baholar. * — dastlabki baho.")}
+        actions={gb && can(user, "reports.export") ? <LinkButton href={`/api/export/gradebook?class=${classId}${sp.subject ? `&subject=${sp.subject}` : ""}`} variant="secondary" prefetch={false}><Download /> {tr("CSV eksport")}</LinkButton> : null}
       />
       <FilterBar
         fields={[
-          { name: "class", label: "Guruh", options: classes.map((c) => [c.id, c.name] as [string, string]) },
-          { name: "subject", label: "Kategoriya", options: [["", "Barcha kategoriyalar"], ...subjects.map((s) => [s.id, s.name] as [string, string])] },
+          { name: "class", label: tr("Guruh"), options: classes.map((c) => [c.id, c.name] as [string, string]) },
+          { name: "subject", label: tr("Kategoriya"), options: [["", tr("Barcha kategoriyalar")], ...subjects.map((s) => [s.id, s.name] as [string, string])] },
         ]}
       />
       {!gb ? (
-        <Card><EmptyState icon={<FileSpreadsheet />} title="Guruh yo‘q" description="Sizga hali guruh biriktirilmagan." /></Card>
+        <Card><EmptyState icon={<FileSpreadsheet />} title={tr("Guruh yo‘q")} description={tr("Sizga hali guruh biriktirilmagan.")} /></Card>
       ) : !gb.assignments.length ? (
-        <Card><EmptyState icon={<FileSpreadsheet />} title="Baholanadigan vazifalar yo‘q" description="Bu guruh uchun e’lon qilingan vazifalar baholangach, jurnal to‘ladi." /></Card>
+        <Card><EmptyState icon={<FileSpreadsheet />} title={tr("Baholanadigan vazifalar yo‘q")} description={tr("Bu guruh uchun e’lon qilingan vazifalar baholangach, jurnal to‘ladi.")} /></Card>
       ) : (
         <Card className="overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-[13px]">
               <thead className="border-b border-border bg-surface-2/60 text-[12px] text-muted">
                 <tr>
-                  <th className="sticky left-0 z-10 min-w-48 bg-surface-2 px-4 py-3 text-left font-semibold">O‘quvchi</th>
+                  <th className="sticky left-0 z-10 min-w-48 bg-surface-2 px-4 py-3 text-left font-semibold">{tr("O‘quvchi")}</th>
                   {gb.assignments.map((a) => (
                     <th key={a.id} className="min-w-28 px-3 py-3 text-left font-semibold">
                       <Link href={`${base}/assignments/${a.id}`} className="line-clamp-2 text-text-2 hover:text-primary" title={a.title}>{a.title}</Link>
                       <div className="font-normal">{a.dueAt ? formatDate(a.dueAt) : ""} · {a.maxScore}</div>
                     </th>
                   ))}
-                  <th className="px-4 py-3 text-right font-semibold">O‘rtacha</th>
+                  <th className="px-4 py-3 text-right font-semibold">{tr("O‘rtacha")}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-border">
@@ -295,7 +296,7 @@ export async function GradebookPage({ user, base, sp }: { user: SessionUser; bas
                   <tr key={r.student.id} className="hover:bg-surface-2/40">
                     <td className="sticky left-0 z-10 bg-surface px-4 py-2.5 font-semibold">
                       <Link href={`${base}/students/${r.student.id}`} className="hover:text-primary">{r.student.name}</Link>
-                      {r.student.status === "deactivated" ? <span className="ml-1 text-[11px] text-muted">(faol emas)</span> : null}
+                      {r.student.status === "deactivated" ? <span className="ml-1 text-[11px] text-muted">{tr("(faol emas)")}</span> : null}
                     </td>
                     {r.cells.map((cell, i) => (
                       <td key={i} className="px-3 py-2.5 tabular">
@@ -324,8 +325,8 @@ export async function BankPage({ user, sp }: { user: SessionUser; sp: { subject?
   const [subjects, items] = await Promise.all([subjectsList(), listBank(user, sp.subject || undefined)]);
   return (
     <>
-      <PageHeader title="Savollar banki" description="Qayta foydalaniladigan savollar. Quiz tahrirlovchisidan “Savollar bankidan” orqali qo‘shing." />
-      <FilterBar fields={[{ name: "subject", label: "Kategoriya", options: [["", "Barcha kategoriyalar"], ...subjects.map((s) => [s.id, s.name] as [string, string])] }]} />
+      <PageHeader title={tr("Savollar banki")} description={tr("Qayta foydalaniladigan savollar. Quiz tahrirlovchisidan “Savollar bankidan” orqali qo‘shing.")} />
+      <FilterBar fields={[{ name: "subject", label: tr("Kategoriya"), options: [["", tr("Barcha kategoriyalar")], ...subjects.map((s) => [s.id, s.name] as [string, string])] }]} />
       <BankManager
         subjects={subjects.map((s) => ({ id: s.id, name: s.name }))}
         defaultSubject={sp.subject || subjects[0]?.id || ""}
@@ -342,14 +343,14 @@ export async function StudentRecordPage({ user, base, studentId }: { user: Sessi
   const avg = grades.length ? grades.reduce((s, g) => s + Number(g.percent), 0) / grades.length : null;
   return (
     <div className="mx-auto max-w-4xl">
-      <PageHeader back={{ href: base === "/admin" ? "/admin/students" : "/teacher/gradebook", label: base === "/admin" ? "O‘quvchilar" : "Baholar jurnali" }} title={r.user.displayName} description={`@${r.user.username}${r.user.studentCode ? ` · ID ${r.user.studentCode}` : ""} · ${r.classes.map((c) => c.name).join(", ") || "guruhsiz"}`} />
+      <PageHeader back={{ href: base === "/admin" ? "/admin/students" : "/teacher/gradebook", label: base === "/admin" ? tr("O‘quvchilar") : tr("Baholar jurnali") }} title={r.user.displayName} description={`@${r.user.username}${r.user.studentCode ? tr(" · ID {0}", r.user.studentCode) : ""} · ${r.classes.map((c) => c.name).join(", ") || "guruhsiz"}`} />
       <div className="mb-5 grid grid-cols-2 gap-3 sm:grid-cols-3">
-        <Card><CardBody><div className="text-[12px] text-muted">O‘rtacha</div><div className="text-[22px] font-bold tabular">{fmtPercent(avg == null ? null : Math.round(avg * 10) / 10)}</div></CardBody></Card>
-        <Card><CardBody><div className="text-[12px] text-muted">Baholar</div><div className="text-[22px] font-bold tabular">{grades.length}</div></CardBody></Card>
-        <Card><CardBody><div className="text-[12px] text-muted">Oxirgi kirish</div><div className="text-[15px] font-bold">{r.user.lastLoginAt ? formatDateTime(r.user.lastLoginAt) : "—"}</div></CardBody></Card>
+        <Card><CardBody><div className="text-[12px] text-muted">{tr("O‘rtacha")}</div><div className="text-[22px] font-bold tabular">{fmtPercent(avg == null ? null : Math.round(avg * 10) / 10)}</div></CardBody></Card>
+        <Card><CardBody><div className="text-[12px] text-muted">{tr("Baholar")}</div><div className="text-[22px] font-bold tabular">{grades.length}</div></CardBody></Card>
+        <Card><CardBody><div className="text-[12px] text-muted">{tr("Oxirgi kirish")}</div><div className="text-[15px] font-bold">{r.user.lastLoginAt ? formatDateTime(r.user.lastLoginAt) : "—"}</div></CardBody></Card>
       </div>
       <Card className="overflow-hidden">
-        <CardHeader title="Baholar" icon={<ClipboardCheck />} description={base === "/teacher" ? "Faqat sizning guruhlaringiz" : undefined} />
+        <CardHeader title={tr("Baholar")} icon={<ClipboardCheck />} description={base === "/teacher" ? tr("Faqat sizning guruhlaringiz") : undefined} />
         <CardBody className="pt-3">
           {grades.length ? (
             <ul className="-mx-2 divide-y divide-border">
@@ -365,7 +366,7 @@ export async function StudentRecordPage({ user, base, studentId }: { user: Sessi
               ))}
             </ul>
           ) : (
-            <p className="py-6 text-center text-[13.5px] text-muted">Baholar yo‘q.</p>
+            <p className="py-6 text-center text-[13.5px] text-muted">{tr("Baholar yo‘q.")}</p>
           )}
         </CardBody>
       </Card>

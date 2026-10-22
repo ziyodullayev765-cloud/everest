@@ -1,5 +1,6 @@
 import { Compass } from "lucide-react";
 import { LinkButton } from "@/components/ui/button";
+import { tr } from "@/lib/i18n/tr";
 
 export default function NotFound() {
   return (
@@ -9,10 +10,10 @@ export default function NotFound() {
           <Compass className="size-6" aria-hidden />
         </div>
         <p className="text-[13px] font-bold tracking-[0.08em] text-muted">404</p>
-        <h1 className="mt-1 text-[22px] font-bold tracking-[-0.02em]">Sahifa topilmadi</h1>
-        <p className="mt-2 text-[14.5px] text-muted">Bu sahifa mavjud emas yoki uni ko‘rishga ruxsatingiz yo‘q.</p>
+        <h1 className="mt-1 text-[22px] font-bold tracking-[-0.02em]">{tr("Sahifa topilmadi")}</h1>
+        <p className="mt-2 text-[14.5px] text-muted">{tr("Bu sahifa mavjud emas yoki uni ko‘rishga ruxsatingiz yo‘q.")}</p>
         <LinkButton href="/" className="mt-6">
-          Bosh sahifaga
+          {tr("Bosh sahifaga")}
         </LinkButton>
       </div>
     </main>

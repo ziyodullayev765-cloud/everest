@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { trNode } from "@/lib/i18n/node";
 import { AlertTriangle, CheckCircle2, Info, XCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -7,6 +8,7 @@ export function Skeleton({ className }: { className?: string }) {
 }
 
 export function EmptyState({ icon, title, description, action, className }: { icon: ReactNode; title: ReactNode; description?: ReactNode; action?: ReactNode; className?: string }) {
+  title = trNode(title); description = trNode(description);
   return (
     <div className={cn("flex flex-col items-center px-6 py-10 text-center", className)}>
       <div className="relative mb-4 grid size-14 place-items-center rounded-2xl bg-primary-soft text-primary-soft-fg [&_svg]:size-6">
@@ -28,6 +30,7 @@ const alertTones = {
 };
 
 export function Alert({ tone = "info", title, children, className }: { tone?: keyof typeof alertTones; title?: ReactNode; children?: ReactNode; className?: string }) {
+  title = trNode(title); children = trNode(children);
   const t = alertTones[tone];
   const Icon = t.icon;
   return (

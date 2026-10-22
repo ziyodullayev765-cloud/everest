@@ -2,8 +2,9 @@ import type { Metadata } from "next";
 import { WifiOff } from "lucide-react";
 import { LogoMark } from "@/components/app/logo";
 import { RetryButton } from "./retry";
+import { tr } from "@/lib/i18n/tr";
 
-export const metadata: Metadata = { title: "Oflayn" };
+export const metadata: Metadata = { get title() { return tr("Oflayn"); } };
 export const dynamic = "force-static";
 
 /** Pre-cached by the service worker and shown when a page can't be loaded without a connection. */
@@ -17,8 +18,8 @@ export default function OfflinePage() {
         <div className="mx-auto mb-4 grid size-14 place-items-center rounded-2xl bg-warning-soft text-warning">
           <WifiOff className="size-6" aria-hidden />
         </div>
-        <h1 className="text-[22px] font-bold tracking-[-0.02em]">Internet aloqasi yo‘q</h1>
-        <p className="mt-2 text-[14.5px] leading-relaxed text-muted">Bu sahifani ochish uchun internet kerak. Vazifalar, baholar va quizlar xavfsizlik uchun qurilmada saqlanmaydi.</p>
+        <h1 className="text-[22px] font-bold tracking-[-0.02em]">{tr("Internet aloqasi yo‘q")}</h1>
+        <p className="mt-2 text-[14.5px] leading-relaxed text-muted">{tr("Bu sahifani ochish uchun internet kerak. Vazifalar, baholar va quizlar xavfsizlik uchun qurilmada saqlanmaydi.")}</p>
         <RetryButton />
       </div>
     </main>

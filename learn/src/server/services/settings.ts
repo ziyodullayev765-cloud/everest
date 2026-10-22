@@ -8,6 +8,7 @@ import { isAdmin, type Actor } from "../auth/rbac";
 import { forbidden, invalid } from "../errors";
 import { audit } from "./audit";
 import { sql } from "drizzle-orm";
+import { tr } from "@/lib/i18n/tr";
 
 export type PlatformSettings = {
   branding: { appName: string; shortName: string; primaryColor: string; logoFileId: string | null };
@@ -20,7 +21,7 @@ export type PlatformSettings = {
 };
 
 export const DEFAULT_SETTINGS: PlatformSettings = {
-  branding: { appName: "Everest Ta’lim", shortName: "Everest", primaryColor: "#0f7a5a", logoFileId: null },
+  branding: { get appName() { return tr("Everest Ta’lim"); }, shortName: "Everest", primaryColor: "#0f7a5a", logoFileId: null },
   grading: { scale: DEFAULT_SCALE },
   gamification: { enabled: true, rules: DEFAULT_XP_RULES },
   languages: { enabled: ["uz"], default: "uz" },
@@ -29,8 +30,8 @@ export const DEFAULT_SETTINGS: PlatformSettings = {
   notificationTemplates: {
     newAssignment: "Yangi vazifa: {title}",
     deadline: "Muddat yaqinlashmoqda: {title}",
-    graded: "Baho e’lon qilindi: {title}",
-    weekly: "Haftalik hisobotingiz tayyor",
+    get graded() { return tr("Baho e’lon qilindi: {title}"); },
+    get weekly() { return tr("Haftalik hisobotingiz tayyor"); },
   },
 };
 
@@ -93,10 +94,10 @@ export const getSettings = cache(async (): Promise<PlatformSettings> => {
 export async function updateSettings(actor: Actor, input: unknown) {
   if (!isAdmin(actor)) throw forbidden();
   const parsed = settingsSchema.safeParse(input);
-  if (!parsed.success) throw invalid(parsed.error.issues[0]?.message ?? "Noto‘g‘ri qiymat");
+  if (!parsed.success) throw invalid(parsed.error.issues[0]?.message ?? tr("Noto‘g‘ri qiymat"));
   const scaleProblem = validateScale(parsed.data.grading.scale);
   if (scaleProblem) throw invalid(scaleProblem);
-  if (!parsed.data.languages.enabled.includes(parsed.data.languages.default)) throw invalid("Asosiy til yoqilgan tillar ichida bo‘lishi kerak.");
+  if (!parsed.data.languages.enabled.includes(parsed.data.languages.default)) throw invalid(tr("Asosiy til yoqilgan tillar ichida bo‘lishi kerak."));
   await db
     .insert(schema.settings)
     .values({ key: "platform", value: parsed.data, updatedBy: actor.id })

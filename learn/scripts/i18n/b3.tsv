@@ -1,0 +1,343 @@
+680	Text
+681	The text is too long.
+682	Text and questions
+683	No text.
+684	Mark the blank in the text with ___
+685	Vocabulary words in the text ({0})
+686	Write your text…
+687	Text answer
+688	Text…
+689	Topic
+690	By topic
+691	Rules, examples and exercises by topic. Mastery is calculated from your attempts.
+692	Private section
+693	Privacy and data
+694	Special practice
+695	Data
+696	Invalid data
+697	Invalid data.
+698	Only an administrator can change this information.
+699	Medal icon
+700	My groups
+701	My work
+702	My answer: {0}
+703	My progress
+704	Menu
+705	Menu names may differ slightly depending on the browser and its version. Some browsers (e.g. some in-app browsers) don’t support installing.
+706	Shown in the menu
+707	Criterion
+708	Criterion name
+709	Add criterion
+710	The criteria total ({0}) must equal the maximum points ({1})
+711	Remove criterion
+712	Minimum percent
+713	Example
+714	Example (EN)
+715	Example translation
+716	No matching assignment
+717	Matching
+718	Matching in progress
+719	Matching finished
+720	Matching
+721	Author
+722	Deadline
+723	Deadline reminder
+724	The deadline must be after the publish time.
+725	Past due
+726	Past due — the attempt is marked as late
+727	After the deadline
+728	Deadline and rules
+729	Accepted after the deadline too and marked “late”
+730	Can’t be submitted after the deadline.
+731	After the deadline
+732	Overdue
+733	No overdue work.
+734	Overdue, not submitted
+735	On time
+736	Assignments submitted on time
+737	Submit on time
+738	No deadline
+739	Important actions are written to a log that can’t be changed or deleted. IP addresses are stored hashed.
+740	Perfect!
+741	Reward
+742	Cover
+743	The cover must be an image.
+744	The challenge has started
+745	Sample
+746	Sample CSV
+747	Result
+748	Results
+749	My results
+750	View results
+751	Show results
+752	How many times it can be resubmitted
+753	What to do?
+754	What went well, what to improve…
+755	Something went wrong
+756	What didn’t you understand? (optional)
+757	Write what needs fixing…
+758	Badge
+759	Unknown type: “{0}”
+760	Name
+762	Wrong
+763	Irregular verb forms
+764	Irregular verbs
+765	Invalid value
+766	Bad request
+767	Bad request.
+768	Copy
+769	Copy created
+770	Copied
+771	Copy
+772	Open
+773	People
+774	Save offline ({0})
+775	Offline
+776	About offline mode
+777	Offline — save once you’re back online
+778	Offline — the answer is saved once you’re back online
+779	Previous
+780	Back to the previous question
+781	The previous attempt’s time is up. Reload the page.
+782	Previous versions
+783	Students who earned it
+784	Remove
+785	Earned
+786	Date earned
+787	Earned achievements
+788	Not earned
+789	Range
+790	Ranges must not repeat.
+791	Back
+792	Easy
+793	Sound
+794	Sound effects
+795	Voice {0}
+796	Final cutoff (optional)
+797	Last sign-in
+798	Last practice
+799	Almost there!
+800	Audit history that can’t be deleted
+801	Removed
+802	A disabled achievement doesn’t unlock for new students; earned ones are kept.
+803	Delete
+804	Turning it off doesn’t affect your grades.
+805	Right
+806	Right side
+807	I’ve read it
+808	Read
+809	Unread
+810	Reading
+811	To read
+812	Learning — organised, fun and effective
+813	Learning — organised, fun and effective.
+814	Teacher
+815	The teacher chose not to show answers for this quiz.
+816	The teacher only sees the groups listed here.
+817	The teacher returned the work for revision
+818	Teacher comments
+819	Teacher panel
+820	After the teacher checks it, the grade and comments appear on this assignment page.
+821	After the teacher checks it, the grade and comments appear on the assignment page.
+822	Teacher not found.
+823	A short note for the teacher…
+824	Teachers
+825	Teachers ({0})
+826	Teachers and staff
+827	Enter the 6-character code your teacher gave you.
+828	Appears here when your teacher publishes an assignment.
+829	Learning
+830	Learning goals
+831	Study material
+832	Reading a study material (once)
+833	Student
+834	Student ID
+835	Student ID (optional)
+836	The student isn’t assigned to this assignment.
+837	The student hasn’t submitted the work yet.
+838	The student hasn’t started the quiz yet.
+839	The student ticks each one separately. For translation and tapescript they write text.
+840	Student card
+841	Student view (preview)
+842	Search students
+843	Add a student
+844	The student reads this text before the questions.
+845	The student is notified and can update and resubmit the work.
+846	Student or assignment
+847	No students.
+848	The student gets this sentence to correct.
+849	The words are shuffled for the student ({0} words).
+850	Students
+851	Students ({0})
+852	Students have started this quiz. To keep results intact the questions can’t be changed — make a copy of the assignment if you need to change them.
+853	Student activity
+854	An assignment students have worked on can’t go back to draft. Archive it.
+855	The type of an assignment students have started can’t be changed.
+856	The type can’t be changed because students have started.
+857	What students can change themselves
+858	Students have started the quiz. Make a copy to change the questions.
+859	Hidden from the student list. Submitted work and grades aren’t deleted — it can be restored at any time.
+860	A modern learning platform for students, teachers and administration
+861	Visible to students immediately
+862	Import students from CSV
+863	Add students
+864	Learned
+865	Learned
+866	Words learned
+867	Words learned (answered correctly at least once)
+868	Learning
+869	Install
+870	Medium
+871	Average
+872	Average %
+873	Average below 60%
+874	Average 80% and above
+875	Average grade
+876	Average grade, % (if there are at least 5 grades)
+877	Average score, %
+878	Passed
+879	Last week you did {0} tasks. The week isn’t over — you can still reach your goal.
+880	Passed tense tests
+881	Pass mark
+882	Pass mark, %
+883	Pass mark: {0}%
+884	Skipped
+885	Game
+886	Game elements (XP, badges) are turned off in Settings — students don’t see achievements.
+887	Not enough words for the game
+888	Play
+889	Manage your own account on the Profile page.
+890	O‘zbekcha
+891	From Uzbek to English
+892	Translate from Uzbek into English
+893	Changes take effect for all users immediately and are written to the audit log.
+894	Save changes
+895	Can’t be changed.
+896	Change
+897	Reason for the change
+898	You can’t delete yourself.
+899	Mastered
+900	The PDF couldn’t be opened. Check your connection and try again.
+901	Upload PDF
+902	PNG/WebP, square
+903	Password
+904	The password is too long.
+905	The password must be at least 8 characters.
+906	Password reset link
+907	Password updated. Sign in with the new password.
+908	The password must contain letters and numbers.
+909	The passwords don’t match.
+910	Show password
+911	Change password
+912	Changing your password signs you out on other devices.
+913	Save password
+914	Reset password
+915	Forgot your password?
+916	Hide password
+918	Passage 1-2 / up to page 18
+921	The one at the bottom (on iPad — at the top)
+922	Down
+923	The platform at a glance.
+924	Platform name
+925	Platform settings
+927	Profile
+928	Profile menu
+929	Change profile picture
+930	Profile permissions
+931	Back to profile
+932	Mastered
+933	Fully mastered
+934	Accepted answers
+935	Lines start with the Uzbek word
+936	Again
+937	Reactivate
+938	Reusable questions. Add them from the quiz editor via “From the question bank”.
+939	Revise
+940	Returned for revision
+941	Returned for revision
+942	Return for revision
+943	Read again
+944	Resubmit
+945	No resubmissions left.
+946	No resubmission.
+947	Resubmission: {0} times.
+948	Allow resubmission
+949	Try again
+950	Returned
+951	Return
+952	Reason for returning
+953	Write the reason for returning it.
+954	Back
+955	Search
+956	Short answer
+957	Short answers
+958	Short answer
+959	Short name
+960	Short description
+961	Hard
+962	Hard word
+963	Mark as a hard word
+964	Hard words
+965	Hard words ({0})
+966	Difficulty
+967	Plays left: {0}
+968	Time left
+969	Draft
+970	Draft (admin only)
+971	Draft / scheduled
+972	Draft saved
+973	To draft
+974	Moved back to draft
+975	Save draft
+976	Dark
+977	Needs manual grading
+978	Save manual grading
+979	Guide
+980	Added
+981	Join
+982	Create a join code
+983	Join code:
+984	Extra
+985	Extra practice
+986	Add
+987	Add ({0})
+989	Quiz accuracy
+990	The quiz is first saved as a draft — in the next step you add questions and publish it.
+991	The quiz has started — questions can’t be added.
+992	Quiz published
+993	The quiz deadline has passed.
+994	Quiz results
+995	Quiz result
+996	Quiz average
+997	Quiz page
+998	Quiz settings
+999	Quiz attempts
+1000	The quiz has no questions yet.
+1001	The quiz needs at least one question.
+1002	Quizzes
+1003	Quizzes are graded per question.
+1004	Finishing a quiz for the first time
+1005	Start the quiz
+1006	Only students take quizzes.
+1007	Finish the quiz now
+1008	Finish the quiz?
+1009	Add the first question with the buttons below.
+1010	Colour
+1011	Image
+1012	Image attached
+1013	Choose an image file.
+1014	Image removed
+1015	Add an image
+1016	Image updated
+1017	Upload an image
+1018	Official grade
+1019	Official grade and practice result are separate
+1020	Official grade:
+1021	Official grades
+1022	Only an administrator can change the picture.
+1023	Remove picture
+1025	Reading text
+1026	Reading and Listening exercises in total
+1027	Scheduled
+1028	Scheduled
+1029	The scheduled time must be in the future.

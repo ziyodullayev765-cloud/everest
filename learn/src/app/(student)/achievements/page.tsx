@@ -13,8 +13,9 @@ import { PageHeader } from "@/components/ui/page";
 import { Card, CardBody, CardHeader } from "@/components/ui/card";
 import { Alert } from "@/components/ui/feedback";
 import { Medal } from "@/components/student/medal";
+import { tr } from "@/lib/i18n/tr";
 
-export const metadata: Metadata = { title: "Yutuqlar" };
+export const metadata: Metadata = { get title() { return tr("Yutuqlar"); } };
 
 const STEPS = [
   "Vazifa, quiz yoki mashqni bajarasiz.",
@@ -31,8 +32,8 @@ export default async function AchievementsPage({ searchParams }: { searchParams:
   if (!settings.gamification.enabled || !user.gamificationEnabled)
     return (
       <>
-        <PageHeader title="Yutuqlar" />
-        <Alert tone="info">{settings.gamification.enabled ? "Siz o‘yin elementlarini sozlamalarda o‘chirgansiz." : "Kurs o‘yin elementlarini (XP, nishonlar) o‘chirib qo‘ygan."}</Alert>
+        <PageHeader title={tr("Yutuqlar")} />
+        <Alert tone="info">{settings.gamification.enabled ? tr("Siz o‘yin elementlarini sozlamalarda o‘chirgansiz.") : tr("Kurs o‘yin elementlarini (XP, nishonlar) o‘chirib qo‘ygan.")}</Alert>
       </>
     );
   const cat = ACH_CATEGORIES.find((x) => x.key === c)?.key ?? null;
@@ -42,13 +43,13 @@ export default async function AchievementsPage({ searchParams }: { searchParams:
   const totalEarned = list.filter((a) => a.earnedAt).length;
   const rules = settings.gamification.rules;
 
-  const tabs = [{ key: null, label: "Barchasi" }, ...ACH_CATEGORIES.map((x) => ({ key: x.key as string | null, label: x.label }))];
+  const tabs = [{ key: null, label: tr("Barchasi") }, ...ACH_CATEGORIES.map((x) => ({ key: x.key as string | null, label: x.label }))];
 
   return (
     <div className="mx-auto max-w-3xl">
-      <PageHeader title="Yutuqlar" description="XP va nishonlar — motivatsiya uchun. Rasmiy baholarga qo‘shilmaydi." />
+      <PageHeader title={tr("Yutuqlar")} description={tr("XP va nishonlar — motivatsiya uchun. Rasmiy baholarga qo‘shilmaydi.")} />
 
-      <nav aria-label="Turkumlar" className="-mx-4 mb-5 flex gap-2 overflow-x-auto px-4 pb-1 sm:mx-0 sm:px-0">
+      <nav aria-label={tr("Turkumlar")} className="-mx-4 mb-5 flex gap-2 overflow-x-auto px-4 pb-1 sm:mx-0 sm:px-0">
         {tabs.map((t) => (
           <Link
             key={t.label}
@@ -70,7 +71,7 @@ export default async function AchievementsPage({ searchParams }: { searchParams:
             <Trophy className="size-9 text-[#e0900a]" aria-hidden />
           </span>
           <div className="min-w-0 flex-1">
-            <div className="text-[13px] font-bold text-muted">Umumiy yutuqlar</div>
+            <div className="text-[13px] font-bold text-muted">{tr("Umumiy yutuqlar")}</div>
             <div className="text-[28px] leading-tight font-black tabular">
               {totalEarned} <span className="text-[18px] text-muted">/ {list.length}</span>
             </div>
@@ -79,15 +80,15 @@ export default async function AchievementsPage({ searchParams }: { searchParams:
             </div>
           </div>
           <div className="hidden shrink-0 text-right sm:block">
-            <div className="text-[13px] font-bold text-muted">{g.level.level}-daraja</div>
-            <div className="text-[20px] font-black tabular">{fmtNumber(g.xp)} XP</div>
+            <div className="text-[13px] font-bold text-muted">{tr("{0}-daraja", g.level.level)}</div>
+            <div className="text-[20px] font-black tabular">{tr("{0} XP", fmtNumber(g.xp))}</div>
           </div>
         </section>
 
         <div className="grid grid-cols-3 gap-3">
           {[
-            { icon: <Flame className="size-5 text-[#ff7a1a]" />, value: `${g.streak.current} kun`, label: "Joriy streak" },
-            { icon: <Flame className="size-5 text-[#e5484d]" />, value: `${g.streak.best} kun`, label: "Eng uzun" },
+            { icon: <Flame className="size-5 text-[#ff7a1a]" />, value: tr("{0} kun", g.streak.current), label: tr("Joriy streak") },
+            { icon: <Flame className="size-5 text-[#e5484d]" />, value: tr("{0} kun", g.streak.best), label: tr("Eng uzun") },
             { icon: <Zap className="size-5 text-[#f5b50b]" />, value: `${fmtNumber(g.xp)}`, label: "XP" },
           ].map((s) => (
             <div key={s.label} className="rounded-3xl border-2 border-border bg-surface px-3 py-3 text-center">
@@ -99,7 +100,7 @@ export default async function AchievementsPage({ searchParams }: { searchParams:
         </div>
 
         <section>
-          <h2 className="mb-3 text-[17px] font-black">Olingan yutuqlar <span className="text-muted">({earned.length})</span></h2>
+          <h2 className="mb-3 text-[17px] font-black">{tr("Olingan yutuqlar")} <span className="text-muted">({earned.length})</span></h2>
           {earned.length ? (
             <div className="grid grid-cols-3 gap-3 sm:grid-cols-4">
               {earned.map((a) => (
@@ -112,7 +113,7 @@ export default async function AchievementsPage({ searchParams }: { searchParams:
             </div>
           ) : (
             <p className="rounded-3xl border-2 border-dashed border-border bg-surface px-4 py-6 text-center text-[13.5px] text-muted">
-              Hali yutuq yo‘q. Birinchi darsni yakunlang — “Birinchi qadam” ochiladi!
+              {tr("Hali yutuq yo‘q. Birinchi darsni yakunlang — “Birinchi qadam” ochiladi!")}
             </p>
           )}
         </section>
@@ -120,7 +121,7 @@ export default async function AchievementsPage({ searchParams }: { searchParams:
         {locked.length ? (
           <section>
             <h2 className="mb-3 flex items-center gap-2 text-[17px] font-black">
-              <Lock className="size-4 text-muted" aria-hidden /> Hali ochilmaganlar <span className="text-muted">({locked.length})</span>
+              <Lock className="size-4 text-muted" aria-hidden /> {tr("Hali ochilmaganlar")} <span className="text-muted">({locked.length})</span>
             </h2>
             <div className="grid grid-cols-3 gap-3 sm:grid-cols-4">
               {locked.map((a) => (
@@ -140,35 +141,35 @@ export default async function AchievementsPage({ searchParams }: { searchParams:
         ) : null}
 
         <Card>
-          <CardHeader title="Yutuqlar qanday ishlaydi?" />
+          <CardHeader title={tr("Yutuqlar qanday ishlaydi?")} />
           <CardBody className="pt-3">
             <ol className="space-y-2.5">
               {STEPS.map((s, i) => (
                 <li key={s} className="flex items-center gap-3 text-[13.5px]">
                   <span className="grid size-7 shrink-0 place-items-center rounded-full bg-primary text-[12.5px] font-black text-primary-fg">{i + 1}</span>
-                  {s}
+                  {tr(s)}
                 </li>
               ))}
             </ol>
-            <p className="mt-3 text-[12.5px] text-muted">Bitta ishni qayta topshirib yutuqni qayta olib bo‘lmaydi: har bir vazifa, quiz va so‘z bir marta hisoblanadi.</p>
+            <p className="mt-3 text-[12.5px] text-muted">{tr("Bitta ishni qayta topshirib yutuqni qayta olib bo‘lmaydi: har bir vazifa, quiz va so‘z bir marta hisoblanadi.")}</p>
           </CardBody>
         </Card>
 
         <Card>
-          <CardHeader title="XP qanday beriladi" description="Takroriy urinishlar XP ni ko‘paytirmaydi. Har bir yutuq ochilganda o‘z XP mukofoti ham beriladi." />
+          <CardHeader title={tr("XP qanday beriladi")} description={tr("Takroriy urinishlar XP ni ko‘paytirmaydi. Har bir yutuq ochilganda o‘z XP mukofoti ham beriladi.")} />
           <CardBody className="pt-3">
             <ul className="divide-y divide-border text-[13.5px]">
               {(Object.keys(XP_RULE_LABELS) as (keyof XpRules)[]).map((k) => (
                 <li key={k} className="flex items-center justify-between gap-4 py-2.5">
                   <span className="text-text-2">{XP_RULE_LABELS[k]}</span>
-                  <span className="shrink-0 font-bold text-primary tabular">+{rules[k]} XP</span>
+                  <span className="shrink-0 font-bold text-primary tabular">{tr("+{0} XP", rules[k])}</span>
                 </li>
               ))}
             </ul>
           </CardBody>
         </Card>
 
-        <p className="pb-2 text-center text-[13px] font-bold text-primary italic">Kichik qadamlar — katta maqsadlarga olib boradi!</p>
+        <p className="pb-2 text-center text-[13px] font-bold text-primary italic">{tr("Kichik qadamlar — katta maqsadlarga olib boradi!")}</p>
       </div>
     </div>
   );

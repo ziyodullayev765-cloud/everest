@@ -1,0 +1,333 @@
+1030	Schedule
+1031	Cancel the schedule
+1032	Your record: {0}
+1033	Role
+1034	List
+1035	The list is empty
+1036	Students see the list once it’s published.
+1037	The list isn’t assigned to anyone yet.
+1038	List name
+1039	List not found.
+1040	List created
+1041	From the list
+1042	Lists
+1043	No lists
+1044	With a rubric, the grade is the sum of the criteria
+1045	Request source not allowed.
+1046	No permission.
+1047	Permissions
+1049	Page not found
+1050	Try reloading the page.
+1051	The page failed to load. Try again.
+1052	Couldn’t save. Is there enough space on the phone?
+1053	Saved
+1054	Saved and published
+1055	Saved. Add questions before publishing the quiz.
+1056	Not saved — retrying
+1057	Unsaved changes
+1058	There are unsaved changes
+1059	Saving…
+1060	Saving… {0}%
+1061	Save
+1062	Save and continue
+1063	Save and publish
+1064	Save and go to questions
+1065	Filter
+1066	Try changing the filters.
+1067	Time spent
+1068	Title
+1069	Search by title
+1070	A header row is required: {0}
+1071	Header: username,display_name,class,student_code,email (class — the group’s name or code). Imported only if every row is valid.
+1072	The header must have username and display_name columns.
+1073	Question
+1074	Question audio
+1075	Question text
+1076	The question text is empty
+1077	Add a question
+1078	Question image
+1079	No question selected.
+1080	Question not found.
+1081	Question: She ___ (go) to school yesterday.\nMy answer: goed\nCorrect answer: went
+1082	Questions
+1083	Questions ({0})
+1084	Calculated automatically from the question points
+1085	Question bank
+1086	From the question bank
+1087	Added to the question bank
+1088	Save to the question bank
+1089	Invalid questions
+1090	Questions are locked
+1091	Question list
+1092	Show the question list
+1093	Questions saved
+1094	Import questions from CSV
+1095	Shuffle questions
+1096	the site
+1097	Streak
+1099	Server error
+1100	Favourite
+1101	Favourites ({0})
+1102	Add to favourites
+1103	Condition
+1104	Personal
+1105	Personal goals
+1106	Personal details
+1107	Your personal data is only visible to you, your teachers and the administration. Other students can’t see your grades.
+1108	Your personal growth. Only you and your teachers can see this.
+1109	Personal analysis
+1112	The scale must have 2–12 ranges.
+1113	The scale needs a range that starts at 0.
+1114	Reviewed {0} times in this period.
+1115	Days this week you did an assignment, a quiz or word reviews.
+1116	After that the app opens from the home-screen icon in its own window (without the address bar). On iOS 16.4 and later, other browsers may support this too.
+1117	You’ve read this material.
+1118	You can only give assignments to the groups assigned to you.
+1119	You opened the app from the home screen.
+1120	You’ve turned off game elements in Settings.
+1121	You keep working on yourself!
+1122	Your sentence
+1123	You started attempt {0}. Continue{1}.
+1124	You’ll have {0} minutes. The timer doesn’t stop once it starts.
+1125	No groups are assigned to you.
+1126	Groups assigned to you.
+1127	You haven’t been assigned a group yet.
+1128	Your answer
+1129	Your answer:
+1130	Settings
+1131	Settings saved
+1132	Set up
+1133	Last 14 days: submitted work and quizzes
+1134	Activity in the last 14 days
+1135	Days the daily goal was met in the last 30 days
+1136	Active days in the last 30 days
+1137	Last 7 days: assignments, quizzes, word reviews and average score
+1138	Activity in the last 7 days: completed assignments, quizzes and average score
+1139	Latest grades
+1140	Recently published assignments
+1141	Recent actions
+1142	Recent quizzes
+1143	Recently submitted work
+1144	Recent achievements
+1145	Ask
+1146	Couldn’t determine the request source.
+1147	A word isn’t “mastered” after one correct answer: it must be reviewed correctly several weeks in a row. A word you miss comes back sooner.
+1148	Word game
+1149	Search words
+1150	Word added
+1151	Word review
+1152	Word not found.
+1153	Part of speech
+1154	Match words with their meanings
+1155	Match the word and the meaning
+1156	Memorising words
+1157	Words
+1158	Words ({0})
+1159	Word list
+1160	Create word lists, import them from CSV and assign them to groups.
+1161	Build a sentence from words
+1162	My words
+1163	Add many words
+1164	Learn and review words.
+1165	Review words
+1166	Tap the words in the right order
+1167	Type the word in English (spelling)
+1168	Understanding the word in context
+1169	See the word, recall it, rate yourself
+1171	Details
+1172	Edit
+1173	Duplicates (skipped): {0}{1}
+1174	Repeated attempts don’t add XP. Each achievement also gives its own XP reward when it unlocks.
+1175	Review
+1176	Reviewing
+1177	Review
+1178	To review
+1179	Calculated from the review history
+1180	Review time
+1181	Words due for review and new words — with spaced repetition.
+1182	With words due for review and new words
+1183	Words appear here when they’re due for review.
+1184	Words recalled in reviews (correct on 2 different days)
+1185	Doesn’t affect the number of reviews
+1186	Students
+1187	Pronunciation
+1188	Pronunciation (browser voice)
+1189	Pronunciation audio
+1190	Choose an audio file for the pronunciation.
+1191	Listen to the pronunciation
+1192	The selected book wasn’t found.
+1193	Some of the selected students aren’t in your groups.
+1194	The selected questions are added to the quiz as copies (save your current changes first).
+1195	Choose…
+1197	Translation
+1198	The sentence or word to translate.
+1199	Translation: EN → UZ
+1200	Translation: UZ → EN
+1201	Write your translation here…
+1202	Your translation…
+1203	Show the translation
+1204	Find the translation
+1205	Confirm
+1206	Description
+1207	Description (optional)
+1208	Ready?
+1209	Nothing to check
+1210	Needs checking
+1211	Being checked
+1212	Check
+1213	Waiting to be checked
+1214	Work waiting to be checked and graded work.
+1215	Saved on the phone — opens without internet
+1216	Removed from the phone
+1217	Test (multiple choice)
+1218	Tests, timed quizzes and practice. Results are calculated as soon as you submit.
+1220	Quick word game
+1221	Quick test: 4 options, a timer, points and a streak bonus
+1222	Restored
+1223	Restore
+1225	Languages
+1226	Listening comprehension
+1227	Listen
+1228	Play limit
+1229	The play limit is used up.
+1230	System
+1231	System settings
+1232	Sign in.
+1233	Submitted
+1234	Your submitted work appears here once it’s graded.
+1235	After submitting
+1236	After submitting
+1237	Answers can’t be changed after submitting.
+1238	Can’t be submitted.
+1239	Submitted
+1240	Submitted work
+1241	No submitted work.
+1242	Submitted work
+1243	Submitted assignments, finished quizzes and word reviews
+1244	Work can’t be changed after submitting (unless resubmission is allowed).
+1245	Item name
+1246	Tasks
+1247	Submit
+1248	Deadline
+1249	The deadline has passed.
+1250	Clear
+1251	Correct
+1252	True / false
+1253	Sounds for correct/wrong answers, the game and finishing. Saved on this device.
+1254	Mark as correct
+1255	Correct sentence
+1256	Correct answer
+1257	Correct answer:
+1258	Correct answer: {0}
+1259	Correct answers open after the deadline.
+1260	Show correct answers
+1261	Correct translations
+1262	Choose the correct translation
+1263	Mark the correct option(s) with *
+1264	Correct options
+1265	Mark one correct answer for a true/false question
+1266	Correct: {0}
+1267	After full grading
+1268	Full name
+1269	XP collected
+1270	Transcription
+1271	Transcript
+1272	The transcript opens after you submit the work.
+1273	Transcript visibility
+1275	Track name
+1276	At least two weeks of grades are needed for a trend.
+1277	There’s an unfinished attempt
+1278	Dark mode and appearance
+1279	Type
+1280	Category
+1281	Categories
+1282	Explanation (shown in the result)
+1283	UZ → EN typing
+1284	Hand them over safely. On first sign-in the user sets their own password.
+1285	Share
+1286	Overall completion
+1287	Overview
+1288	Shared goal: how many tasks the group submits together
+1289	Overall result — nobody is shown individually
+1290	All achievements
+1292	The attempt isn’t finished yet.
+1293	Attempt not found.
+1294	The attempt is finished.
+1295	The attempt isn’t finished.
+1296	Attempts
+1297	Number of attempts
+1298	No attempts left.
+1299	Attempt history
+1300	My attempts
+1301	Teacher
+1302	Grammar exercises appear here by topic once your teacher adds them.
+1303	Listening exercises appear here once your teacher adds them.
+1304	Reading texts appear here once your teacher adds them.
+1305	Appears here once your teacher assigns a word list to you or your group.
+1306	Columns: minimum %, label, name. There must be a range starting at 0.
+1307	Columns: type, prompt, points, options, answers, extra, explanation. Download the sample and fill it in.
+1308	My homework
+1309	Homework
+1310	Add at least one item to the homework
+1315	Time
+1316	Result over time
+1317	Timed
+1318	Time limit, minutes
+1319	Time is up — your answers are being submitted
+1320	Time’s up! Correct answer: {0}
+1321	Time is up. Your answers were submitted automatically.
+1322	Temporary password
+1323	A temporary password is generated automatically.
+1324	Temporary passwords are shown only now
+1325	Times are in Tashkent time
+1326	Timed quiz
+1327	Option
+1328	Few options — it becomes a full test once more words are added to the list.
+1329	Options {0}
+1330	Shuffle options
+1331	Multiple-choice test
+1332	Remove option
+1333	Assignment
+1334	Search by assignment title
+1335	Assignment defaults
+1336	Assignment not found
+1337	Assignment not found.
+1338	Create assignments and quizzes
+1339	Assignments and quizzes
+1340	Charts fill in automatically once you submit assignments and quizzes.
+1341	Create an assignment
+1342	No permission to create assignments.
+1343	An assignment, a quiz or 10 word reviews = 1 session
+1344	An assignment, a quiz or 10 word reviews = 1 session. 1–20
+1345	Back to the assignment
+1346	Assignments
+1347	Assignment completion
+1348	Assignments and tests
+1349	Assignments, quizzes, grades and personal results — in one place.
+1350	Assignments, quizzes, grades and your personal results — all in one place, on your phone too.
+1351	Go to assignments
+1352	Archive the assignment?
+1353	Submitting an assignment late (once)
+1354	View the assignment
+1355	Submitting an assignment on time (once per assignment)
+1356	Edit the assignment
+1357	Comma-separated
+1358	Separate with commas
+1359	Comma-separated: was, were
+1361	Not required for minors
+1364	XP is only for motivation — it doesn’t affect official grades.
+1365	XP amount
+1366	XP reward
+1367	How XP is earned
+1368	XP and badges are for motivation. They aren’t added to official grades.
+1369	Show XP, levels and badges
+1370	Turn on XP, levels, badges and streaks
+1371	Messages
+1372	Incorrect sentence: {0}
+1373	Enter the incorrect sentence and the correct version(s)
+1374	Explain my mistake
+1375	Error
+1376	Something went wrong. Try again.
+1377	Find the mistake and write the sentence correctly:
+1378	Correct the mistake
+1379	Sentence with a mistake

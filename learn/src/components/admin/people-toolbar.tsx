@@ -9,6 +9,7 @@ import { Field, Input, Select, Checkbox } from "@/components/ui/form";
 import { Alert } from "@/components/ui/feedback";
 import { toast } from "@/components/ui/toast";
 import { toCsv } from "@/lib/utils";
+import { tr } from "@/lib/i18n/tr";
 
 const PERMS: [string, string][] = [
   ["assignments.create", "Vazifa va quiz yaratish"],
@@ -28,8 +29,8 @@ function download(name: string, text: string) {
 export function Credentials({ rows }: { rows: { username: string; displayName: string; tempPassword: string }[] }) {
   return (
     <div className="space-y-3">
-      <Alert tone="warning" title="Vaqtinchalik parollar faqat hozir ko‘rsatiladi">
-        Ularni xavfsiz tarzda topshiring. Birinchi kirishda foydalanuvchi o‘z parolini o‘rnatadi.
+      <Alert tone="warning" title={tr("Vaqtinchalik parollar faqat hozir ko‘rsatiladi")}>
+        {tr("Ularni xavfsiz tarzda topshiring. Birinchi kirishda foydalanuvchi o‘z parolini o‘rnatadi.")}
       </Alert>
       <div className="max-h-64 overflow-y-auto rounded-xl border border-border">
         <table className="w-full text-[13px]">
@@ -45,11 +46,11 @@ export function Credentials({ rows }: { rows: { username: string; displayName: s
         </table>
       </div>
       <div className="flex gap-2">
-        <Button variant="secondary" size="sm" onClick={() => download("hisoblar.csv", toCsv([["Ism", "Login", "Vaqtinchalik parol"], ...rows.map((r) => [r.displayName, r.username, r.tempPassword])]))}>
-          <Download /> CSV yuklab olish
+        <Button variant="secondary" size="sm" onClick={() => download("hisoblar.csv", toCsv([["Ism", "Login", tr("Vaqtinchalik parol")], ...rows.map((r) => [r.displayName, r.username, r.tempPassword])]))}>
+          <Download /> {tr("CSV yuklab olish")}
         </Button>
-        <Button variant="secondary" size="sm" onClick={() => navigator.clipboard.writeText(rows.map((r) => `${r.displayName}\t${r.username}\t${r.tempPassword}`).join("\n")).then(() => toast.success("Nusxalandi"))}>
-          <Copy /> Nusxalash
+        <Button variant="secondary" size="sm" onClick={() => navigator.clipboard.writeText(rows.map((r) => `${r.displayName}\t${r.username}\t${r.tempPassword}`).join("\n")).then(() => toast.success(tr("Nusxalandi")))}>
+          <Copy /> {tr("Nusxalash")}
         </Button>
       </div>
     </div>
@@ -77,14 +78,14 @@ export function PeopleToolbar({ kind, classes, canCreateAdmins }: { kind: "stude
     <>
       {kind === "student" ? (
         <Button variant="secondary" onClick={() => setOpen("import")}>
-          <Upload /> CSV import
+          <Upload /> {tr("CSV import")}
         </Button>
       ) : null}
       <Button onClick={() => setOpen("create")}>
-        <Plus /> {kind === "student" ? "O‘quvchi qo‘shish" : "Xodim qo‘shish"}
+        <Plus /> {kind === "student" ? tr("O‘quvchi qo‘shish") : tr("Xodim qo‘shish")}
       </Button>
 
-      <Dialog open={open === "create"} onClose={close} title={kind === "student" ? "Yangi o‘quvchi" : "Yangi xodim"} description="Vaqtinchalik parol avtomatik yaratiladi.">
+      <Dialog open={open === "create"} onClose={close} title={kind === "student" ? tr("Yangi o‘quvchi") : tr("Yangi xodim")} description={tr("Vaqtinchalik parol avtomatik yaratiladi.")}>
         {created ? (
           <Credentials rows={created} />
         ) : (
@@ -109,32 +110,32 @@ export function PeopleToolbar({ kind, classes, canCreateAdmins }: { kind: "stude
           >
             {error ? <Alert tone="danger">{error}</Alert> : null}
             {kind === "staff" ? (
-              <Field label="Rol">
+              <Field label={tr("Rol")}>
                 <Select value={f.role} onChange={(e) => setF({ ...f, role: e.target.value })}>
-                  <option value="teacher">O‘qituvchi</option>
-                  {canCreateAdmins ? <option value="admin">Administrator</option> : null}
-                  {canCreateAdmins ? <option value="super_admin">Bosh administrator</option> : null}
+                  <option value="teacher">{tr("O‘qituvchi")}</option>
+                  {canCreateAdmins ? <option value="admin">{tr("Administrator")}</option> : null}
+                  {canCreateAdmins ? <option value="super_admin">{tr("Bosh administrator")}</option> : null}
                 </Select>
               </Field>
             ) : null}
-            <Field label="To‘liq ism" required error={errors.displayName}>
+            <Field label={tr("To‘liq ism")} required error={errors.displayName}>
               <Input value={f.displayName} onChange={(e) => setF({ ...f, displayName: e.target.value })} required />
             </Field>
-            <Field label="Login" required hint="Lotin harflari, raqam, nuqta" error={errors.username}>
+            <Field label={tr("Login")} required hint={tr("Lotin harflari, raqam, nuqta")} error={errors.username}>
               <Input value={f.username} onChange={(e) => setF({ ...f, username: e.target.value.toLowerCase() })} autoCapitalize="none" required />
             </Field>
             <div className="grid gap-4 sm:grid-cols-2">
-              <Field label="E-pochta (ixtiyoriy)" error={errors.email} hint={kind === "student" ? "Voyaga yetmaganlar uchun shart emas" : undefined}>
+              <Field label={tr("E-pochta (ixtiyoriy)")} error={errors.email} hint={kind === "student" ? tr("Voyaga yetmaganlar uchun shart emas") : undefined}>
                 <Input type="email" value={f.email} onChange={(e) => setF({ ...f, email: e.target.value })} />
               </Field>
               {kind === "student" ? (
-                <Field label="O‘quvchi ID (ixtiyoriy)" error={errors.studentCode}>
+                <Field label={tr("O‘quvchi ID (ixtiyoriy)")} error={errors.studentCode}>
                   <Input value={f.studentCode} onChange={(e) => setF({ ...f, studentCode: e.target.value })} />
                 </Field>
               ) : null}
             </div>
             {f.role === "student" || f.role === "teacher" ? (
-              <Field label={f.role === "student" ? "Guruhlar" : "Biriktiriladigan guruhlar"}>
+              <Field label={f.role === "student" ? tr("Guruhlar") : tr("Biriktiriladigan guruhlar")}>
                 <div className="flex flex-wrap gap-2">
                   {classes.map((c) => (
                     <Checkbox key={c.id} className="rounded-lg border border-border px-2.5 py-1.5" checked={f.classIds.includes(c.id)} onChange={(x) => setF({ ...f, classIds: x ? [...f.classIds, c.id] : f.classIds.filter((y) => y !== c.id) })} label={c.name} />
@@ -143,27 +144,27 @@ export function PeopleToolbar({ kind, classes, canCreateAdmins }: { kind: "stude
               </Field>
             ) : null}
             {f.role === "teacher" ? (
-              <Field label="Ruxsatlar">
+              <Field label={tr("Ruxsatlar")}>
                 <div className="space-y-1.5">
                   {PERMS.map(([k, l]) => (
-                    <Checkbox key={k} checked={f.permissions.includes(k)} onChange={(x) => setF({ ...f, permissions: x ? [...f.permissions, k] : f.permissions.filter((y) => y !== k) })} label={l} />
+                    <Checkbox key={k} checked={f.permissions.includes(k)} onChange={(x) => setF({ ...f, permissions: x ? [...f.permissions, k] : f.permissions.filter((y) => y !== k) })} label={tr(l)} />
                   ))}
                 </div>
               </Field>
             ) : null}
             <div className="flex justify-end gap-2 pt-2">
               <Button type="button" variant="secondary" onClick={close}>
-                Bekor qilish
+                {tr("Bekor qilish")}
               </Button>
               <Button type="submit" loading={pending}>
-                Yaratish
+                {tr("Yaratish")}
               </Button>
             </div>
           </form>
         )}
       </Dialog>
 
-      <Dialog open={open === "import"} onClose={close} title="O‘quvchilarni CSV dan import qilish" description="Sarlavha: username,display_name,class,student_code,email (class — guruh nomi yoki kodi). Barcha qatorlar to‘g‘ri bo‘lsagina import qilinadi.">
+      <Dialog open={open === "import"} onClose={close} title={tr("O‘quvchilarni CSV dan import qilish")} description={tr("Sarlavha: username,display_name,class,student_code,email (class — guruh nomi yoki kodi). Barcha qatorlar to‘g‘ri bo‘lsagina import qilinadi.")}>
         {created ? (
           <Credentials rows={created} />
         ) : (
@@ -177,12 +178,12 @@ export function PeopleToolbar({ kind, classes, canCreateAdmins }: { kind: "stude
                 if (file) setCsv(await file.text());
               }}
             />
-            <textarea value={csv} onChange={(e) => setCsv(e.target.value)} rows={6} className="w-full rounded-xl border border-border bg-surface p-3 font-mono text-base sm:text-[12.5px]" placeholder={"username,display_name,class,student_code\nali.v,Ali Valiyev,7-A,S-1001"} aria-label="CSV matni" />
+            <textarea value={csv} onChange={(e) => setCsv(e.target.value)} rows={6} className="w-full rounded-xl border border-border bg-surface p-3 font-mono text-base sm:text-[12.5px]" placeholder={tr("username,display_name,class,student_code\nali.v,Ali Valiyev,7-A,S-1001")} aria-label={tr("CSV matni")} />
             {importErrors.length ? (
-              <Alert tone="danger" title={`${importErrors.length} ta xato — hech narsa import qilinmadi`}>
+              <Alert tone="danger" title={tr("{0} ta xato — hech narsa import qilinmadi", importErrors.length)}>
                 <ul className="mt-1 max-h-36 overflow-y-auto">
                   {importErrors.map((x, i) => (
-                    <li key={i}>{x.line}-qator: {x.message}</li>
+                    <li key={i}>{tr("{0}-qator: {1}", x.line, x.message)}</li>
                   ))}
                 </ul>
               </Alert>
@@ -190,7 +191,7 @@ export function PeopleToolbar({ kind, classes, canCreateAdmins }: { kind: "stude
             {error ? <Alert tone="danger">{error}</Alert> : null}
             <div className="flex justify-end gap-2">
               <Button variant="secondary" onClick={close}>
-                Bekor qilish
+                {tr("Bekor qilish")}
               </Button>
               <Button
                 loading={pending}
@@ -203,12 +204,12 @@ export function PeopleToolbar({ kind, classes, canCreateAdmins }: { kind: "stude
                     if (r.data.errors.length) return setImportErrors(r.data.errors);
                     setImportErrors([]);
                     setCreated(r.data.created);
-                    toast.success(`${r.data.created.length} ta o‘quvchi qo‘shildi`);
+                    toast.success(tr("{0} ta o‘quvchi qo‘shildi", r.data.created.length));
                     router.refresh();
                   })
                 }
               >
-                Import qilish
+                {tr("Import qilish")}
               </Button>
             </div>
           </div>

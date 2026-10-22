@@ -6,6 +6,7 @@ import { homeFor } from "@/server/auth/rbac";
 import { changePassword, consumeReset, login } from "@/server/services/users";
 import { audit } from "@/server/services/audit";
 import { safeNext } from "@/lib/utils";
+import { tr } from "@/lib/i18n/tr";
 
 export async function loginAction(_: ActionResult<{ to: string }> | null, form: FormData): Promise<ActionResult<{ to: string }>> {
   const res = await run(async () => {
@@ -30,7 +31,7 @@ export async function logoutAction() {
 
 export async function changePasswordAction(_: ActionResult<string> | null, form: FormData): Promise<ActionResult<string>> {
   const next = String(form.get("next") ?? "");
-  if (next !== String(form.get("confirm") ?? "")) return { ok: false, error: "Parollar mos kelmadi.", fields: { confirm: "Parollar mos kelmadi." } };
+  if (next !== String(form.get("confirm") ?? "")) return { ok: false, error: tr("Parollar mos kelmadi."), fields: { confirm: tr("Parollar mos kelmadi.") } };
   const res = await run(async () => {
     const u = await requireUser();
     await changePassword(u, String(form.get("current") ?? ""), next);
@@ -42,7 +43,7 @@ export async function changePasswordAction(_: ActionResult<string> | null, form:
 
 export async function resetPasswordAction(_: ActionResult | null, form: FormData): Promise<ActionResult> {
   const pw = String(form.get("password") ?? "");
-  if (pw !== String(form.get("confirm") ?? "")) return { ok: false, error: "Parollar mos kelmadi.", fields: { confirm: "Parollar mos kelmadi." } };
+  if (pw !== String(form.get("confirm") ?? "")) return { ok: false, error: tr("Parollar mos kelmadi."), fields: { confirm: tr("Parollar mos kelmadi.") } };
   const res = await run(() => consumeReset(String(form.get("token") ?? ""), pw));
   if (res.ok) redirect("/login?reset=1");
   return res;

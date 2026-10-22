@@ -7,14 +7,15 @@ import { Card, CardBody } from "@/components/ui/card";
 import { Alert } from "@/components/ui/feedback";
 import { Input, Textarea } from "@/components/ui/form";
 import { cn } from "@/lib/utils";
+import { tr } from "@/lib/i18n/tr";
 
 const PLACEHOLDER: Record<string, string> = {
-  grammar: "Masalan: Present Perfect va Past Simple farqi nima?",
-  mistake: "Savol: She ___ (go) to school yesterday.\nMening javobim: goed\nTo‘g‘ri javob: went",
-  writing: "Inglizcha yozgan matningizni shu yerga qo‘ying…",
-  vocabulary: "Masalan: take off",
-  practice: "Masalan: Articles (a / an / the), A2",
-  next: "Masalan: Reading 80%, Grammar (Present Perfect) 55%, so‘zlar takrorlashda ko‘p xato…",
+  get grammar() { return tr("Masalan: Present Perfect va Past Simple farqi nima?"); },
+  get mistake() { return tr("Savol: She ___ (go) to school yesterday.\nMening javobim: goed\nTo‘g‘ri javob: went"); },
+  get writing() { return tr("Inglizcha yozgan matningizni shu yerga qo‘ying…"); },
+  get vocabulary() { return tr("Masalan: take off"); },
+  get practice() { return tr("Masalan: Articles (a / an / the), A2"); },
+  get next() { return tr("Masalan: Reading 80%, Grammar (Present Perfect) 55%, so‘zlar takrorlashda ko‘p xato…"); },
 };
 
 export function TutorChat({ kinds, initialKind, initialText, remaining, limit }: { kinds: Record<string, string>; initialKind: string; initialText: string; remaining: number; limit: number }) {
@@ -45,16 +46,16 @@ export function TutorChat({ kinds, initialKind, initialText, remaining, limit }:
       </div>
       <Card>
         <CardBody className="space-y-3">
-          <Textarea rows={kind === "writing" ? 9 : 4} value={text} onChange={(e) => setText(e.target.value)} placeholder={PLACEHOLDER[kind]} maxLength={4000} aria-label="Savol" spellCheck={false} />
+          <Textarea rows={kind === "writing" ? 9 : 4} value={text} onChange={(e) => setText(e.target.value)} placeholder={PLACEHOLDER[kind]} maxLength={4000} aria-label={tr("Savol")} spellCheck={false} />
           {kind === "mistake" || kind === "vocabulary" ? (
-            <Input value={extra} onChange={(e) => setExtra(e.target.value)} maxLength={1000} placeholder={kind === "vocabulary" ? "Gap (kontekst), ixtiyoriy" : "Nimani tushunmadingiz? (ixtiyoriy)"} aria-label="Qo‘shimcha" />
+            <Input value={extra} onChange={(e) => setExtra(e.target.value)} maxLength={1000} placeholder={kind === "vocabulary" ? tr("Gap (kontekst), ixtiyoriy") : tr("Nimani tushunmadingiz? (ixtiyoriy)")} aria-label={tr("Qo‘shimcha")} />
           ) : null}
           <div className="flex items-center justify-between gap-3">
             <span className="text-[12.5px] text-muted tabular">
-              Bugun qolgan: {left}/{limit}
+              {tr("Bugun qolgan: {0}/{1}", left, limit)}
             </span>
             <Button onClick={ask} loading={pending} disabled={text.trim().length < 2 || left === 0}>
-              <Send /> So‘rash
+              <Send /> {tr("So‘rash")}
             </Button>
           </div>
         </CardBody>
@@ -67,11 +68,11 @@ export function TutorChat({ kinds, initialKind, initialText, remaining, limit }:
               <span className="grid size-7 place-items-center rounded-lg bg-violet-soft">
                 <Bot className="size-4" aria-hidden />
               </span>
-              AI tomonidan yaratilgan javob
+              {tr("AI tomonidan yaratilgan javob")}
               <Sparkles className="size-3.5" aria-hidden />
             </div>
             <div className="prose-text text-[14.5px] leading-relaxed">{answer}</div>
-            <p className="mt-4 border-t border-border pt-3 text-[12px] text-muted">AI xato qilishi mumkin. Bu javob bahongizga ta’sir qilmaydi.</p>
+            <p className="mt-4 border-t border-border pt-3 text-[12px] text-muted">{tr("AI xato qilishi mumkin. Bu javob bahongizga ta’sir qilmaydi.")}</p>
           </CardBody>
         </Card>
       ) : null}

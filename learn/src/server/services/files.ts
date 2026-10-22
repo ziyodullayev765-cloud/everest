@@ -6,6 +6,7 @@ import { env } from "../env";
 import { invalid, notFound, forbidden } from "../errors";
 import { isAdmin, isStaff, type Actor } from "../auth/rbac";
 import { assertStudentCanSee, canManageAssignment, canViewStudent } from "./access";
+import { tr } from "@/lib/i18n/tr";
 
 type Kind = { mime: string; ext: string[]; image?: boolean; audio?: boolean };
 
@@ -69,15 +70,15 @@ export function safeFilename(name: string) {
 export type UploadOpts = { visibility?: "public" | "private"; imagesOnly?: boolean };
 
 function checkKind(k: Kind | null, opts: UploadOpts, actor: Actor) {
-  if (!k) throw invalid(`Bu fayl turi qo‘llab-quvvatlanmaydi. Ruxsat etilgan: ${ALLOWED_EXTENSIONS.join(", ")}.`);
-  if (opts.imagesOnly && !k.image) throw invalid("Faqat rasm yuklash mumkin (PNG, JPG, WebP, GIF).");
+  if (!k) throw invalid(tr("Bu fayl turi qo‘llab-quvvatlanmaydi. Ruxsat etilgan: {0}.", ALLOWED_EXTENSIONS.join(", ")));
+  if (opts.imagesOnly && !k.image) throw invalid(tr("Faqat rasm yuklash mumkin (PNG, JPG, WebP, GIF)."));
   if (opts.visibility === "public" && !isStaff(actor)) throw forbidden();
   return k;
 }
 
 export async function storeFile(actor: Actor, file: File, opts: UploadOpts = {}) {
-  if (file.size <= 0) throw invalid("Fayl bo‘sh.");
-  if (file.size > env.maxUploadBytes) throw invalid(`Fayl hajmi ${Math.round(env.maxUploadBytes / 1024 / 1024)} MB dan oshmasligi kerak.`);
+  if (file.size <= 0) throw invalid(tr("Fayl bo‘sh."));
+  if (file.size > env.maxUploadBytes) throw invalid(tr("Fayl hajmi {0} MB dan oshmasligi kerak.", Math.round(env.maxUploadBytes / 1024 / 1024)));
   const buf = Buffer.from(await file.arrayBuffer());
   const name = safeFilename(file.name);
   const k = checkKind(sniff(buf, name), opts, actor);
@@ -155,7 +156,7 @@ export async function assertOwnFiles(actorId: string, fileIds: string[]) {
     .select({ id: schema.files.id })
     .from(schema.files)
     .where(and(eq(schema.files.ownerId, actorId), inArray(schema.files.id, fileIds)));
-  if (rows.length !== new Set(fileIds).size) throw invalid("Fayl topilmadi.");
+  if (rows.length !== new Set(fileIds).size) throw invalid(tr("Fayl topilmadi."));
 }
 
 export async function fileMeta(ids: string[]) {
@@ -179,21 +180,21 @@ export const blobPrefix = (a: Actor) => `u/${a.id}/`;
  * client's MIME type) and anything that fails is deleted from storage.
  */
 export async function registerBlob(actor: Actor, input: { pathname: string; name: string }, opts: UploadOpts = {}) {
-  if (!blobEnabled()) throw invalid("Katta fayllar ombori sozlanmagan.");
+  if (!blobEnabled()) throw invalid(tr("Katta fayllar ombori sozlanmagan."));
   const { get, head, del } = await import("@vercel/blob");
   const pathname = String(input.pathname ?? "");
   if (!pathname.startsWith(blobPrefix(actor)) || pathname.includes("..") || pathname.length > 300) throw forbidden();
   const name = safeFilename(String(input.name ?? "fayl"));
   const meta = await head(pathname).catch(() => null);
-  if (!meta) throw notFound("Yuklangan fayl topilmadi.");
+  if (!meta) throw notFound(tr("Yuklangan fayl topilmadi."));
   const reject = async (e: Error) => {
     await del(pathname).catch(() => {});
     throw e;
   };
-  if (meta.size <= 0) return reject(invalid("Fayl bo‘sh."));
-  if (meta.size > blobMaxBytes(actor)) return reject(invalid("Fayl juda katta."));
+  if (meta.size <= 0) return reject(invalid(tr("Fayl bo‘sh.")));
+  if (meta.size > blobMaxBytes(actor)) return reject(invalid(tr("Fayl juda katta.")));
   const res = await get(pathname, { access: "private", headers: { Range: "bytes=0-63" } });
-  if (!res || res.statusCode !== 200) return reject(invalid("Fayl o‘qilmadi."));
+  if (!res || res.statusCode !== 200) return reject(invalid(tr("Fayl o‘qilmadi.")));
   const first = Buffer.from(await new Response(res.stream).arrayBuffer()).subarray(0, 64);
   let k: Kind;
   try {

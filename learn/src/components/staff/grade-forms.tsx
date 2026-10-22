@@ -12,6 +12,7 @@ import { Dialog } from "@/components/ui/dialog";
 import { RichText } from "@/components/ui/rich-text";
 import { toast } from "@/components/ui/toast";
 import { t } from "@/lib/i18n";
+import { tr } from "@/lib/i18n/tr";
 
 type Rubric = { id: string; title: string; description?: string; maxPoints: number }[];
 
@@ -43,7 +44,7 @@ export function GradeForm({ assignmentId, studentId, maxScore, rubric, isLate, l
         applyLatePenalty: applyLate,
       });
       if (r.ok) {
-        toast.success(r.data.status === "final" ? `Baho yakunlandi: ${r.data.points}` : "Dastlabki baho saqlandi");
+        toast.success(r.data.status === "final" ? tr("Baho yakunlandi: {0}", r.data.points) : tr("Dastlabki baho saqlandi"));
         setFeedback("");
         setReason("");
         router.refresh();
@@ -52,12 +53,12 @@ export function GradeForm({ assignmentId, studentId, maxScore, rubric, isLate, l
 
   return (
     <Card>
-      <CardHeader title="Baholash" description={`Maksimal ${maxScore} ball`} action={current ? <Badge tone={final ? "success" : "warning"}>{t.gradeStatus[current.status]}</Badge> : null} />
+      <CardHeader title={tr("Baholash")} description={tr("Maksimal {0} ball", maxScore)} action={current ? <Badge tone={final ? "success" : "warning"}>{t.gradeStatus[current.status]}</Badge> : null} />
       <CardBody className="space-y-4 pt-4">
         {error ? <Alert tone="danger">{error}</Alert> : null}
-        {returned ? <Alert tone="warning">Ish qayta ishlashga qaytarilgan — o‘quvchi yangi versiyani topshirishini kuting.</Alert> : null}
-        {locked ? <Alert tone="info">Baho yakunlangan. O‘zgartirish uchun “Yakuniy baholarni o‘zgartirish” ruxsati kerak.</Alert> : null}
-        {final && canEditFinal ? <Alert tone="warning">Yakuniy baho o‘zgartiriladi — sabab majburiy va audit jurnaliga yoziladi.</Alert> : null}
+        {returned ? <Alert tone="warning">{tr("Ish qayta ishlashga qaytarilgan — o‘quvchi yangi versiyani topshirishini kuting.")}</Alert> : null}
+        {locked ? <Alert tone="info">{tr("Baho yakunlangan. O‘zgartirish uchun “Yakuniy baholarni o‘zgartirish” ruxsati kerak.")}</Alert> : null}
+        {final && canEditFinal ? <Alert tone="warning">{tr("Yakuniy baho o‘zgartiriladi — sabab majburiy va audit jurnaliga yoziladi.")}</Alert> : null}
         {rubric.length ? (
           <div className="space-y-2.5">
             {rubric.map((c) => (
@@ -73,20 +74,20 @@ export function GradeForm({ assignmentId, studentId, maxScore, rubric, isLate, l
             ))}
           </div>
         ) : (
-          <Field label="Ball" htmlFor="pts">
+          <Field label={tr("Ball")} htmlFor="pts">
             <div className="flex items-center gap-2">
               <Input id="pts" type="number" inputMode="decimal" min={0} max={maxScore} step="0.5" value={points} onChange={(e) => setPoints(e.target.value)} className="text-[18px] font-bold" disabled={locked} />
               <span className="shrink-0 text-muted">/ {maxScore}</span>
             </div>
           </Field>
         )}
-        {isLate && latePenaltyPercent ? <Switch checked={applyLate} onChange={setApplyLate} label={`Kechikish jarimasi (−${latePenaltyPercent}%)`} description={penalty ? `−${penalty} ball → yakuniy ${Math.max(0, raw - penalty)}` : undefined} disabled={locked} /> : null}
-        <Field label="Izoh o‘quvchiga" htmlFor="fb">
-          <Textarea id="fb" rows={4} value={feedback} onChange={(e) => setFeedback(e.target.value)} placeholder="Nima yaxshi chiqdi, nimani yaxshilash kerak…" disabled={locked} />
+        {isLate && latePenaltyPercent ? <Switch checked={applyLate} onChange={setApplyLate} label={tr("Kechikish jarimasi (−{0}%)", latePenaltyPercent)} description={penalty ? tr("−{0} ball → yakuniy {1}", penalty, Math.max(0, raw - penalty)) : undefined} disabled={locked} /> : null}
+        <Field label={tr("Izoh o‘quvchiga")} htmlFor="fb">
+          <Textarea id="fb" rows={4} value={feedback} onChange={(e) => setFeedback(e.target.value)} placeholder={tr("Nima yaxshi chiqdi, nimani yaxshilash kerak…")} disabled={locked} />
         </Field>
         {final && canEditFinal ? (
-          <Field label="O‘zgartirish sababi" htmlFor="reason" required>
-            <Input id="reason" value={reason} onChange={(e) => setReason(e.target.value)} placeholder="Masalan: apellyatsiya natijasi" />
+          <Field label={tr("O‘zgartirish sababi")} htmlFor="reason" required>
+            <Input id="reason" value={reason} onChange={(e) => setReason(e.target.value)} placeholder={tr("Masalan: apellyatsiya natijasi")} />
           </Field>
         ) : null}
         {!locked ? (
@@ -94,20 +95,20 @@ export function GradeForm({ assignmentId, studentId, maxScore, rubric, isLate, l
             {!final ? (
               <>
                 <Button onClick={() => save(true)} loading={pending}>
-                  <CheckCircle2 /> Yakunlash va e’lon qilish
+                  <CheckCircle2 /> {tr("Yakunlash va e’lon qilish")}
                 </Button>
                 <Button variant="secondary" onClick={() => save(false)} loading={pending}>
-                  <Save /> Dastlabki sifatida saqlash
+                  <Save /> {tr("Dastlabki sifatida saqlash")}
                 </Button>
                 {!returned ? (
                   <Button variant="ghost" onClick={() => setRet(true)}>
-                    <RotateCcw /> Qayta ishlashga qaytarish
+                    <RotateCcw /> {tr("Qayta ishlashga qaytarish")}
                   </Button>
                 ) : null}
               </>
             ) : (
               <Button onClick={() => save(true)} loading={pending} disabled={reason.trim().length < 5}>
-                <Save /> Bahoni o‘zgartirish
+                <Save /> {tr("Bahoni o‘zgartirish")}
               </Button>
             )}
           </div>
@@ -116,12 +117,12 @@ export function GradeForm({ assignmentId, studentId, maxScore, rubric, isLate, l
       <Dialog
         open={ret}
         onClose={() => setRet(false)}
-        title="Qayta ishlashga qaytarish"
-        description="O‘quvchi xabar oladi va ishini yangilab qayta topshira oladi."
+        title={tr("Qayta ishlashga qaytarish")}
+        description={tr("O‘quvchi xabar oladi va ishini yangilab qayta topshira oladi.")}
         footer={
           <>
             <Button variant="secondary" onClick={() => setRet(false)}>
-              Bekor qilish
+              {tr("Bekor qilish")}
             </Button>
             <Button
               loading={pending}
@@ -130,19 +131,19 @@ export function GradeForm({ assignmentId, studentId, maxScore, rubric, isLate, l
                 start(async () => {
                   const r = await returnAction(assignmentId, studentId, retMsg);
                   if (r.ok) {
-                    toast.success("Ish qaytarildi");
+                    toast.success(tr("Ish qaytarildi"));
                     setRet(false);
                     router.refresh();
                   } else toast.error(r.error);
                 })
               }
             >
-              Qaytarish
+              {tr("Qaytarish")}
             </Button>
           </>
         }
       >
-        <Textarea rows={4} value={retMsg} onChange={(e) => setRetMsg(e.target.value)} placeholder="Nimani tuzatish kerakligini yozing…" aria-label="Qaytarish sababi" />
+        <Textarea rows={4} value={retMsg} onChange={(e) => setRetMsg(e.target.value)} placeholder={tr("Nimani tuzatish kerakligini yozing…")} aria-label={tr("Qaytarish sababi")} />
       </Dialog>
     </Card>
   );
@@ -165,7 +166,7 @@ export function QuizGradeForm({ attemptId, items }: { attemptId: string; items: 
             </span>
             {i.manual ? (
               <span className="flex items-center gap-1.5">
-                <Input type="number" min={0} max={i.maxPoints} step="0.5" value={pts[i.questionId]} onChange={(e) => setPts({ ...pts, [i.questionId]: e.target.value })} className="h-8 w-20 text-right" aria-label="Ball" />/ {i.maxPoints}
+                <Input type="number" min={0} max={i.maxPoints} step="0.5" value={pts[i.questionId]} onChange={(e) => setPts({ ...pts, [i.questionId]: e.target.value })} className="h-8 w-20 text-right" aria-label={tr("Ball")} />/ {i.maxPoints}
               </span>
             ) : (
               <span className="inline-flex items-center gap-1 tabular">
@@ -176,10 +177,10 @@ export function QuizGradeForm({ attemptId, items }: { attemptId: string; items: 
           </div>
           <RichText text={i.prompt} className="text-[13.5px] font-semibold" />
           <div className="mt-1.5 rounded-lg bg-surface-2 px-3 py-2 text-[13.5px]">
-            <span className="text-muted">Javob: </span>
+            <span className="text-muted">{tr("Javob:")} </span>
             <span className="prose-text">{i.answerText}</span>
           </div>
-          {!i.manual && i.correctText ? <div className="mt-1 text-[12.5px] text-success">To‘g‘ri: {i.correctText}</div> : null}
+          {!i.manual && i.correctText ? <div className="mt-1 text-[12.5px] text-success">{tr("To‘g‘ri: {0}", i.correctText)}</div> : null}
         </div>
       ))}
       {manual.length ? (
@@ -190,13 +191,13 @@ export function QuizGradeForm({ attemptId, items }: { attemptId: string; items: 
             start(async () => {
               const r = await gradeAttemptAction(attemptId, Object.fromEntries(Object.entries(pts).map(([k, v]) => [k, Number(v)])));
               if (r.ok) {
-                toast.success("Baholandi");
+                toast.success(tr("Baholandi"));
                 router.refresh();
               } else toast.error(r.error);
             })
           }
         >
-          <Save /> Qo‘lda baholashni saqlash
+          <Save /> {tr("Qo‘lda baholashni saqlash")}
         </Button>
       ) : null}
     </div>
@@ -215,13 +216,13 @@ export function FinalizeButton({ gradeId }: { gradeId: string }) {
         start(async () => {
           const r = await finalizeAction(gradeId);
           if (r.ok) {
-            toast.success("Baho yakunlandi");
+            toast.success(tr("Baho yakunlandi"));
             router.refresh();
           } else toast.error(r.error);
         })
       }
     >
-      <CheckCircle2 /> Yakunlash
+      <CheckCircle2 /> {tr("Yakunlash")}
     </Button>
   );
 }

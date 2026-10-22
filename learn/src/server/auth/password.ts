@@ -1,5 +1,6 @@
 import "server-only";
 import { randomBytes, scrypt as scryptCb, timingSafeEqual } from "node:crypto";
+import { tr } from "@/lib/i18n/tr";
 
 /**
  * scrypt (RFC 7914) from Node's crypto module: memory-hard, no native dependency.
@@ -41,9 +42,9 @@ export function dummyHash() {
 }
 
 export function passwordProblem(pw: string): string | null {
-  if (pw.length < 8) return "Parol kamida 8 ta belgidan iborat bo‘lishi kerak.";
-  if (pw.length > 128) return "Parol juda uzun.";
-  if (!/[a-zA-Z]/.test(pw) || !/[0-9]/.test(pw)) return "Parolda harf va raqam bo‘lishi kerak.";
+  if (pw.length < 8) return tr("Parol kamida 8 ta belgidan iborat bo‘lishi kerak.");
+  if (pw.length > 128) return tr("Parol juda uzun.");
+  if (!/[a-zA-Z]/.test(pw) || !/[0-9]/.test(pw)) return tr("Parolda harf va raqam bo‘lishi kerak.");
   return null;
 }
 

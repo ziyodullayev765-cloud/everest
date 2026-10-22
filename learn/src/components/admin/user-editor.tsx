@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Alert } from "@/components/ui/feedback";
 import { Dialog } from "@/components/ui/dialog";
 import { toast } from "@/components/ui/toast";
+import { tr } from "@/lib/i18n/tr";
 
 const PERMS: [string, string][] = [
   ["assignments.create", "Vazifa va quiz yaratish"],
@@ -35,47 +36,47 @@ export function UserEditor({ user, classes, memberIds, teaching }: { user: U; cl
       if (r.ok) {
         toast.success(msg);
         router.refresh();
-      } else setError(r.error ?? "Xatolik");
+      } else setError(r.error ?? tr("Xatolik"));
     });
 
   return (
     <>
       {error ? <Alert tone="danger">{error}</Alert> : null}
       <Card>
-        <CardHeader title="Ma’lumotlar" />
+        <CardHeader title={tr("Ma’lumotlar")} />
         <CardBody className="space-y-4">
           <div className="grid gap-4 sm:grid-cols-2">
-            <Field label="To‘liq ism"><Input value={f.displayName} onChange={(e) => setF({ ...f, displayName: e.target.value })} /></Field>
-            <Field label="Login"><Input value={f.username} onChange={(e) => setF({ ...f, username: e.target.value.toLowerCase() })} /></Field>
-            <Field label="E-pochta"><Input type="email" value={f.email} onChange={(e) => setF({ ...f, email: e.target.value })} /></Field>
-            {f.role === "student" ? <Field label="O‘quvchi ID"><Input value={f.studentCode} onChange={(e) => setF({ ...f, studentCode: e.target.value })} /></Field> : null}
+            <Field label={tr("To‘liq ism")}><Input value={f.displayName} onChange={(e) => setF({ ...f, displayName: e.target.value })} /></Field>
+            <Field label={tr("Login")}><Input value={f.username} onChange={(e) => setF({ ...f, username: e.target.value.toLowerCase() })} /></Field>
+            <Field label={tr("E-pochta")}><Input type="email" value={f.email} onChange={(e) => setF({ ...f, email: e.target.value })} /></Field>
+            {f.role === "student" ? <Field label={tr("O‘quvchi ID")}><Input value={f.studentCode} onChange={(e) => setF({ ...f, studentCode: e.target.value })} /></Field> : null}
           </div>
           {f.role === "teacher" ? (
-            <Field label="Ruxsatlar">
+            <Field label={tr("Ruxsatlar")}>
               <div className="space-y-1.5">
                 {PERMS.map(([k, l]) => (
-                  <Checkbox key={k} checked={f.permissions.includes(k)} onChange={(x) => setF({ ...f, permissions: x ? [...f.permissions, k] : f.permissions.filter((y) => y !== k) })} label={l} />
+                  <Checkbox key={k} checked={f.permissions.includes(k)} onChange={(x) => setF({ ...f, permissions: x ? [...f.permissions, k] : f.permissions.filter((y) => y !== k) })} label={tr(l)} />
                 ))}
               </div>
             </Field>
           ) : null}
           <Button loading={pending} onClick={() => run(() => updateUserAction(f.id, { username: f.username, displayName: f.displayName, email: f.email, studentCode: f.studentCode, permissions: f.permissions }), "Saqlandi")}>
-            <Save /> Saqlash
+            <Save /> {tr("Saqlash")}
           </Button>
         </CardBody>
       </Card>
 
       {f.role === "student" ? (
         <Card>
-          <CardHeader title="Guruhlar" description="Guruhdan chiqarish baholar va topshirilgan ishlarni o‘chirmaydi." />
+          <CardHeader title={tr("Guruhlar")} description={tr("Guruhdan chiqarish baholar va topshirilgan ishlarni o‘chirmaydi.")} />
           <CardBody className="space-y-4">
             <div className="flex flex-wrap gap-2">
               {classes.map((c) => (
                 <Checkbox key={c.id} className="rounded-lg border border-border px-2.5 py-1.5" checked={members.includes(c.id)} onChange={(x) => setMembers(x ? [...members, c.id] : members.filter((y) => y !== c.id))} label={c.name} />
               ))}
             </div>
-            <Button variant="secondary" loading={pending} onClick={() => run(() => membershipsAction(f.id, members), "Guruhlar yangilandi")}>
-              Guruhlarni saqlash
+            <Button variant="secondary" loading={pending} onClick={() => run(() => membershipsAction(f.id, members), tr("Guruhlar yangilandi"))}>
+              {tr("Guruhlarni saqlash")}
             </Button>
           </CardBody>
         </Card>
@@ -83,25 +84,25 @@ export function UserEditor({ user, classes, memberIds, teaching }: { user: U; cl
 
       {f.role === "teacher" ? (
         <Card>
-          <CardHeader title="Guruhlar" description="O‘qituvchi faqat shu yerda ko‘rsatilgan guruhlarni ko‘radi." />
+          <CardHeader title={tr("Guruhlar")} description={tr("O‘qituvchi faqat shu yerda ko‘rsatilgan guruhlarni ko‘radi.")} />
           <CardBody className="space-y-4">
             <ul className="space-y-2">
               {teaching.map((x) => (
                 <li key={x.id} className="flex items-center justify-between rounded-xl border border-border px-3 py-2 text-[13.5px]">
                   <span className="font-semibold">{x.className}</span>
-                  <Button variant="ghost" size="icon" aria-label="Ajratish" onClick={() => run(() => unassignTeacherAction(x.id), "Ajratildi")}>
+                  <Button variant="ghost" size="icon" aria-label={tr("Ajratish")} onClick={() => run(() => unassignTeacherAction(x.id), "Ajratildi")}>
                     <X />
                   </Button>
                 </li>
               ))}
-              {!teaching.length ? <li className="text-[13px] text-muted">Hali biriktirilmagan.</li> : null}
+              {!teaching.length ? <li className="text-[13px] text-muted">{tr("Hali biriktirilmagan.")}</li> : null}
             </ul>
             <div className="grid gap-2 sm:grid-cols-[1fr_auto]">
-              <Select value={assign.classId} onChange={(e) => setAssign({ ...assign, classId: e.target.value })} aria-label="Guruh">
+              <Select value={assign.classId} onChange={(e) => setAssign({ ...assign, classId: e.target.value })} aria-label={tr("Guruh")}>
                 {classes.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
               </Select>
               <Button variant="secondary" disabled={!assign.classId} onClick={() => run(() => assignTeacherAction(assign.classId, f.id), "Biriktirildi")}>
-                <Plus /> Biriktirish
+                <Plus /> {tr("Biriktirish")}
               </Button>
             </div>
           </CardBody>
@@ -109,7 +110,7 @@ export function UserEditor({ user, classes, memberIds, teaching }: { user: U; cl
       ) : null}
 
       <Card>
-        <CardHeader title="Kirish va xavfsizlik" />
+        <CardHeader title={tr("Kirish va xavfsizlik")} />
         <CardBody className="space-y-4">
           <div className="flex flex-wrap gap-2">
             <Button
@@ -123,21 +124,21 @@ export function UserEditor({ user, classes, memberIds, teaching }: { user: U; cl
                 })
               }
             >
-              <KeyRound /> Parol tiklash havolasi
+              <KeyRound /> {tr("Parol tiklash havolasi")}
             </Button>
             <Button variant={f.status === "active" ? "danger" : "secondary"} onClick={() => setConfirm(true)}>
-              <Power /> {f.status === "active" ? "Faolsizlantirish" : "Qayta faollashtirish"}
+              <Power /> {f.status === "active" ? tr("Faolsizlantirish") : tr("Qayta faollashtirish")}
             </Button>
           </div>
           {link ? (
-            <Alert tone="warning" title="Bir martalik havola (24 soat)">
+            <Alert tone="warning" title={tr("Bir martalik havola (24 soat)")}>
               <div className="mt-1 flex items-center gap-2">
                 <code className="min-w-0 flex-1 truncate rounded-lg bg-surface px-2 py-1 text-[12px]">{link}</code>
-                <Button size="sm" variant="secondary" onClick={() => navigator.clipboard.writeText(link).then(() => toast.success("Nusxalandi"))}>
+                <Button size="sm" variant="secondary" onClick={() => navigator.clipboard.writeText(link).then(() => toast.success(tr("Nusxalandi")))}>
                   <Copy />
                 </Button>
               </div>
-              <p className="mt-1 text-[12px]">Havolani faqat hisob egasiga shaxsan bering. Eski havolalar bekor qilindi.</p>
+              <p className="mt-1 text-[12px]">{tr("Havolani faqat hisob egasiga shaxsan bering. Eski havolalar bekor qilindi.")}</p>
             </Alert>
           ) : null}
         </CardBody>
@@ -146,11 +147,11 @@ export function UserEditor({ user, classes, memberIds, teaching }: { user: U; cl
       <Dialog
         open={confirm}
         onClose={() => setConfirm(false)}
-        title={f.status === "active" ? "Hisobni faolsizlantirasizmi?" : "Hisobni qayta faollashtirasizmi?"}
-        description={f.status === "active" ? "Foydalanuvchi tizimdan chiqariladi va kira olmaydi. Topshirilgan ishlar va baholar saqlanadi." : "Foydalanuvchi yana tizimga kira oladi."}
+        title={f.status === "active" ? tr("Hisobni faolsizlantirasizmi?") : tr("Hisobni qayta faollashtirasizmi?")}
+        description={f.status === "active" ? tr("Foydalanuvchi tizimdan chiqariladi va kira olmaydi. Topshirilgan ishlar va baholar saqlanadi.") : tr("Foydalanuvchi yana tizimga kira oladi.")}
         footer={
           <>
-            <Button variant="secondary" onClick={() => setConfirm(false)}>Bekor qilish</Button>
+            <Button variant="secondary" onClick={() => setConfirm(false)}>{tr("Bekor qilish")}</Button>
             <Button
               variant={f.status === "active" ? "danger" : "primary"}
               loading={pending}
@@ -161,10 +162,10 @@ export function UserEditor({ user, classes, memberIds, teaching }: { user: U; cl
                   const r = await userStatusAction(f.id, next as "active");
                   if (r.ok) setF({ ...f, status: next });
                   return r;
-                }, next === "active" ? "Faollashtirildi" : "Faolsizlantirildi");
+                }, next === "active" ? tr("Faollashtirildi") : tr("Faolsizlantirildi"));
               }}
             >
-              Tasdiqlash
+              {tr("Tasdiqlash")}
             </Button>
           </>
         }

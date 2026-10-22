@@ -12,22 +12,23 @@ import { Badge } from "@/components/ui/badge";
 import { EmptyState } from "@/components/ui/feedback";
 import { FilterBar } from "./filter-bar";
 import { NewWordListButton, WordListEditor, WordListTargets } from "./vocab-editor";
+import { tr } from "@/lib/i18n/tr";
 
 const STATUS: Record<string, { label: string; tone: "neutral" | "success" | "warning" }> = {
-  draft: { label: "Qoralama", tone: "warning" },
-  published: { label: "E’lon qilingan", tone: "success" },
-  archived: { label: "Arxiv", tone: "neutral" },
+  draft: { get label() { return tr("Qoralama"); }, tone: "warning" },
+  published: { get label() { return tr("E’lon qilingan"); }, tone: "success" },
+  archived: { get label() { return tr("Arxiv"); }, tone: "neutral" },
 };
 
 export async function WordListsPage({ user, base, sp }: { user: SessionUser; base: string; sp: { q?: string; status?: string } }) {
   const rows = await listWordLists(user, { q: sp.q, status: sp.status });
   return (
     <>
-      <PageHeader title="Lug‘at ro‘yxatlari" description="So‘zlar ro‘yxatini yarating, CSV’dan import qiling va guruhlarga biriktiring." actions={<NewWordListButton base={base} />} />
+      <PageHeader title={tr("Lug‘at ro‘yxatlari")} description={tr("So‘zlar ro‘yxatini yarating, CSV’dan import qiling va guruhlarga biriktiring.")} actions={<NewWordListButton base={base} />} />
       <FilterBar
         fields={[
-          { name: "q", type: "search", placeholder: "Ro‘yxat nomi" },
-          { name: "status", label: "Holat", options: [["", "Faol"], ["draft", "Qoralama"], ["published", "E’lon qilingan"], ["archived", "Arxiv"]] },
+          { name: "q", type: "search", placeholder: tr("Ro‘yxat nomi") },
+          { name: "status", label: tr("Holat"), options: [["", "Faol"], ["draft", "Qoralama"], ["published", tr("E’lon qilingan")], ["archived", "Arxiv"]] },
         ]}
       />
       {rows.length ? (
@@ -46,7 +47,7 @@ export async function WordListsPage({ user, base, sp }: { user: SessionUser; bas
                       {l.level ? <Badge>{l.level}</Badge> : null}
                     </span>
                     <span className="block truncate text-[12.5px] text-muted">
-                      {l.words} ta so‘z · {l.targets ? `${l.targets} ta biriktirish` : "biriktirilmagan"} · {l.authorName} · {formatDate(l.updatedAt)}
+                      {tr("{0} ta so‘z ·", l.words)} {l.targets ? tr("{0} ta biriktirish", l.targets) : tr("biriktirilmagan")} · {l.authorName} · {formatDate(l.updatedAt)}
                     </span>
                   </span>
                   <ChevronRight className="size-4 text-muted" aria-hidden />
@@ -57,7 +58,7 @@ export async function WordListsPage({ user, base, sp }: { user: SessionUser; bas
         </Card>
       ) : (
         <Card>
-          <EmptyState icon={<BookA />} title="Ro‘yxatlar yo‘q" description="Birinchi lug‘at ro‘yxatini yarating." action={<NewWordListButton base={base} />} />
+          <EmptyState icon={<BookA />} title={tr("Ro‘yxatlar yo‘q")} description={tr("Birinchi lug‘at ro‘yxatini yarating.")} action={<NewWordListButton base={base} />} />
         </Card>
       )}
     </>
@@ -68,19 +69,19 @@ export async function WordListDetailPage({ user, base, id, tab }: { user: Sessio
   const d = await orNotFound(getWordList(user, id));
   const current = tab === "assign" || tab === "activity" ? tab : "words";
   const tabs = [
-    ["words", `So‘zlar (${d.words.length})`],
+    ["words", tr("So‘zlar ({0})", d.words.length)],
     ["assign", "Biriktirish"],
     ["activity", "Faollik"],
   ] as const;
   return (
     <div className="mx-auto max-w-5xl">
       <PageHeader
-        back={{ href: `${base}/vocabulary`, label: "Lug‘at ro‘yxatlari" }}
+        back={{ href: `${base}/vocabulary`, label: tr("Lug‘at ro‘yxatlari") }}
         eyebrow={<Badge tone={STATUS[d.list.status]?.tone}>{STATUS[d.list.status]?.label}</Badge>}
         title={d.list.title}
         description={[d.list.level, d.list.topic].filter(Boolean).join(" · ") || undefined}
       />
-      <nav className="mb-5 flex gap-1 rounded-xl bg-surface-2 p-1" aria-label="Bo‘limlar">
+      <nav className="mb-5 flex gap-1 rounded-xl bg-surface-2 p-1" aria-label={tr("Bo‘limlar")}>
         {tabs.map(([k, l]) => (
           <Link key={k} href={`${base}/vocabulary/${id}${k === "words" ? "" : `?tab=${k}`}`} aria-current={current === k ? "page" : undefined} className={cn("flex-1 rounded-lg px-3 py-2 text-center text-[13.5px] font-semibold", current === k ? "bg-surface text-text shadow-soft" : "text-muted hover:text-text")}>
             {l}
@@ -116,18 +117,18 @@ async function ActivityTab({ user, id }: { user: SessionUser; id: string }) {
   const rows = await listActivity(user, id);
   return (
     <Card className="overflow-hidden">
-      <CardHeader title="O‘quvchilar faolligi" icon={<Users />} description="Takrorlash tarixidan hisoblangan" />
+      <CardHeader title={tr("O‘quvchilar faolligi")} icon={<Users />} description={tr("Takrorlash tarixidan hisoblangan")} />
       {rows.length ? (
         <div className="overflow-x-auto">
           <table className="w-full min-w-[640px] text-[13.5px]">
             <thead className="bg-surface-2 text-left text-[12px] text-muted">
               <tr>
-                <th className="px-4 py-2.5 font-semibold">O‘quvchi</th>
-                <th className="px-3 py-2.5 font-semibold">O‘rgangan</th>
-                <th className="px-3 py-2.5 font-semibold">Puxta</th>
-                <th className="px-3 py-2.5 font-semibold">Takrorlash kerak</th>
-                <th className="px-3 py-2.5 font-semibold">Aniqlik</th>
-                <th className="px-3 py-2.5 font-semibold">Oxirgi mashq</th>
+                <th className="px-4 py-2.5 font-semibold">{tr("O‘quvchi")}</th>
+                <th className="px-3 py-2.5 font-semibold">{tr("O‘rgangan")}</th>
+                <th className="px-3 py-2.5 font-semibold">{tr("Puxta")}</th>
+                <th className="px-3 py-2.5 font-semibold">{tr("Takrorlash kerak")}</th>
+                <th className="px-3 py-2.5 font-semibold">{tr("Aniqlik")}</th>
+                <th className="px-3 py-2.5 font-semibold">{tr("Oxirgi mashq")}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-border">
@@ -138,7 +139,7 @@ async function ActivityTab({ user, id }: { user: SessionUser; id: string }) {
                   <td className="px-3 py-2.5 tabular">{r.mastered}</td>
                   <td className="px-3 py-2.5 tabular">{r.due || "—"}</td>
                   <td className="px-3 py-2.5 tabular">{r.accuracy == null ? "—" : `${r.accuracy}%`}</td>
-                  <td className="px-3 py-2.5 text-muted">{r.last ? formatDateTime(r.last) : "hali yo‘q"}</td>
+                  <td className="px-3 py-2.5 text-muted">{r.last ? formatDateTime(r.last) : tr("hali yo‘q")}</td>
                 </tr>
               ))}
             </tbody>
@@ -146,7 +147,7 @@ async function ActivityTab({ user, id }: { user: SessionUser; id: string }) {
         </div>
       ) : (
         <CardBody>
-          <p className="py-6 text-center text-[13.5px] text-muted">Ro‘yxat hali hech kimga biriktirilmagan.</p>
+          <p className="py-6 text-center text-[13.5px] text-muted">{tr("Ro‘yxat hali hech kimga biriktirilmagan.")}</p>
         </CardBody>
       )}
     </Card>

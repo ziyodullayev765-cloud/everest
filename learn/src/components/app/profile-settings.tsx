@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Avatar } from "@/components/ui/avatar";
 import { toast } from "@/components/ui/toast";
 import { uploadFile } from "./uploader";
+import { tr } from "@/lib/i18n/tr";
 
 type Initial = { displayName: string; avatarFileId: string | null; weeklyTaskGoal: number; dailyXpGoal: number; dailyGoal: number; gamificationEnabled: boolean; notificationPrefs: Record<string, boolean> };
 
@@ -29,14 +30,14 @@ export function ProfileSettings({ isStudent, canEditName, canEditAvatar, gamific
   return (
     <>
       <Card>
-        <CardHeader title="Shaxsiy ma’lumotlar" description={!canEditName && !canEditAvatar ? "Ma’lumotlarni faqat administrator o‘zgartira oladi." : undefined} />
+        <CardHeader title={tr("Shaxsiy ma’lumotlar")} description={!canEditName && !canEditAvatar ? tr("Ma’lumotlarni faqat administrator o‘zgartira oladi.") : undefined} />
         <CardBody className="space-y-4 pt-4">
           <div className="flex items-center gap-4">
             <Avatar name={v.displayName} fileId={v.avatarFileId} size={56} />
             {canEditAvatar ? (
               <div className="flex flex-wrap gap-2">
                 <label className="inline-flex h-9 cursor-pointer items-center rounded-xl border border-border bg-surface px-3 text-[13px] font-semibold hover:bg-surface-2">
-                  {uploading ? "Yuklanmoqda…" : "Rasm yuklash"}
+                  {uploading ? tr("Yuklanmoqda…") : tr("Rasm yuklash")}
                   <input
                     type="file"
                     accept="image/png,image/jpeg,image/webp"
@@ -49,7 +50,7 @@ export function ProfileSettings({ isStudent, canEditName, canEditAvatar, gamific
                       try {
                         const up = await uploadFile(f, { imagesOnly: true });
                         setV((x) => ({ ...x, avatarFileId: up.id }));
-                        save({ avatarFileId: up.id }, "Rasm yangilandi");
+                        save({ avatarFileId: up.id }, tr("Rasm yangilandi"));
                       } catch (err) {
                         toast.error((err as Error).message);
                       } finally {
@@ -64,10 +65,10 @@ export function ProfileSettings({ isStudent, canEditName, canEditAvatar, gamific
                     size="sm"
                     onClick={() => {
                       setV((x) => ({ ...x, avatarFileId: null }));
-                      save({ avatarFileId: null }, "Rasm olib tashlandi");
+                      save({ avatarFileId: null }, tr("Rasm olib tashlandi"));
                     }}
                   >
-                    Olib tashlash
+                    {tr("Olib tashlash")}
                   </Button>
                 ) : null}
               </div>
@@ -81,11 +82,11 @@ export function ProfileSettings({ isStudent, canEditName, canEditAvatar, gamific
                 save({ displayName: v.displayName });
               }}
             >
-              <Field label="Ko‘rinadigan ism" htmlFor="dn" className="flex-1">
+              <Field label={tr("Ko‘rinadigan ism")} htmlFor="dn" className="flex-1">
                 <Input id="dn" value={v.displayName} onChange={(e) => setV({ ...v, displayName: e.target.value })} maxLength={80} />
               </Field>
               <Button type="submit" variant="secondary" loading={pending}>
-                Saqlash
+                {tr("Saqlash")}
               </Button>
             </form>
           ) : null}
@@ -94,33 +95,33 @@ export function ProfileSettings({ isStudent, canEditName, canEditAvatar, gamific
 
       {isStudent ? (
         <Card id="goals">
-          <CardHeader title="O‘quv maqsadlari" icon={<Target />} />
+          <CardHeader title={tr("O‘quv maqsadlari")} icon={<Target />} />
           <CardBody className="space-y-4 pt-4">
             <div className="grid gap-4 sm:grid-cols-2">
-              <Field label="Kunlik maqsad (mashg‘ulotlar)" htmlFor="dg" hint="Vazifa, quiz yoki 10 ta so‘z takrorlash = 1 mashg‘ulot. 1–20">
+              <Field label={tr("Kunlik maqsad (mashg‘ulotlar)")} htmlFor="dg" hint={tr("Vazifa, quiz yoki 10 ta so‘z takrorlash = 1 mashg‘ulot. 1–20")}>
                 <Input id="dg" type="number" inputMode="numeric" min={1} max={20} value={v.dailyGoal} onChange={(e) => setV({ ...v, dailyGoal: Number(e.target.value) })} />
               </Field>
-              <Field label="Haftasiga bajariladigan ishlar" htmlFor="wg" hint="1–100">
+              <Field label={tr("Haftasiga bajariladigan ishlar")} htmlFor="wg" hint="1–100">
                 <Input id="wg" type="number" inputMode="numeric" min={1} max={100} value={v.weeklyTaskGoal} onChange={(e) => setV({ ...v, weeklyTaskGoal: Number(e.target.value) })} />
               </Field>
               {gamificationAvailable ? (
-                <Field label="Kunlik XP maqsadi" htmlFor="xg" hint="5–1000">
+                <Field label={tr("Kunlik XP maqsadi")} htmlFor="xg" hint="5–1000">
                   <Input id="xg" type="number" inputMode="numeric" min={5} max={1000} value={v.dailyXpGoal} onChange={(e) => setV({ ...v, dailyXpGoal: Number(e.target.value) })} />
                 </Field>
               ) : null}
             </div>
             {gamificationAvailable ? (
-              <Switch checked={v.gamificationEnabled} onChange={(x) => setV({ ...v, gamificationEnabled: x })} label="XP, darajalar va nishonlarni ko‘rsatish" description="O‘chirsangiz ham baholaringizga ta’sir qilmaydi." />
+              <Switch checked={v.gamificationEnabled} onChange={(x) => setV({ ...v, gamificationEnabled: x })} label={tr("XP, darajalar va nishonlarni ko‘rsatish")} description={tr("O‘chirsangiz ham baholaringizga ta’sir qilmaydi.")} />
             ) : null}
             <Button variant="secondary" loading={pending} onClick={() => save({ dailyGoal: v.dailyGoal, weeklyTaskGoal: v.weeklyTaskGoal, dailyXpGoal: v.dailyXpGoal, gamificationEnabled: v.gamificationEnabled })}>
-              Maqsadlarni saqlash
+              {tr("Maqsadlarni saqlash")}
             </Button>
           </CardBody>
         </Card>
       ) : null}
 
       <Card>
-        <CardHeader title="Bildirishnomalar" icon={<Bell />} description="Ilova ichidagi bildirishnomalar. E-pochta/push xabarnomalar hozircha sozlanmagan." />
+        <CardHeader title={tr("Bildirishnomalar")} icon={<Bell />} description={tr("Ilova ichidagi bildirishnomalar. E-pochta/push xabarnomalar hozircha sozlanmagan.")} />
         <CardBody className="divide-y divide-border pt-2">
           {prefTypes.map(([k, label]) => (
             <div key={k} className="py-2.5">

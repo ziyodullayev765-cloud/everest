@@ -2,6 +2,7 @@
 import { useEffect, useRef, type ReactNode } from "react";
 import { X } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { tr } from "@/lib/i18n/tr";
 
 /** Accessible modal built on <dialog> (focus trap, Esc to close, backdrop). Bottom sheet on phones. */
 export function Dialog({ open, onClose, title, description, children, footer, className }: { open: boolean; onClose: () => void; title: ReactNode; description?: ReactNode; children?: ReactNode; footer?: ReactNode; className?: string }) {
@@ -35,7 +36,7 @@ export function Dialog({ open, onClose, title, description, children, footer, cl
             <h2 className="text-[17px] font-bold tracking-[-0.01em]">{title}</h2>
             {description ? <p className="mt-1 text-[13.5px] text-muted">{description}</p> : null}
           </div>
-          <button type="button" onClick={onClose} className="-mt-1 -mr-1 grid size-8 shrink-0 place-items-center rounded-lg text-muted hover:bg-surface-2" aria-label="Yopish">
+          <button type="button" onClick={onClose} className="-mt-1 -mr-1 grid size-8 shrink-0 place-items-center rounded-lg text-muted hover:bg-surface-2" aria-label={tr("Yopish")}>
             <X className="size-4" />
           </button>
         </div>

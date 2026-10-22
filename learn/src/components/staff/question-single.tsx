@@ -3,6 +3,7 @@ import { useState, useTransition } from "react";
 import { Save } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { QuestionCard, QuestionTypeSelect, blankQuestion, type EditQuestion } from "./question-editor";
+import { tr } from "@/lib/i18n/tr";
 
 /** Single-question form used by the question bank. */
 export function QuestionEditorSingle({ onSave }: { onSave: (q: unknown) => Promise<void> }) {
@@ -22,7 +23,7 @@ export function QuestionEditorSingle({ onSave }: { onSave: (q: unknown) => Promi
           })
         }
       >
-        <Save /> Saqlash
+        <Save /> {tr("Saqlash")}
       </Button>
     </div>
   );
