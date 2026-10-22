@@ -16,6 +16,7 @@ import { hrefFor } from "@/components/student/assignment-card";
 import { WeeklyActivityChart } from "@/components/student/charts";
 import { Medal } from "@/components/student/medal";
 import { recentAchievements } from "@/server/services/achievements";
+import { myPlaces } from "@/server/services/leaderboard";
 import { currentLocale, tr } from "@/lib/i18n/tr";
 
 export const metadata: Metadata = { get title() { return tr("Bosh sahifa"); } };
@@ -45,7 +46,8 @@ function greeting() {
 
 export default async function StudentHome() {
   const user = await pageUser("student");
-  const [profile, settings, recent] = await Promise.all([ownProfile(user.id), getSettings(), recentAchievements(user.id, 3)]);
+  const [profile, settings, recent, places] = await Promise.all([ownProfile(user.id), getSettings(), recentAchievements(user.id, 3), myPlaces(user.id)]);
+  const best = places.filter((p) => p.place).sort((a, b) => a.place! - b.place!)[0];
   const d = await studentDashboard(user.id, profile.weeklyTaskGoal, profile.dailyGoal);
   const gamify = settings.gamification.enabled && profile.gamificationEnabled;
   const firstName = user.displayName.split(" ")[0];
@@ -81,20 +83,29 @@ export default async function StudentHome() {
               )}
             </p>
           </div>
-          <div className="flex shrink-0 gap-2">
-            <div className="flex items-center gap-2.5 rounded-3xl border-2 border-border bg-surface px-3.5 py-2.5 shadow-soft">
-              <Flame className={cn("size-5", d.stats.streak ? "text-warning" : "text-muted")} aria-hidden />
+          <div className="grid shrink-0 grid-cols-3 gap-2 sm:flex [&>*]:min-w-0 [&>*]:whitespace-nowrap">
+            <div className="flex items-center gap-2 rounded-3xl border-2 border-border bg-surface px-3 py-2.5 shadow-soft">
+              <Flame className={cn("size-5 shrink-0", d.stats.streak ? "text-warning" : "text-muted")} aria-hidden />
               <div className="leading-tight">
                 <div className="text-[17px] font-bold tabular">{d.stats.streak}</div>
-                <div className="text-[11.5px] text-muted">{tr("kun ketma-ket")}</div>
+                <div className="truncate text-[11.5px] text-muted">{tr("kun ketma-ket")}</div>
               </div>
             </div>
             {gamify ? (
-              <Link href="/achievements" className="flex items-center gap-2.5 rounded-3xl border-2 border-border bg-surface px-3.5 py-2.5 shadow-soft hover:border-border-strong">
-                <Zap className="size-5 text-primary" aria-hidden />
+              <Link href="/achievements" className="flex items-center gap-2 rounded-3xl border-2 border-border bg-surface px-3 py-2.5 shadow-soft hover:border-border-strong">
+                <Zap className="size-5 shrink-0 text-primary" aria-hidden />
                 <div className="leading-tight">
                   <div className="text-[17px] font-bold tabular">{tr("{0}-daraja", d.game.level.level)}</div>
                   <div className="text-[11.5px] text-muted tabular">{tr("{0} XP", fmtNumber(d.game.xp))}</div>
+                </div>
+              </Link>
+            ) : null}
+            {gamify && best ? (
+              <Link href={`/leaderboard?g=${best.classId}`} className="flex items-center gap-2 rounded-3xl border-2 border-border bg-surface px-3 py-2.5 shadow-soft hover:border-border-strong">
+                <Trophy className="size-5 shrink-0 text-[#f5b50b]" aria-hidden />
+                <div className="leading-tight">
+                  <div className="text-[17px] font-bold tabular">{tr("{0}-o‘rin", best.place)}</div>
+                  <div className="truncate text-[11.5px] text-muted">{tr("{0} kishidan", best.of)}</div>
                 </div>
               </Link>
             ) : null}

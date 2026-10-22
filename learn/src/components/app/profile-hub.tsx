@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { sql } from "drizzle-orm";
 import {
-  BarChart3, Bell, Flame, BookOpenText, Bot, ChevronRight, ClipboardCheck, ClipboardList, Download, FileClock, GraduationCap, Headphones,
+  BarChart3, Bell, Crown, Flame, BookOpenText, Bot, ChevronRight, ClipboardCheck, ClipboardList, Download, FileClock, GraduationCap, Headphones,
   Library, ListChecks, NotebookTabs, PenLine, Settings, ShieldCheck, Sparkles, Star, Trophy, UserRound, UsersRound, type LucideIcon,
 } from "lucide-react";
 import type { SessionUser } from "@/server/auth/session";
@@ -11,6 +11,7 @@ import { studentClasses } from "@/server/services/classes";
 import { activeDays, gamificationSummary } from "@/server/services/gamification";
 import { recentAchievements } from "@/server/services/achievements";
 import { isOwner } from "@/server/services/owner";
+import { medalCounts, myPlaces } from "@/server/services/leaderboard";
 import { tutorEnabled } from "@/server/services/tutor";
 import { db } from "@/server/db";
 import { localDay, weekStart } from "@/lib/dates";
@@ -91,6 +92,7 @@ function menuFor(role: SessionUser["role"], opts: { gamification: boolean }): It
       { href: "/reading", label: tr("Reading"), icon: BookOpenText },
       { href: "/listening", label: tr("Listening"), icon: Headphones },
       ...(tutorEnabled() ? [{ href: "/tutor", label: tr("AI yordamchi"), icon: Bot }] : []),
+      ...(opts.gamification ? [{ href: "/leaderboard", label: tr("Haftalik reyting"), icon: Crown }] : []),
       { href: "/grades", label: tr("Baholar"), icon: Star },
       ...(opts.gamification ? [{ href: "/achievements", label: tr("Yutuqlar"), icon: Trophy }] : []),
       { href: "/classes", label: tr("Guruhlarim"), icon: UsersRound },
@@ -137,7 +139,9 @@ export async function ProfileHub({ user }: { user: SessionUser }) {
   const gameOn = isStudent && settings.gamification.enabled && p.gamificationEnabled;
   const menu = menuFor(user.role, { gamification: gameOn });
   if (isOwner(user)) menu.unshift({ href: "/maxfiy", label: tr("🤫 Maxfiy bo‘lim"), icon: Sparkles });
-  const [game, recent] = gameOn ? await Promise.all([gamificationSummary(user.id), recentAchievements(user.id, 3)]) : [null, []];
+  const [game, recent, medals, places] = gameOn
+    ? await Promise.all([gamificationSummary(user.id), recentAchievements(user.id, 3), medalCounts(user.id), myPlaces(user.id)])
+    : [null, [], null, []];
 
   return (
     <div className="-mx-4 -mt-5 sm:mx-auto sm:mt-0 sm:max-w-2xl">
@@ -228,6 +232,19 @@ export async function ProfileHub({ user }: { user: SessionUser }) {
               </div>
             </div>
           </section>
+        ) : null}
+
+        {medals ? (
+          <Link href="/leaderboard" className="flex items-center gap-3 rounded-3xl border-2 border-border bg-surface p-4 hover:bg-surface-2">
+            <Crown className="size-7 shrink-0 fill-[#f5b50b] text-[#f5b50b]" aria-hidden />
+            <div className="min-w-0 flex-1">
+              <div className="text-[14.5px] font-extrabold">{tr("Haftalik reyting")}</div>
+              <div className="truncate text-[12.5px] text-muted">
+                {places.length ? places.map((p) => (p.place ? tr("{0}: {1}-o‘rin", p.name, p.place) : p.name)).join(" · ") : tr("Hali guruhga qo‘shilmagansiz")}
+              </div>
+            </div>
+            <span className="shrink-0 text-[14px] font-black tabular" aria-label={tr("Medallar")}>🥇{medals.gold} 🥈{medals.silver} 🥉{medals.bronze}</span>
+          </Link>
         ) : null}
 
         {/* Menu */}

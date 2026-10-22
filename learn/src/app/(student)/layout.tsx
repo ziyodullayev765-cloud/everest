@@ -35,7 +35,7 @@ export default async function StudentLayout({ children }: { children: React.Reac
       items: [
         { href: "/results", label: t.nav.progress, icon: "results" },
         { href: "/grades", label: t.nav.grades, icon: "grades" },
-        ...(settings.gamification.enabled && user.gamificationEnabled ? [{ href: "/achievements", label: t.nav.achievements, icon: "achievements" }] : []),
+        ...(settings.gamification.enabled && user.gamificationEnabled ? [{ href: "/achievements", label: t.nav.achievements, icon: "achievements" }, { href: "/leaderboard", label: tr("Haftalik reyting"), icon: "leaderboard" }] : []),
         { href: "/library", label: t.nav.library, icon: "bank" },
         { href: "/classes", label: t.nav.classes, icon: "classes" },
         { href: "/notifications", label: t.nav.notifications, icon: "notifications" },

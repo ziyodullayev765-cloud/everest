@@ -12,6 +12,7 @@ import {
   boolean,
   check,
   customType,
+  date,
   index,
   integer,
   jsonb,
@@ -681,6 +682,28 @@ export const userAchievements = pgTable(
     seenAt: ts("seen_at"),
   },
   (t) => [primaryKey({ columns: [t.userId, t.code] })],
+);
+
+/** Weekly group podium: places 1–3 by weekly score (see services/leaderboard.ts). Written once per week. */
+export const weeklyMedals = pgTable(
+  "weekly_medals",
+  {
+    classId: uuid("class_id")
+      .notNull()
+      .references(() => classes.id, { onDelete: "restrict" }),
+    weekStart: date("week_start").notNull(),
+    studentId: uuid("student_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "restrict" }),
+    place: integer("place").notNull(),
+    score: integer("score").notNull(),
+    awardedAt: ts("awarded_at").notNull().defaultNow(),
+  },
+  (t) => [
+    primaryKey({ columns: [t.classId, t.weekStart, t.studentId] }),
+    index("weekly_medals_student_idx").on(t.studentId),
+    check("weekly_medals_place", sql`${t.place} between 1 and 3`),
+  ],
 );
 
 /** Achievement rules (seeded from src/lib/achievements.ts, editable by admins). */

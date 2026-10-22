@@ -1,5 +1,5 @@
 import "server-only";
-import { and, eq, sql } from "drizzle-orm";
+import { and, eq, inArray, sql } from "drizzle-orm";
 import { randomUUID } from "node:crypto";
 import { z } from "zod";
 import { db, schema } from "../db";
@@ -45,10 +45,11 @@ export async function ownerSetAchievement(actor: Actor & { username: string }, c
   if (!def) throw notFound();
   if (on) {
     const r = await db.insert(schema.userAchievements).values({ userId: actor.id, code }).onConflictDoNothing().returning({ code: schema.userAchievements.code });
-    if (r.length && def.xpReward > 0) await awardXp(actor.id, def.xpReward, "achievement", `ach:${code}:${actor.id}`);
+    // "owner-" keys are left out of group rankings, so self-granted XP never beats classmates.
+    if (r.length && def.xpReward > 0) await awardXp(actor.id, def.xpReward, "achievement", `owner-ach:${code}:${actor.id}`);
   } else {
     await db.delete(schema.userAchievements).where(and(eq(schema.userAchievements.userId, actor.id), eq(schema.userAchievements.code, code)));
-    await db.delete(schema.xpTransactions).where(eq(schema.xpTransactions.sourceKey, `ach:${code}:${actor.id}`));
+    await db.delete(schema.xpTransactions).where(inArray(schema.xpTransactions.sourceKey, [`ach:${code}:${actor.id}`, `owner-ach:${code}:${actor.id}`]));
   }
   await audit(actor.id, on ? "owner.achievement.grant" : "owner.achievement.revoke", "achievement", null, { code });
 }

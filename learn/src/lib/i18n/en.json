@@ -1729,5 +1729,18 @@
  "Guruh e’lonlari": "Group announcements",
  "Tizim xabarlari": "System messages",
  "Baholanmaydi": "Not graded",
- "Esladim": "Got it"
+ "Esladim": "Got it",
+ "Haftalik reyting": "Weekly ranking",
+ "Shu hafta: {0}. Har dushanba 1–3-o‘rin egalari medal oladi.": "This week: {0}. Every Monday places 1–3 get a medal.",
+ "Siz {0}-o‘rindasiz": "You’re in place {0}",
+ "{0} o‘quvchidan · {1} ball": "of {0} students · {1} points",
+ "{0}-o‘rin": "Place {0}",
+ "Bu hafta hali hech kim ball to‘plamagan. Birinchi bo‘ling!": "Nobody has scored this week yet. Be the first!",
+ "siz": "you",
+ "O‘tgan hafta g‘oliblari": "Last week’s winners",
+ "Ball = shu hafta to‘plangan XP + har bir to‘g‘ri takrorlangan so‘z uchun 1 ball (kuniga ko‘pi bilan {0}). Hafta dushanba kuni Toshkent vaqti bilan boshlanadi.": "Points = XP earned this week + 1 point per correctly reviewed word (at most {0} a day). The week starts on Monday, Tashkent time.",
+ "{0}: {1}-o‘rin": "{0}: place {1}",
+ "Medallar": "Medals",
+ "{0} dan": "of {0}",
+ "{0} kishidan": "of {0}"
 }

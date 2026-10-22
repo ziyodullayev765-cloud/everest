@@ -3,6 +3,7 @@ import { sql } from "drizzle-orm";
 import { timingSafeEqual } from "node:crypto";
 import { db } from "@/server/db";
 import { promoteScheduled } from "@/server/services/assignments";
+import { ensureLastWeekFinalized } from "@/server/services/leaderboard";
 import { notify } from "@/server/services/notifications";
 import { fillTemplate, getSettings } from "@/server/services/settings";
 
@@ -20,6 +21,7 @@ export async function GET(req: Request) {
   if (!secret || given.length !== secret.length || !timingSafeEqual(Buffer.from(given), Buffer.from(secret))) return NextResponse.json({ ok: false }, { status: 401 });
 
   const published = await promoteScheduled(true);
+  await ensureLastWeekFinalized(); // weekly group medals
   const settings = await getSettings();
   const due = await db.execute<{ assignment_id: string; title: string; student_id: string; quiz: boolean }>(sql`
     select a.id as assignment_id, a.title, u.id as student_id,

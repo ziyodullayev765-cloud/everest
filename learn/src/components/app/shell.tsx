@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import {
   Award,
+  Trophy,
   BookA,
   BookOpenText,
   Bot,
@@ -50,6 +51,7 @@ const ICONS: Record<string, LucideIcon> = {
   profile: User,
   grades: Star,
   achievements: Award,
+  leaderboard: Trophy,
   classes: UsersRound,
   notifications: Bell,
   install: Download,

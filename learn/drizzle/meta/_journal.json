@@ -43,6 +43,13 @@
       "when": 1792681314917,
       "tag": "0005_achievements",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1792691953675,
+      "tag": "0006_weekly_medals",
+      "breakpoints": true
     }
   ]
 }

@@ -33,6 +33,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
         { href: "/admin/submissions", label: t.nav.submissions, icon: "inbox" },
         { href: "/admin/gradebook", label: t.nav.gradebook, icon: "gradebook" },
         { href: "/admin/achievements", label: t.nav.achievements, icon: "achievements" },
+        { href: "/admin/leaderboard", label: tr("Haftalik reyting"), icon: "leaderboard" },
       ],
     },
     {
