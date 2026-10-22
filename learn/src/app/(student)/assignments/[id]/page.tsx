@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
-import { CalendarClock, CheckCircle2, ExternalLink, FileText, Link2, ListTodo, MessageSquareText, RotateCcw, Scale, User } from "lucide-react";
+import { BookOpen, CalendarClock, CheckCircle2, ExternalLink, Headphones, FileText, Link2, ListTodo, MessageSquareText, RotateCcw, Scale, User } from "lucide-react";
 import { orNotFound, pageUser } from "@/server/auth/guards";
 import { getForStudent } from "@/server/services/assignments";
 import { editability } from "@/server/services/submissions";
+import { glossaryFor } from "@/server/services/vocabulary";
 import { isQuizType, isWorkType, submissionWindow } from "@/lib/assignment-kinds";
 import { formatDate, formatDateTime, remaining } from "@/lib/dates";
 import { fmtNumber } from "@/lib/utils";
@@ -15,7 +16,8 @@ import { Alert } from "@/components/ui/feedback";
 import { LinkButton } from "@/components/ui/button";
 import { RichText } from "@/components/ui/rich-text";
 import { StatusBadge } from "@/components/student/status";
-import { MediaGallery } from "@/components/app/media";
+import { ListeningPlayer, MediaGallery } from "@/components/app/media";
+import { Glossary } from "@/components/vocab/glossary";
 import { HomeworkItemsList } from "@/components/app/homework-items";
 import { MarkReadButton } from "./mark-read";
 
@@ -28,6 +30,7 @@ export default async function AssignmentDetail({ params }: { params: Promise<{ i
   const user = await pageUser("student");
   const d = await orNotFound(getForStudent(user.id, id));
   const a = d.assignment;
+  const glossary = a.passage ? await glossaryFor(user.id, a.passage) : [];
   if (isQuizType(a.type)) redirect(`/quizzes/${a.id}`);
   const win = submissionWindow(a);
   const ed = editability(a, d.submission, d.grade);
@@ -67,6 +70,33 @@ export default async function AssignmentDetail({ params }: { params: Promise<{ i
                     <h2 className="mb-2 text-[13px] font-semibold tracking-[0.04em] text-muted uppercase">Ko‘rsatmalar</h2>
                     <RichText text={a.instructions} className="text-[14.5px] text-text" />
                   </div>
+                ) : null}
+              </CardBody>
+            </Card>
+          ) : null}
+
+          {a.passage ? (
+            <Card>
+              <CardHeader title="Reading matni" icon={<BookOpen />} description={[a.level, a.topic].filter(Boolean).join(" · ") || undefined} />
+              <CardBody className="pt-3">
+                <div className="prose-text text-[15.5px] leading-[1.75]">{a.passage}</div>
+                {glossary.length ? <Glossary items={glossary} /> : null}
+              </CardBody>
+            </Card>
+          ) : null}
+
+          {a.audioFileId ? (
+            <Card>
+              <CardHeader title="Listening" icon={<Headphones />} />
+              <CardBody className="space-y-3 pt-3">
+                <ListeningPlayer fileId={a.audioFileId} limit={a.replayLimit} storageKey={`asg:${a.id}`} />
+                {a.transcript && (a.transcriptMode === "always" || (a.transcriptMode === "after_submit" && submitted)) ? (
+                  <details className="rounded-xl bg-surface-2 px-4 py-3 text-[14px]">
+                    <summary className="cursor-pointer font-medium">Transkript</summary>
+                    <div className="prose-text mt-2 text-text-2">{a.transcript}</div>
+                  </details>
+                ) : a.transcript && a.transcriptMode === "after_submit" ? (
+                  <p className="text-[12.5px] text-muted">Transkript ishni topshirganingizdan keyin ochiladi.</p>
                 ) : null}
               </CardBody>
             </Card>

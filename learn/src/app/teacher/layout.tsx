@@ -20,6 +20,7 @@ export default async function TeacherLayout({ children }: { children: React.Reac
         { href: "/teacher/submissions", label: t.nav.submissions, icon: "inbox" },
         { href: "/teacher/assignments", label: t.nav.content, icon: "builder" },
         ...(can(user, "assignments.create") ? [{ href: "/teacher/bank", label: t.nav.questionBank, icon: "bank" }] : []),
+        { href: "/teacher/vocabulary", label: t.nav.vocabulary, icon: "vocabulary" },
         { href: "/teacher/gradebook", label: t.nav.gradebook, icon: "gradebook" },
         { href: "/teacher/library", label: t.nav.library, icon: "subjects" },
         { href: "/teacher/classes", label: t.nav.classes, icon: "classes" },

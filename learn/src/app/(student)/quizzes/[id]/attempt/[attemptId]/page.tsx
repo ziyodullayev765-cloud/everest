@@ -24,6 +24,7 @@ export default async function AttemptPage({ params }: { params: Promise<{ id: st
       serverNow={v.attempt.serverNow.toISOString()}
       allowBack={v.assignment.allowBackNavigation}
       showOverview={v.assignment.showOverview}
+      context={{ passage: v.assignment.passage, audioFileId: v.assignment.audioFileId, replayLimit: v.assignment.replayLimit, transcript: v.assignment.transcript }}
     />
   );
 }

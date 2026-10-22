@@ -61,3 +61,60 @@ export function MediaGallery({ files }: { files: UploadedFile[] }) {
     </div>
   );
 }
+
+/**
+ * Listening clip with an optional play limit. The limit is counted in this browser (localStorage),
+ * so it guides practice but is not a security control — the UI says so to teachers.
+ */
+export function ListeningPlayer({ fileId, limit, storageKey, title = "Listening" }: { fileId: string; limit: number | null; storageKey: string; title?: string }) {
+  const key = `plays:${storageKey}`;
+  const [plays, setPlays] = useState(() => {
+    if (typeof window === "undefined") return 0;
+    try {
+      return Number(localStorage.getItem(key)) || 0;
+    } catch {
+      return 0;
+    }
+  });
+  const [counted, setCounted] = useState(false);
+  const left = limit ? Math.max(0, limit - plays) : null;
+  const blocked = left === 0 && !counted;
+  return (
+    <div className="rounded-xl border border-border bg-surface p-3">
+      <div className="mb-2 flex items-center gap-2 text-[13.5px]">
+        <span className="grid size-8 shrink-0 place-items-center rounded-lg bg-violet-soft text-violet">
+          <Music className="size-4" aria-hidden />
+        </span>
+        <span className="min-w-0 flex-1 truncate font-medium">{title}</span>
+        {limit ? <span className="shrink-0 text-[12px] text-muted tabular">Qolgan tinglash: {left}</span> : null}
+      </div>
+      {blocked ? (
+        <p className="rounded-lg bg-surface-2 px-3 py-2.5 text-[13px] text-muted">Tinglash chegarasi tugadi.</p>
+      ) : (
+        <audio
+          controls
+          preload="metadata"
+          src={`/api/files/${fileId}`}
+          className="w-full"
+          controlsList="nodownload noplaybackrate"
+          onPlay={(e) => {
+            if (!limit || counted) return;
+            if (plays >= limit) {
+              e.currentTarget.pause();
+              return;
+            }
+            const n = plays + 1;
+            setPlays(n);
+            setCounted(true);
+            try {
+              localStorage.setItem(key, String(n));
+            } catch {}
+          }}
+          onEnded={() => setCounted(false)}
+        >
+          Brauzeringiz audioni qo‘llab-quvvatlamaydi.
+        </audio>
+      )}
+    </div>
+  );
+}

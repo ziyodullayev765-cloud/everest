@@ -18,7 +18,7 @@ import { CATEGORY_CODES } from "@/lib/course";
 
 // ─── Staff: create / update ──────────────────────────────────────────────────
 
-async function assertTargetsInScope(actor: Actor, classIds: string[], studentIds: string[], ex: Executor) {
+export async function assertTargetsInScope(actor: Actor, classIds: string[], studentIds: string[], ex: Executor) {
   const scope = await manageableClassIds(actor, ex);
   if (scope === "all") return;
   if (classIds.some((c) => !scope.includes(c))) throw forbidden("Siz faqat o‘zingizga biriktirilgan guruhlarga vazifa bera olasiz.");
@@ -389,7 +389,10 @@ export async function getForEditing(actor: Actor, id: string) {
     questionsWithOptions(id),
   ]);
   const attemptCount = (await db.select({ n: sql<number>`count(*)::int` }).from(schema.quizAttempts).where(eq(schema.quizAttempts.assignmentId, id)))[0]?.n ?? 0;
-  return { assignment: asg, targets, attachments, questions: qs, questionsLocked: attemptCount > 0 };
+  const audio = asg.audioFileId
+    ? ((await db.select({ id: schema.files.id, name: schema.files.name, mime: schema.files.mime, size: schema.files.size }).from(schema.files).where(eq(schema.files.id, asg.audioFileId)))[0] ?? null)
+    : null;
+  return { assignment: asg, targets, attachments, audio, questions: qs, questionsLocked: attemptCount > 0 };
 }
 
 export async function questionsWithOptions(assignmentId: string, ex: Executor = db) {
@@ -415,6 +418,14 @@ export type StudentAssignmentRow = {
   subjectId: string;
   subjectName: string;
   subjectColor: string;
+  /** English category code (GRAMMAR, READING, …). */
+  category: string;
+  level: string;
+  topic: string;
+  hasAudio: boolean;
+  hasPassage: boolean;
+  /** Best scored attempt (quizzes and practice), as a percent. */
+  bestPercent: number | null;
   authorName: string;
   status: StudentStatus;
   gradePercent: number | null;
@@ -433,7 +444,9 @@ export async function listForStudent(studentId: string): Promise<StudentAssignme
   await promoteScheduled();
   const rows = await db.execute<Record<string, unknown>>(sql`
     select a.id, a.title, a.type, a.due_at, a.published_at, a.publish_at, a.max_score, a.allow_late, a.late_cutoff_at, a.time_limit_minutes, a.max_attempts,
-      s.id as subject_id, s.name as subject_name, s.color as subject_color, u.display_name as author_name,
+      s.id as subject_id, s.name as subject_name, s.color as subject_color, s.code as category, a.level, a.topic,
+      a.audio_file_id is not null as has_audio, a.passage <> '' as has_passage, u.display_name as author_name,
+      (select max(round(100 * qa.score / nullif(qa.max_score, 0))) from quiz_attempts qa where qa.assignment_id = a.id and qa.student_id = ${studentId} and qa.status = 'graded')::int as best_percent,
       sub.status as sub_status, sub.version as sub_version,
       g.percent as grade_percent, g.points as grade_points, g.status as grade_status, g.scale_label,
       (select count(*)::int from questions q where q.assignment_id = a.id) as question_count,
@@ -462,6 +475,12 @@ export async function listForStudent(studentId: string): Promise<StudentAssignme
       subjectId: r.subject_id as string,
       subjectName: r.subject_name as string,
       subjectColor: r.subject_color as string,
+      category: r.category as string,
+      level: (r.level as string) ?? "",
+      topic: (r.topic as string) ?? "",
+      hasAudio: !!r.has_audio,
+      hasPassage: !!r.has_passage,
+      bestPercent: r.best_percent == null ? null : Number(r.best_percent),
       authorName: r.author_name as string,
       gradePercent: r.grade_percent == null ? null : Number(r.grade_percent),
       gradePoints: r.grade_points == null ? null : Number(r.grade_points),

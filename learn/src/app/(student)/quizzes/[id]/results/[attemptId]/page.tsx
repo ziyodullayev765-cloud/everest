@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
-import { CheckCircle2, Clock, EyeOff, Lightbulb, MinusCircle, XCircle } from "lucide-react";
+import Link from "next/link";
+import { Bot, CheckCircle2, Clock, EyeOff, Lightbulb, MinusCircle, XCircle } from "lucide-react";
 import { orNotFound, pageUser } from "@/server/auth/guards";
+import { tutorEnabled } from "@/server/services/tutor";
 import { attemptResult } from "@/server/services/quiz";
 import { formatDateTime } from "@/lib/dates";
 import { cn, fmtNumber } from "@/lib/utils";
@@ -20,6 +22,7 @@ export default async function ResultsPage({ params }: { params: Promise<{ id: st
   const { id, attemptId } = await params;
   const user = await pageUser("student");
   const r = await orNotFound(attemptResult(user, attemptId));
+  const ai = tutorEnabled();
   const pending = r.score == null;
   return (
     <div className="mx-auto max-w-3xl">
@@ -75,6 +78,41 @@ export default async function ResultsPage({ params }: { params: Promise<{ id: st
         </CardBody>
       </Card>
 
+      {r.durationMs != null || r.history.length > 1 ? (
+        <div className="mb-5 grid gap-3 sm:grid-cols-2">
+          {r.durationMs != null ? (
+            <div className="rounded-2xl border border-border bg-surface px-5 py-4 shadow-card">
+              <div className="text-[12px] text-muted">Sarflangan vaqt</div>
+              <div className="mt-0.5 text-[18px] font-semibold tabular">{fmtDuration(r.durationMs)}</div>
+            </div>
+          ) : null}
+          {r.history.length > 1 ? (
+            <div className="rounded-2xl border border-border bg-surface px-5 py-4 shadow-card">
+              <div className="text-[12px] text-muted">Urinishlar</div>
+              <ol className="mt-1.5 flex flex-wrap gap-1.5">
+                {r.history.map((h, i) => {
+                  const prev = i > 0 ? r.history[i - 1].percent : null;
+                  const up = prev != null && h.percent != null ? h.percent - prev : null;
+                  return (
+                    <li key={h.id} className={cn("rounded-lg px-2.5 py-1 text-[12.5px] tabular", h.id === attemptId ? "bg-primary-soft font-semibold text-primary-soft-fg" : "bg-surface-2")}>
+                      #{h.attemptNo}: {h.percent == null ? "—" : `${h.percent}%`}
+                      {up ? <span className={up > 0 ? "text-success" : "text-danger"}> {up > 0 ? "▲" : "▼"}{Math.abs(up)}</span> : null}
+                    </li>
+                  );
+                })}
+              </ol>
+            </div>
+          ) : null}
+        </div>
+      ) : null}
+
+      {r.transcript ? (
+        <details className="mb-5 rounded-2xl border border-border bg-surface px-5 py-4 shadow-card">
+          <summary className="cursor-pointer text-[14px] font-semibold">Listening transkripti</summary>
+          <div className="prose-text mt-3 text-[14.5px] text-text-2">{r.transcript}</div>
+        </details>
+      ) : null}
+
       {!r.review ? (
         <Alert tone="info" title="Javoblar hozircha yopiq">
           <span className="inline-flex items-center gap-1.5">
@@ -102,6 +140,11 @@ export default async function ResultsPage({ params }: { params: Promise<{ id: st
                 <div className="mt-3 space-y-2">
                   <AnswerReview q={q} a={a} correct={it.correct} />
                 </div>
+                {ai && it.isCorrect === false ? (
+                  <Link href={`/tutor?kind=mistake&text=${encodeURIComponent(mistakeText(q, a))}`} className="mt-3 inline-flex items-center gap-1.5 text-[12.5px] font-medium text-violet hover:underline">
+                    <Bot className="size-3.5" aria-hidden /> AI yordamchidan tushuntirish so‘rash
+                  </Link>
+                ) : null}
                 {it.explanation ? (
                   <div className="mt-4 flex gap-2.5 rounded-xl bg-info-soft px-4 py-3 text-[13.5px] text-text-2">
                     <Lightbulb className="mt-0.5 size-4 shrink-0 text-info" aria-hidden />
@@ -126,6 +169,18 @@ export default async function ResultsPage({ params }: { params: Promise<{ id: st
 
 type Correct = { optionIds: string[]; accepted: string[][]; matches: Record<string, string> } | null;
 type Q = Awaited<ReturnType<typeof attemptResult>>["items"][number]["question"];
+
+/** Question + the student's own answer, as text for the tutor (no names or ids). */
+function mistakeText(q: Q, a: Ans) {
+  const given = a?.text ?? a?.blanks?.join(" / ") ?? (a?.optionId ? q.options.find((o) => o.id === a.optionId)?.label : undefined) ?? a?.optionIds?.map((id) => q.options.find((o) => o.id === id)?.label).join(", ") ?? "";
+  return [`Savol: ${q.prompt}`, q.incorrect ? `Xato gap: ${q.incorrect}` : "", q.base ? `Fe’l: ${q.base}` : "", q.options.length ? `Variantlar: ${q.options.map((o) => o.label).join(" | ")}` : "", `Mening javobim: ${given || "(bo‘sh)"}`].filter(Boolean).join("\n").slice(0, 3900);
+}
+
+function fmtDuration(ms: number) {
+  const s = Math.max(0, Math.round(ms / 1000));
+  const m = Math.floor(s / 60);
+  return m ? `${m} daq ${s % 60} soniya` : `${s} soniya`;
+}
 
 function TextAnswer({ a, correct }: { a: Ans; correct: Correct }) {
   return (

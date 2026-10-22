@@ -208,7 +208,18 @@ export async function attemptView(actor: Actor, attemptId: string) {
   const responses = await db.select().from(schema.quizResponses).where(eq(schema.quizResponses.attemptId, attemptId));
   return {
     attempt: { id: att.id, status: att.status, attemptNo: att.attemptNo, startedAt: att.startedAt, expiresAt: att.expiresAt, serverNow: new Date() },
-    assignment: { id: asg.id, title: asg.title, allowBackNavigation: asg.allowBackNavigation, showOverview: asg.showOverview, type: asg.type },
+    assignment: {
+      id: asg.id,
+      title: asg.title,
+      allowBackNavigation: asg.allowBackNavigation,
+      showOverview: asg.showOverview,
+      type: asg.type,
+      passage: asg.passage,
+      audioFileId: asg.audioFileId,
+      replayLimit: asg.replayLimit,
+      // The transcript is only sent while answering when the teacher made it always visible.
+      transcript: asg.transcriptMode === "always" ? asg.transcript : "",
+    },
     questions: att.questionOrder.map((id) => byId.get(id)).filter(Boolean).map((q) => publicQuestion(q!, att.id, att.optionOrder[q!.id])),
     answers: Object.fromEntries(responses.map((r) => [r.questionId, r.answer])),
   };
@@ -440,7 +451,16 @@ export async function attemptResult(actor: Actor, attemptId: string) {
     });
   const correctCount = responses.filter((r) => r.isCorrect === true).length;
   const answered = att.questionOrder.length;
+  const history = await db
+    .select({ id: schema.quizAttempts.id, attemptNo: schema.quizAttempts.attemptNo, score: schema.quizAttempts.score, maxScore: schema.quizAttempts.maxScore, status: schema.quizAttempts.status, submittedAt: schema.quizAttempts.submittedAt })
+    .from(schema.quizAttempts)
+    .where(and(eq(schema.quizAttempts.assignmentId, att.assignmentId), eq(schema.quizAttempts.studentId, actor.id), sql`${schema.quizAttempts.status} <> 'in_progress'`))
+    .orderBy(asc(schema.quizAttempts.attemptNo));
+  const showTranscript = asg.transcript && (asg.transcriptMode === "always" || asg.transcriptMode === "after_submit");
   return {
+    transcript: showTranscript ? asg.transcript : "",
+    durationMs: att.submittedAt ? att.submittedAt.getTime() - att.startedAt.getTime() : null,
+    history: history.map((h) => ({ id: h.id, attemptNo: h.attemptNo, percent: h.score == null ? null : percentOf(Number(h.score), Number(h.maxScore)), submittedAt: h.submittedAt })),
     attempt: att,
     assignment: asg,
     review,

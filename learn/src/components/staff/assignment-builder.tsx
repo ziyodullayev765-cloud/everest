@@ -1,7 +1,7 @@
 "use client";
 import { useMemo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowDown, ArrowUp, ListTodo, Wand2, BookOpen, Dumbbell, FileText, FileUp, Link2, ListChecks, Plus, Save, Search, Send, Timer, Trash2, Users, CalendarClock, Scale, Settings2, CheckSquare } from "lucide-react";
+import { ArrowDown, ArrowUp, Headphones, ListTodo, Wand2, BookOpen, Dumbbell, FileText, FileUp, Link2, ListChecks, Plus, Save, Search, Send, Timer, Trash2, Users, CalendarClock, Scale, Settings2, CheckSquare } from "lucide-react";
 import { saveAssignmentAction } from "@/app/actions/staff";
 import { Card, CardBody, CardHeader } from "@/components/ui/card";
 import { Field, Input, Select, Switch, Textarea, Checkbox } from "@/components/ui/form";
@@ -11,6 +11,7 @@ import { toast } from "@/components/ui/toast";
 import { Uploader, type UploadedFile } from "@/components/app/uploader";
 import { cn } from "@/lib/utils";
 import { t } from "@/lib/i18n";
+import { GRAMMAR_TOPICS, LEVELS } from "@/lib/course";
 
 const QUIZ = ["multiple_choice", "short_answer", "true_false", "timed_quiz", "practice"];
 const TYPES = [
@@ -54,6 +55,13 @@ export type BuilderValue = {
   classIds: string[];
   studentIds: string[];
   items: { id: string; kind: HomeworkKind; title: string; bookId?: string | null; range?: string; note?: string }[];
+  level: string;
+  topic: string;
+  passage: string;
+  audioFileId: string | null;
+  transcript: string;
+  transcriptMode: "never" | "after_submit" | "always";
+  replayLimit: number | "";
 };
 
 type HomeworkKind = "reading" | "vocabulary" | "listening" | "translation" | "tapescript" | "writing" | "other";
@@ -73,8 +81,9 @@ type Props = {
   id: string | null;
   initial: BuilderValue;
   initialAttachments: UploadedFile[];
+  initialAudio: UploadedFile | null;
   status: string | null;
-  subjects: { id: string; name: string }[];
+  subjects: { id: string; name: string; code: string }[];
   classes: { id: string; name: string; students: number }[];
   students: { id: string; displayName: string; className: string }[];
   books: { id: string; title: string; category: string }[];
@@ -84,6 +93,12 @@ type Props = {
 export function AssignmentBuilder(p: Props) {
   const [v, setV] = useState<BuilderValue>(p.initial);
   const [files, setFiles] = useState<UploadedFile[]>(p.initialAttachments);
+  const [audio, setAudio] = useState<UploadedFile[]>(p.initialAudio ? [p.initialAudio] : []);
+  const code = p.subjects.find((s) => s.id === v.subjectId)?.code;
+  const [showReading, setShowReading] = useState(!!p.initial.passage);
+  const [showListening, setShowListening] = useState(!!p.initial.audioFileId || !!p.initial.transcript);
+  const reading = showReading || code === "READING";
+  const listening = showListening || code === "LISTENING";
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [formError, setFormError] = useState<string | null>(null);
   const [studentQ, setStudentQ] = useState("");
@@ -104,7 +119,14 @@ export function AssignmentBuilder(p: Props) {
     start(async () => {
       setErrors({});
       setFormError(null);
-      const payload = { ...v, publishMode: live ? "now" : mode, timeLimitMinutes: v.timeLimitMinutes === "" ? null : v.timeLimitMinutes, attachmentFileIds: files.map((f) => f.id) };
+      const payload = {
+        ...v,
+        publishMode: live ? "now" : mode,
+        timeLimitMinutes: v.timeLimitMinutes === "" ? null : v.timeLimitMinutes,
+        replayLimit: v.replayLimit === "" ? null : v.replayLimit,
+        audioFileId: audio[0]?.id ?? null,
+        attachmentFileIds: files.map((f) => f.id),
+      };
       const r = await saveAssignmentAction(p.id, payload);
       if (!r.ok) {
         setErrors(r.fields ?? {});
@@ -127,7 +149,7 @@ export function AssignmentBuilder(p: Props) {
         <CardHeader title="Asosiy ma’lumot" icon={<FileText />} />
         <CardBody className="space-y-5">
           <Field label="Sarlavha" htmlFor="title" required error={errors.title}>
-            <Input id="title" value={v.title} onChange={(e) => set("title", e.target.value)} maxLength={200} placeholder="Masalan: Kasrlarni qo‘shish" />
+            <Input id="title" value={v.title} onChange={(e) => set("title", e.target.value)} maxLength={200} placeholder="Masalan: Present Perfect — mashqlar" />
           </Field>
           <div>
             <div className="mb-2 text-[13px] font-medium text-text-2">Turi</div>
@@ -149,20 +171,30 @@ export function AssignmentBuilder(p: Props) {
             </div>
             {p.hasWork ? <p className="mt-2 text-[12px] text-muted">O‘quvchilar ishlay boshlagani uchun turini o‘zgartirib bo‘lmaydi.</p> : null}
           </div>
-          <Field label="Kategoriya" htmlFor="subject" required error={errors.subjectId}>
-            <Select id="subject" value={v.subjectId} onChange={(e) => set("subjectId", e.target.value)}>
-              <option value="">Tanlang…</option>
-              {p.subjects.map((s) => (
-                <option key={s.id} value={s.id}>
-                  {s.name}
-                </option>
-              ))}
-            </Select>
-          </Field>
+          <div className="grid gap-4 sm:grid-cols-3">
+            <Field label="Kategoriya" htmlFor="subject" required error={errors.subjectId}>
+              <Select id="subject" value={v.subjectId} onChange={(e) => set("subjectId", e.target.value)}>
+                <option value="">Tanlang…</option>
+                {p.subjects.map((s) => (
+                  <option key={s.id} value={s.id}>
+                    {s.name}
+                  </option>
+                ))}
+              </Select>
+            </Field>
+            <Field label="Daraja" htmlFor="level" error={errors.level}>
+              <Input id="level" value={v.level} onChange={(e) => set("level", e.target.value)} list="asg-levels" placeholder="B1" maxLength={40} />
+            </Field>
+            <Field label="Mavzu" htmlFor="topic" hint={code === "GRAMMAR" ? "Grammatika bo‘limida shu mavzu ostida chiqadi" : undefined} error={errors.topic}>
+              <Input id="topic" value={v.topic} onChange={(e) => set("topic", e.target.value)} list="asg-topics" placeholder="Present Perfect" maxLength={120} />
+            </Field>
+            <datalist id="asg-levels">{LEVELS.map((l) => <option key={l} value={l} />)}</datalist>
+            <datalist id="asg-topics">{GRAMMAR_TOPICS.map((l) => <option key={l} value={l} />)}</datalist>
+          </div>
           <Field label="Qisqa tavsif" htmlFor="desc" error={errors.description}>
             <Textarea id="desc" value={v.description} onChange={(e) => set("description", e.target.value)} rows={3} maxLength={5000} />
           </Field>
-          <Field label="Ko‘rsatmalar" htmlFor="instr" hint="Havolalar avtomatik bosiladigan bo‘ladi. Formulalar: $a^2+b^2=c^2$" error={errors.instructions}>
+          <Field label="Ko‘rsatmalar" htmlFor="instr" hint="Havolalar avtomatik bosiladigan bo‘ladi. Grammatika uchun qoida va misollarni shu yerga yozing." error={errors.instructions}>
             <Textarea id="instr" value={v.instructions} onChange={(e) => set("instructions", e.target.value)} rows={7} maxLength={20000} />
           </Field>
         </CardBody>
@@ -229,6 +261,48 @@ export function AssignmentBuilder(p: Props) {
             {!p.books.length ? <p className="text-[12.5px] text-muted">Kitob biriktirish uchun avval Admin → Kutubxona bo‘limiga kitob qo‘shing.</p> : null}
           </CardBody>
         </Card>
+      ) : null}
+
+      {reading ? (
+        <Card>
+          <CardHeader title="Reading matni" icon={<BookOpen />} description="O‘quvchi savollardan oldin shu matnni o‘qiydi." />
+          <CardBody>
+            <Field label="Matn" htmlFor="passage" error={errors.passage}>
+              <Textarea id="passage" value={v.passage} onChange={(e) => set("passage", e.target.value)} rows={10} maxLength={20000} placeholder="English text…" spellCheck={false} />
+            </Field>
+          </CardBody>
+        </Card>
+      ) : null}
+
+      {listening ? (
+        <Card>
+          <CardHeader title="Listening" icon={<Headphones />} description="Audio, tinglash soni va transkript." />
+          <CardBody className="space-y-4">
+            <Uploader files={audio} onChange={setAudio} max={1} accept="audio/mpeg,audio/mp4,audio/x-m4a,audio/wav,audio/ogg,audio/webm,audio/aac" label="Audio fayl" />
+            <div className="grid gap-4 sm:grid-cols-2">
+              <Field label="Tinglash chegarasi" htmlFor="replay" hint="Bo‘sh — cheksiz. Brauzerda hisoblanadi.">
+                <Input id="replay" type="number" min={1} max={20} value={v.replayLimit} onChange={(e) => set("replayLimit", e.target.value === "" ? "" : Number(e.target.value))} />
+              </Field>
+              <Field label="Transkript ko‘rinishi" htmlFor="tmode">
+                <Select id="tmode" value={v.transcriptMode} onChange={(e) => set("transcriptMode", e.target.value as BuilderValue["transcriptMode"])}>
+                  <option value="after_submit">Topshirgandan keyin</option>
+                  <option value="always">Doim ko‘rinadi</option>
+                  <option value="never">Ko‘rsatilmaydi</option>
+                </Select>
+              </Field>
+            </div>
+            <Field label="Transkript" htmlFor="transcript">
+              <Textarea id="transcript" value={v.transcript} onChange={(e) => set("transcript", e.target.value)} rows={6} maxLength={20000} spellCheck={false} />
+            </Field>
+          </CardBody>
+        </Card>
+      ) : null}
+
+      {!reading || !listening ? (
+        <div className="flex flex-wrap gap-2">
+          {!reading ? <Button variant="secondary" size="sm" onClick={() => setShowReading(true)}><Plus /> Reading matni</Button> : null}
+          {!listening ? <Button variant="secondary" size="sm" onClick={() => setShowListening(true)}><Plus /> Listening audio</Button> : null}
+        </div>
       ) : null}
 
       <Card>

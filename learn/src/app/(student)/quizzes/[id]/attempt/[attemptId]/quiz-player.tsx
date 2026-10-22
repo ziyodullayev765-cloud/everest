@@ -12,7 +12,7 @@ import { toast } from "@/components/ui/toast";
 import { useOnline } from "@/components/app/pwa";
 import { cn } from "@/lib/utils";
 import { t } from "@/lib/i18n";
-import { AudioPlayer } from "@/components/app/media";
+import { AudioPlayer, ListeningPlayer } from "@/components/app/media";
 
 type Answer = { optionId?: string; optionIds?: string[]; text?: string; blanks?: string[]; matches?: Record<string, string> } | null;
 type SaveState = "idle" | "saving" | "saved" | "error";
@@ -27,6 +27,8 @@ type Props = {
   serverNow: string;
   allowBack: boolean;
   showOverview: boolean;
+  /** Reading text / listening clip shared by all questions. */
+  context?: { passage: string; audioFileId: string | null; replayLimit: number | null; transcript: string };
 };
 
 function isAnswered(q: PublicQuestion, a: Answer) {
@@ -219,6 +221,8 @@ export function QuizPlayer(p: Props) {
           </div>
         ) : null}
       </div>
+
+      {p.context && (p.context.passage || p.context.audioFileId) ? <QuizContext attemptId={p.attemptId} {...p.context} /> : null}
 
       {/* Question */}
       <section key={q.id} className="animate-fade-up rounded-2xl border border-border bg-surface p-5 shadow-card sm:p-6" aria-labelledby={`q-${q.id}`}>
@@ -550,5 +554,29 @@ function ArrangeWords({ tokens, value, onChange }: { tokens: string[]; value: st
         </button>
       ) : null}
     </div>
+  );
+}
+
+function QuizContext({ attemptId, passage, audioFileId, replayLimit, transcript }: { attemptId: string; passage: string; audioFileId: string | null; replayLimit: number | null; transcript: string }) {
+  const [open, setOpen] = useState(true);
+  return (
+    <section className="mb-4 rounded-2xl border border-border bg-surface shadow-card">
+      <button type="button" onClick={() => setOpen((o) => !o)} className="flex w-full items-center justify-between gap-2 px-5 py-3 text-left text-[13.5px] font-semibold" aria-expanded={open}>
+        {passage ? "Reading matni" : "Listening"}
+        <span className="text-[12px] font-medium text-muted">{open ? "Yashirish" : "Ko‘rsatish"}</span>
+      </button>
+      {open ? (
+        <div className="space-y-3 border-t border-border px-5 py-4">
+          {audioFileId ? <ListeningPlayer fileId={audioFileId} limit={replayLimit} storageKey={attemptId} /> : null}
+          {passage ? <div className="prose-text max-h-[45dvh] overflow-y-auto text-[15.5px] leading-[1.75] text-text">{passage}</div> : null}
+          {transcript ? (
+            <details className="rounded-xl bg-surface-2 px-4 py-3 text-[14px]">
+              <summary className="cursor-pointer font-medium">Transkript</summary>
+              <div className="prose-text mt-2 text-text-2">{transcript}</div>
+            </details>
+          ) : null}
+        </div>
+      ) : null}
+    </section>
   );
 }

@@ -4,6 +4,11 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import {
   Award,
+  BookA,
+  BookOpenText,
+  Bot,
+  Headphones,
+  PenLine,
   BarChart3,
   Bell,
   BookOpen,
@@ -58,6 +63,11 @@ const ICONS: Record<string, LucideIcon> = {
   settings: Settings,
   audit: ScrollText,
   review: ClipboardCheck,
+  vocabulary: BookA,
+  grammar: PenLine,
+  reading: BookOpenText,
+  listening: Headphones,
+  tutor: Bot,
 };
 
 export type NavItem = { href: string; label: string; icon: keyof typeof ICONS | string; exact?: boolean; badge?: number };

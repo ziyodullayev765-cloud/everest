@@ -22,6 +22,7 @@
     "node": ">=20.9"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^1.1.0",
     "@vercel/blob": "^2.8.2",
     "clsx": "^2.1.1",
     "drizzle-orm": "^0.45.4",

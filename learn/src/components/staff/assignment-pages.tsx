@@ -102,7 +102,7 @@ export async function AssignmentListPage({ user, base, sp }: { user: SessionUser
 
 async function builderData(user: SessionUser) {
   const [subjects, classes, students, books] = await Promise.all([subjectsList(), listClasses(user), targetableStudents(user), bookOptions()]);
-  return { subjects: subjects.map((s) => ({ id: s.id, name: s.name })), classes: classes.map((c) => ({ id: c.id, name: c.name, students: c.students })), students, books };
+  return { subjects: subjects.map((s) => ({ id: s.id, name: s.name, code: s.code })), classes: classes.map((c) => ({ id: c.id, name: c.name, students: c.students })), students, books };
 }
 
 export async function NewAssignmentPage({ user, base }: { user: SessionUser; base: string }) {
@@ -114,7 +114,7 @@ export async function NewAssignmentPage({ user, base }: { user: SessionUser; bas
     description: "",
     instructions: "",
     type: "homework",
-    subjectId: data.subjects[0]?.id ?? "",
+    subjectId: data.subjects.find((s) => s.code === "CUSTOM")?.id ?? data.subjects[0]?.id ?? "",
     dueAt: "",
     publishMode: "now",
     publishAt: "",
@@ -138,11 +138,18 @@ export async function NewAssignmentPage({ user, base }: { user: SessionUser; bas
     classIds: [],
     studentIds: [],
     items: [],
+    level: "",
+    topic: "",
+    passage: "",
+    audioFileId: null,
+    transcript: "",
+    transcriptMode: "after_submit",
+    replayLimit: "",
   };
   return (
     <div className="mx-auto max-w-4xl">
       <PageHeader back={{ href: `${base}/assignments`, label: "Vazifalar" }} title="Yangi vazifa" />
-      <AssignmentBuilder base={base} id={null} initial={initial} initialAttachments={[]} status={null} hasWork={false} {...data} />
+      <AssignmentBuilder base={base} id={null} initial={initial} initialAttachments={[]} initialAudio={null} status={null} hasWork={false} {...data} />
     </div>
   );
 }
@@ -182,6 +189,13 @@ export async function EditAssignmentPage({ user, base, id, tab }: { user: Sessio
     classIds: e.targets.filter((x) => x.classId).map((x) => x.classId!),
     studentIds: e.targets.filter((x) => x.studentId).map((x) => x.studentId!),
     items: a.items,
+    level: a.level,
+    topic: a.topic,
+    passage: a.passage,
+    audioFileId: a.audioFileId,
+    transcript: a.transcript,
+    transcriptMode: a.transcriptMode as BuilderValue["transcriptMode"],
+    replayLimit: a.replayLimit ?? "",
   };
   const questions: EditQuestion[] = e.questions.map((q) => {
     const cfg = q.config as QuestionConfig;
@@ -237,7 +251,7 @@ export async function EditAssignmentPage({ user, base, id, tab }: { user: Sessio
       {current === "questions" ? (
         <QuestionEditor assignmentId={a.id} initial={questions} locked={e.questionsLocked} status={a.status} bank={bank.map((b) => ({ id: b.id, type: b.type, prompt: b.prompt, points: Number(b.points), subjectName: b.subjectName, ownerName: b.ownerName }))} subjectId={a.subjectId} />
       ) : (
-        <AssignmentBuilder base={base} id={a.id} initial={initial} initialAttachments={e.attachments} status={a.status} hasWork={e.questionsLocked} {...data} />
+        <AssignmentBuilder base={base} id={a.id} initial={initial} initialAttachments={e.attachments} initialAudio={e.audio} status={a.status} hasWork={e.questionsLocked} {...data} />
       )}
     </div>
   );

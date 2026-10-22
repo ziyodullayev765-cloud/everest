@@ -8,6 +8,7 @@ export const NOTIFICATION_TYPES = {
   submission: "Topshirilgan ishlar (o‘qituvchilar uchun)",
   grade: "E’lon qilingan baholar",
   feedback: "O‘qituvchi izohlari",
+  vocabulary: "Yangi lug‘at ro‘yxatlari",
   weekly_summary: "Haftalik hisobot",
   announcement: "Guruh e’lonlari",
   system: "Tizim xabarlari",

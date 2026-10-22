@@ -5,22 +5,33 @@ import { logoutAction } from "@/app/actions/auth";
 import { unreadCount } from "@/server/services/notifications";
 import { getSettings } from "@/server/services/settings";
 import { t } from "@/lib/i18n";
+import { tutorEnabled } from "@/server/services/tutor";
 
 export default async function StudentLayout({ children }: { children: React.ReactNode }) {
   const user = await pageUser("student");
   const [unread, settings] = await Promise.all([unreadCount(user.id), getSettings()]);
   const tabs = [
     { href: "/", label: t.nav.home, icon: "home", exact: true },
-    { href: "/assignments", label: t.nav.assignments, icon: "assignments" },
+    { href: "/assignments", label: t.nav.homework, icon: "assignments" },
+    { href: "/vocabulary", label: t.nav.vocabulary, icon: "vocabulary" },
     { href: "/quizzes", label: t.nav.quizzes, icon: "quizzes" },
-    { href: "/results", label: t.nav.results, icon: "results" },
     { href: "/profile", label: t.nav.profile, icon: "profile" },
   ];
   const sections: NavSection[] = [
     { items: tabs.slice(0, 4) },
     {
+      title: "Mashq",
+      items: [
+        { href: "/grammar", label: t.nav.grammar, icon: "grammar" },
+        { href: "/reading", label: t.nav.reading, icon: "reading" },
+        { href: "/listening", label: t.nav.listening, icon: "listening" },
+        ...(tutorEnabled() ? [{ href: "/tutor", label: t.nav.tutor, icon: "tutor" }] : []),
+      ],
+    },
+    {
       title: "Shaxsiy",
       items: [
+        { href: "/results", label: t.nav.progress, icon: "results" },
         { href: "/grades", label: t.nav.grades, icon: "grades" },
         ...(settings.gamification.enabled && user.gamificationEnabled ? [{ href: "/achievements", label: t.nav.achievements, icon: "achievements" }] : []),
         { href: "/library", label: t.nav.library, icon: "bank" },
