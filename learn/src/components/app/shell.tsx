@@ -219,7 +219,7 @@ export function AppShell({ appName, logoFileId, areaLabel, sections, tabs, user,
 
       {/* Bottom tab bar (students, phones) */}
       {tabs ? (
-        <nav className="fixed inset-x-3 bottom-[calc(env(safe-area-inset-bottom)+2px)] z-40 lg:hidden" aria-label="Asosiy">
+        <nav className="fixed inset-x-2 bottom-[max(4px,calc(env(safe-area-inset-bottom)*0.35))] z-40 lg:hidden" aria-label="Asosiy">
           <ul className="mx-auto grid h-[68px] max-w-md grid-cols-5 rounded-[28px] border border-border/60 bg-surface shadow-[0_8px_30px_rgba(16,40,28,0.12)]">
             {tabs.map((t, i) => {
               const Icon = ICONS[t.icon] ?? Home;

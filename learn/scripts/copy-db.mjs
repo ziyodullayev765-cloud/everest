@@ -62,7 +62,10 @@ try {
   while (order.length < tables.length) {
     const ready = tables.filter((t) => !done.has(t) && active.every((e) => e.t !== t || done.has(e.r)));
     if (ready.length) {
-      for (const t of ready) (order.push(t), done.add(t));
+      for (const t of ready) {
+        order.push(t);
+        done.add(t);
+      }
       continue;
     }
     const nullableOf = (e) => e.cols.every((c) => cols.get(e.t).find((x) => x.c === c)?.nullable);

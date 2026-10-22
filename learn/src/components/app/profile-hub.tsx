@@ -10,6 +10,7 @@ import { getSettings } from "@/server/services/settings";
 import { studentClasses } from "@/server/services/classes";
 import { activeDays, gamificationSummary } from "@/server/services/gamification";
 import { recentAchievements } from "@/server/services/achievements";
+import { isOwner } from "@/server/services/owner";
 import { tutorEnabled } from "@/server/services/tutor";
 import { db } from "@/server/db";
 import { localDay, weekStart } from "@/lib/dates";
@@ -134,6 +135,7 @@ export async function ProfileHub({ user }: { user: SessionUser }) {
   const badge = sd ? sd.badge : t.role[p.role];
   const gameOn = isStudent && settings.gamification.enabled && p.gamificationEnabled;
   const menu = menuFor(user.role, { gamification: gameOn });
+  if (isOwner(user)) menu.unshift({ href: "/maxfiy", label: "🤫 Maxfiy bo‘lim", icon: Sparkles });
   const [game, recent] = gameOn ? await Promise.all([gamificationSummary(user.id), recentAchievements(user.id, 3)]) : [null, []];
 
   return (

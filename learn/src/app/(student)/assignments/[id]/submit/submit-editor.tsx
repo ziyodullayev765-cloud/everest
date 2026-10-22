@@ -224,7 +224,7 @@ export function SubmitEditor(p: Props) {
         </CardBody>
       </Card>
 
-      <div className="sticky bottom-[calc(100px+env(safe-area-inset-bottom))] z-10 flex items-center justify-between gap-3 rounded-3xl border-2 border-border bg-surface/95 p-3 shadow-pop backdrop-blur lg:bottom-4">
+      <div className="sticky bottom-[calc(96px+env(safe-area-inset-bottom))] z-10 flex items-center justify-between gap-3 rounded-3xl border-2 border-border bg-surface/95 p-3 shadow-pop backdrop-blur lg:bottom-4">
         <div className="flex min-w-0 items-center gap-2 pl-1 text-[12.5px] text-muted" aria-live="polite">
           {!online ? (
             <>
