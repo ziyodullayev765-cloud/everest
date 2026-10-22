@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowLeft, Info, KeyRound, Lock, Moon, Shield } from "lucide-react";
+import { ArrowLeft, Info, KeyRound, Languages, Lock, Moon, Shield } from "lucide-react";
 import type { SessionUser } from "@/server/auth/session";
 import { ownProfile } from "@/server/services/users";
 import { getSettings } from "@/server/services/settings";
@@ -11,6 +11,7 @@ import { ThemeSwitcher } from "./theme";
 import { ProfileSettings } from "./profile-settings";
 import { SoundToggle } from "./sound-toggle";
 import { LogoutButton } from "./logout-button";
+import { LanguageSwitch } from "./language-switch";
 import { OfflineStatus } from "./offline-status";
 
 export async function ProfileSettingsView({ user, backHref }: { user: SessionUser; backHref: string }) {
@@ -35,6 +36,13 @@ export async function ProfileSettingsView({ user, backHref }: { user: SessionUse
         initial={{ displayName: p.displayName, avatarFileId: p.avatarFileId, weeklyTaskGoal: p.weeklyTaskGoal, dailyXpGoal: p.dailyXpGoal, dailyGoal: p.dailyGoal, gamificationEnabled: p.gamificationEnabled, notificationPrefs: p.notificationPrefs ?? {} }}
         prefTypes={prefTypes}
       />
+
+      <Card>
+        <CardHeader title="Til · Language" icon={<Languages />} />
+        <CardBody className="pt-3">
+          <LanguageSwitch />
+        </CardBody>
+      </Card>
 
       <Card>
         <CardHeader title="Tungi rejim va ko‘rinish" icon={<Moon />} />

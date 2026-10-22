@@ -1,6 +1,7 @@
 import { BarChart3, CalendarCheck2, Sparkles } from "lucide-react";
 import { Logo, LogoMark } from "@/components/app/logo";
 import { getSettings } from "@/server/services/settings";
+import { LanguageSwitch } from "@/components/app/language-switch";
 
 export default async function AuthLayout({ children }: { children: React.ReactNode }) {
   const s = await getSettings();
@@ -39,6 +40,9 @@ export default async function AuthLayout({ children }: { children: React.ReactNo
         <p className="relative text-[12px] text-muted">© {new Date().getFullYear()} {s.branding.appName}</p>
       </aside>
       <main className="flex flex-col px-5 pt-safe pb-safe">
+        <div className="flex justify-end pt-4">
+          <LanguageSwitch compact />
+        </div>
         <div className="mx-auto flex w-full max-w-sm flex-1 flex-col justify-center py-10">
           <div className="mb-8 flex justify-center lg:hidden">
             <LogoMark size={52} />

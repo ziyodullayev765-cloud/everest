@@ -1,4 +1,5 @@
 import "server-only";
+import "@/server/locale";
 import { cache } from "react";
 import { cookies, headers } from "next/headers";
 import { and, eq, gt, lt } from "drizzle-orm";

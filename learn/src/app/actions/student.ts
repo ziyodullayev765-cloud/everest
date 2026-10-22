@@ -1,13 +1,14 @@
 "use server";
 import { revalidatePath } from "next/cache";
 import { run, type ActionResult } from "@/server/action";
-import { requireRole, requireUser } from "@/server/auth/session";
+import { getCurrentUser, requireRole, requireUser } from "@/server/auth/session";
 import { markAchievementsSeen, unseenAchievements } from "@/server/services/achievements";
 import { getSettings } from "@/server/services/settings";
 import { markMaterialRead, saveDraft, submitWork } from "@/server/services/submissions";
 import { saveAnswer, startAttempt, submitAttempt } from "@/server/services/quiz";
 import { markRead } from "@/server/services/notifications";
-import { updateOwnProfile } from "@/server/services/users";
+import { setOwnLocale, updateOwnProfile } from "@/server/services/users";
+import { setLocaleCookie } from "@/server/locale";
 import { joinByCode } from "@/server/services/classes";
 
 export async function saveDraftAction(assignmentId: string, input: { content: string; fileIds: string[]; itemProgress?: Record<string, { done: boolean; text?: string }> }) {
@@ -98,5 +99,14 @@ export async function markAchievementsSeenAction(codes: string[]) {
   return run(async () => {
     const u = await requireRole("student");
     await markAchievementsSeen(u.id, codes.filter((c) => typeof c === "string").slice(0, 20));
+  });
+}
+
+/** Switches the interface language; signed-out visitors (login page) only get the device cookie. */
+export async function setLocaleAction(locale: "uz" | "en") {
+  return run(async () => {
+    const u = await getCurrentUser();
+    if (u) await setOwnLocale(u, locale);
+    else await setLocaleCookie(locale === "en" ? "en" : "uz");
   });
 }

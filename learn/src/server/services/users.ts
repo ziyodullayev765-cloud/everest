@@ -1,4 +1,5 @@
 import "server-only";
+import { setLocaleCookie } from "@/server/locale";
 import { and, asc, desc, eq, ilike, inArray, isNull, or, sql, type SQL } from "drizzle-orm";
 import { z } from "zod";
 import { db, schema } from "../db";
@@ -35,6 +36,7 @@ export async function login(usernameRaw: string, password: string) {
   }
   await resetLimit(`login-user:${keyedHash(username)}`);
   await createSession(user.id);
+  await setLocaleCookie(user.locale === "en" ? "en" : "uz"); // the account's language follows it to new devices
   await db.update(schema.users).set({ lastLoginAt: new Date() }).where(eq(schema.users.id, user.id));
   await audit(user.id, "auth.login", "user", user.id);
   return user;
@@ -412,4 +414,11 @@ export async function recentAudit(actor: Actor, f: { q?: string; limit?: number 
     .where(like ? or(ilike(schema.auditLogs.action, like), ilike(schema.users.displayName, like)) : sql`true`)
     .orderBy(desc(schema.auditLogs.createdAt))
     .limit(Math.min(500, f.limit ?? 200));
+}
+
+/** Interface language for the signed-in user (also remembered on this device). */
+export async function setOwnLocale(actor: Actor, locale: string) {
+  const l = locale === "en" ? "en" : "uz";
+  await db.update(schema.users).set({ locale: l, updatedAt: new Date() }).where(eq(schema.users.id, actor.id));
+  await setLocaleCookie(l);
 }

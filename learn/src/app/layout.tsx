@@ -6,6 +6,7 @@ import "./globals.css";
 import { themeScript } from "@/components/app/theme";
 import { NoZoom, OfflineIndicator, ServiceWorkerRegistrar } from "@/components/app/pwa";
 import { Toaster } from "@/components/ui/toast";
+import { requestLocale } from "@/server/locale";
 
 /** Rounded, friendly typeface (self-hosted; latin subset covers Uzbek Latin incl. ʻ and ‘). */
 const nunito = localFont({
@@ -44,9 +45,10 @@ export const viewport: Viewport = {
   ],
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const lang = await requestLocale();
   return (
-    <html lang="uz" suppressHydrationWarning className={`${nunito.variable} ${GeistMono.variable}`}>
+    <html lang={lang} suppressHydrationWarning className={`${nunito.variable} ${GeistMono.variable}`}>
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
       </head>
