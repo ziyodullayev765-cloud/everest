@@ -1,5 +1,7 @@
 "use server";
 import { revalidatePath } from "next/cache";
+import { after } from "next/server";
+import { evaluateAchievements } from "@/server/services/achievements";
 import { run } from "@/server/action";
 import { requireRole } from "@/server/auth/session";
 import {
@@ -65,7 +67,10 @@ export async function sessionCardsAction(mode: SessionMode, listId: string | nul
 }
 export async function recordReviewAction(input: unknown) {
   return run(async () => {
-    const r = await recordReview(await student(), input);
+    const u = await student();
+    const r = await recordReview(u, input);
+    // Word-count achievements; checked after the response so reviews stay fast.
+    after(() => evaluateAchievements(u.id).catch(() => {}));
     return { ...r, dueAt: r.dueAt.toISOString() };
   });
 }
@@ -83,7 +88,9 @@ export async function vocabGoalAction(n: number) {
 }
 export async function finishGameAction(input: unknown) {
   return run(async () => {
-    const r = await finishGame(await student(), input);
+    const u = await student();
+    const r = await finishGame(u, input);
+    await evaluateAchievements(u.id);
     revalidatePath("/", "layout");
     return r;
   });

@@ -8,7 +8,8 @@ import { isWorkType, submissionWindow } from "@/lib/assignment-kinds";
 import type { HomeworkItem, ItemProgress } from "../db/schema";
 import { assertStudentCanSee } from "./access";
 import { assertOwnFiles } from "./files";
-import { awardXp, evaluateAchievements } from "./gamification";
+import { awardXp } from "./gamification";
+import { evaluateAchievements } from "./achievements";
 import { notify, teachersFor } from "./notifications";
 import { getSettings } from "./settings";
 

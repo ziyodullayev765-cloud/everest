@@ -11,7 +11,7 @@ import { audit } from "./audit";
 import { booksByIds } from "./library";
 import { notify } from "./notifications";
 import { fillTemplate, getSettings } from "./settings";
-import { evaluateAchievements } from "./gamification";
+import { evaluateAchievements } from "./achievements";
 
 const gradeInput = z.object({
   points: z.coerce.number().min(0).optional(),

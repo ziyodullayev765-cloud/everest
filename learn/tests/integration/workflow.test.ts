@@ -1,5 +1,5 @@
 import { afterAll, describe, expect, it } from "vitest";
-import { and, eq } from "drizzle-orm";
+import { and, eq, sql } from "drizzle-orm";
 import { closeDb, db, schema } from "@/server/db";
 import { saveAssignment, listForStudent, getForStudent, saveQuestions, setAssignmentStatus, duplicateAssignment, listForStaff, promoteScheduled } from "@/server/services/assignments";
 import { saveDraft, submitWork } from "@/server/services/submissions";
@@ -7,11 +7,14 @@ import { gradeSubmission, returnForRevision, gradingContext, studentGrades, grad
 import { startAttempt, saveAnswer, submitAttempt, attemptView, attemptResult, quizOverview, gradeAttemptManually } from "@/server/services/quiz";
 import { studentDashboard, studentResults } from "@/server/services/analytics";
 import { listNotifications } from "@/server/services/notifications";
-import { xpTotal } from "@/server/services/gamification";
 import { authorizeFileRead } from "@/server/services/files";
 import { baseAssignment, world } from "./fixtures";
 import { localDay } from "@/lib/dates";
 import { addDays } from "@/lib/gamification";
+
+/** XP from the task rules only (achievement rewards are tested separately). */
+const taskXp = async (userId: string) =>
+  (await db.execute<{ n: number }>(sql`select coalesce(sum(amount),0)::int as n from xp_transactions where user_id = ${userId} and reason <> 'achievement'`))[0].n;
 
 afterAll(async () => closeDb());
 
@@ -52,7 +55,7 @@ describe("assignment → submission → grading", () => {
     expect((await err(submitWork(w.student, id, { content: "o‘zgartirdim" }))).code).toBe("closed");
     expect((await err(saveDraft(w.student, id, { content: "o‘zgartirdim" }))).code).toBe("closed");
     // XP awarded exactly once.
-    expect(await xpTotal(w.student.id)).toBe(20);
+    expect(await taskXp(w.student.id)).toBe(20);
 
     // Other teacher cannot grade; other student cannot be graded on it.
     expect((await err(gradeSubmission(w.outsiderTeacher, id, w.student.id, { points: 9 }))).code).toBe("forbidden");
@@ -99,7 +102,7 @@ describe("assignment → submission → grading", () => {
     expect(s2.version).toBe(2);
     const ctx = await gradingContext(w.teacher, id, w.student.id);
     expect(ctx.versions.map((v) => v.content)).toEqual(["v2 to‘liq", "v1"]);
-    expect(await xpTotal(w.student.id)).toBe(20); // no XP for the resubmission
+    expect(await taskXp(w.student.id)).toBe(20); // no XP for the resubmission
   });
 
   it("late rules: closed without allowLate, penalty with it", async () => {
@@ -114,7 +117,7 @@ describe("assignment → submission → grading", () => {
     expect(s.isLate).toBe(true);
     const g = await gradeSubmission(w.teacher, open.id, w.student.id, { points: 10, finalize: true });
     expect(g.points).toBe(8);
-    expect(await xpTotal(w.student.id)).toBe(10);
+    expect(await taskXp(w.student.id)).toBe(10);
   });
 
   it("rubric grading sums criteria and validates limits", async () => {
@@ -215,7 +218,7 @@ describe("quiz engine", () => {
     const grades = await studentGrades(w.student.id);
     expect(grades[0]).toMatchObject({ points: 7, status: "final", label: "5" });
     // XP once: 10 + 8 (87.5% → 8 tens) = 18
-    expect(await xpTotal(w.student.id)).toBe(18);
+    expect(await taskXp(w.student.id)).toBe(18);
     expect((await err(startAttempt(w.student, id))).code).toBe("closed"); // 1 attempt only
   });
 
@@ -282,7 +285,7 @@ describe("quiz engine", () => {
     g = (await studentGrades(w.student.id))[0];
     expect(g).toMatchObject({ points: 2, status: "final" });
     // XP is from the first attempt only (0% → 10 XP).
-    expect(await xpTotal(w.student.id)).toBe(10);
+    expect(await taskXp(w.student.id)).toBe(10);
     // Questions are locked once attempts exist.
     expect((await err(saveQuestions(w.teacher, id, [questions[1]]))).code).toBe("closed");
   });

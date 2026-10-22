@@ -5,7 +5,6 @@ import { pageUser } from "@/server/auth/guards";
 import { studentDashboard } from "@/server/services/analytics";
 import { ownProfile } from "@/server/services/users";
 import { getSettings } from "@/server/services/settings";
-import { ACHIEVEMENTS } from "@/lib/gamification";
 import { formatDateTime, formatLongToday, remaining } from "@/lib/dates";
 import { cn, fmtNumber, fmtPercent } from "@/lib/utils";
 import { t } from "@/lib/i18n";
@@ -15,7 +14,8 @@ import { EmptyState, Progress, Ring } from "@/components/ui/feedback";
 import { LinkButton } from "@/components/ui/button";
 import { hrefFor } from "@/components/student/assignment-card";
 import { WeeklyActivityChart } from "@/components/student/charts";
-import { AchievementIcon } from "@/components/student/achievement-icon";
+import { Medal } from "@/components/student/medal";
+import { recentAchievements } from "@/server/services/achievements";
 
 export const metadata: Metadata = { title: "Bosh sahifa" };
 
@@ -44,7 +44,7 @@ function greeting() {
 
 export default async function StudentHome() {
   const user = await pageUser("student");
-  const [profile, settings] = await Promise.all([ownProfile(user.id), getSettings()]);
+  const [profile, settings, recent] = await Promise.all([ownProfile(user.id), getSettings(), recentAchievements(user.id, 3)]);
   const d = await studentDashboard(user.id, profile.weeklyTaskGoal, profile.dailyGoal);
   const gamify = settings.gamification.enabled && profile.gamificationEnabled;
   const firstName = user.displayName.split(" ")[0];
@@ -237,17 +237,14 @@ export default async function StudentHome() {
                   </div>
                   <Progress value={d.game.level.progress * 100} label="Keyingi darajagacha" />
                 </div>
-                {d.game.earned.length ? (
-                  <div className="flex flex-wrap gap-2">
-                    {d.game.earned.slice(0, 6).map((e) => {
-                      const def = ACHIEVEMENTS.find((a) => a.code === e.code);
-                      return def ? (
-                        <span key={e.code} className="inline-flex items-center gap-1.5 rounded-full border border-border bg-surface-2 py-1 pr-3 pl-1 text-[12.5px] font-semibold text-text-2" title={def.description}>
-                          <AchievementIcon name={def.icon} tier={def.tier} size={24} />
-                          {def.title}
-                        </span>
-                      ) : null;
-                    })}
+                {recent.length ? (
+                  <div className="grid grid-cols-3 gap-2">
+                    {recent.map((a) => (
+                      <Link key={a.code} href={`/achievements/${a.code}`} className="flex flex-col items-center rounded-2xl border-2 border-border px-1 py-3 text-center hover:bg-surface-2">
+                        <Medal icon={a.icon} category={a.category} size={44} />
+                        <span className="mt-1.5 line-clamp-2 text-[11.5px] leading-tight font-extrabold">{a.title}</span>
+                      </Link>
+                    ))}
                   </div>
                 ) : (
                   <p className="flex items-center gap-2 text-[13px] text-muted">

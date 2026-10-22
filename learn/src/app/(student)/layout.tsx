@@ -6,6 +6,7 @@ import { unreadCount } from "@/server/services/notifications";
 import { getSettings } from "@/server/services/settings";
 import { t } from "@/lib/i18n";
 import { tutorEnabled } from "@/server/services/tutor";
+import { AchievementUnlock } from "@/components/student/achievement-unlock";
 
 export default async function StudentLayout({ children }: { children: React.ReactNode }) {
   const user = await pageUser("student");
@@ -57,6 +58,7 @@ export default async function StudentLayout({ children }: { children: React.Reac
       notificationsHref="/notifications"
     >
       {children}
+      {settings.gamification.enabled && user.gamificationEnabled ? <AchievementUnlock /> : null}
     </AppShell>
     </>
   );

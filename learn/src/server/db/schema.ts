@@ -677,8 +677,34 @@ export const userAchievements = pgTable(
       .references(() => users.id, { onDelete: "restrict" }),
     code: text("code").notNull(),
     earnedAt: ts("earned_at").notNull().defaultNow(),
+    /** When the student saw the unlock celebration (null = still to show). */
+    seenAt: ts("seen_at"),
   },
   (t) => [primaryKey({ columns: [t.userId, t.code] })],
+);
+
+/** Achievement rules (seeded from src/lib/achievements.ts, editable by admins). */
+export const achievements = pgTable(
+  "achievements",
+  {
+    code: text("code").primaryKey(),
+    category: text("category").notNull(),
+    title: text("title").notNull(),
+    description: text("description").notNull().default(""),
+    icon: text("icon").notNull().default("Award"),
+    metric: text("metric").notNull(),
+    threshold: integer("threshold").notNull(),
+    xpReward: integer("xp_reward").notNull().default(0),
+    active: boolean("active").notNull().default(true),
+    sortOrder: integer("sort_order").notNull().default(1000),
+    createdAt: ts("created_at").notNull().defaultNow(),
+    updatedAt: ts("updated_at").notNull().defaultNow(),
+  },
+  (t) => [
+    check("achievements_category", sql`${t.category} in ('reading','quiz','vocab','grammar','activity')`),
+    check("achievements_threshold", sql`${t.threshold} between 1 and 100000`),
+    check("achievements_xp", sql`${t.xpReward} between 0 and 1000`),
+  ],
 );
 
 /** Optional class-wide goals; progress is shown in aggregate only. */

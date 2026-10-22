@@ -1,20 +1,23 @@
 import Link from "next/link";
 import { sql } from "drizzle-orm";
 import {
-  BarChart3, Bell, BookOpenText, Bot, ChevronRight, ClipboardCheck, ClipboardList, Download, FileClock, GraduationCap, Headphones,
+  BarChart3, Bell, Flame, BookOpenText, Bot, ChevronRight, ClipboardCheck, ClipboardList, Download, FileClock, GraduationCap, Headphones,
   Library, ListChecks, NotebookTabs, PenLine, Settings, ShieldCheck, Sparkles, Star, Trophy, UserRound, UsersRound, type LucideIcon,
 } from "lucide-react";
 import type { SessionUser } from "@/server/auth/session";
 import { ownProfile } from "@/server/services/users";
 import { getSettings } from "@/server/services/settings";
 import { studentClasses } from "@/server/services/classes";
-import { activeDays } from "@/server/services/gamification";
+import { activeDays, gamificationSummary } from "@/server/services/gamification";
+import { recentAchievements } from "@/server/services/achievements";
 import { tutorEnabled } from "@/server/services/tutor";
 import { db } from "@/server/db";
 import { localDay, weekStart } from "@/lib/dates";
 import { fmtNumber } from "@/lib/utils";
 import { t } from "@/lib/i18n";
 import { Avatar } from "@/components/ui/avatar";
+import { Medal } from "@/components/student/medal";
+import { formatShortDate } from "@/lib/dates";
 
 type Item = { href: string; label: string; icon: LucideIcon; hint?: string };
 
@@ -112,6 +115,7 @@ function menuFor(role: SessionUser["role"], opts: { gamification: boolean }): It
     { href: "/admin/assignments", label: "Vazifalar va testlar", icon: ClipboardList },
     { href: "/admin/vocabulary", label: "Lug‘at ro‘yxatlari", icon: NotebookTabs },
     { href: "/admin/gradebook", label: "Hisobotlar", icon: BarChart3 },
+    { href: "/admin/achievements", label: "Yutuqlar", icon: Trophy },
     { href: "/admin/settings", label: "Tizim sozlamalari", icon: ShieldCheck },
     { href: "/admin/audit", label: "Faoliyat jurnali", icon: FileClock },
     { href: "/admin/notifications", label: "Bildirishnomalar", icon: Bell },
@@ -128,7 +132,9 @@ export async function ProfileHub({ user }: { user: SessionUser }) {
   const sd = isStudent ? await studentData(user.id) : null;
   const stats = sd ? sd.stats : user.role === "teacher" ? await teacherData(user.id) : await adminData();
   const badge = sd ? sd.badge : t.role[p.role];
-  const menu = menuFor(user.role, { gamification: isStudent && settings.gamification.enabled });
+  const gameOn = isStudent && settings.gamification.enabled && p.gamificationEnabled;
+  const menu = menuFor(user.role, { gamification: gameOn });
+  const [game, recent] = gameOn ? await Promise.all([gamificationSummary(user.id), recentAchievements(user.id, 3)]) : [null, []];
 
   return (
     <div className="-mx-4 -mt-5 sm:mx-auto sm:mt-0 sm:max-w-2xl">
@@ -152,6 +158,16 @@ export async function ProfileHub({ user }: { user: SessionUser }) {
           <span className="relative mt-2 inline-flex items-center gap-1.5 rounded-full bg-white/15 px-3 py-1 text-[12px] font-bold">
             <span className="size-2 rounded-full bg-[#5ee08f]" aria-hidden /> {p.role === "teacher" ? "Faol" : "Admin"}
           </span>
+        ) : null}
+        {game ? (
+          <div className="relative mt-3 flex justify-center gap-2">
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-black/20 px-3 py-1.5 text-[12.5px] font-extrabold">
+              <Flame className="size-4 text-[#ff9a3d]" aria-hidden /> {game.streak.current} kunlik streak
+            </span>
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-black/20 px-3 py-1.5 text-[12.5px] font-extrabold">
+              <Star className="size-4 fill-[#ffc22e] text-[#ffc22e]" aria-hidden /> {fmtNumber(game.xp, 0)} XP
+            </span>
+          </div>
         ) : null}
       </section>
 
@@ -179,6 +195,35 @@ export async function ProfileHub({ user }: { user: SessionUser }) {
               <div className="h-full rounded-full bg-primary transition-all" style={{ width: `${(sd.week / 7) * 100}%` }} />
             </div>
             <p className="mt-2 text-[12px] text-muted">Shu hafta vazifa, quiz yoki so‘z takrorlagan kunlaringiz.</p>
+          </section>
+        ) : null}
+
+        {game ? (
+          <section className="rounded-3xl border-2 border-border bg-surface p-4">
+            <div className="mb-3 flex items-center justify-between">
+              <h2 className="text-[15px] font-extrabold">So‘nggi yutuqlar</h2>
+              <Link href="/achievements" className="text-[13px] font-extrabold text-primary">Barchasi</Link>
+            </div>
+            {recent.length ? (
+              <div className="grid grid-cols-3 gap-2">
+                {recent.map((a) => (
+                  <Link key={a.code} href={`/achievements/${a.code}`} className="flex flex-col items-center rounded-2xl border-2 border-border px-1 py-3 text-center hover:bg-surface-2">
+                    <Medal icon={a.icon} category={a.category} size={52} />
+                    <span className="mt-1.5 line-clamp-2 text-[12px] leading-tight font-extrabold">{a.title}</span>
+                    <span className="text-[11px] font-semibold text-muted">{formatShortDate(a.earnedAt)}</span>
+                  </Link>
+                ))}
+              </div>
+            ) : (
+              <p className="text-[13px] text-muted">Birinchi darsni yakunlang — birinchi yutuq ochiladi.</p>
+            )}
+            <div className="mt-3 flex items-center gap-3 rounded-2xl bg-[#fff4e5] p-3 dark:bg-[#2c2012]">
+              <Flame className="size-8 shrink-0 text-[#ff7a1a]" aria-hidden />
+              <div className="min-w-0 flex-1">
+                <div className="text-[14px] font-extrabold">{game.streak.current} kunlik streak</div>
+                <div className="text-[12px] text-muted">Eng uzun: {game.streak.best} kun. Har kuni ozgina mashq qiling!</div>
+              </div>
+            </div>
           </section>
         ) : null}
 

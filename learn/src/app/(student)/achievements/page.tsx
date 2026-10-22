@@ -1,95 +1,161 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { Flame, Lock, Trophy, Zap } from "lucide-react";
-import { sql } from "drizzle-orm";
 import { pageUser } from "@/server/auth/guards";
 import { gamificationSummary } from "@/server/services/gamification";
+import { studentAchievements } from "@/server/services/achievements";
 import { getSettings } from "@/server/services/settings";
-import { db } from "@/server/db";
-import { ACHIEVEMENTS, XP_RULE_LABELS, type XpRules } from "@/lib/gamification";
-import { formatDate } from "@/lib/dates";
-import { fmtNumber, fmtPercent } from "@/lib/utils";
-import { PageHeader, StatCard } from "@/components/ui/page";
+import { ACH_CATEGORIES } from "@/lib/achievements";
+import { XP_RULE_LABELS, type XpRules } from "@/lib/gamification";
+import { formatShortDate } from "@/lib/dates";
+import { cn, fmtNumber } from "@/lib/utils";
+import { PageHeader } from "@/components/ui/page";
 import { Card, CardBody, CardHeader } from "@/components/ui/card";
-import { Alert, Progress } from "@/components/ui/feedback";
-import { AchievementIcon } from "@/components/student/achievement-icon";
+import { Alert } from "@/components/ui/feedback";
+import { Medal } from "@/components/student/medal";
 
 export const metadata: Metadata = { title: "Yutuqlar" };
 
-const TIER_LABEL = { bronze: "Bronza", silver: "Kumush", gold: "Oltin" };
+const STEPS = [
+  "Vazifa, quiz yoki mashqni bajarasiz.",
+  "Tizim faolligingizni haqiqiy natijalar asosida qayd etadi.",
+  "Shart bajarilganda yutuq ochiladi — bir marta.",
+  "Siz XP va maxsus nishon olasiz.",
+  "Yutuqlar profilingizda saqlanadi.",
+];
 
-export default async function AchievementsPage() {
+export default async function AchievementsPage({ searchParams }: { searchParams: Promise<{ c?: string }> }) {
   const user = await pageUser("student");
-  const [g, settings] = await Promise.all([gamificationSummary(user.id), getSettings()]);
+  const { c } = await searchParams;
+  const [g, settings, { list }] = await Promise.all([gamificationSummary(user.id), getSettings(), studentAchievements(user.id)]);
   if (!settings.gamification.enabled || !user.gamificationEnabled)
     return (
       <>
         <PageHeader title="Yutuqlar" />
-        <Alert tone="info">{settings.gamification.enabled ? "Siz o‘yin elementlarini profil sozlamalarida o‘chirgansiz." : "Kurs o‘yin elementlarini (XP, nishonlar) o‘chirib qo‘ygan."}</Alert>
+        <Alert tone="info">{settings.gamification.enabled ? "Siz o‘yin elementlarini sozlamalarda o‘chirgansiz." : "Kurs o‘yin elementlarini (XP, nishonlar) o‘chirib qo‘ygan."}</Alert>
       </>
     );
-  const bests = (
-    await db.execute<{ best_quiz: string | null; best_grade: string | null; best_week: number | null }>(sql`
-      select (select max(score / nullif(max_score,0) * 100) from quiz_attempts where student_id = ${user.id} and score is not null) as best_quiz,
-        (select max(percent) from grades where student_id = ${user.id}) as best_grade,
-        (select max(n)::int from (select count(*) as n from submission_versions v join submissions s on s.id = v.submission_id where s.student_id = ${user.id} and v.version = 1 group by date_trunc('week', v.submitted_at)) w) as best_week`)
-  )[0];
-  const earned = new Map(g.earned.map((e) => [e.code, e.earnedAt]));
+  const cat = ACH_CATEGORIES.find((x) => x.key === c)?.key ?? null;
+  const shown = cat ? list.filter((a) => a.category === cat) : list;
+  const earned = shown.filter((a) => a.earnedAt).sort((a, b) => b.earnedAt!.getTime() - a.earnedAt!.getTime());
+  const locked = shown.filter((a) => !a.earnedAt).sort((a, b) => b.progress.ratio - a.progress.ratio || a.sortOrder - b.sortOrder);
+  const totalEarned = list.filter((a) => a.earnedAt).length;
   const rules = settings.gamification.rules;
 
-  return (
-    <>
-      <PageHeader title="Yutuqlar" description="XP, darajalar va nishonlar — rasmiy baholarga ta’sir qilmaydi." />
-      <div className="space-y-6">
-        <Card className="overflow-hidden">
-          <CardBody className="flex flex-col gap-5 sm:flex-row sm:items-center">
-            <div className="grid size-20 shrink-0 place-items-center rounded-3xl bg-primary text-primary-fg shadow-card">
-              <div className="text-center leading-none">
-                <div className="text-[28px] font-bold tabular">{g.level.level}</div>
-                <div className="mt-1 text-[10.5px] font-bold tracking-wide uppercase">daraja</div>
-              </div>
-            </div>
-            <div className="min-w-0 flex-1">
-              <div className="flex items-baseline justify-between gap-3">
-                <span className="text-[20px] font-bold tabular">{fmtNumber(g.xp)} XP</span>
-                <span className="text-[13px] text-muted tabular">
-                  keyingi daraja: {fmtNumber(g.level.next)} XP
-                </span>
-              </div>
-              <Progress value={g.level.progress * 100} className="mt-3 h-2.5" label="Keyingi darajagacha" />
-              <p className="mt-2 text-[13px] text-muted">{fmtNumber(g.level.next - g.xp)} XP qoldi</p>
-            </div>
-          </CardBody>
-        </Card>
+  const tabs = [{ key: null, label: "Barchasi" }, ...ACH_CATEGORIES.map((x) => ({ key: x.key as string | null, label: x.label }))];
 
-        <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-          <StatCard label="Joriy seriya" value={`${g.streak.current} kun`} icon={<Flame />} tone="warning" />
-          <StatCard label="Eng uzun seriya" value={`${g.streak.best} kun`} icon={<Flame />} tone="warning" hint="shaxsiy rekord" />
-          <StatCard label="Eng yaxshi quiz" value={fmtPercent(bests?.best_quiz == null ? null : Math.round(Number(bests.best_quiz)))} icon={<Zap />} tone="violet" hint="shaxsiy rekord" />
-          <StatCard label="Eng yaxshi hafta" value={`${bests?.best_week ?? 0} ta`} icon={<Trophy />} hint="topshirilgan ishlar" />
+  return (
+    <div className="mx-auto max-w-3xl">
+      <PageHeader title="Yutuqlar" description="XP va nishonlar — motivatsiya uchun. Rasmiy baholarga qo‘shilmaydi." />
+
+      <nav aria-label="Turkumlar" className="-mx-4 mb-5 flex gap-2 overflow-x-auto px-4 pb-1 sm:mx-0 sm:px-0">
+        {tabs.map((t) => (
+          <Link
+            key={t.label}
+            href={t.key ? `/achievements?c=${t.key}` : "/achievements"}
+            aria-current={cat === t.key ? "page" : undefined}
+            className={cn(
+              "shrink-0 rounded-full border-2 px-4 py-1.5 text-[13.5px] font-extrabold transition",
+              cat === t.key ? "border-primary bg-primary text-primary-fg shadow-[0_3px_0_0_var(--primary-shadow)]" : "border-border bg-surface text-text-2 hover:bg-surface-2",
+            )}
+          >
+            {t.label}
+          </Link>
+        ))}
+      </nav>
+
+      <div className="space-y-5">
+        <section className="flex items-center gap-4 rounded-3xl border-2 border-border bg-surface p-4 sm:p-5">
+          <span className="grid size-16 shrink-0 place-items-center rounded-2xl bg-[#fdf1dc]">
+            <Trophy className="size-9 text-[#e0900a]" aria-hidden />
+          </span>
+          <div className="min-w-0 flex-1">
+            <div className="text-[13px] font-bold text-muted">Umumiy yutuqlar</div>
+            <div className="text-[28px] leading-tight font-black tabular">
+              {totalEarned} <span className="text-[18px] text-muted">/ {list.length}</span>
+            </div>
+            <div className="mt-2 h-2.5 overflow-hidden rounded-full bg-surface-2">
+              <div className="h-full rounded-full bg-[#f5b50b]" style={{ width: `${list.length ? (totalEarned / list.length) * 100 : 0}%` }} />
+            </div>
+          </div>
+          <div className="hidden shrink-0 text-right sm:block">
+            <div className="text-[13px] font-bold text-muted">{g.level.level}-daraja</div>
+            <div className="text-[20px] font-black tabular">{fmtNumber(g.xp)} XP</div>
+          </div>
+        </section>
+
+        <div className="grid grid-cols-3 gap-3">
+          {[
+            { icon: <Flame className="size-5 text-[#ff7a1a]" />, value: `${g.streak.current} kun`, label: "Joriy streak" },
+            { icon: <Flame className="size-5 text-[#e5484d]" />, value: `${g.streak.best} kun`, label: "Eng uzun" },
+            { icon: <Zap className="size-5 text-[#f5b50b]" />, value: `${fmtNumber(g.xp)}`, label: "XP" },
+          ].map((s) => (
+            <div key={s.label} className="rounded-3xl border-2 border-border bg-surface px-3 py-3 text-center">
+              <div className="flex justify-center" aria-hidden>{s.icon}</div>
+              <div className="mt-1 text-[17px] font-black tabular">{s.value}</div>
+              <div className="text-[11.5px] font-semibold text-muted">{s.label}</div>
+            </div>
+          ))}
         </div>
 
-        <Card>
-          <CardHeader title="Nishonlar galereyasi" description={`${g.earned.length} / ${ACHIEVEMENTS.length} ta qo‘lga kiritilgan`} />
-          <CardBody className="grid grid-cols-2 gap-3 pt-4 sm:grid-cols-3 lg:grid-cols-5">
-            {ACHIEVEMENTS.map((a) => {
-              const at = earned.get(a.code);
-              return (
-                <div key={a.code} className={`flex flex-col items-center rounded-2xl border p-4 text-center ${at ? "border-border bg-surface" : "border-dashed border-border bg-surface-2/50"}`}>
-                  <div className="relative">
-                    <AchievementIcon name={a.icon} tier={a.tier} size={56} locked={!at} />
-                    {!at ? <Lock className="absolute -right-1 -bottom-1 size-5 rounded-full bg-surface p-1 text-muted ring-1 ring-border" aria-hidden /> : null}
+        <section>
+          <h2 className="mb-3 text-[17px] font-black">Olingan yutuqlar <span className="text-muted">({earned.length})</span></h2>
+          {earned.length ? (
+            <div className="grid grid-cols-3 gap-3 sm:grid-cols-4">
+              {earned.map((a) => (
+                <Link key={a.code} href={`/achievements/${a.code}`} className="flex flex-col items-center rounded-3xl border-2 border-border bg-surface px-2 py-4 text-center transition hover:-translate-y-0.5 hover:border-border-strong">
+                  <Medal icon={a.icon} category={a.category} size={64} />
+                  <div className="mt-2 line-clamp-2 text-[13px] leading-tight font-extrabold">{a.title}</div>
+                  <div className="mt-1 text-[11.5px] font-semibold text-muted">{formatShortDate(a.earnedAt!)}</div>
+                </Link>
+              ))}
+            </div>
+          ) : (
+            <p className="rounded-3xl border-2 border-dashed border-border bg-surface px-4 py-6 text-center text-[13.5px] text-muted">
+              Hali yutuq yo‘q. Birinchi darsni yakunlang — “Birinchi qadam” ochiladi!
+            </p>
+          )}
+        </section>
+
+        {locked.length ? (
+          <section>
+            <h2 className="mb-3 flex items-center gap-2 text-[17px] font-black">
+              <Lock className="size-4 text-muted" aria-hidden /> Hali ochilmaganlar <span className="text-muted">({locked.length})</span>
+            </h2>
+            <div className="grid grid-cols-3 gap-3 sm:grid-cols-4">
+              {locked.map((a) => (
+                <Link key={a.code} href={`/achievements/${a.code}`} className="flex flex-col items-center rounded-3xl border-2 border-dashed border-border bg-surface/60 px-2 py-4 text-center hover:bg-surface">
+                  <Medal icon={a.icon} category={a.category} size={56} locked />
+                  <div className="mt-2 line-clamp-2 text-[12.5px] leading-tight font-extrabold text-text-2">{a.title}</div>
+                  <div className="mt-2 h-1.5 w-full max-w-[90px] overflow-hidden rounded-full bg-surface-2">
+                    <div className="h-full rounded-full bg-primary" style={{ width: `${a.progress.ratio * 100}%` }} />
                   </div>
-                  <div className={`mt-3 text-[13.5px] font-bold ${at ? "" : "text-muted"}`}>{a.title}</div>
-                  <div className="mt-0.5 text-[12px] leading-snug text-muted">{a.description}</div>
-                  <div className="mt-2 text-[11px] font-semibold text-muted">{at ? formatDate(at) : TIER_LABEL[a.tier]}</div>
-                </div>
-              );
-            })}
+                  <div className="mt-1 text-[11px] font-bold text-muted tabular">
+                    {fmtNumber(a.progress.value)}/{fmtNumber(a.progress.target)}
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </section>
+        ) : null}
+
+        <Card>
+          <CardHeader title="Yutuqlar qanday ishlaydi?" />
+          <CardBody className="pt-3">
+            <ol className="space-y-2.5">
+              {STEPS.map((s, i) => (
+                <li key={s} className="flex items-center gap-3 text-[13.5px]">
+                  <span className="grid size-7 shrink-0 place-items-center rounded-full bg-primary text-[12.5px] font-black text-primary-fg">{i + 1}</span>
+                  {s}
+                </li>
+              ))}
+            </ol>
+            <p className="mt-3 text-[12.5px] text-muted">Bitta ishni qayta topshirib yutuqni qayta olib bo‘lmaydi: har bir vazifa, quiz va so‘z bir marta hisoblanadi.</p>
           </CardBody>
         </Card>
 
         <Card>
-          <CardHeader title="XP qanday beriladi" description="Qoidalar shaffof. Takroriy so‘rovlar yoki qayta urinishlar XP ni ko‘paytirmaydi." />
+          <CardHeader title="XP qanday beriladi" description="Takroriy urinishlar XP ni ko‘paytirmaydi. Har bir yutuq ochilganda o‘z XP mukofoti ham beriladi." />
           <CardBody className="pt-3">
             <ul className="divide-y divide-border text-[13.5px]">
               {(Object.keys(XP_RULE_LABELS) as (keyof XpRules)[]).map((k) => (
@@ -101,7 +167,9 @@ export default async function AchievementsPage() {
             </ul>
           </CardBody>
         </Card>
+
+        <p className="pb-2 text-center text-[13px] font-bold text-primary italic">Kichik qadamlar — katta maqsadlarga olib boradi!</p>
       </div>
-    </>
+    </div>
   );
 }

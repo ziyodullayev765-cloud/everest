@@ -1,5 +1,6 @@
 "use client";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { checkAchievements } from "@/components/student/achievement-unlock";
 import Link from "next/link";
 import { Flame, Gamepad2, RotateCcw, Trophy, Volume2, VolumeX, X, Zap } from "lucide-react";
 import type { GameCard } from "@/server/services/vocabulary";
@@ -44,6 +45,7 @@ export function VocabGame({ cards, listId, best, backHref }: { cards: GameCard[]
       if (r.ok) {
         setResult(r.data);
         play("complete");
+        setTimeout(checkAchievements, 2500);
       } else toast.error(r.error);
     },
     [listId],

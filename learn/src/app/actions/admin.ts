@@ -7,6 +7,7 @@ import { assignTeacher, createClass, enroll, setClassArchived, setJoinCode, unas
 import { updateSettings } from "@/server/services/settings";
 import { saveBook, setBookStatus } from "@/server/services/library";
 import { env } from "@/server/env";
+import { saveAchievement, setAchievementActive, type AchievementInput } from "@/server/services/achievements";
 import type { SessionUser } from "@/server/auth/session";
 
 /** Every admin action re-checks the role on the server and refreshes cached pages afterwards. */
@@ -65,4 +66,12 @@ export async function saveBookAction(id: string | null, input: unknown) {
 }
 export async function bookStatusAction(id: string, status: "draft" | "published" | "archived") {
   return adminRun((u) => setBookStatus(u, id, status));
+}
+
+export async function saveAchievementAction(code: string | null, input: AchievementInput) {
+  return adminRun((a) => saveAchievement(a, code, input));
+}
+
+export async function setAchievementActiveAction(code: string, active: boolean) {
+  return adminRun((a) => setAchievementActive(a, code, active));
 }

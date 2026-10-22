@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { CheckAchievementsLater } from "@/components/student/achievement-unlock";
 import Link from "next/link";
 import { ArrowRight, Check, ChevronLeft, PartyPopper, RotateCcw, Star, TriangleAlert, Volume2, X } from "lucide-react";
 import type { SessionCard } from "@/server/services/vocabulary";
@@ -81,6 +82,7 @@ export function VocabSession({ cards, kind, backHref }: { cards: SessionCard[]; 
     return (
       <div className="mx-auto max-w-lg py-10 text-center">
         <Celebrate good={!done.total || done.correct / done.total >= 0.6} />
+        <CheckAchievementsLater />
         <div className="mx-auto mb-4 grid size-16 place-items-center rounded-2xl bg-primary-soft text-primary">
           <PartyPopper className="size-8" aria-hidden />
         </div>
@@ -366,6 +368,7 @@ function MatchBoard({ cards, backHref }: { cards: SessionCard[]; backHref: strin
     return (
       <div className="mx-auto max-w-lg py-10 text-center">
         <Celebrate good={!stats.total || stats.correct / stats.total >= 0.6} />
+        <CheckAchievementsLater />
         <div className="mx-auto mb-4 grid size-16 place-items-center rounded-2xl bg-primary-soft text-primary">
           <PartyPopper className="size-8" aria-hidden />
         </div>

@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { bandFor, DEFAULT_SCALE, latePenalty, percentOf, validateScale } from "@/lib/grading";
-import { computeStreak, earnedAchievementCodes, levelFor, quizXp, DEFAULT_XP_RULES } from "@/lib/gamification";
+import { computeStreak, levelFor, quizXp, DEFAULT_XP_RULES } from "@/lib/gamification";
+import { DEFAULT_ACHIEVEMENTS, progressOf, slugCode, unlockedCodes } from "@/lib/achievements";
 import { deriveStatus, submissionWindow } from "@/lib/assignment-kinds";
 import { fromLocalInput, toLocalInput, weekStart, lastNDays, remaining } from "@/lib/dates";
 import { can, canManageRole, homeFor } from "@/server/auth/rbac";
@@ -51,11 +52,23 @@ describe("gamification", () => {
     expect(computeStreak(["2026-10-01", "2026-10-02", "2026-10-03", "2026-10-04", "2026-10-21"], "2026-10-21")).toEqual({ current: 1, best: 4 });
     expect(computeStreak([], "2026-10-21")).toEqual({ current: 0, best: 0 });
   });
-  it("achievements from stats", () => {
-    const base = { submissions: 0, onTimeSubmissions: 0, quizzes: 0, perfectQuizzes: 0, streakBest: 0, xp: 0, gradedCount: 0, averagePercent: null };
-    expect(earnedAchievementCodes(base)).toEqual([]);
-    expect(earnedAchievementCodes({ ...base, submissions: 1, streakBest: 7 })).toEqual(["first_submission", "streak_3", "streak_7"]);
-    expect(earnedAchievementCodes({ ...base, gradedCount: 4, averagePercent: 99 })).not.toContain("scholar");
+  it("achievements unlock from metrics; inactive rules never unlock", () => {
+    expect(unlockedCodes(DEFAULT_ACHIEVEMENTS, {})).toEqual([]);
+    const got = unlockedCodes(DEFAULT_ACHIEVEMENTS, { lessons_done: 1, streak_best: 30, quizzes_done: 1 });
+    expect(got).toEqual(expect.arrayContaining(["first_step", "first_win", "streak_3", "streak_7"]));
+    expect(got).not.toContain("streak_30"); // legacy badge, off by default
+    expect(got).not.toContain("explorer");
+  });
+  it("catalogue has 25 active achievements, 5 per category, unique codes", () => {
+    const active = DEFAULT_ACHIEVEMENTS.filter((a) => a.active);
+    expect(active).toHaveLength(25);
+    for (const c of ["reading", "quiz", "vocab", "grammar", "activity"]) expect(active.filter((a) => a.category === c)).toHaveLength(5);
+    expect(new Set(DEFAULT_ACHIEVEMENTS.map((a) => a.code)).size).toBe(DEFAULT_ACHIEVEMENTS.length);
+  });
+  it("progress is capped at the target", () => {
+    expect(progressOf({ metric: "quizzes_done", threshold: 10 }, { quizzes_done: 6 })).toEqual({ value: 6, target: 10, ratio: 0.6 });
+    expect(progressOf({ metric: "quizzes_done", threshold: 10 }, { quizzes_done: 15 }).value).toBe(10);
+    expect(slugCode("Super O‘quvchi!")).toBe("super_oquvchi");
   });
 });
 
