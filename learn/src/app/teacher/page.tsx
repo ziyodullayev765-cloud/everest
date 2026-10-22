@@ -39,7 +39,7 @@ export default async function TeacherHome() {
         <StatCard label="Tekshirish kutilmoqda" value={o.counts.pending} icon={<ClipboardCheck />} tone="violet" hint={<Link href="/teacher/submissions" className="text-primary hover:underline">Ko‘rish →</Link>} />
         <StatCard label="E’lon qilingan" value={o.counts.published} icon={<Send />} hint="faol vazifalar" />
         <StatCard label="Qoralama / reja" value={o.counts.drafts} icon={<FilePen />} tone="info" />
-        <StatCard label="Sinflar" value={o.classes.length} icon={<UsersRound />} tone="warning" hint={`${o.classes.reduce((s, c) => s + c.students, 0)} o‘quvchi`} />
+        <StatCard label="Guruhlar" value={o.classes.length} icon={<UsersRound />} tone="warning" hint={`${o.classes.reduce((s, c) => s + c.students, 0)} o‘quvchi`} />
       </div>
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-[1fr_360px]">
         <div className="min-w-0 space-y-6">
@@ -108,7 +108,7 @@ export default async function TeacherHome() {
             </CardBody>
           </Card>
           <Card>
-            <CardHeader title="Sinflarim" icon={<UsersRound />} />
+            <CardHeader title="Guruhlarim" icon={<UsersRound />} />
             <CardBody className="pt-2">
               <ul className="-mx-2">
                 {o.classes.map((c) => (
@@ -119,7 +119,7 @@ export default async function TeacherHome() {
                     </Link>
                   </li>
                 ))}
-                {!o.classes.length ? <li className="px-2 py-3 text-[13.5px] text-muted">Administrator sizga hali sinf biriktirmagan.</li> : null}
+                {!o.classes.length ? <li className="px-2 py-3 text-[13.5px] text-muted">Administrator sizga hali guruh biriktirmagan.</li> : null}
               </ul>
             </CardBody>
           </Card>

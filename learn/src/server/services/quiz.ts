@@ -152,12 +152,28 @@ export type PublicQuestion = {
   blanks: number;
   left: { id: string; label: string }[];
   right: { id: string; label: string }[];
+  /** arrange_words: the words, shuffled per attempt. */
+  tokens: string[];
+  /** irregular_verb base form; grammar_correction sentence to fix; translation direction. */
+  base: string;
+  incorrect: string;
+  direction: "en_uz" | "uz_en" | null;
+  audioFileId: string | null;
 };
+
+/** Shuffle that never returns the solution order (unless every order is the same). */
+function shuffledTokens(words: string[], seed: string) {
+  let out = seededShuffle(words, seed);
+  for (let i = 1; i < 5 && out.join(" ") === words.join(" ") && new Set(words).size > 1; i++) out = seededShuffle(words, seed + i);
+  if (out.join(" ") === words.join(" ") && words.length > 1) out = [...words.slice(1), words[0]];
+  return out;
+}
 
 function publicQuestion(q: QWithOptions, attemptId: string, optionOrder: string[] | undefined): PublicQuestion {
   const byId = new Map(q.options.map((o) => [o.id, o]));
   const options = (optionOrder ?? q.options.map((o) => o.id)).map((id) => byId.get(id)).filter(Boolean).map((o) => ({ id: o!.id, label: o!.label }));
-  const pairs = (q.config as QuestionConfig).pairs ?? [];
+  const cfg = q.config as QuestionConfig;
+  const pairs = cfg.pairs ?? [];
   return {
     id: q.id,
     type: q.type,
@@ -165,7 +181,12 @@ function publicQuestion(q: QWithOptions, attemptId: string, optionOrder: string[
     points: Number(q.points),
     imageFileId: q.imageFileId,
     options,
-    blanks: q.type === "fill_blank" ? countBlanks(q.prompt) : 0,
+    blanks: q.type === "fill_blank" ? countBlanks(q.prompt) : q.type === "irregular_verb" ? 2 : 0,
+    tokens: q.type === "arrange_words" ? shuffledTokens(cfg.words ?? [], attemptId + q.id) : [],
+    base: q.type === "irregular_verb" ? (cfg.base ?? "") : "",
+    incorrect: q.type === "grammar_correction" ? (cfg.incorrect ?? "") : "",
+    direction: q.type === "translation" ? (cfg.direction ?? "en_uz") : null,
+    audioFileId: cfg.audioFileId ?? null,
     left: pairs.map((p) => ({ id: p.id, label: p.left })),
     right: seededShuffle(
       pairs.map((p) => ({ id: matchToken(attemptId, p.id), label: p.right })),
@@ -210,8 +231,8 @@ function validateAnswerShape(q: QWithOptions, attemptId: string, raw: unknown) {
   const ok =
     ((q.type === "single_choice" || q.type === "true_false") && typeof a.optionId === "string" && optionIds.has(a.optionId)) ||
     (q.type === "multiple_choice" && Array.isArray(a.optionIds) && (a.optionIds as string[]).every((id) => optionIds.has(id))) ||
-    ((q.type === "short_answer" || q.type === "essay") && typeof a.text === "string") ||
-    (q.type === "fill_blank" && Array.isArray(a.blanks)) ||
+    ((q.type === "short_answer" || q.type === "essay" || q.type === "translation" || q.type === "grammar_correction" || q.type === "arrange_words") && typeof a.text === "string") ||
+    ((q.type === "fill_blank" || q.type === "irregular_verb") && Array.isArray(a.blanks)) ||
     (q.type === "matching" &&
       !!a.matches &&
       Object.entries(a.matches as Record<string, string>).every(([l, r]) => pairs.some((p) => p.id === l) && pairs.some((p) => matchToken(attemptId, p.id) === r)));

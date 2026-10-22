@@ -52,6 +52,10 @@ export const questionTypeEnum = pgEnum("question_type", [
   "fill_blank",
   "matching",
   "essay",
+  "arrange_words",
+  "translation",
+  "grammar_correction",
+  "irregular_verb",
 ]);
 export const submissionStatusEnum = pgEnum("submission_status", ["draft", "submitted", "returned", "graded"]);
 export const attemptStatusEnum = pgEnum("attempt_status", ["in_progress", "submitted", "graded"]);
@@ -79,6 +83,10 @@ export const users = pgTable(
     notificationPrefs: jsonb("notification_prefs").$type<Record<string, boolean>>().notNull().default({}),
     weeklyTaskGoal: integer("weekly_task_goal").notNull().default(5),
     dailyXpGoal: integer("daily_xp_goal").notNull().default(30),
+    /** Daily learning goal in activities (a submitted task, a finished quiz, or 10 word reviews). */
+    dailyGoal: integer("daily_goal").notNull().default(3),
+    /** New words introduced per day in vocabulary sessions. */
+    newWordsPerDay: integer("new_words_per_day").notNull().default(10),
     lastLoginAt: ts("last_login_at"),
     createdAt: ts("created_at").notNull().defaultNow(),
     updatedAt: ts("updated_at").notNull().defaultNow(),
@@ -90,6 +98,7 @@ export const users = pgTable(
     index("users_role_status_idx").on(t.role, t.status),
     check("users_username_format", sql`${t.username} ~ '^[a-zA-Z0-9._-]{3,40}$'`),
     check("users_goals_range", sql`${t.weeklyTaskGoal} between 1 and 100 and ${t.dailyXpGoal} between 5 and 1000`),
+    check("users_daily_goal_range", sql`${t.dailyGoal} between 1 and 20 and ${t.newWordsPerDay} between 0 and 50`),
   ],
 );
 
@@ -186,8 +195,12 @@ export const classes = pgTable(
   {
     id: uuid("id").primaryKey().defaultRandom(),
     name: text("name").notNull(),
+    /** Legacy (school grade); unused by the course. */
     gradeLevel: integer("grade_level"),
-    academicYear: text("academic_year").notNull(),
+    /** Course level label, e.g. "Elementary (A2)" — configurable, not a certified CEFR result. */
+    level: text("level").notNull().default(""),
+    description: text("description").notNull().default(""),
+    academicYear: text("academic_year").notNull().default(""),
     joinCode: text("join_code"),
     archivedAt: ts("archived_at"),
     createdAt: ts("created_at").notNull().defaultNow(),
@@ -264,6 +277,17 @@ export const assignments = pgTable(
     links: jsonb("links").$type<AssignmentLink[]>().notNull().default([]),
     rubric: jsonb("rubric").$type<RubricCriterion[]>().notNull().default([]),
     items: jsonb("items").$type<HomeworkItem[]>().notNull().default([]),
+    /** Course level and topic (e.g. "B1", "Present Perfect") — drive the grammar/reading/listening sections. */
+    level: text("level").notNull().default(""),
+    topic: text("topic").notNull().default(""),
+    /** Reading text shown above the questions. */
+    passage: text("passage").notNull().default(""),
+    /** Listening audio and its transcript (revealed per transcriptMode). */
+    audioFileId: uuid("audio_file_id").references(() => files.id, { onDelete: "set null" }),
+    transcript: text("transcript").notNull().default(""),
+    transcriptMode: text("transcript_mode").notNull().default("after_submit"),
+    /** Client-side play limit for the listening audio; null = unlimited. */
+    replayLimit: integer("replay_limit"),
     allowLate: boolean("allow_late").notNull().default(true),
     latePenaltyPercent: integer("late_penalty_percent").notNull().default(0),
     lateCutoffAt: ts("late_cutoff_at"),
@@ -293,6 +317,8 @@ export const assignments = pgTable(
     check("assignments_attempts", sql`${t.maxAttempts} between 1 and 20`),
     check("assignments_passing", sql`${t.passingPercent} between 0 and 100`),
     check("assignments_time_limit", sql`${t.timeLimitMinutes} is null or ${t.timeLimitMinutes} between 1 and 600`),
+    check("assignments_transcript_mode", sql`${t.transcriptMode} in ('never','after_submit','always')`),
+    check("assignments_replay_limit", sql`${t.replayLimit} is null or ${t.replayLimit} between 1 and 20`),
     check("assignments_scheduled_has_date", sql`${t.status} <> 'scheduled' or ${t.publishAt} is not null`),
   ],
 );
@@ -336,6 +362,16 @@ export type QuestionConfig = {
   caseSensitive?: boolean;
   /** matching: left/right pairs. */
   pairs?: { id: string; left: string; right: string }[];
+  /** arrange_words: the sentence's words in the correct order (shown shuffled). */
+  words?: string[];
+  /** translation: direction label. */
+  direction?: "en_uz" | "uz_en";
+  /** grammar_correction: the sentence with the mistake, pre-filled for the student. */
+  incorrect?: string;
+  /** irregular_verb: base form; accepted holds [past simple forms, past participle forms]. */
+  base?: string;
+  /** Optional listening clip for the question. */
+  audioFileId?: string;
 };
 
 export const questions = pgTable(
@@ -710,6 +746,149 @@ export const announcements = pgTable(
   (t) => [index("announcements_class_idx").on(t.classId, t.createdAt)],
 );
 
+// ─── Vocabulary (spaced repetition) ──────────────────────────────────────────
+
+export const wordLists = pgTable(
+  "word_lists",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    title: text("title").notNull(),
+    description: text("description").notNull().default(""),
+    level: text("level").notNull().default(""),
+    topic: text("topic").notNull().default(""),
+    status: text("status").notNull().default("draft"),
+    createdBy: uuid("created_by")
+      .notNull()
+      .references(() => users.id, { onDelete: "restrict" }),
+    createdAt: ts("created_at").notNull().defaultNow(),
+    updatedAt: ts("updated_at").notNull().defaultNow(),
+  },
+  (t) => [index("word_lists_status_idx").on(t.status), check("word_lists_status", sql`${t.status} in ('draft','published','archived')`)],
+);
+
+export const words = pgTable(
+  "words",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    listId: uuid("list_id")
+      .notNull()
+      .references(() => wordLists.id, { onDelete: "restrict" }),
+    position: integer("position").notNull().default(0),
+    english: text("english").notNull(),
+    uzbek: text("uzbek").notNull(),
+    example: text("example").notNull().default(""),
+    exampleUz: text("example_uz").notNull().default(""),
+    phonetic: text("phonetic").notNull().default(""),
+    partOfSpeech: text("part_of_speech").notNull().default(""),
+    audioFileId: uuid("audio_file_id").references(() => files.id, { onDelete: "set null" }),
+    imageFileId: uuid("image_file_id").references(() => files.id, { onDelete: "set null" }),
+    difficulty: integer("difficulty").notNull().default(2),
+    /** Words with review history are archived, never deleted. */
+    archivedAt: ts("archived_at"),
+    createdAt: ts("created_at").notNull().defaultNow(),
+  },
+  (t) => [
+    index("words_list_idx").on(t.listId, t.position),
+    uniqueIndex("words_list_english_key").on(t.listId, sql`lower(${t.english})`).where(sql`${t.archivedAt} is null`),
+    check("words_difficulty", sql`${t.difficulty} between 1 and 3`),
+  ],
+);
+
+/** Who a word list is assigned to: one row per group or individual student. */
+export const wordListTargets = pgTable(
+  "word_list_targets",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    listId: uuid("list_id")
+      .notNull()
+      .references(() => wordLists.id, { onDelete: "cascade" }),
+    classId: uuid("class_id").references(() => classes.id, { onDelete: "restrict" }),
+    studentId: uuid("student_id").references(() => users.id, { onDelete: "restrict" }),
+    createdAt: ts("created_at").notNull().defaultNow(),
+  },
+  (t) => [
+    index("word_list_targets_list_idx").on(t.listId),
+    index("word_list_targets_class_idx").on(t.classId),
+    index("word_list_targets_student_idx").on(t.studentId),
+    check("word_list_targets_one", sql`(${t.classId} is null) <> (${t.studentId} is null)`),
+  ],
+);
+
+/** A student's scheduling state for one word. */
+export const vocabProgress = pgTable(
+  "vocab_progress",
+  {
+    studentId: uuid("student_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "restrict" }),
+    wordId: uuid("word_id")
+      .notNull()
+      .references(() => words.id, { onDelete: "restrict" }),
+    state: text("state").notNull().default("learning"),
+    ease: numeric("ease", { precision: 4, scale: 2, mode: "number" }).notNull().default(2.5),
+    intervalDays: numeric("interval_days", { precision: 7, scale: 2, mode: "number" }).notNull().default(0),
+    /** Consecutive successful reviews; reset by a lapse. */
+    reps: integer("reps").notNull().default(0),
+    lapses: integer("lapses").notNull().default(0),
+    dueAt: ts("due_at").notNull().defaultNow(),
+    lastReviewedAt: ts("last_reviewed_at"),
+    favorite: boolean("favorite").notNull().default(false),
+    difficult: boolean("difficult").notNull().default(false),
+    createdAt: ts("created_at").notNull().defaultNow(),
+  },
+  (t) => [
+    primaryKey({ columns: [t.studentId, t.wordId] }),
+    index("vocab_progress_due_idx").on(t.studentId, t.dueAt),
+    check("vocab_progress_state", sql`${t.state} in ('learning','review','mastered')`),
+  ],
+);
+
+/** Append-only review history. */
+export const vocabReviews = pgTable(
+  "vocab_reviews",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    studentId: uuid("student_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "restrict" }),
+    wordId: uuid("word_id")
+      .notNull()
+      .references(() => words.id, { onDelete: "restrict" }),
+    mode: text("mode").notNull(),
+    /** 0 again · 1 hard · 2 good · 3 easy */
+    grade: integer("grade").notNull(),
+    correct: boolean("correct").notNull(),
+    response: text("response"),
+    intervalDays: numeric("interval_days", { precision: 7, scale: 2, mode: "number" }).notNull(),
+    reviewedAt: ts("reviewed_at").notNull().defaultNow(),
+  },
+  (t) => [
+    index("vocab_reviews_student_idx").on(t.studentId, t.reviewedAt),
+    index("vocab_reviews_word_idx").on(t.wordId),
+    check("vocab_reviews_grade", sql`${t.grade} between 0 and 3`),
+    check("vocab_reviews_mode", sql`${t.mode} in ('flashcard','typing','choice','match','listen')`),
+  ],
+);
+
+// ─── Optional AI tutor ───────────────────────────────────────────────────────
+
+/** Every AI request (for limits and audit). The output is shown to the student marked as AI-generated. */
+export const aiRequests = pgTable(
+  "ai_requests",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "restrict" }),
+    kind: text("kind").notNull(),
+    inputChars: integer("input_chars").notNull(),
+    outputChars: integer("output_chars").notNull().default(0),
+    ok: boolean("ok").notNull(),
+    createdAt: ts("created_at").notNull().defaultNow(),
+  },
+  (t) => [index("ai_requests_user_idx").on(t.userId, t.createdAt)],
+);
+
 // ─── Platform ────────────────────────────────────────────────────────────────
 
 export const settings = pgTable("settings", {
@@ -745,6 +924,8 @@ export type QuestionOption = typeof questionOptions.$inferSelect;
 export type Submission = typeof submissions.$inferSelect;
 export type Grade = typeof grades.$inferSelect;
 export type Book = typeof books.$inferSelect;
+export type Word = typeof words.$inferSelect;
+export type WordList = typeof wordLists.$inferSelect;
 export type QuizAttempt = typeof quizAttempts.$inferSelect;
 export type Role = (typeof roleEnum.enumValues)[number];
 export type AssignmentType = (typeof assignmentTypeEnum.enumValues)[number];

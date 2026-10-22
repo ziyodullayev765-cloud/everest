@@ -7,14 +7,14 @@ import { PageHeader } from "@/components/ui/page";
 import { Card } from "@/components/ui/card";
 import { EmptyState } from "@/components/ui/feedback";
 
-export const metadata: Metadata = { title: "Sinflar" };
+export const metadata: Metadata = { title: "Guruhlar" };
 
 export default async function Page() {
   const user = await pageUser("teacher");
   const classes = await listClasses(user);
   return (
     <div className="mx-auto max-w-3xl">
-      <PageHeader title="Sinflarim" description="Sizga biriktirilgan sinflar." />
+      <PageHeader title="Guruhlarim" description="Sizga biriktirilgan guruhlar." />
       <Card className="overflow-hidden">
         {classes.length ? (
           <ul className="divide-y divide-border">
@@ -24,7 +24,7 @@ export default async function Page() {
                   <span className="grid size-11 place-items-center rounded-xl bg-primary-soft font-bold text-primary-soft-fg">{c.name.slice(0, 3)}</span>
                   <span className="min-w-0 flex-1">
                     <span className="block font-semibold">{c.name}</span>
-                    <span className="text-[13px] text-muted">{c.academicYear} · {c.students} o‘quvchi</span>
+                    <span className="text-[13px] text-muted">{[c.level, `${c.students} o‘quvchi`].filter(Boolean).join(" · ")}</span>
                   </span>
                   <ChevronRight className="size-4 text-muted" aria-hidden />
                 </Link>
@@ -32,7 +32,7 @@ export default async function Page() {
             ))}
           </ul>
         ) : (
-          <EmptyState icon={<UsersRound />} title="Sinf yo‘q" description="Administrator sizni sinfga biriktirgach, shu yerda ko‘rinadi." />
+          <EmptyState icon={<UsersRound />} title="Guruh yo‘q" description="Administrator sizni guruhga biriktirgach, shu yerda ko‘rinadi." />
         )}
       </Card>
     </div>

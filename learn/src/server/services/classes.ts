@@ -11,16 +11,11 @@ import { notify } from "./notifications";
 import { enforce } from "./rate-limit";
 
 const classInput = z.object({
-  name: z.string().trim().min(1, "Sinf nomi kerak").max(60),
-  gradeLevel: z.union([z.coerce.number().int().min(1).max(12), z.literal(""), z.null()]).transform((v) => (v === "" ? null : v)).default(null),
-  academicYear: z.string().trim().regex(/^\d{4}[-–/]\d{4}$/, "O‘quv yili 2026-2027 ko‘rinishida").max(20),
+  name: z.string().trim().min(1, "Guruh nomi kerak").max(60),
+  level: z.string().trim().max(40).default(""),
+  description: z.string().trim().max(500).default(""),
 });
 
-const subjectInput = z.object({
-  name: z.string().trim().min(2, "Fan nomi kerak").max(60),
-  code: z.string().trim().toUpperCase().regex(/^[A-Z0-9_-]{2,12}$/, "Kod 2–12 ta lotin harfi/raqam"),
-  color: z.string().regex(/^#[0-9a-fA-F]{6}$/).default("#0f766e"),
-});
 
 const requireAdmin = (a: Actor) => {
   if (!isAdmin(a)) throw forbidden();
@@ -35,8 +30,8 @@ export async function listClasses(actor: Actor, includeArchived = false) {
     .select({
       id: schema.classes.id,
       name: schema.classes.name,
-      gradeLevel: schema.classes.gradeLevel,
-      academicYear: schema.classes.academicYear,
+      level: schema.classes.level,
+      description: schema.classes.description,
       joinCode: schema.classes.joinCode,
       archivedAt: schema.classes.archivedAt,
       students: sql<number>`(select count(*)::int from class_students cs join users u on u.id = cs.student_id where cs.class_id = classes.id and u.status = 'active')`,
@@ -44,7 +39,7 @@ export async function listClasses(actor: Actor, includeArchived = false) {
     })
     .from(schema.classes)
     .where(and(includeArchived ? sql`true` : isNull(schema.classes.archivedAt), scope === "all" ? sql`true` : inArray(schema.classes.id, scope)))
-    .orderBy(asc(schema.classes.gradeLevel), asc(schema.classes.name));
+    .orderBy(asc(schema.classes.name));
 }
 
 export async function createClass(actor: Actor, input: unknown) {
@@ -114,10 +109,9 @@ export async function classDetailForAdmin(actor: Actor, id: string) {
       .where(eq(schema.classStudents.classId, id))
       .orderBy(asc(schema.users.displayName)),
     db
-      .select({ id: schema.classTeachers.id, teacherId: schema.users.id, displayName: schema.users.displayName, subjectId: schema.classTeachers.subjectId, subjectName: schema.subjects.name })
+      .select({ id: schema.classTeachers.id, teacherId: schema.users.id, displayName: schema.users.displayName })
       .from(schema.classTeachers)
       .innerJoin(schema.users, eq(schema.users.id, schema.classTeachers.teacherId))
-      .leftJoin(schema.subjects, eq(schema.subjects.id, schema.classTeachers.subjectId))
       .where(eq(schema.classTeachers.classId, id)),
   ]);
   return { cls: c, students, teachers };
@@ -134,46 +128,18 @@ export async function enroll(actor: Actor, classId: string, studentIds: string[]
   await audit(actor.id, add ? "class.enroll" : "class.unenroll", "class", classId, { count: ids.length });
 }
 
-export async function assignTeacher(actor: Actor, classId: string, teacherId: string, subjectId: string | null) {
+export async function assignTeacher(actor: Actor, classId: string, teacherId: string) {
   requireAdmin(actor);
   const [t] = await db.select().from(schema.users).where(eq(schema.users.id, teacherId));
   if (!t || t.role !== "teacher") throw invalid("O‘qituvchi topilmadi.");
-  await db.insert(schema.classTeachers).values({ classId, teacherId, subjectId }).onConflictDoNothing();
-  await audit(actor.id, "class.assign_teacher", "class", classId, { teacherId, subjectId });
+  await db.insert(schema.classTeachers).values({ classId, teacherId }).onConflictDoNothing();
+  await audit(actor.id, "class.assign_teacher", "class", classId, { teacherId });
 }
 
 export async function unassignTeacher(actor: Actor, classTeacherId: string) {
   requireAdmin(actor);
   const [row] = await db.delete(schema.classTeachers).where(eq(schema.classTeachers.id, classTeacherId)).returning();
   if (row) await audit(actor.id, "class.unassign_teacher", "class", row.classId, { teacherId: row.teacherId });
-}
-
-// ─── Subjects ────────────────────────────────────────────────────────────────
-
-export async function createSubject(actor: Actor, input: unknown) {
-  requireAdmin(actor);
-  const v = subjectInput.parse(input);
-  try {
-    const [s] = await db.insert(schema.subjects).values(v).returning({ id: schema.subjects.id });
-    await audit(actor.id, "subject.create", "subject", s.id, { name: v.name });
-    return s.id;
-  } catch (e) {
-    if ((e as { code?: string }).code === "23505") throw invalid("Bu kod band.");
-    throw e;
-  }
-}
-
-export async function updateSubject(actor: Actor, id: string, input: unknown) {
-  requireAdmin(actor);
-  const v = subjectInput.parse(input);
-  await db.update(schema.subjects).set(v).where(eq(schema.subjects.id, id));
-  await audit(actor.id, "subject.update", "subject", id);
-}
-
-export async function setSubjectArchived(actor: Actor, id: string, archived: boolean) {
-  requireAdmin(actor);
-  await db.update(schema.subjects).set({ archivedAt: archived ? new Date() : null }).where(eq(schema.subjects.id, id));
-  await audit(actor.id, archived ? "subject.archive" : "subject.restore", "subject", id);
 }
 
 // ─── Student-facing class pages, announcements, challenges ───────────────────
@@ -185,10 +151,9 @@ export async function studentClasses(studentId: string) {
     .select({
       id: schema.classes.id,
       name: schema.classes.name,
-      academicYear: schema.classes.academicYear,
+      level: schema.classes.level,
       archivedAt: schema.classes.archivedAt,
       teachers: sql<string>`coalesce((select string_agg(distinct u.display_name, ', ') from class_teachers ct join users u on u.id = ct.teacher_id where ct.class_id = classes.id), '')`,
-      subjects: sql<string>`coalesce((select string_agg(distinct s.name, ', ') from class_teachers ct join subjects s on s.id = ct.subject_id where ct.class_id = classes.id), '')`,
     })
     .from(schema.classes)
     .where(inArray(schema.classes.id, ids))
@@ -210,10 +175,9 @@ export async function classPage(actor: Actor, classId: string) {
   if (!c) throw notFound();
   const [teachers, ann, challenges, studentCount] = await Promise.all([
     db
-      .select({ name: schema.users.displayName, subject: schema.subjects.name, color: schema.subjects.color })
+      .select({ name: schema.users.displayName })
       .from(schema.classTeachers)
       .innerJoin(schema.users, eq(schema.users.id, schema.classTeachers.teacherId))
-      .leftJoin(schema.subjects, eq(schema.subjects.id, schema.classTeachers.subjectId))
       .where(eq(schema.classTeachers.classId, classId)),
     db
       .select({ id: schema.announcements.id, title: schema.announcements.title, body: schema.announcements.body, createdAt: schema.announcements.createdAt, author: schema.users.displayName })

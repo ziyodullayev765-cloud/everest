@@ -17,7 +17,7 @@ export function ClassTools({ classId }: { classId: string }) {
   return (
     <div className="grid gap-5 xl:grid-cols-2">
       <Card>
-        <CardHeader title="E’lon yuborish" icon={<Megaphone />} description="Sinfdagi barcha o‘quvchilarga bildirishnoma" />
+        <CardHeader title="E’lon yuborish" icon={<Megaphone />} description="Guruhdagi barcha o‘quvchilarga bildirishnoma" />
         <CardBody className="space-y-3">
           <Input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Sarlavha" aria-label="Sarlavha" maxLength={120} />
           <Textarea value={body} onChange={(e) => setBody(e.target.value)} rows={3} placeholder="Matn…" aria-label="Matn" maxLength={5000} />
@@ -41,7 +41,7 @@ export function ClassTools({ classId }: { classId: string }) {
         </CardBody>
       </Card>
       <Card>
-        <CardHeader title="Sinf musobaqasi" icon={<Target />} description="Umumiy maqsad: sinf birgalikda nechta ish topshiradi" />
+        <CardHeader title="Guruh musobaqasi" icon={<Target />} description="Umumiy maqsad: guruh birgalikda nechta ish topshiradi" />
         <CardBody className="space-y-3">
           <Input value={ch.title} onChange={(e) => setCh({ ...ch, title: e.target.value })} placeholder="Masalan: Haftalik 30 ta topshiriq" aria-label="Nomi" />
           <div className="grid grid-cols-2 gap-3">

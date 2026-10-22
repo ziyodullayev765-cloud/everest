@@ -37,7 +37,7 @@ export default async function GradesPage() {
             <StatCard label="O‘rtacha" value={fmtPercent(avg)} icon={<Star />} hint="barcha baholar bo‘yicha" />
             <StatCard label="Baholar soni" value={grades.length} icon={<Star />} tone="info" hint={`${finals.length} tasi yakuniy`} />
             <StatCard label="Dastlabki" value={grades.length - finals.length} icon={<Star />} tone="warning" hint="hali yakunlanmagan" />
-            <StatCard label="Fanlar" value={bySubject.length} icon={<Star />} tone="violet" hint="baholangan fanlar" />
+            <StatCard label="Kategoriyalar" value={bySubject.length} icon={<Star />} tone="violet" hint="baholangan yo‘nalishlar" />
           </div>
           <Card>
             <CardHeader title="Baholash shkalasi" description="Foiz natija quyidagi baholarga aylantiriladi" />

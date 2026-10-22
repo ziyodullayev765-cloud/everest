@@ -12,7 +12,7 @@ export function AudioPlayer({ file, title }: { file: Pick<UploadedFile, "id" | "
           <Music className="size-4" aria-hidden />
         </span>
         <span className="min-w-0 flex-1 truncate font-medium">{title || file.name}</span>
-        <span className="shrink-0 text-[11.5px] text-muted">{fmtSize(file.size)}</span>
+        {file.size ? <span className="shrink-0 text-[11.5px] text-muted">{fmtSize(file.size)}</span> : null}
       </div>
       <audio controls preload="metadata" src={`/api/files/${file.id}`} className="w-full" controlsList="nodownload">
         Brauzeringiz audioni qo‘llab-quvvatlamaydi.

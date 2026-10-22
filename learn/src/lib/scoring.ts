@@ -16,8 +16,8 @@ export type ScorableQuestion = {
 export type Answer =
   | { optionId: string } // single_choice, true_false
   | { optionIds: string[] } // multiple_choice
-  | { text: string } // short_answer, essay
-  | { blanks: string[] } // fill_blank
+  | { text: string } // short_answer, essay, translation, grammar_correction, arrange_words (assembled sentence)
+  | { blanks: string[] } // fill_blank, irregular_verb ([past simple, past participle])
   | { matches: Record<string, string> }; // matching: leftPairId -> rightPairId
 
 export type ScoreResult = { isCorrect: boolean | null; points: number | null; needsManual: boolean };
@@ -32,6 +32,8 @@ function matchesAccepted(given: string, accepted: string[] = [], caseSensitive =
   if (!g) return false;
   return accepted.some((a) => normalizeText(a, caseSensitive) === g);
 }
+
+const stripEnd = (t: string) => t.trim().replace(/[\s.!?]+$/, "");
 
 export function scoreQuestion(q: ScorableQuestion, raw: unknown): ScoreResult {
   const pts = Number(q.points);
@@ -53,12 +55,23 @@ export function scoreQuestion(q: ScorableQuestion, raw: unknown): ScoreResult {
       const ok = chosen.size === correct.size && [...correct].every((id) => chosen.has(id));
       return { isCorrect: ok, points: ok ? pts : 0, needsManual: false };
     }
-    case "short_answer": {
+    case "short_answer":
+    case "translation":
+    case "grammar_correction": {
       const accepted = q.config.accepted?.[0] ?? [];
       if (accepted.length === 0) return { isCorrect: null, points: null, needsManual: true };
-      const ok = typeof a.text === "string" && matchesAccepted(a.text, accepted, q.config.caseSensitive);
+      // Sentence answers ignore a trailing full stop / question mark.
+      const norm = q.type === "short_answer" ? (t: string) => t : stripEnd;
+      const ok = typeof a.text === "string" && matchesAccepted(norm(a.text), accepted.map(norm), q.config.caseSensitive);
       return { isCorrect: ok, points: ok ? pts : 0, needsManual: false };
     }
+    case "arrange_words": {
+      // The assembled sentence must match (punctuation-insensitive at the end).
+      const accepted = (q.config.accepted?.[0] ?? []).map(stripEnd);
+      const ok = typeof a.text === "string" && matchesAccepted(stripEnd(a.text), accepted, false);
+      return { isCorrect: ok, points: ok ? pts : 0, needsManual: false };
+    }
+    case "irregular_verb":
     case "fill_blank": {
       // Partial credit per blank.
       const accepted = q.config.accepted ?? [];

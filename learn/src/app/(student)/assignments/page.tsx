@@ -11,7 +11,7 @@ export default async function AssignmentsPage() {
   const rows = await listForStudent(user.id);
   return (
     <>
-      <PageHeader title="Vazifalar" description="Barcha vazifalar, quizlar va o‘quv materiallari — fan, holat va muddat bo‘yicha saralang." />
+      <PageHeader title="Vazifalar" description="Barcha vazifalar, quizlar va o‘quv materiallari — kategoriya, holat va muddat bo‘yicha saralang." />
       <AssignmentBoard rows={rows} emptyText="O‘qituvchingiz vazifa e’lon qilganda shu yerda ko‘rinadi." />
     </>
   );

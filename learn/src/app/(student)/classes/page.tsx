@@ -8,14 +8,14 @@ import { Card } from "@/components/ui/card";
 import { EmptyState } from "@/components/ui/feedback";
 import { JoinClass } from "./join-class";
 
-export const metadata: Metadata = { title: "Sinflarim" };
+export const metadata: Metadata = { title: "Guruhlarim" };
 
 export default async function ClassesPage() {
   const user = await pageUser("student");
   const classes = await studentClasses(user.id);
   return (
     <div className="mx-auto max-w-3xl">
-      <PageHeader title="Sinflarim" description="Sinflaringiz, o‘qituvchilar va e’lonlar." />
+      <PageHeader title="Guruhlarim" description="Guruhlaringiz, o‘qituvchilar va e’lonlar." />
       <div className="space-y-5">
         {classes.length ? (
           <Card className="overflow-hidden">
@@ -26,7 +26,7 @@ export default async function ClassesPage() {
                     <span className="grid size-11 place-items-center rounded-xl bg-primary-soft text-[14px] font-bold text-primary-soft-fg">{c.name.slice(0, 3)}</span>
                     <span className="min-w-0 flex-1">
                       <span className="block font-semibold">{c.name}{c.archivedAt ? " (arxiv)" : ""}</span>
-                      <span className="block truncate text-[13px] text-muted">{[c.academicYear, c.subjects, c.teachers].filter(Boolean).join(" · ")}</span>
+                      <span className="block truncate text-[13px] text-muted">{[c.level, c.teachers].filter(Boolean).join(" · ")}</span>
                     </span>
                     <ChevronRight className="size-4 text-muted" aria-hidden />
                   </Link>
@@ -36,7 +36,7 @@ export default async function ClassesPage() {
           </Card>
         ) : (
           <Card>
-            <EmptyState icon={<UsersRound />} title="Hali sinfga qo‘shilmagansiz" description="Administrator sizni sinfga qo‘shadi yoki o‘qituvchi bergan kod orqali qo‘shiling." />
+            <EmptyState icon={<UsersRound />} title="Hali guruhga qo‘shilmagansiz" description="Administrator sizni guruhga qo‘shadi yoki o‘qituvchi bergan kod orqali qo‘shiling." />
           </Card>
         )}
         <JoinClass />

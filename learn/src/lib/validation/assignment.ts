@@ -48,6 +48,13 @@ export const assignmentInput = z
     classIds: z.array(uuid).max(100).default([]),
     studentIds: z.array(uuid).max(500).default([]),
     attachmentFileIds: z.array(uuid).max(30).default([]),
+    level: z.string().trim().max(40).default(""),
+    topic: z.string().trim().max(120).default(""),
+    passage: z.string().trim().max(20000).default(""),
+    audioFileId: uuid.nullable().default(null),
+    transcript: z.string().trim().max(20000).default(""),
+    transcriptMode: z.enum(["never", "after_submit", "always"]).default("after_submit"),
+    replayLimit: z.union([z.coerce.number().int().min(1).max(20), z.literal(""), z.null()]).transform((v) => (v === "" ? null : v)).default(null),
     items: z
       .array(
         z.object({
@@ -66,7 +73,7 @@ export const assignmentInput = z
     if (v.type === "homework" && v.items.length === 0) ctx.addIssue({ code: "custom", path: ["items"], message: "Uyga vazifaga kamida bitta topshiriq qo‘shing" });
     if (v.publishMode === "schedule" && !v.publishAt) ctx.addIssue({ code: "custom", path: ["publishAt"], message: "E’lon qilish vaqtini kiriting" });
     if (v.publishMode !== "draft" && v.classIds.length + v.studentIds.length === 0)
-      ctx.addIssue({ code: "custom", path: ["classIds"], message: "Kamida bitta sinf yoki o‘quvchini tanlang" });
+      ctx.addIssue({ code: "custom", path: ["classIds"], message: "Kamida bitta guruh yoki o‘quvchini tanlang" });
     if (v.lateCutoffAt && v.dueAt && v.lateCutoffAt < v.dueAt) ctx.addIssue({ code: "custom", path: ["lateCutoffAt"], message: "Kechikish chegarasi muddatdan keyin bo‘lishi kerak" });
     if (v.rubric.length) {
       const sum = v.rubric.reduce((s, c) => s + c.maxPoints, 0);
@@ -75,7 +82,19 @@ export const assignmentInput = z
   });
 export type AssignmentInput = z.infer<typeof assignmentInput>;
 
-export const QUESTION_TYPES = ["single_choice", "multiple_choice", "true_false", "short_answer", "fill_blank", "matching", "essay"] as const;
+export const QUESTION_TYPES = [
+  "single_choice",
+  "multiple_choice",
+  "true_false",
+  "short_answer",
+  "fill_blank",
+  "matching",
+  "essay",
+  "arrange_words",
+  "translation",
+  "grammar_correction",
+  "irregular_verb",
+] as const;
 
 export const questionInput = z
   .object({
@@ -88,6 +107,11 @@ export const questionInput = z
     accepted: z.array(z.array(z.string().trim().min(1).max(200)).max(20)).max(20).default([]),
     caseSensitive: z.boolean().default(false),
     pairs: z.array(z.object({ left: z.string().trim().min(1).max(300), right: z.string().trim().min(1).max(300) })).max(12).default([]),
+    words: z.array(z.string().trim().min(1).max(60)).max(30).default([]),
+    direction: z.enum(["en_uz", "uz_en"]).nullable().default(null),
+    incorrect: z.string().trim().max(1000).default(""),
+    base: z.string().trim().max(60).default(""),
+    audioFileId: uuid.nullable().default(null),
   })
   .superRefine((q, ctx) => {
     const correct = q.options.filter((o) => o.isCorrect).length;
@@ -101,6 +125,9 @@ export const questionInput = z
       else if (q.accepted.length !== n || q.accepted.some((a) => a.length === 0)) add(`Har bir bo‘sh joy (${n} ta) uchun to‘g‘ri javob kiriting`);
     }
     if (q.type === "matching" && q.pairs.length < 2) add("Kamida 2 ta juftlik kerak");
+    if (q.type === "arrange_words" && q.words.length < 2) add("Gapni kamida 2 ta so‘zga ajrating");
+    if (q.type === "grammar_correction" && (!q.incorrect || !q.accepted[0]?.length)) add("Xato gapni va to‘g‘ri variant(lar)ni kiriting");
+    if (q.type === "irregular_verb" && (!q.base || q.accepted.length !== 2 || q.accepted.some((a) => !a.length))) add("Fe’lning asosiy shakli, Past Simple va Past Participle shakllarini kiriting");
   });
 export type QuestionInput = z.infer<typeof questionInput>;
 

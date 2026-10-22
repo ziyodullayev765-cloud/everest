@@ -127,6 +127,18 @@ export default async function ResultsPage({ params }: { params: Promise<{ id: st
 type Correct = { optionIds: string[]; accepted: string[][]; matches: Record<string, string> } | null;
 type Q = Awaited<ReturnType<typeof attemptResult>>["items"][number]["question"];
 
+function TextAnswer({ a, correct }: { a: Ans; correct: Correct }) {
+  return (
+    <>
+      <div className="rounded-xl bg-surface-2 px-3.5 py-2.5 text-[14px]">
+        <span className="text-[12px] text-muted">Sizning javobingiz: </span>
+        {a?.text?.trim() ? <span className="prose-text">{a.text}</span> : <i className="text-muted">javob berilmagan</i>}
+      </div>
+      {correct?.accepted?.[0]?.length ? <div className="text-[13px] text-success">To‘g‘ri javob: {correct.accepted[0].join(" / ")}</div> : null}
+    </>
+  );
+}
+
 function AnswerReview({ q, a, correct }: { q: Q; a: Ans; correct: Correct }) {
   if (q.type === "single_choice" || q.type === "true_false" || q.type === "multiple_choice") {
     const chosen = new Set(q.type === "multiple_choice" ? (a?.optionIds ?? []) : a?.optionId ? [a.optionId] : []);
@@ -153,15 +165,27 @@ function AnswerReview({ q, a, correct }: { q: Q; a: Ans; correct: Correct }) {
       </>
     );
   }
-  if (q.type === "short_answer" || q.type === "essay")
+  if (q.type === "grammar_correction" && q.incorrect) {
     return (
       <>
-        <div className="rounded-xl bg-surface-2 px-3.5 py-2.5 text-[14px]">
-          <span className="text-[12px] text-muted">Sizning javobingiz: </span>
-          {a?.text?.trim() ? <span className="prose-text">{a.text}</span> : <i className="text-muted">javob berilmagan</i>}
-        </div>
-        {correct?.accepted?.[0]?.length ? <div className="text-[13px] text-success">To‘g‘ri javob: {correct.accepted[0].join(" / ")}</div> : null}
+        <div className="text-[13px] text-muted line-through decoration-danger/60">{q.incorrect}</div>
+        <TextAnswer a={a} correct={correct} />
       </>
+    );
+  }
+  if (q.type === "short_answer" || q.type === "essay" || q.type === "translation" || q.type === "grammar_correction" || q.type === "arrange_words") return <TextAnswer a={a} correct={correct} />;
+  if (q.type === "irregular_verb")
+    return (
+      <div className="space-y-1.5 text-[14px]">
+        <div className="text-muted">V1: <b className="text-text">{q.base}</b></div>
+        {["V2", "V3"].map((label, i) => (
+          <div key={label} className="flex flex-wrap gap-x-3">
+            <span className="text-muted">{label}:</span>
+            <span>{a?.blanks?.[i]?.trim() || <i className="text-muted">bo‘sh</i>}</span>
+            {correct?.accepted?.[i] ? <span className="text-success">→ {correct.accepted[i].join(" / ")}</span> : null}
+          </div>
+        ))}
+      </div>
     );
   if (q.type === "fill_blank")
     return (

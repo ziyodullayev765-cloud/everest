@@ -14,6 +14,7 @@ import { formatDateTime, toLocalInput } from "@/lib/dates";
 import { countBlanks } from "@/lib/scoring";
 import { cn } from "@/lib/utils";
 import { t } from "@/lib/i18n";
+import { AudioPlayer } from "@/components/app/media";
 import type { QuestionConfig } from "@/server/db/schema";
 import { PageHeader } from "@/components/ui/page";
 import { Card, CardBody, CardHeader } from "@/components/ui/card";
@@ -43,7 +44,7 @@ export async function AssignmentListPage({ user, base, sp }: { user: SessionUser
           { name: "q", type: "search", placeholder: "Sarlavha bo‘yicha qidirish" },
           { name: "status", label: "Holat", options: [["", "Faol (arxivsiz)"], ["draft", "Qoralama"], ["scheduled", "Rejalashtirilgan"], ["published", "E’lon qilingan"], ["archived", "Arxiv"]] },
           { name: "type", label: "Turi", options: [["", "Barcha turlar"], ["work", "Vazifalar"], ["quiz", "Quizlar"]] },
-          { name: "subject", label: "Fan", options: [["", "Barcha fanlar"], ...subjects.map((s) => [s.id, s.name] as [string, string])] },
+          { name: "subject", label: "Kategoriya", options: [["", "Barcha kategoriyalar"], ...subjects.map((s) => [s.id, s.name] as [string, string])] },
         ]}
       />
       {rows.length ? (
@@ -192,9 +193,21 @@ export async function EditAssignmentPage({ user, base, id, tab }: { user: Sessio
       explanation: q.explanation,
       imageFileId: q.imageFileId,
       options: q.options.map((o) => ({ label: o.label, isCorrect: o.isCorrect })),
-      accepted: q.type === "fill_blank" ? Array.from({ length: countBlanks(q.prompt) }, (_, i) => cfg.accepted?.[i] ?? []) : (cfg.accepted ?? [[]]),
+      accepted:
+        q.type === "fill_blank"
+          ? Array.from({ length: countBlanks(q.prompt) }, (_, i) => cfg.accepted?.[i] ?? [])
+          : q.type === "arrange_words"
+            ? [(cfg.accepted?.[0] ?? []).slice(1)]
+            : q.type === "irregular_verb"
+              ? [cfg.accepted?.[0] ?? [], cfg.accepted?.[1] ?? []]
+              : (cfg.accepted ?? [[]]),
       caseSensitive: !!cfg.caseSensitive,
       pairs: (cfg.pairs ?? []).map((p) => ({ left: p.left, right: p.right })),
+      words: cfg.words ?? [],
+      direction: cfg.direction ?? (q.type === "translation" ? "en_uz" : null),
+      incorrect: cfg.incorrect ?? "",
+      base: cfg.base ?? "",
+      audioFileId: cfg.audioFileId ?? null,
     };
   });
   return (
@@ -263,7 +276,13 @@ export async function PreviewAssignmentPage({ user, base, id }: { user: SessionU
               {(q.config as QuestionConfig).pairs?.map((p) => (
                 <div key={p.id} className="grid grid-cols-2 gap-2 text-[14px]"><span className="rounded-xl border border-border px-3 py-2">{p.left}</span><span className="rounded-xl border border-dashed border-border px-3 py-2 text-muted">Tanlang…</span></div>
               ))}
-              {q.type === "short_answer" || q.type === "essay" || q.type === "fill_blank" ? <div className="h-11 rounded-xl border border-dashed border-border" aria-hidden /> : null}
+              {(q.config as QuestionConfig).audioFileId ? <AudioPlayer file={{ id: (q.config as QuestionConfig).audioFileId!, name: "Audio", size: 0 }} title="Savol audiosi" /> : null}
+              {q.type === "arrange_words" ? (
+                <div className="flex flex-wrap gap-2">{[...((q.config as QuestionConfig).words ?? [])].sort().map((w, k) => <span key={k} className="rounded-lg border border-border px-3 py-1.5 text-[14px]">{w}</span>)}</div>
+              ) : null}
+              {q.type === "grammar_correction" ? <div className="rounded-xl bg-danger-soft/60 px-3.5 py-2.5 text-[14px]">{(q.config as QuestionConfig).incorrect}</div> : null}
+              {q.type === "irregular_verb" ? <div className="text-[14px]">V1: <b>{(q.config as QuestionConfig).base}</b> · V2: ____ · V3: ____</div> : null}
+              {["short_answer", "essay", "fill_blank", "translation", "grammar_correction"].includes(q.type) ? <div className="h-11 rounded-xl border border-dashed border-border" aria-hidden /> : null}
             </CardBody>
           </Card>
         ))}

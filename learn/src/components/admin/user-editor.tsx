@@ -14,7 +14,7 @@ const PERMS: [string, string][] = [
   ["assignments.create", "Vazifa va quiz yaratish"],
   ["grades.edit_final", "Yakuniy baholarni o‘zgartirish"],
   ["reports.export", "Hisobotlarni eksport qilish"],
-  ["classes.all", "Barcha sinflarga kirish (ehtiyotkorlik bilan)"],
+  ["classes.all", "Barcha guruhlarga kirish (ehtiyotkorlik bilan)"],
 ];
 
 type U = { id: string; role: string; status: string; username: string; displayName: string; email: string; studentCode: string; permissions: string[] };
@@ -22,7 +22,7 @@ type U = { id: string; role: string; status: string; username: string; displayNa
 export function UserEditor({ user, classes, subjects, memberIds, teaching }: { user: U; classes: { id: string; name: string }[]; subjects: { id: string; name: string }[]; memberIds: string[]; teaching: { id: string; className: string; subjectName: string | null }[] }) {
   const [f, setF] = useState(user);
   const [members, setMembers] = useState(memberIds);
-  const [assign, setAssign] = useState({ classId: classes[0]?.id ?? "", subjectId: "" });
+  const [assign, setAssign] = useState({ classId: classes[0]?.id ?? "" });
   const [link, setLink] = useState<string | null>(null);
   const [confirm, setConfirm] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -67,15 +67,15 @@ export function UserEditor({ user, classes, subjects, memberIds, teaching }: { u
 
       {f.role === "student" ? (
         <Card>
-          <CardHeader title="Sinflar" description="Sinfdan chiqarish baholar va topshirilgan ishlarni o‘chirmaydi." />
+          <CardHeader title="Guruhlar" description="Guruhdan chiqarish baholar va topshirilgan ishlarni o‘chirmaydi." />
           <CardBody className="space-y-4">
             <div className="flex flex-wrap gap-2">
               {classes.map((c) => (
                 <Checkbox key={c.id} className="rounded-lg border border-border px-2.5 py-1.5" checked={members.includes(c.id)} onChange={(x) => setMembers(x ? [...members, c.id] : members.filter((y) => y !== c.id))} label={c.name} />
               ))}
             </div>
-            <Button variant="secondary" loading={pending} onClick={() => run(() => membershipsAction(f.id, members), "Sinflar yangilandi")}>
-              Sinflarni saqlash
+            <Button variant="secondary" loading={pending} onClick={() => run(() => membershipsAction(f.id, members), "Guruhlar yangilandi")}>
+              Guruhlarni saqlash
             </Button>
           </CardBody>
         </Card>
@@ -83,12 +83,12 @@ export function UserEditor({ user, classes, subjects, memberIds, teaching }: { u
 
       {f.role === "teacher" ? (
         <Card>
-          <CardHeader title="Sinf va fanlar" description="O‘qituvchi faqat shu yerda ko‘rsatilgan sinflarni ko‘radi." />
+          <CardHeader title="Guruhlar" description="O‘qituvchi faqat shu yerda ko‘rsatilgan guruhlarni ko‘radi." />
           <CardBody className="space-y-4">
             <ul className="space-y-2">
               {teaching.map((x) => (
                 <li key={x.id} className="flex items-center justify-between rounded-xl border border-border px-3 py-2 text-[13.5px]">
-                  <span><b className="font-medium">{x.className}</b> · {x.subjectName ?? "barcha fanlar"}</span>
+                  <span className="font-medium">{x.className}</span>
                   <Button variant="ghost" size="icon" aria-label="Ajratish" onClick={() => run(() => unassignTeacherAction(x.id), "Ajratildi")}>
                     <X />
                   </Button>
@@ -96,15 +96,11 @@ export function UserEditor({ user, classes, subjects, memberIds, teaching }: { u
               ))}
               {!teaching.length ? <li className="text-[13px] text-muted">Hali biriktirilmagan.</li> : null}
             </ul>
-            <div className="grid gap-2 sm:grid-cols-[1fr_1fr_auto]">
-              <Select value={assign.classId} onChange={(e) => setAssign({ ...assign, classId: e.target.value })} aria-label="Sinf">
+            <div className="grid gap-2 sm:grid-cols-[1fr_auto]">
+              <Select value={assign.classId} onChange={(e) => setAssign({ ...assign, classId: e.target.value })} aria-label="Guruh">
                 {classes.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
               </Select>
-              <Select value={assign.subjectId} onChange={(e) => setAssign({ ...assign, subjectId: e.target.value })} aria-label="Fan">
-                <option value="">Barcha fanlar</option>
-                {subjects.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}
-              </Select>
-              <Button variant="secondary" disabled={!assign.classId} onClick={() => run(() => assignTeacherAction(assign.classId, f.id, assign.subjectId || null), "Biriktirildi")}>
+              <Button variant="secondary" disabled={!assign.classId} onClick={() => run(() => assignTeacherAction(assign.classId, f.id), "Biriktirildi")}>
                 <Plus /> Biriktirish
               </Button>
             </div>

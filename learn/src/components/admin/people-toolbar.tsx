@@ -14,7 +14,7 @@ const PERMS: [string, string][] = [
   ["assignments.create", "Vazifa va quiz yaratish"],
   ["grades.edit_final", "Yakuniy baholarni o‘zgartirish"],
   ["reports.export", "Hisobotlarni eksport qilish"],
-  ["classes.all", "Barcha sinflarga kirish"],
+  ["classes.all", "Barcha guruhlarga kirish"],
 ];
 
 function download(name: string, text: string) {
@@ -134,7 +134,7 @@ export function PeopleToolbar({ kind, classes, canCreateAdmins }: { kind: "stude
               ) : null}
             </div>
             {f.role === "student" || f.role === "teacher" ? (
-              <Field label={f.role === "student" ? "Sinflar" : "Biriktiriladigan sinflar (barcha fanlar)"}>
+              <Field label={f.role === "student" ? "Guruhlar" : "Biriktiriladigan guruhlar"}>
                 <div className="flex flex-wrap gap-2">
                   {classes.map((c) => (
                     <Checkbox key={c.id} className="rounded-lg border border-border px-2.5 py-1.5" checked={f.classIds.includes(c.id)} onChange={(x) => setF({ ...f, classIds: x ? [...f.classIds, c.id] : f.classIds.filter((y) => y !== c.id) })} label={c.name} />
@@ -163,7 +163,7 @@ export function PeopleToolbar({ kind, classes, canCreateAdmins }: { kind: "stude
         )}
       </Dialog>
 
-      <Dialog open={open === "import"} onClose={close} title="O‘quvchilarni CSV dan import qilish" description="Sarlavha: username,display_name,class,student_code,email (class — sinf nomi yoki kodi). Barcha qatorlar to‘g‘ri bo‘lsagina import qilinadi.">
+      <Dialog open={open === "import"} onClose={close} title="O‘quvchilarni CSV dan import qilish" description="Sarlavha: username,display_name,class,student_code,email (class — guruh nomi yoki kodi). Barcha qatorlar to‘g‘ri bo‘lsagina import qilinadi.">
         {created ? (
           <Credentials rows={created} />
         ) : (

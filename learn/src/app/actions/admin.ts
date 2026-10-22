@@ -3,7 +3,7 @@ import { revalidatePath } from "next/cache";
 import { run } from "@/server/action";
 import { requireRole } from "@/server/auth/session";
 import { createResetLink, createUser, importStudents, setClassMemberships, setUserStatus, updateUser } from "@/server/services/users";
-import { assignTeacher, createClass, createSubject, enroll, setClassArchived, setJoinCode, setSubjectArchived, unassignTeacher, updateClass, updateSubject } from "@/server/services/classes";
+import { assignTeacher, createClass, enroll, setClassArchived, setJoinCode, unassignTeacher, updateClass } from "@/server/services/classes";
 import { updateSettings } from "@/server/services/settings";
 import { saveBook, setBookStatus } from "@/server/services/library";
 import { env } from "@/server/env";
@@ -51,20 +51,11 @@ export async function joinCodeAction(id: string, enabled: boolean) {
 export async function enrollAction(classId: string, ids: string[], add: boolean) {
   return adminRun((u) => enroll(u, classId, ids, add));
 }
-export async function assignTeacherAction(classId: string, teacherId: string, subjectId: string | null) {
-  return adminRun((u) => assignTeacher(u, classId, teacherId, subjectId));
+export async function assignTeacherAction(classId: string, teacherId: string) {
+  return adminRun((u) => assignTeacher(u, classId, teacherId));
 }
 export async function unassignTeacherAction(id: string) {
   return adminRun((u) => unassignTeacher(u, id));
-}
-export async function createSubjectAction(input: unknown) {
-  return adminRun((u) => createSubject(u, input));
-}
-export async function updateSubjectAction(id: string, input: unknown) {
-  return adminRun((u) => updateSubject(u, id, input));
-}
-export async function archiveSubjectAction(id: string, archived: boolean) {
-  return adminRun((u) => setSubjectArchived(u, id, archived));
 }
 export async function settingsAction(input: unknown) {
   return adminRun((u) => updateSettings(u, input));

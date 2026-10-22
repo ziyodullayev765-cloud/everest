@@ -39,10 +39,7 @@ export function ClassPageView({ data, staffTools }: { data: Awaited<ReturnType<t
               {data.teachers.map((t, i) => (
                 <li key={i} className="flex items-center justify-between gap-2">
                   <span className="font-medium">{t.name}</span>
-                  <span className="inline-flex items-center gap-1.5 text-[12.5px] text-muted">
-                    {t.color ? <span className="size-2 rounded-full" style={{ background: t.color }} /> : null}
-                    {t.subject ?? "Barcha fanlar"}
-                  </span>
+                  <span className="text-[12.5px] text-muted">Ustoz</span>
                 </li>
               ))}
               {!data.teachers.length ? <li className="text-muted">Biriktirilmagan</li> : null}
@@ -50,7 +47,7 @@ export function ClassPageView({ data, staffTools }: { data: Awaited<ReturnType<t
           </CardBody>
         </Card>
         <Card>
-          <CardHeader title="Sinf musobaqalari" icon={<Target />} description="Umumiy natija — hech kim alohida ko‘rsatilmaydi" />
+          <CardHeader title="Guruh musobaqalari" icon={<Target />} description="Umumiy natija — hech kim alohida ko‘rsatilmaydi" />
           <CardBody className="space-y-4 pt-3">
             {data.challenges.length ? (
               data.challenges.map((c) => (

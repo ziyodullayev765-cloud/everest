@@ -22,7 +22,7 @@ export default async function AuthLayout({ children }: { children: React.ReactNo
             {[
               { icon: CalendarCheck2, t: "Kunlik reja", d: "Bugungi vazifalar va yaqinlashayotgan muddatlar" },
               { icon: Sparkles, t: "Interaktiv quizlar", d: "Darhol natija va tushuntirishlar" },
-              { icon: BarChart3, t: "Shaxsiy tahlil", d: "Haftalik o‘sish, kuchli fanlar va maqsadlar" },
+              { icon: BarChart3, t: "Shaxsiy tahlil", d: "Haftalik o‘sish, kuchli tomonlar va maqsadlar" },
             ].map(({ icon: Icon, t, d }) => (
               <li key={t} className="flex gap-3">
                 <span className="grid size-9 shrink-0 place-items-center rounded-xl border border-border bg-surface text-primary shadow-soft">

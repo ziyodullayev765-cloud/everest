@@ -12,7 +12,7 @@ export async function GET(req: Request) {
   try {
     const user = await getCurrentUser();
     if (!user) throw new AppError("unauthenticated", "Tizimga kiring.");
-    if (!/^[0-9a-f-]{36}$/i.test(classId)) throw new AppError("invalid", "Sinf noto‘g‘ri.");
+    if (!/^[0-9a-f-]{36}$/i.test(classId)) throw new AppError("invalid", "Guruh noto‘g‘ri.");
     const { filename, rows } = await gradebookCsv(user, classId, subjectId);
     return new NextResponse(toCsv(rows), {
       headers: {

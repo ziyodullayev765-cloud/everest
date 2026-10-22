@@ -41,8 +41,8 @@ export async function SubmissionsPage({ user, base, sp }: { user: SessionUser; b
         fields={[
           { name: "q", type: "search", placeholder: "O‘quvchi yoki vazifa" },
           { name: "status", label: "Holat", options: [["pending", "Tekshirilishi kerak"], ["graded", "Yakuniy baholangan"], ["returned", "Qaytarilgan"], ["all", "Barchasi"]] },
-          { name: "class", label: "Sinf", options: [["", "Barcha sinflar"], ...classes.map((c) => [c.id, c.name] as [string, string])] },
-          { name: "subject", label: "Fan", options: [["", "Barcha fanlar"], ...subjects.map((s) => [s.id, s.name] as [string, string])] },
+          { name: "class", label: "Guruh", options: [["", "Barcha guruhlar"], ...classes.map((c) => [c.id, c.name] as [string, string])] },
+          { name: "subject", label: "Kategoriya", options: [["", "Barcha kategoriyalar"], ...subjects.map((s) => [s.id, s.name] as [string, string])] },
         ]}
       />
       {rows.length ? (
@@ -261,19 +261,19 @@ export async function GradebookPage({ user, base, sp }: { user: SessionUser; bas
     <>
       <PageHeader
         title="Baholar jurnali"
-        description="Sinf bo‘yicha barcha baholar. * — dastlabki baho."
+        description="Guruh bo‘yicha barcha baholar. * — dastlabki baho."
         actions={gb && can(user, "reports.export") ? <LinkButton href={`/api/export/gradebook?class=${classId}${sp.subject ? `&subject=${sp.subject}` : ""}`} variant="secondary" prefetch={false}><Download /> CSV eksport</LinkButton> : null}
       />
       <FilterBar
         fields={[
-          { name: "class", label: "Sinf", options: classes.map((c) => [c.id, c.name] as [string, string]) },
-          { name: "subject", label: "Fan", options: [["", "Barcha fanlar"], ...subjects.map((s) => [s.id, s.name] as [string, string])] },
+          { name: "class", label: "Guruh", options: classes.map((c) => [c.id, c.name] as [string, string]) },
+          { name: "subject", label: "Kategoriya", options: [["", "Barcha kategoriyalar"], ...subjects.map((s) => [s.id, s.name] as [string, string])] },
         ]}
       />
       {!gb ? (
-        <Card><EmptyState icon={<FileSpreadsheet />} title="Sinf yo‘q" description="Sizga hali sinf biriktirilmagan." /></Card>
+        <Card><EmptyState icon={<FileSpreadsheet />} title="Guruh yo‘q" description="Sizga hali guruh biriktirilmagan." /></Card>
       ) : !gb.assignments.length ? (
-        <Card><EmptyState icon={<FileSpreadsheet />} title="Baholanadigan vazifalar yo‘q" description="Bu sinf uchun e’lon qilingan vazifalar baholangach, jurnal to‘ladi." /></Card>
+        <Card><EmptyState icon={<FileSpreadsheet />} title="Baholanadigan vazifalar yo‘q" description="Bu guruh uchun e’lon qilingan vazifalar baholangach, jurnal to‘ladi." /></Card>
       ) : (
         <Card className="overflow-hidden">
           <div className="overflow-x-auto">
@@ -325,7 +325,7 @@ export async function BankPage({ user, sp }: { user: SessionUser; sp: { subject?
   return (
     <>
       <PageHeader title="Savollar banki" description="Qayta foydalaniladigan savollar. Quiz tahrirlovchisidan “Savollar bankidan” orqali qo‘shing." />
-      <FilterBar fields={[{ name: "subject", label: "Fan", options: [["", "Barcha fanlar"], ...subjects.map((s) => [s.id, s.name] as [string, string])] }]} />
+      <FilterBar fields={[{ name: "subject", label: "Kategoriya", options: [["", "Barcha kategoriyalar"], ...subjects.map((s) => [s.id, s.name] as [string, string])] }]} />
       <BankManager
         subjects={subjects.map((s) => ({ id: s.id, name: s.name }))}
         defaultSubject={sp.subject || subjects[0]?.id || ""}
@@ -342,14 +342,14 @@ export async function StudentRecordPage({ user, base, studentId }: { user: Sessi
   const avg = grades.length ? grades.reduce((s, g) => s + Number(g.percent), 0) / grades.length : null;
   return (
     <div className="mx-auto max-w-4xl">
-      <PageHeader back={{ href: base === "/admin" ? "/admin/students" : "/teacher/gradebook", label: base === "/admin" ? "O‘quvchilar" : "Baholar jurnali" }} title={r.user.displayName} description={`@${r.user.username}${r.user.studentCode ? ` · ID ${r.user.studentCode}` : ""} · ${r.classes.map((c) => c.name).join(", ") || "sinfsiz"}`} />
+      <PageHeader back={{ href: base === "/admin" ? "/admin/students" : "/teacher/gradebook", label: base === "/admin" ? "O‘quvchilar" : "Baholar jurnali" }} title={r.user.displayName} description={`@${r.user.username}${r.user.studentCode ? ` · ID ${r.user.studentCode}` : ""} · ${r.classes.map((c) => c.name).join(", ") || "guruhsiz"}`} />
       <div className="mb-5 grid grid-cols-2 gap-3 sm:grid-cols-3">
         <Card><CardBody><div className="text-[12px] text-muted">O‘rtacha</div><div className="text-[22px] font-semibold tabular">{fmtPercent(avg == null ? null : Math.round(avg * 10) / 10)}</div></CardBody></Card>
         <Card><CardBody><div className="text-[12px] text-muted">Baholar</div><div className="text-[22px] font-semibold tabular">{grades.length}</div></CardBody></Card>
         <Card><CardBody><div className="text-[12px] text-muted">Oxirgi kirish</div><div className="text-[15px] font-semibold">{r.user.lastLoginAt ? formatDateTime(r.user.lastLoginAt) : "—"}</div></CardBody></Card>
       </div>
       <Card className="overflow-hidden">
-        <CardHeader title="Baholar" icon={<ClipboardCheck />} description={base === "/teacher" ? "Faqat siz o‘qitadigan fanlar" : undefined} />
+        <CardHeader title="Baholar" icon={<ClipboardCheck />} description={base === "/teacher" ? "Faqat sizning guruhlaringiz" : undefined} />
         <CardBody className="pt-3">
           {grades.length ? (
             <ul className="-mx-2 divide-y divide-border">

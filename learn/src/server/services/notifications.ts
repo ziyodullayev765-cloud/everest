@@ -9,7 +9,7 @@ export const NOTIFICATION_TYPES = {
   grade: "E’lon qilingan baholar",
   feedback: "O‘qituvchi izohlari",
   weekly_summary: "Haftalik hisobot",
-  announcement: "Sinf e’lonlari",
+  announcement: "Guruh e’lonlari",
   system: "Tizim xabarlari",
 } as const;
 export type NotificationType = keyof typeof NOTIFICATION_TYPES;

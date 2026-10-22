@@ -1,6 +1,7 @@
 import "server-only";
 import { and, asc, desc, eq, inArray, ne, sql } from "drizzle-orm";
 import { db, schema, type Executor } from "../db";
+import type { QuestionConfig } from "../db/schema";
 import { can, isAdmin, type Actor } from "../auth/rbac";
 import { forbidden, invalid, notFound, AppError } from "../errors";
 import { assignmentInput, questionsInput, type QuestionInput } from "@/lib/validation/assignment";
@@ -13,13 +14,14 @@ import { booksByIds } from "./library";
 import { audit } from "./audit";
 import { notify } from "./notifications";
 import { fillTemplate, getSettings } from "./settings";
+import { CATEGORY_CODES } from "@/lib/course";
 
 // ─── Staff: create / update ──────────────────────────────────────────────────
 
 async function assertTargetsInScope(actor: Actor, classIds: string[], studentIds: string[], ex: Executor) {
   const scope = await manageableClassIds(actor, ex);
   if (scope === "all") return;
-  if (classIds.some((c) => !scope.includes(c))) throw forbidden("Siz faqat o‘zingizga biriktirilgan sinflarga vazifa bera olasiz.");
+  if (classIds.some((c) => !scope.includes(c))) throw forbidden("Siz faqat o‘zingizga biriktirilgan guruhlarga vazifa bera olasiz.");
   if (studentIds.length) {
     const rows = scope.length
       ? await ex
@@ -27,7 +29,7 @@ async function assertTargetsInScope(actor: Actor, classIds: string[], studentIds
           .from(schema.classStudents)
           .where(and(inArray(schema.classStudents.studentId, studentIds), inArray(schema.classStudents.classId, scope)))
       : [];
-    if (rows.length !== new Set(studentIds).size) throw forbidden("Tanlangan o‘quvchilardan ba’zilari sizning sinflaringizda emas.");
+    if (rows.length !== new Set(studentIds).size) throw forbidden("Tanlangan o‘quvchilardan ba’zilari sizning guruhlaringizda emas.");
   }
 }
 
@@ -64,6 +66,13 @@ function toRow(v: ReturnType<typeof assignmentInput.parse>) {
     links: v.links,
     rubric: v.rubric,
     items: v.type === "homework" ? v.items.map((i) => ({ ...i, bookId: i.bookId ?? null })) : [],
+    level: v.level,
+    topic: v.topic,
+    passage: v.passage,
+    audioFileId: v.audioFileId,
+    transcript: v.transcript,
+    transcriptMode: v.transcriptMode,
+    replayLimit: v.audioFileId ? v.replayLimit : null,
   };
 }
 
@@ -77,6 +86,7 @@ export async function saveAssignment(actor: Actor, id: string | null, input: unk
   }
   const v = parsed.data;
   await assertOwnFilesOrAttached(actor, id, v.attachmentFileIds);
+  if (v.audioFileId) await assertAudioFile(actor, id, v.audioFileId);
   const row = toRow(v);
   const bookIds = [...new Set(row.items.map((i) => i.bookId).filter((x): x is string => !!x))];
   if (bookIds.length) {
@@ -87,7 +97,7 @@ export async function saveAssignment(actor: Actor, id: string | null, input: unk
   const result = await db.transaction(async (tx) => {
     await assertTargetsInScope(actor, v.classIds, v.studentIds, tx);
     const subject = await tx.select().from(schema.subjects).where(eq(schema.subjects.id, v.subjectId)).limit(1);
-    if (!subject[0] || subject[0].archivedAt) throw invalid("Fan topilmadi.");
+    if (!subject[0] || subject[0].archivedAt) throw invalid("Kategoriya topilmadi.");
 
     let assignmentId = id;
     let wasLive = false;
@@ -139,6 +149,16 @@ async function assertOwnFilesOrAttached(actor: Actor, assignmentId: string | nul
   await assertOwnFiles(actor.id, fileIds.filter((f) => !already.includes(f)));
 }
 
+async function assertAudioFile(actor: Actor, assignmentId: string | null, fileId: string) {
+  const [f] = await db.select({ mime: schema.files.mime }).from(schema.files).where(eq(schema.files.id, fileId));
+  if (!f || !f.mime.startsWith("audio/")) throw invalid("Listening uchun audio fayl tanlang.");
+  if (assignmentId) {
+    const [cur] = await db.select({ a: schema.assignments.audioFileId }).from(schema.assignments).where(eq(schema.assignments.id, assignmentId));
+    if (cur?.a === fileId) return;
+  }
+  await assertOwnFiles(actor.id, [fileId]);
+}
+
 async function hasStudentWork(assignmentId: string, ex: Executor) {
   const r = await ex.execute<{ n: number }>(sql`
     select (select count(*) from submissions where assignment_id = ${assignmentId})::int + (select count(*) from quiz_attempts where assignment_id = ${assignmentId})::int as n`);
@@ -157,8 +177,9 @@ export async function saveQuestions(actor: Actor, assignmentId: string, input: u
   }
   const attempts = await db.select({ n: sql<number>`count(*)::int` }).from(schema.quizAttempts).where(eq(schema.quizAttempts.assignmentId, assignmentId));
   if ((attempts[0]?.n ?? 0) > 0) throw new AppError("closed", "O‘quvchilar quizni boshlagan. Savollarni o‘zgartirish uchun nusxa yarating.");
-  const imageIds = parsed.data.map((q) => q.imageFileId).filter((x): x is string => !!x);
-  const existingImages = (await db.select({ id: schema.questions.imageFileId }).from(schema.questions).where(eq(schema.questions.assignmentId, assignmentId))).map((r) => r.id);
+  const imageIds = parsed.data.flatMap((q) => [q.imageFileId, q.audioFileId]).filter((x): x is string => !!x);
+  const existingRows = await db.select({ id: schema.questions.imageFileId, config: schema.questions.config }).from(schema.questions).where(eq(schema.questions.assignmentId, assignmentId));
+  const existingImages = existingRows.flatMap((r) => [r.id, (r.config as QuestionConfig).audioFileId]);
   await assertOwnFiles(actor.id, imageIds.filter((i) => !existingImages.includes(i)));
 
   await db.transaction(async (tx) => {
@@ -171,14 +192,33 @@ export async function saveQuestions(actor: Actor, assignmentId: string, input: u
   });
 }
 
+/** Stored answer key / settings per question type (never sent to students before review). */
+function questionConfig(q: QuestionInput): QuestionConfig {
+  const one = [q.accepted.flat()];
+  switch (q.type) {
+    case "matching":
+      return { pairs: q.pairs.map((p) => ({ id: randomUUID().slice(0, 8), left: p.left, right: p.right })) };
+    case "short_answer":
+      return { accepted: one, caseSensitive: q.caseSensitive };
+    case "fill_blank":
+      return { accepted: q.accepted, caseSensitive: q.caseSensitive };
+    case "translation":
+      return { accepted: one, direction: q.direction ?? "en_uz" };
+    case "grammar_correction":
+      return { accepted: one, incorrect: q.incorrect };
+    case "arrange_words":
+      // Alternatives (if any) are extra accepted sentences; the main one is the words in order.
+      return { words: q.words, accepted: [[q.words.join(" "), ...q.accepted.flat()]] };
+    case "irregular_verb":
+      return { base: q.base, accepted: q.accepted.slice(0, 2) };
+    default:
+      return {};
+  }
+}
+
 export async function insertQuestions(tx: Executor, ownerId: string, qs: QuestionInput[], target: { assignmentId?: string; bankSubjectId?: string }) {
   for (const [position, q] of qs.entries()) {
-    const config =
-      q.type === "matching"
-        ? { pairs: q.pairs.map((p) => ({ id: randomUUID().slice(0, 8), left: p.left, right: p.right })) }
-        : q.type === "short_answer" || q.type === "fill_blank"
-          ? { accepted: q.type === "short_answer" ? [q.accepted.flat()] : q.accepted, caseSensitive: q.caseSensitive }
-          : {};
+    const config = { ...questionConfig(q), ...(q.audioFileId ? { audioFileId: q.audioFileId } : {}) };
     const [row] = await tx
       .insert(schema.questions)
       .values({
@@ -204,7 +244,7 @@ export async function setAssignmentStatus(actor: Actor, id: string, action: "pub
   let status = asg.status;
   if (action === "publish") {
     const targets = await db.select().from(schema.assignmentTargets).where(eq(schema.assignmentTargets.assignmentId, id));
-    if (!targets.length) throw invalid("E’lon qilishdan oldin sinf yoki o‘quvchini tanlang.");
+    if (!targets.length) throw invalid("E’lon qilishdan oldin guruh yoki o‘quvchini tanlang.");
     if (isQuizType(asg.type)) {
       const q = await db.select({ n: sql<number>`count(*)::int` }).from(schema.questions).where(eq(schema.questions.assignmentId, id));
       if (!q[0]?.n) throw invalid("Quizda kamida bitta savol bo‘lishi kerak.");
@@ -488,12 +528,22 @@ export async function getForStudent(studentId: string, assignmentId: string) {
   };
 }
 
+/** The English assignment categories (the subjects table, seeded by migration), in course order. */
 export async function subjectsList(includeArchived = false) {
+  const codes = sql.raw(`ARRAY[${CATEGORY_CODES.map((c) => `'${c}'`).join(",")}]::text[]`);
   return db
     .select()
     .from(schema.subjects)
     .where(includeArchived ? sql`true` : sql`${schema.subjects.archivedAt} is null`)
-    .orderBy(asc(schema.subjects.name));
+    .orderBy(sql`coalesce(array_position(${codes}, ${schema.subjects.code}), 999)`, asc(schema.subjects.name));
+}
+
+/** Category id by code (falls back to "Boshqa mashq"). */
+export async function categoryId(code: string, ex: Executor = db) {
+  const rows = await ex.select({ id: schema.subjects.id, code: schema.subjects.code }).from(schema.subjects).where(inArray(schema.subjects.code, [code, "CUSTOM"]));
+  const hit = rows.find((r) => r.code === code) ?? rows[0];
+  if (!hit) throw invalid("Kategoriyalar sozlanmagan. Migratsiyani ishga tushiring.");
+  return hit.id;
 }
 
 export async function ensureCanSeeAsStaffOrStudent(actor: Actor, assignmentId: string) {

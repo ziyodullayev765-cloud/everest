@@ -12,7 +12,7 @@ export async function StaffClassPage({ user, base, id, back }: { user: SessionUs
   const [page, detail] = await Promise.all([orNotFound(classPage(user, id)), orNotFound(classDetailForAdmin(user, id))]);
   return (
     <>
-      <PageHeader back={{ href: back, label: "Sinflar" }} title={page.cls.name} description={`${page.cls.academicYear} · ${detail.students.length} o‘quvchi`} />
+      <PageHeader back={{ href: back, label: "Guruhlar" }} title={page.cls.name} description={`${page.cls.academicYear} · ${detail.students.length} o‘quvchi`} />
       <ClassPageView
         data={page}
         staffTools={

@@ -54,7 +54,7 @@ export async function ProfileView({ user }: { user: SessionUser }) {
           </Card>
           {isStudent ? (
             <Card>
-              <CardHeader title="Sinflar" icon={<UsersRound />} />
+              <CardHeader title="Guruhlar" icon={<UsersRound />} />
               <CardBody className="pt-3">
                 {classes.length ? (
                   <ul className="space-y-2 text-[13.5px]">
@@ -63,12 +63,12 @@ export async function ProfileView({ user }: { user: SessionUser }) {
                         <a href={`/classes/${c.id}`} className="font-medium hover:text-primary">
                           {c.name}
                         </a>
-                        {c.subjects ? <div className="text-[12px] text-muted">{c.subjects}</div> : null}
+                        {c.level ? <div className="text-[12px] text-muted">{c.level}</div> : null}
                       </li>
                     ))}
                   </ul>
                 ) : (
-                  <p className="text-[13px] text-muted">Hali sinfga biriktirilmagansiz.</p>
+                  <p className="text-[13px] text-muted">Hali guruhga biriktirilmagansiz.</p>
                 )}
               </CardBody>
             </Card>

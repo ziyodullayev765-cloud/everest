@@ -55,3 +55,25 @@ describe("helpers", () => {
     expect([...a].sort()).toEqual([1, 2, 3, 4, 5, 6]);
   });
 });
+
+describe("English question types", () => {
+  it("arrange words: the assembled sentence must match, trailing punctuation ignored", () => {
+    const s = q({ type: "arrange_words", config: { words: ["I", "have", "never", "been", "there"], accepted: [["I have never been there", "Never have I been there"]] } });
+    expect(scoreQuestion(s, { text: "I have never been there." }).isCorrect).toBe(true);
+    expect(scoreQuestion(s, { text: "never have i been there" }).isCorrect).toBe(true);
+    expect(scoreQuestion(s, { text: "I never have been there" }).isCorrect).toBe(false);
+  });
+  it("translation and grammar correction compare sentences; no key means manual review", () => {
+    const tr = q({ type: "translation", config: { accepted: [["I am a student"]], direction: "uz_en" } });
+    expect(scoreQuestion(tr, { text: "i am a student." }).isCorrect).toBe(true);
+    expect(scoreQuestion(q({ type: "translation", config: { accepted: [[]] } }), { text: "x" }).needsManual).toBe(true);
+    const gc = q({ type: "grammar_correction", config: { incorrect: "She don't like it.", accepted: [["She doesn't like it", "She does not like it"]] } });
+    expect(scoreQuestion(gc, { text: "She does not like it." }).isCorrect).toBe(true);
+    expect(scoreQuestion(gc, { text: "She don't like it." }).isCorrect).toBe(false);
+  });
+  it("irregular verbs give partial credit per form", () => {
+    const s = q({ type: "irregular_verb", points: 2, config: { base: "be", accepted: [["was", "were"], ["been"]] } });
+    expect(scoreQuestion(s, { blanks: ["were", "been"] })).toEqual({ isCorrect: true, points: 2, needsManual: false });
+    expect(scoreQuestion(s, { blanks: ["was", "beed"] }).points).toBe(1);
+  });
+});

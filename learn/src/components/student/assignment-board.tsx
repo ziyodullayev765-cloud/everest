@@ -74,8 +74,8 @@ export function AssignmentBoard({ rows, initialView = "active", emptyTitle = "Ho
               <Input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Qidirish" className="h-10 pl-9" aria-label="Vazifa nomi bo‘yicha qidirish" />
             </div>
           ) : null}
-          <Select value={subject} onChange={(e) => setSubject(e.target.value)} aria-label="Fan" className="h-10 sm:w-40">
-            <option value="">Barcha fanlar</option>
+          <Select value={subject} onChange={(e) => setSubject(e.target.value)} aria-label="Kategoriya" className="h-10 sm:w-40">
+            <option value="">Barcha kategoriyalar</option>
             {subjects.map(([id, name]) => (
               <option key={id} value={id}>
                 {name}

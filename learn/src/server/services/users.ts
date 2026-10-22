@@ -247,7 +247,7 @@ export async function importStudents(actor: Actor, text: string): Promise<CsvImp
     if (email && !z.string().email().safeParse(email).success) return errors.push({ line, message: "E-pochta noto‘g‘ri" });
     const cname = get("class");
     const cls = cname ? classes.find((c) => c.name.toLowerCase() === cname.toLowerCase() || c.joinCode === cname.toUpperCase()) : null;
-    if (cname && !cls) return errors.push({ line, message: `Sinf topilmadi: “${cname}”` });
+    if (cname && !cls) return errors.push({ line, message: `Guruh topilmadi: “${cname}”` });
     parsed.push({ username: un.data, displayName: name, studentCode: get("student_code") || null, email, classId: cls?.id ?? null, className: cls?.name ?? "", line });
   });
   if (parsed.length) {

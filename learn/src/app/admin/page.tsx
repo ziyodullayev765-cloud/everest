@@ -24,7 +24,7 @@ export default async function AdminHome() {
       <div className="mb-6 grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-5">
         <StatCard label="O‘quvchilar" value={c.students} icon={<GraduationCap />} hint={<Link className="text-primary hover:underline" href="/admin/students">Boshqarish →</Link>} />
         <StatCard label="O‘qituvchilar" value={c.teachers} icon={<Users />} tone="info" hint={<Link className="text-primary hover:underline" href="/admin/teachers">Boshqarish →</Link>} />
-        <StatCard label="Faol sinflar" value={c.classes} icon={<Layers />} tone="warning" />
+        <StatCard label="Faol guruhlar" value={c.classes} icon={<Layers />} tone="warning" />
         <StatCard label="E’lon qilingan vazifalar" value={c.published} icon={<Send />} tone="success" />
         <StatCard label="Tekshirish kutilmoqda" value={c.pending} icon={<ClipboardCheck />} tone="violet" hint={<Link className="text-primary hover:underline" href="/admin/submissions">Ko‘rish →</Link>} />
       </div>

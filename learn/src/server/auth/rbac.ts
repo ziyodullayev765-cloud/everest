@@ -9,7 +9,7 @@ export type Actor = { id: string; role: Role; permissions: string[]; displayName
 export const PERMISSIONS = {
   "assignments.create": "Vazifa va quiz yaratish",
   "grades.edit_final": "Yakunlangan baholarni o‘zgartirish",
-  "classes.all": "Barcha sinflarga kirish",
+  "classes.all": "Barcha guruhlarga kirish",
   "reports.export": "Hisobotlarni eksport qilish",
 } as const;
 export type Permission = keyof typeof PERMISSIONS;

@@ -1,7 +1,8 @@
 "use client";
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowDown, ArrowUp, Copy, ImagePlus, Library, Lock, Plus, Save, Trash2, X, Check } from "lucide-react";
+import { ArrowDown, ArrowUp, Copy, Download, FileUp, ImagePlus, Library, Lock, Music, Plus, Save, Trash2, X, Check } from "lucide-react";
+import { parseQuestionCsv, QUESTION_CSV_EXAMPLE, type CsvQuestion } from "@/lib/question-csv";
 import { copyFromBankAction, saveQuestionsAction, addToBankAction, assignmentStatusAction } from "@/app/actions/staff";
 import { Card, CardBody } from "@/components/ui/card";
 import { Field, Input, Select, Textarea, Checkbox } from "@/components/ui/form";
@@ -15,10 +16,12 @@ import { uploadFile } from "@/components/app/uploader";
 import { countBlanks } from "@/lib/scoring";
 import { cn } from "@/lib/utils";
 import { t } from "@/lib/i18n";
+import { QUESTION_TYPES } from "@/lib/validation/assignment";
+import { AudioPlayer } from "@/components/app/media";
 
 export type EditQuestion = {
   key: string;
-  type: "single_choice" | "multiple_choice" | "true_false" | "short_answer" | "fill_blank" | "matching" | "essay";
+  type: QuestionType;
   prompt: string;
   points: number;
   explanation: string;
@@ -27,7 +30,14 @@ export type EditQuestion = {
   accepted: string[][];
   caseSensitive: boolean;
   pairs: { left: string; right: string }[];
+  words: string[];
+  direction: "en_uz" | "uz_en" | null;
+  incorrect: string;
+  base: string;
+  audioFileId: string | null;
 };
+
+type QuestionType = (typeof QUESTION_TYPES)[number];
 
 type BankItem = { id: string; type: string; prompt: string; points: number; subjectName: string; ownerName: string };
 
@@ -54,22 +64,30 @@ export function blankQuestion(type: EditQuestion["type"]): EditQuestion {
               { label: "", isCorrect: false },
             ]
           : [],
-    accepted: type === "short_answer" ? [[]] : [],
+    accepted: type === "short_answer" || type === "translation" || type === "grammar_correction" ? [[]] : type === "irregular_verb" ? [[], []] : [],
     caseSensitive: false,
     pairs: type === "matching" ? [{ left: "", right: "" }, { left: "", right: "" }] : [],
+    words: [],
+    direction: type === "translation" ? "en_uz" : null,
+    incorrect: "",
+    base: "",
+    audioFileId: null,
   };
 }
 
 function toPayload(q: EditQuestion) {
   const { key: _k, ...rest } = q;
   void _k;
-  return { ...rest, accepted: rest.accepted.map((a) => a.map((x) => x.trim()).filter(Boolean)) };
+  const accepted = rest.accepted.map((a) => a.map((x) => x.trim()).filter(Boolean));
+  // arrange_words keeps only the alternatives here; the main sentence is `words`.
+  return { ...rest, accepted: rest.type === "arrange_words" ? accepted.slice(0, 1) : accepted, words: rest.words.map((w) => w.trim()).filter(Boolean) };
 }
 
 export function QuestionEditor({ assignmentId, initial, locked, status, bank, subjectId }: { assignmentId: string; initial: EditQuestion[]; locked: boolean; status: string; bank: BankItem[]; subjectId: string }) {
   const [qs, setQs] = useState<EditQuestion[]>(initial);
   const [error, setError] = useState<string | null>(null);
   const [bankOpen, setBankOpen] = useState(false);
+  const [csvOpen, setCsvOpen] = useState(false);
   const [picked, setPicked] = useState<string[]>([]);
   const [pending, start] = useTransition();
   const [dirty, setDirty] = useState(false);
@@ -138,9 +156,14 @@ export function QuestionEditor({ assignmentId, initial, locked, status, bank, su
         <div className="text-[13.5px] text-muted">
           <b className="text-text">{qs.length}</b> ta savol · jami <b className="text-text tabular">{total}</b> ball
         </div>
-        <Button variant="secondary" size="sm" onClick={() => setBankOpen(true)}>
-          <Library /> Savollar bankidan
-        </Button>
+        <div className="flex flex-wrap gap-2">
+          <Button variant="secondary" size="sm" onClick={() => setCsvOpen(true)}>
+            <FileUp /> CSV import
+          </Button>
+          <Button variant="secondary" size="sm" onClick={() => setBankOpen(true)}>
+            <Library /> Savollar bankidan
+          </Button>
+        </div>
       </div>
 
       {qs.length === 0 ? (
@@ -177,7 +200,7 @@ export function QuestionEditor({ assignmentId, initial, locked, status, bank, su
         <CardBody>
           <div className="mb-2 text-[13px] font-medium text-text-2">Savol qo‘shish</div>
           <div className="flex flex-wrap gap-2">
-            {(Object.keys(t.questionType) as EditQuestion["type"][]).map((ty) => (
+            {QUESTION_TYPES.map((ty) => (
               <Button
                 key={ty}
                 variant="secondary"
@@ -207,6 +230,17 @@ export function QuestionEditor({ assignmentId, initial, locked, status, bank, su
           ) : null}
         </div>
       </div>
+
+      <CsvImportDialog
+        open={csvOpen}
+        onClose={() => setCsvOpen(false)}
+        onImport={(list) => {
+          setQs((xs) => [...xs, ...list.map((c) => ({ ...blankQuestion(c.type), ...c, key: key() }))]);
+          setDirty(true);
+          setCsvOpen(false);
+          toast.success(`${list.length} ta savol qo‘shildi — saqlashni unutmang`);
+        }}
+      />
 
       <Dialog
         open={bankOpen}
@@ -263,15 +297,25 @@ export function QuestionEditor({ assignmentId, initial, locked, status, bank, su
             ))}
           </ul>
         ) : (
-          <p className="py-6 text-center text-[13.5px] text-muted">Bu fan bo‘yicha bankda savol yo‘q. Savol kartasidagi “Bankka” tugmasi orqali qo‘shing.</p>
+          <p className="py-6 text-center text-[13.5px] text-muted">Bu kategoriya bo‘yicha bankda savol yo‘q. Savol kartasidagi “Bankka” tugmasi orqali qo‘shing.</p>
         )}
       </Dialog>
     </div>
   );
 }
 
+const PROMPT_HINT: Partial<Record<QuestionType, string>> = {
+  single_choice: "Masalan: Choose the correct form: She ___ to school every day.",
+  translation: "Tarjima qilinadigan gap yoki so‘z.",
+  grammar_correction: "Masalan: Find and correct the mistake.",
+  arrange_words: "Masalan: Put the words in the correct order.",
+  irregular_verb: "Masalan: Write the past forms of the verb.",
+  essay: "Masalan: Write 80–100 words about your last holiday.",
+};
+
 export function QuestionCard({ q, index, count, onChange, onMove, onDelete, onDuplicate, onSaveToBank }: { q: EditQuestion; index: number; count: number; onChange: (p: Partial<EditQuestion>) => void; onMove?: (d: number) => void; onDelete?: () => void; onDuplicate?: () => void; onSaveToBank?: () => void }) {
   const [uploading, setUploading] = useState(false);
+  const [audioUp, setAudioUp] = useState(false);
   const blanks = q.type === "fill_blank" ? countBlanks(q.prompt) : 0;
   const isChoice = q.type === "single_choice" || q.type === "multiple_choice";
   return (
@@ -303,7 +347,7 @@ export function QuestionCard({ q, index, count, onChange, onMove, onDelete, onDu
       </div>
       <CardBody className="space-y-4">
         <div className="grid gap-4 sm:grid-cols-[1fr_120px]">
-          <Field label="Savol matni" hint={q.type === "fill_blank" ? `Bo‘sh joylarni ___ bilan belgilang (topildi: ${blanks})` : "Formula: $x^2$"}>
+          <Field label="Savol matni" hint={q.type === "fill_blank" ? `Bo‘sh joylarni ___ bilan belgilang (topildi: ${blanks})` : PROMPT_HINT[q.type]}>
             <Textarea value={q.prompt} onChange={(e) => onChange({ prompt: e.target.value, ...(q.type === "fill_blank" ? { accepted: Array.from({ length: countBlanks(e.target.value) }, (_, i) => q.accepted[i] ?? []) } : {}) })} rows={3} />
           </Field>
           <Field label="Ball">
@@ -338,6 +382,34 @@ export function QuestionCard({ q, index, count, onChange, onMove, onDelete, onDu
                     toast.error((err as Error).message);
                   } finally {
                     setUploading(false);
+                  }
+                }}
+              />
+            </label>
+          )}
+          {q.audioFileId ? (
+            <div className="flex min-w-0 flex-1 items-center gap-2">
+              <div className="min-w-0 flex-1"><AudioPlayer file={{ id: q.audioFileId, name: "Savol audiosi", size: 0 }} title="Savol audiosi" /></div>
+              <Button variant="ghost" size="icon" onClick={() => onChange({ audioFileId: null })} aria-label="Audioni olib tashlash"><X /></Button>
+            </div>
+          ) : (
+            <label className="inline-flex h-9 cursor-pointer items-center gap-2 rounded-xl border border-dashed border-border-strong px-3 text-[13px] font-medium text-text-2 hover:border-primary hover:text-primary">
+              <Music className="size-4" aria-hidden /> {audioUp ? "Yuklanmoqda…" : "Audio qo‘shish"}
+              <input
+                type="file"
+                hidden
+                accept="audio/mpeg,audio/mp4,audio/x-m4a,audio/wav,audio/ogg,audio/webm,audio/aac"
+                onChange={async (e) => {
+                  const f = e.target.files?.[0];
+                  e.target.value = "";
+                  if (!f) return;
+                  setAudioUp(true);
+                  try {
+                    onChange({ audioFileId: (await uploadFile(f)).id });
+                  } catch (err) {
+                    toast.error((err as Error).message);
+                  } finally {
+                    setAudioUp(false);
                   }
                 }}
               />
@@ -409,6 +481,56 @@ export function QuestionCard({ q, index, count, onChange, onMove, onDelete, onDu
           </div>
         ) : null}
 
+        {q.type === "translation" ? (
+          <div className="space-y-3">
+            <Field label="Yo‘nalish">
+              <Select value={q.direction ?? "en_uz"} onChange={(e) => onChange({ direction: e.target.value as "en_uz" | "uz_en" })}>
+                <option value="en_uz">Inglizchadan o‘zbekchaga</option>
+                <option value="uz_en">O‘zbekchadan inglizchaga</option>
+              </Select>
+            </Field>
+            <Field label="To‘g‘ri tarjimalar" hint="Har birini yangi qatorga yozing. Bo‘sh qoldirsangiz — ustoz qo‘lda baholaydi.">
+              <Textarea rows={3} value={(q.accepted[0] ?? []).join("\n")} onChange={(e) => onChange({ accepted: [e.target.value.split("\n")] })} />
+            </Field>
+          </div>
+        ) : null}
+
+        {q.type === "grammar_correction" ? (
+          <div className="space-y-3">
+            <Field label="Xatosi bor gap" hint="O‘quvchiga shu gap tahrirlash uchun beriladi.">
+              <Input value={q.incorrect} onChange={(e) => onChange({ incorrect: e.target.value })} placeholder="She don't like coffee." />
+            </Field>
+            <Field label="To‘g‘ri variantlar" hint="Har birini yangi qatorga yozing.">
+              <Textarea rows={2} value={(q.accepted[0] ?? []).join("\n")} onChange={(e) => onChange({ accepted: [e.target.value.split("\n")] })} placeholder="She doesn't like coffee." />
+            </Field>
+          </div>
+        ) : null}
+
+        {q.type === "arrange_words" ? (
+          <div className="space-y-3">
+            <Field label="To‘g‘ri gap" hint={`O‘quvchiga so‘zlar aralashtirib beriladi (${q.words.length} ta so‘z).`}>
+              <Input value={q.words.join(" ")} onChange={(e) => onChange({ words: e.target.value.split(/\s+/) })} placeholder="I have never been to London" />
+            </Field>
+            <Field label="Boshqa to‘g‘ri tartiblar (ixtiyoriy)" hint="Har birini yangi qatorga yozing.">
+              <Textarea rows={2} value={(q.accepted[0] ?? []).join("\n")} onChange={(e) => onChange({ accepted: [e.target.value.split("\n")] })} />
+            </Field>
+          </div>
+        ) : null}
+
+        {q.type === "irregular_verb" ? (
+          <div className="grid gap-3 sm:grid-cols-3">
+            <Field label="Asosiy shakl (V1)">
+              <Input value={q.base} onChange={(e) => onChange({ base: e.target.value })} placeholder="go" />
+            </Field>
+            <Field label="Past Simple (V2)" hint="Vergul bilan: was, were">
+              <Input value={(q.accepted[0] ?? []).join(", ")} onChange={(e) => onChange({ accepted: [e.target.value.split(","), q.accepted[1] ?? []] })} placeholder="went" />
+            </Field>
+            <Field label="Past Participle (V3)" hint="Vergul bilan">
+              <Input value={(q.accepted[1] ?? []).join(", ")} onChange={(e) => onChange({ accepted: [q.accepted[0] ?? [], e.target.value.split(",")] })} placeholder="gone" />
+            </Field>
+          </div>
+        ) : null}
+
         {q.type === "essay" ? <p className="text-[12.5px] text-muted">Erkin javoblar o‘qituvchi tomonidan qo‘lda baholanadi.</p> : null}
 
         <Field label="Tushuntirish (natijada ko‘rsatiladi)">
@@ -428,5 +550,54 @@ export function QuestionTypeSelect({ value, onChange }: { value: string; onChang
         </option>
       ))}
     </Select>
+  );
+}
+
+function CsvImportDialog({ open, onClose, onImport }: { open: boolean; onClose: () => void; onImport: (q: CsvQuestion[]) => void }) {
+  const [text, setText] = useState("");
+  const parsed = text.trim() ? parseQuestionCsv(text) : null;
+  const template = () => {
+    const url = URL.createObjectURL(new Blob(["\ufeff" + QUESTION_CSV_EXAMPLE], { type: "text/csv;charset=utf-8" }));
+    const a = Object.assign(document.createElement("a"), { href: url, download: "savollar-namuna.csv" });
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+  return (
+    <Dialog
+      open={open}
+      onClose={onClose}
+      title="Savollarni CSV’dan import qilish"
+      description="Ustunlar: type, prompt, points, options, answers, extra, explanation. Namunani yuklab, to‘ldiring."
+      footer={
+        <>
+          <Button variant="secondary" onClick={onClose}>Bekor qilish</Button>
+          <Button disabled={!parsed || !parsed.questions.length || parsed.errors.length > 0} onClick={() => parsed && onImport(parsed.questions)}>
+            Qo‘shish{parsed?.questions.length ? ` (${parsed.questions.length})` : ""}
+          </Button>
+        </>
+      }
+    >
+      <div className="space-y-3">
+        <div className="flex flex-wrap gap-2">
+          <Button variant="secondary" size="sm" onClick={template}><Download /> Namuna CSV</Button>
+          <label className="inline-flex h-8 cursor-pointer items-center gap-1.5 rounded-lg border border-border bg-surface px-3 text-[13px] font-medium hover:bg-surface-2">
+            <FileUp className="size-4" aria-hidden /> Fayl tanlash
+            <input type="file" accept=".csv,text/csv" hidden onChange={async (e) => { const f = e.target.files?.[0]; e.target.value = ""; if (f) setText(await f.text()); }} />
+          </label>
+        </div>
+        <Textarea rows={7} value={text} onChange={(e) => setText(e.target.value)} placeholder={QUESTION_CSV_EXAMPLE.split("\n").slice(0, 3).join("\n")} aria-label="CSV matni" className="font-mono text-[12.5px]" spellCheck={false} />
+        {parsed ? (
+          parsed.errors.length ? (
+            <Alert tone="danger" title={`${parsed.errors.length} ta xato — tuzatib qayta urining`}>
+              <ul className="max-h-40 space-y-0.5 overflow-y-auto text-[12.5px]">
+                {parsed.errors.map((e, i) => <li key={i}>{e.line}-qator: {e.message}</li>)}
+              </ul>
+            </Alert>
+          ) : (
+            <Alert tone="success">{parsed.questions.length} ta savol tayyor.</Alert>
+          )
+        ) : null}
+      </div>
+    </Dialog>
   );
 }

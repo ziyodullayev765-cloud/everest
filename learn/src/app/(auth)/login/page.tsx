@@ -25,7 +25,7 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
       <details className="group mt-8 rounded-xl border border-border bg-surface px-4 py-3 text-[13.5px]">
         <summary className="cursor-pointer list-none font-medium text-text-2 marker:hidden">Parolni unutdingizmi?</summary>
         <p className="mt-2 leading-relaxed text-muted">
-          Xavfsizlik uchun parolni faqat maktab ma’muriyati tiklaydi. Sinf rahbaringiz yoki administratorga murojaat qiling — ular sizga bir martalik tiklash havolasini beradi.
+          Xavfsizlik uchun parolni faqat kurs administratori tiklaydi. Ustozingiz yoki administratorga murojaat qiling — ular sizga bir martalik tiklash havolasini beradi.
         </p>
       </details>
       <p className="mt-6 text-center text-[13px] text-muted">

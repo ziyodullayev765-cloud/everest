@@ -12,6 +12,7 @@ import { toast } from "@/components/ui/toast";
 import { useOnline } from "@/components/app/pwa";
 import { cn } from "@/lib/utils";
 import { t } from "@/lib/i18n";
+import { AudioPlayer } from "@/components/app/media";
 
 type Answer = { optionId?: string; optionIds?: string[]; text?: string; blanks?: string[]; matches?: Record<string, string> } | null;
 type SaveState = "idle" | "saving" | "saved" | "error";
@@ -38,15 +39,19 @@ function isAnswered(q: PublicQuestion, a: Answer) {
       return !!a.optionIds?.length;
     case "short_answer":
     case "essay":
+    case "translation":
+    case "grammar_correction":
+    case "arrange_words":
       return !!a.text?.trim();
     case "fill_blank":
+    case "irregular_verb":
       return !!a.blanks?.some((b) => b?.trim());
     case "matching":
       return Object.values(a.matches ?? {}).some(Boolean);
   }
 }
 
-const TEXT_TYPES = new Set(["short_answer", "essay", "fill_blank"]);
+const TEXT_TYPES = new Set(["short_answer", "essay", "fill_blank", "translation", "grammar_correction", "irregular_verb"]);
 
 export function QuizPlayer(p: Props) {
   const router = useRouter();
@@ -227,6 +232,11 @@ export function QuizPlayer(p: Props) {
         {q.imageFileId ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img src={`/api/files/${q.imageFileId}`} alt="Savol rasmi" className="mt-4 max-h-80 w-full rounded-xl border border-border bg-surface-2 object-contain" />
+        ) : null}
+        {q.audioFileId ? (
+          <div className="mt-4">
+            <AudioPlayer file={{ id: q.audioFileId, name: "Audio", size: 0 }} title="Tinglang" />
+          </div>
         ) : null}
         <div className="mt-5">
           <QuestionInput q={q} value={answers[q.id] ?? null} onChange={(a) => setAnswer(q, a)} />
@@ -427,6 +437,41 @@ function QuestionInput({ q, value, onChange }: { q: PublicQuestion; value: Answe
         </div>
       );
     }
+    case "translation":
+      return (
+        <div className="space-y-2">
+          <p className="text-[12.5px] font-medium text-muted">{q.direction === "uz_en" ? "O‘zbekchadan inglizchaga tarjima qiling" : "Inglizchadan o‘zbekchaga tarjima qiling"}</p>
+          <Textarea value={value?.text ?? ""} onChange={(e) => onChange({ text: e.target.value })} placeholder="Tarjimangiz…" rows={3} maxLength={2000} aria-label="Tarjima" spellCheck={false} />
+        </div>
+      );
+    case "grammar_correction":
+      return (
+        <div className="space-y-2">
+          <div className="rounded-xl bg-danger-soft/60 px-4 py-3 text-[15.5px] text-text-2">{q.incorrect}</div>
+          <p className="text-[12.5px] text-muted">Xatoni toping va gapni to‘g‘ri yozing:</p>
+          <Textarea value={value?.text ?? q.incorrect} onChange={(e) => onChange({ text: e.target.value })} rows={2} maxLength={1000} aria-label="To‘g‘ri gap" spellCheck={false} />
+        </div>
+      );
+    case "arrange_words":
+      return <ArrangeWords tokens={q.tokens} value={value?.text ?? ""} onChange={(text) => onChange({ text })} />;
+    case "irregular_verb": {
+      const b = value?.blanks ?? ["", ""];
+      const set = (i: number, v: string) => onChange({ blanks: [i === 0 ? v : (b[0] ?? ""), i === 1 ? v : (b[1] ?? "")] });
+      return (
+        <div className="grid gap-3 sm:grid-cols-3">
+          <div className="rounded-xl bg-surface-2 px-4 py-3">
+            <div className="text-[11.5px] font-medium text-muted">V1 · Base form</div>
+            <div className="mt-1 text-[18px] font-semibold">{q.base}</div>
+          </div>
+          {["V2 · Past Simple", "V3 · Past Participle"].map((label, i) => (
+            <label key={label} className="block rounded-xl border border-border px-4 py-2.5">
+              <span className="text-[11.5px] font-medium text-muted">{label}</span>
+              <input value={b[i] ?? ""} onChange={(e) => set(i, e.target.value)} maxLength={60} autoComplete="off" autoCapitalize="none" spellCheck={false} className="mt-1 block w-full bg-transparent text-[18px] font-semibold outline-none" />
+            </label>
+          ))}
+        </div>
+      );
+    }
     case "matching": {
       const m = value?.matches ?? {};
       return (
@@ -450,4 +495,60 @@ function QuestionInput({ q, value, onChange }: { q: PublicQuestion; value: Answe
       );
     }
   }
+}
+
+/** Tap words to build the sentence; tap a placed word to send it back. */
+function ArrangeWords({ tokens, value, onChange }: { tokens: string[]; value: string; onChange: (text: string) => void }) {
+  // Rebuild the picked indices from the saved sentence (greedy, handles repeated words).
+  const initial = useMemo(() => {
+    const used = new Set<number>();
+    const picked: number[] = [];
+    for (const w of value.split(/\s+/).filter(Boolean)) {
+      const i = tokens.findIndex((t, j) => t === w && !used.has(j));
+      if (i >= 0) {
+        used.add(i);
+        picked.push(i);
+      }
+    }
+    return picked;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tokens]);
+  const [picked, setPicked] = useState<number[]>(initial);
+  const update = (next: number[]) => {
+    setPicked(next);
+    onChange(next.map((i) => tokens[i]).join(" "));
+  };
+  return (
+    <div className="space-y-4">
+      <div className="flex min-h-14 flex-wrap items-center gap-2 rounded-xl border border-dashed border-border-strong bg-surface-2/60 p-3" aria-label="Siz tuzgan gap">
+        {picked.length ? (
+          picked.map((i, k) => (
+            <button key={`${i}-${k}`} type="button" onClick={() => update(picked.filter((_, j) => j !== k))} className="rounded-lg bg-primary px-3 py-1.5 text-[15px] font-medium text-primary-fg shadow-soft active:scale-95">
+              {tokens[i]}
+            </button>
+          ))
+        ) : (
+          <span className="text-[13px] text-muted">So‘zlarni to‘g‘ri tartibda bosing</span>
+        )}
+      </div>
+      <div className="flex flex-wrap gap-2">
+        {tokens.map((w, i) =>
+          picked.includes(i) ? (
+            <span key={i} className="rounded-lg border border-border px-3 py-1.5 text-[15px] text-transparent select-none" aria-hidden>
+              {w}
+            </span>
+          ) : (
+            <button key={i} type="button" onClick={() => update([...picked, i])} className="rounded-lg border border-border-strong bg-surface px-3 py-1.5 text-[15px] font-medium hover:border-primary active:scale-95">
+              {w}
+            </button>
+          ),
+        )}
+      </div>
+      {picked.length ? (
+        <button type="button" onClick={() => update([])} className="text-[12.5px] font-medium text-muted hover:text-text">
+          Tozalash
+        </button>
+      ) : null}
+    </div>
+  );
 }

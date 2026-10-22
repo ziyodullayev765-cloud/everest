@@ -77,7 +77,7 @@ export function BankManager({ subjects, defaultSubject, items, canDeleteAll }: {
       )}
       <Dialog open={open} onClose={() => setOpen(false)} title="Bankka savol qo‘shish" className="sm:max-w-2xl">
         <div className="mb-4">
-          <Select value={subject} onChange={(e) => setSubject(e.target.value)} aria-label="Fan">
+          <Select value={subject} onChange={(e) => setSubject(e.target.value)} aria-label="Kategoriya">
             {subjects.map((s) => (
               <option key={s.id} value={s.id}>
                 {s.name}

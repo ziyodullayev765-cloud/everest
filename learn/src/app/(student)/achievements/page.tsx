@@ -24,7 +24,7 @@ export default async function AchievementsPage() {
     return (
       <>
         <PageHeader title="Yutuqlar" />
-        <Alert tone="info">{settings.gamification.enabled ? "Siz o‘yin elementlarini profil sozlamalarida o‘chirgansiz." : "Maktab o‘yin elementlarini (XP, nishonlar) o‘chirib qo‘ygan."}</Alert>
+        <Alert tone="info">{settings.gamification.enabled ? "Siz o‘yin elementlarini profil sozlamalarida o‘chirgansiz." : "Kurs o‘yin elementlarini (XP, nishonlar) o‘chirib qo‘ygan."}</Alert>
       </>
     );
   const bests = (

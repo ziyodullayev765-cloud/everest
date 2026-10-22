@@ -149,7 +149,7 @@ export function AssignmentBuilder(p: Props) {
             </div>
             {p.hasWork ? <p className="mt-2 text-[12px] text-muted">O‘quvchilar ishlay boshlagani uchun turini o‘zgartirib bo‘lmaydi.</p> : null}
           </div>
-          <Field label="Fan" htmlFor="subject" required error={errors.subjectId}>
+          <Field label="Kategoriya" htmlFor="subject" required error={errors.subjectId}>
             <Select id="subject" value={v.subjectId} onChange={(e) => set("subjectId", e.target.value)}>
               <option value="">Tanlang…</option>
               {p.subjects.map((s) => (
@@ -254,7 +254,7 @@ export function AssignmentBuilder(p: Props) {
       </Card>
 
       <Card>
-        <CardHeader title="Kimlar uchun" icon={<Users />} description="Sinflar va/yoki alohida o‘quvchilar" />
+        <CardHeader title="Kimlar uchun" icon={<Users />} description="Guruhlar va/yoki alohida o‘quvchilar" />
         <CardBody className="space-y-4">
           {errors.classIds ? <p className="text-[12.5px] text-danger">{errors.classIds}</p> : null}
           <div className="grid gap-2 sm:grid-cols-3">
@@ -267,18 +267,18 @@ export function AssignmentBuilder(p: Props) {
                 <span className="text-[12px] text-muted">{c.students} o‘q.</span>
               </label>
             ))}
-            {!p.classes.length ? <p className="text-[13px] text-muted">Sizga biriktirilgan sinf yo‘q.</p> : null}
+            {!p.classes.length ? <p className="text-[13px] text-muted">Sizga biriktirilgan guruh yo‘q.</p> : null}
           </div>
           <details className="rounded-xl border border-border px-4 py-3" open={v.studentIds.length > 0}>
             <summary className="cursor-pointer text-[13.5px] font-medium">Alohida o‘quvchilar ({v.studentIds.length})</summary>
             <div className="mt-3 space-y-2">
               <div className="relative">
                 <Search className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted" aria-hidden />
-                <Input value={studentQ} onChange={(e) => setStudentQ(e.target.value)} placeholder="Ism yoki sinf bo‘yicha qidirish" className="pl-9" />
+                <Input value={studentQ} onChange={(e) => setStudentQ(e.target.value)} placeholder="Ism yoki guruh bo‘yicha qidirish" className="pl-9" />
               </div>
               <div className="max-h-56 space-y-1 overflow-y-auto">
                 {filteredStudents.map((s) => (
-                  <Checkbox key={s.id} className="rounded-lg px-2 py-1.5 hover:bg-surface-2" checked={v.studentIds.includes(s.id)} onChange={(c) => set("studentIds", c ? [...v.studentIds, s.id] : v.studentIds.filter((x) => x !== s.id))} label={<>{s.displayName} <span className="text-muted">· {s.className || "sinfsiz"}</span></>} />
+                  <Checkbox key={s.id} className="rounded-lg px-2 py-1.5 hover:bg-surface-2" checked={v.studentIds.includes(s.id)} onChange={(c) => set("studentIds", c ? [...v.studentIds, s.id] : v.studentIds.filter((x) => x !== s.id))} label={<>{s.displayName} <span className="text-muted">· {s.className || "guruhsiz"}</span></>} />
                 ))}
               </div>
             </div>
