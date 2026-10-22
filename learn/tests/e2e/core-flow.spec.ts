@@ -5,25 +5,25 @@ test.describe.configure({ mode: "serial" });
 
 const TITLE = `E2E insho ${Date.now().toString(36)}`;
 
-test("admin creates and publishes an assignment for 7-A", async ({ page }) => {
+test("admin creates and publishes an assignment for Intermediate", async ({ page }) => {
   await login(page, "admin");
   await page.goto("/admin/assignments/new");
   await page.getByLabel("Sarlavha").fill(TITLE);
   await page.getByRole("button", { name: /Yozma javob/ }).click();
   await page.getByLabel("Ko‘rsatmalar").fill("Yozgi ta’til haqida 5 gap yozing.");
   await page.getByLabel("Maksimal ball").fill("10");
-  await page.getByRole("checkbox", { name: /7-A/ }).check();
+  await page.getByRole("checkbox", { name: /Intermediate/ }).check();
   await page.getByRole("button", { name: "E’lon qilish" }).last().click();
   await expect(page).toHaveURL(/\/admin\/assignments\/[0-9a-f-]{36}/);
   await expect(page.getByText("E’lon qilingan").first()).toBeVisible();
 });
 
-test("the assignment is visible to a 7-A student but not to a 7-B student", async ({ page }) => {
-  await login(page, "sardor.qodirov"); // 7-B
+test("the assignment is visible to an Intermediate student but not to an Elementary student", async ({ page }) => {
+  await login(page, "sardor.qodirov"); // Elementary
   await page.goto("/assignments");
   await expect(page.getByText(TITLE)).toHaveCount(0);
   await logout(page);
-  await login(page, "ali.valiyev"); // 7-A
+  await login(page, "ali.valiyev"); // Intermediate
   await page.goto("/assignments");
   await expect(page.getByText(TITLE)).toBeVisible();
 });
@@ -44,7 +44,7 @@ test("student submits the work and gets a confirmation", async ({ page }) => {
 });
 
 test("teacher grades it and the student sees the final grade with feedback", async ({ page }) => {
-  await login(page, "t.saidova"); // teaches English in 7-A only — not this admin-created Math work's subject scope
+  await login(page, "t.saidova"); // teaches the Elementary group only — must not see Intermediate work
   await page.goto("/teacher/submissions");
   await expect(page.getByText(TITLE)).toHaveCount(0);
   await logout(page);
@@ -72,14 +72,14 @@ test("teacher grades it and the student sees the final grade with feedback", asy
 test("student takes a quiz and sees the automatic score", async ({ page }) => {
   await login(page, "madina.usmonova");
   await page.goto("/quizzes");
-  await page.getByText("Mashq: o‘nli kasrlar").click();
+  await page.getByText("Practice: Past Simple").click();
   await page.getByRole("button", { name: "Quizni boshlash" }).click();
   await expect(page).toHaveURL(/\/attempt\//);
   // Q1/Q2 order is fixed (no shuffling for this practice set).
-  await page.getByRole("radio", { name: /0,7/ }).click();
+  await page.getByRole("radio", { name: "went" }).click();
   await expect(page.getByText("Saqlandi")).toBeVisible();
   await page.getByRole("button", { name: "Keyingi" }).click();
-  await page.getByRole("textbox", { name: "Javob", exact: true }).fill("1");
+  await page.getByRole("textbox", { name: "Javob", exact: true }).fill("ate");
   await page.getByRole("button", { name: "Yakunlash" }).click();
   await page.getByRole("button", { name: "Ha, topshirish" }).click();
   await expect(page).toHaveURL(/\/results\//);

@@ -15,3 +15,9 @@ export class AppError extends Error {
 export const forbidden = (msg = "Bu amal uchun ruxsat yo‘q.") => new AppError("forbidden", msg);
 export const notFound = (msg = "Topilmadi.") => new AppError("not_found", msg);
 export const invalid = (msg: string, fields?: Record<string, string>) => new AppError("invalid", msg, fields);
+
+/** Postgres unique violation — drizzle wraps driver errors, so check the cause too. */
+export function isUniqueViolation(e: unknown) {
+  const x = e as { code?: string; cause?: { code?: string } };
+  return x?.code === "23505" || x?.cause?.code === "23505";
+}

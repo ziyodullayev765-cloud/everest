@@ -24,13 +24,15 @@ export async function xpTotal(userId: string, ex: Executor = db) {
   return r[0]?.n ?? 0;
 }
 
-/** Distinct local days with learning activity (submissions or finished quizzes). */
+/** Distinct local days with learning activity (submissions, finished quizzes or vocabulary reviews). */
 export async function activeDays(userId: string, ex: Executor = db): Promise<string[]> {
   const rows = await ex.execute<{ d: string }>(sql`
     select distinct to_char((ts at time zone 'Asia/Tashkent')::date, 'YYYY-MM-DD') as d from (
       select v.submitted_at as ts from submission_versions v join submissions s on s.id = v.submission_id where s.student_id = ${userId}
       union all
       select submitted_at from quiz_attempts where student_id = ${userId} and submitted_at is not null
+      union all
+      select reviewed_at from vocab_reviews where student_id = ${userId}
     ) x where ts > now() - interval '400 days'`);
   return rows.map((r) => r.d);
 }

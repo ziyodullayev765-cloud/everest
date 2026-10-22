@@ -309,7 +309,7 @@ describe("analytics reflect real records", () => {
 
     const today = localDay(new Date());
     const r = await studentResults(w.student.id, { from: addDays(today, -29), to: today });
-    expect(r.subjects[0]).toMatchObject({ average: 60, count: 1 });
+    expect(r.areas[0]).toMatchObject({ official: 60, officialCount: 1 });
     expect(r.needsPractice).toHaveLength(0);
     expect(r.punctuality.onTime).toBe(1);
     expect(r.compare.thisWeek.tasks).toBe(1);

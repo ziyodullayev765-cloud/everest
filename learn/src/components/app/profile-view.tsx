@@ -123,7 +123,7 @@ export async function ProfileView({ user }: { user: SessionUser }) {
             canEditName={!isStudent || settings.profile.studentsCanEditDisplayName}
             canEditAvatar={!isStudent || settings.profile.studentsCanEditAvatar}
             gamificationAvailable={isStudent && settings.gamification.enabled}
-            initial={{ displayName: p.displayName, avatarFileId: p.avatarFileId, weeklyTaskGoal: p.weeklyTaskGoal, dailyXpGoal: p.dailyXpGoal, gamificationEnabled: p.gamificationEnabled, notificationPrefs: p.notificationPrefs ?? {} }}
+            initial={{ displayName: p.displayName, avatarFileId: p.avatarFileId, weeklyTaskGoal: p.weeklyTaskGoal, dailyXpGoal: p.dailyXpGoal, dailyGoal: p.dailyGoal, gamificationEnabled: p.gamificationEnabled, notificationPrefs: p.notificationPrefs ?? {} }}
             prefTypes={prefTypes}
           />
 

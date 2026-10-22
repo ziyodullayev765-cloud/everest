@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Award, CheckCircle2, Clock3, Flame, Gauge, Hourglass, Star, Target, Trophy, Zap, ChevronRight, CalendarRange } from "lucide-react";
+import { Award, BookA, CheckCircle2, Clock3, Flame, Gauge, ListTodo, PlayCircle, Target, Trophy, Zap, ChevronRight, CalendarRange } from "lucide-react";
 import { pageUser } from "@/server/auth/guards";
 import { studentDashboard } from "@/server/services/analytics";
 import { ownProfile } from "@/server/services/users";
@@ -13,7 +13,6 @@ import { Card, CardBody, CardHeader } from "@/components/ui/card";
 import { StatCard } from "@/components/ui/page";
 import { EmptyState, Progress, Ring } from "@/components/ui/feedback";
 import { LinkButton } from "@/components/ui/button";
-import { AssignmentBoard } from "@/components/student/assignment-board";
 import { hrefFor } from "@/components/student/assignment-card";
 import { WeeklyActivityChart } from "@/components/student/charts";
 import { AchievementIcon } from "@/components/student/achievement-icon";
@@ -21,13 +20,13 @@ import { AchievementIcon } from "@/components/student/achievement-icon";
 export const metadata: Metadata = { title: "Bosh sahifa" };
 
 const MOTIVATION = [
-  "Kichik qadamlar katta natijalarga olib keladi.",
-  "Bugungi harakat — ertangi ishonch.",
-  "Har bir savol sizni maqsadga yaqinlashtiradi.",
-  "Izchillik — iste’doddan kuchliroq.",
-  "Xato qilish — o‘rganishning bir qismi.",
-  "Bir soatlik diqqat bir kunlik tashvishdan yaxshi.",
-  "Siz o‘ylaganingizdan ham ko‘proq narsaga qodirsiz.",
+  "Little by little, a little becomes a lot. — Oz-ozdan, ko‘p bo‘ladi.",
+  "Practice makes progress. — Mashq natija beradi.",
+  "Every word you learn is yours forever. — Har bir yangi so‘z — sizniki.",
+  "Mistakes are proof that you are trying. — Xato — harakat belgisi.",
+  "Ten minutes a day beats two hours once a week. — Har kuni 10 daqiqa yaxshiroq.",
+  "Don’t stop until you’re proud. — To‘xtamang!",
+  "Small steps every day. — Har kuni kichik qadam.",
 ];
 
 function greeting() {
@@ -38,7 +37,7 @@ function greeting() {
 export default async function StudentHome() {
   const user = await pageUser("student");
   const [profile, settings] = await Promise.all([ownProfile(user.id), getSettings()]);
-  const d = await studentDashboard(user.id, profile.weeklyTaskGoal);
+  const d = await studentDashboard(user.id, profile.weeklyTaskGoal, profile.dailyGoal);
   const gamify = settings.gamification.enabled && profile.gamificationEnabled;
   const firstName = user.displayName.split(" ")[0];
   const dayIdx = Math.floor(Date.now() / 86400000) % MOTIVATION.length;
@@ -73,15 +72,15 @@ export default async function StudentHome() {
               )}
             </p>
           </div>
-          {gamify ? (
-            <div className="flex shrink-0 gap-2">
-              <div className="flex items-center gap-2.5 rounded-2xl border border-border bg-surface px-3.5 py-2.5 shadow-soft">
-                <Flame className={cn("size-5", d.stats.streak ? "text-warning" : "text-muted")} aria-hidden />
-                <div className="leading-tight">
-                  <div className="text-[17px] font-semibold tabular">{d.stats.streak}</div>
-                  <div className="text-[11.5px] text-muted">kunlik seriya</div>
-                </div>
+          <div className="flex shrink-0 gap-2">
+            <div className="flex items-center gap-2.5 rounded-2xl border border-border bg-surface px-3.5 py-2.5 shadow-soft">
+              <Flame className={cn("size-5", d.stats.streak ? "text-warning" : "text-muted")} aria-hidden />
+              <div className="leading-tight">
+                <div className="text-[17px] font-semibold tabular">{d.stats.streak}</div>
+                <div className="text-[11.5px] text-muted">kun ketma-ket</div>
               </div>
+            </div>
+            {gamify ? (
               <Link href="/achievements" className="flex items-center gap-2.5 rounded-2xl border border-border bg-surface px-3.5 py-2.5 shadow-soft hover:border-border-strong">
                 <Zap className="size-5 text-primary" aria-hidden />
                 <div className="leading-tight">
@@ -89,37 +88,47 @@ export default async function StudentHome() {
                   <div className="text-[11.5px] text-muted tabular">{fmtNumber(d.game.xp)} XP</div>
                 </div>
               </Link>
-            </div>
-          ) : null}
+            ) : null}
+          </div>
         </div>
       </section>
 
       {/* Stats */}
-      <section aria-label="Ko‘rsatkichlar" className="grid grid-cols-2 gap-3 md:grid-cols-3 2xl:grid-cols-6">
-        <StatCard label="Bajarilgan" value={d.stats.completed} icon={<CheckCircle2 />} hint="jami vazifalar" />
-        <StatCard label="Kutilmoqda" value={d.stats.pending} icon={<Hourglass />} tone="warning" hint={d.overdue.length ? `${d.overdue.length} tasi muddati o‘tgan` : "barchasi muddatida"} />
-        <StatCard label="O‘rtacha baho" value={fmtPercent(d.stats.averageGrade)} icon={<Star />} tone="info" hint={d.stats.gradedCount ? `${d.stats.gradedCount} ta baho asosida` : "hali baho yo‘q"} />
-        <StatCard label="Quiz aniqligi" value={fmtPercent(d.stats.quizAccuracy)} icon={<Target />} tone="violet" hint="to‘g‘ri javoblar ulushi" />
-        <StatCard label="Haftalik maqsad" value={`${d.stats.weeklyProgress}%`} icon={<Gauge />} tone="success" hint={`${d.stats.weekDone} / ${d.stats.weeklyTaskGoal} ta`} />
-        <StatCard label="O‘qish seriyasi" value={`${d.stats.streak} kun`} icon={<Flame />} tone="warning" hint={`eng yaxshisi: ${d.stats.bestStreak} kun`} />
+      <section aria-label="Ko‘rsatkichlar" className="grid grid-cols-2 gap-3 lg:grid-cols-5">
+        <StatCard label="Vazifalar bajarilishi" value={d.stats.homeworkRate == null ? "—" : `${d.stats.homeworkRate}%`} icon={<CheckCircle2 />} hint={d.overdue.length ? `${d.overdue.length} tasi muddati o‘tgan` : `${d.stats.pending} ta kutilmoqda`} />
+        <StatCard label="Quiz o‘rtachasi" value={fmtPercent(d.stats.quizAverage)} icon={<Target />} tone="violet" hint={d.stats.quizCount ? `${d.stats.quizCount} ta urinish` : "hali quiz yo‘q"} />
+        <StatCard label="O‘rganilgan so‘zlar" value={d.stats.vocabLearned} icon={<BookA />} tone="info" hint={d.stats.vocabDue ? `${d.stats.vocabDue} tasi takrorlashga` : `${d.stats.vocabMastered} tasi puxta`} />
+        <StatCard label="Ketma-ket kunlar" value={`${d.stats.streak} kun`} icon={<Flame />} tone="warning" hint={`eng yaxshisi: ${d.stats.bestStreak} kun`} />
+        <StatCard label="Haftalik maqsad" value={`${d.stats.weeklyProgress}%`} icon={<Gauge />} tone="success" hint={`${d.stats.weekDone} / ${d.stats.weeklyTaskGoal} ta`} className="col-span-2 lg:col-span-1" />
       </section>
 
       <div className="grid grid-cols-1 gap-6 xl:grid-cols-[1fr_360px]">
         <div className="min-w-0 space-y-6">
-          {/* Assignments */}
-          <section>
-            <div className="mb-3 flex items-center justify-between">
-              <h2 className="text-[17px] font-semibold tracking-[-0.01em]">Vazifalarim</h2>
-              <Link href="/assignments" className="inline-flex items-center text-[13px] font-medium text-primary hover:underline">
-                Barchasi <ChevronRight className="size-4" aria-hidden />
-              </Link>
-            </div>
-            <AssignmentBoard rows={d.all} showSearch={false} narrow emptyText="O‘qituvchingiz vazifa e’lon qilganda shu yerda ko‘rinadi." />
-          </section>
+          {/* Today's learning */}
+          <Card>
+            <CardHeader title="Bugungi o‘quv" action={<LinkButton href="/assignments" variant="ghost" size="sm">Barcha vazifalar <ChevronRight /></LinkButton>} />
+            <CardBody className="space-y-1 pt-2">
+              {d.stats.vocabDue ? (
+                <TodayRow href="/vocabulary/session?mode=daily" icon={<BookA />} tone="info" title={`${d.stats.vocabDue} ta so‘zni takrorlash vaqti keldi`} meta="Lug‘at · oraliq takrorlash" cta="Boshlash" />
+              ) : null}
+              {d.unfinished.slice(0, 3).map((a) => (
+                <TodayRow key={a.id} href={hrefFor(a)} icon={<PlayCircle />} tone="warning" title={a.title} meta={`${a.status === "returned" ? "Qayta ishlashga qaytarilgan" : "Boshlangan"} · ${a.subjectName}`} cta="Davom ettirish" />
+              ))}
+              {d.focus
+                .filter((a) => !d.unfinished.includes(a))
+                .slice(0, 4)
+                .map((a) => (
+                  <TodayRow key={a.id} href={hrefFor(a)} icon={<ListTodo />} tone={a.dueAt && remaining(a.dueAt).hours < 24 ? "danger" : "primary"} title={a.title} meta={`${t.assignmentType[a.type]} · ${a.dueAt ? `muddat ${formatDateTime(a.dueAt)}` : "muddatsiz"}`} />
+                ))}
+              {!d.stats.vocabDue && !d.unfinished.length && !d.focus.length ? (
+                <p className="px-2 py-6 text-center text-[13.5px] text-muted">Hozircha bajariladigan ish yo‘q. Lug‘at yoki grammatika bo‘limida mashq qilishingiz mumkin.</p>
+              ) : null}
+            </CardBody>
+          </Card>
 
           {/* Weekly activity */}
           <Card>
-            <CardHeader title="Haftalik faollik" description="So‘nggi 7 kun: bajarilgan ishlar va o‘rtacha ball" />
+            <CardHeader title="Haftalik faollik" description="So‘nggi 7 kun: vazifalar, quizlar, so‘z takrorlash va o‘rtacha ball" />
             <CardBody className="pt-3">
               {d.hasAnyActivity ? (
                 <>
@@ -127,6 +136,7 @@ export default async function StudentHome() {
                   <div className="mt-3 flex flex-wrap gap-x-5 gap-y-1 text-[12.5px] text-muted">
                     <Legend color="var(--chart-1)" label="Vazifalar" />
                     <Legend color="var(--chart-2)" label="Quizlar" />
+                    <Legend color="var(--violet)" label="Lug‘at (10 takrorlash = 1)" />
                     <Legend color="var(--chart-3)" label="O‘rtacha ball, %" line />
                   </div>
                 </>
@@ -139,14 +149,22 @@ export default async function StudentHome() {
 
         <aside className="space-y-6">
           <Card>
-            <CardHeader title="Haftalik maqsad" description="Har dushanba yangilanadi" action={<LinkButton href="/profile#goals" variant="ghost" size="sm">O‘zgartirish</LinkButton>} />
+            <CardHeader title="Kunlik maqsad" description="Vazifa, quiz yoki 10 ta so‘z takrorlash = 1 mashg‘ulot" action={<LinkButton href="/profile#goals" variant="ghost" size="sm">O‘zgartirish</LinkButton>} />
             <CardBody className="flex items-center gap-4">
-              <Ring value={d.stats.weeklyProgress} size={84} stroke={8}>
-                <span className="text-[17px] font-semibold tabular">{d.stats.weeklyProgress}%</span>
+              <Ring value={Math.min(100, (100 * d.stats.todayUnits) / d.stats.dailyGoal)} size={84} stroke={8}>
+                <span className="text-[17px] font-semibold tabular">
+                  {Math.min(d.stats.todayUnits, d.stats.dailyGoal)}/{d.stats.dailyGoal}
+                </span>
               </Ring>
               <div className="text-[13.5px] text-muted">
-                Bu hafta <b className="text-text">{d.stats.weekDone}</b> ta ish bajarildi. Maqsad — <b className="text-text">{d.stats.weeklyTaskGoal}</b> ta.
-                {d.stats.weekDone < d.stats.weeklyTaskGoal ? <> Yana {d.stats.weeklyTaskGoal - d.stats.weekDone} ta qoldi.</> : <> Maqsadga erishdingiz!</>}
+                {d.stats.todayUnits >= d.stats.dailyGoal ? (
+                  <>Bugungi maqsad bajarildi. Ajoyib!</>
+                ) : (
+                  <>
+                    Bugun <b className="text-text">{d.stats.todayUnits}</b> ta mashg‘ulot. Yana <b className="text-text">{d.stats.dailyGoal - d.stats.todayUnits}</b> ta qoldi.
+                  </>
+                )}
+                <div className="mt-1 text-[12px]">Bu hafta: {d.stats.weekDone} / {d.stats.weeklyTaskGoal} ta ish.</div>
               </div>
             </CardBody>
           </Card>
@@ -228,5 +246,21 @@ function Legend({ color, label, line }: { color: string; label: string; line?: b
       <span className={line ? "h-0.5 w-3.5 rounded" : "size-2.5 rounded-[3px]"} style={{ background: color }} aria-hidden />
       {label}
     </span>
+  );
+}
+
+function TodayRow({ href, icon, tone, title, meta, cta }: { href: string; icon: React.ReactNode; tone: "primary" | "info" | "warning" | "danger"; title: string; meta: string; cta?: string }) {
+  const tones = { primary: "bg-primary-soft text-primary", info: "bg-info-soft text-info", warning: "bg-warning-soft text-warning", danger: "bg-danger-soft text-danger" };
+  return (
+    <Link href={href} className="flex items-center gap-3 rounded-xl px-2 py-2.5 hover:bg-surface-2">
+      <span className={cn("grid size-10 shrink-0 place-items-center rounded-xl [&_svg]:size-5", tones[tone])} aria-hidden>
+        {icon}
+      </span>
+      <span className="min-w-0 flex-1">
+        <span className="block truncate text-[14px] font-medium text-text">{title}</span>
+        <span className="block truncate text-[12px] text-muted">{meta}</span>
+      </span>
+      {cta ? <span className="shrink-0 text-[12.5px] font-semibold text-primary">{cta}</span> : <ChevronRight className="size-4 shrink-0 text-muted" aria-hidden />}
+    </Link>
   );
 }

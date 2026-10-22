@@ -11,6 +11,7 @@ import { EmptyState, Progress } from "@/components/ui/feedback";
 import { LinkButton } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar } from "@/components/ui/avatar";
+import { FollowUpCard, RecentQuizzesCard } from "@/components/staff/follow-ups";
 
 export const metadata: Metadata = { title: "Bosh sahifa" };
 
@@ -88,6 +89,8 @@ export default async function TeacherHome() {
           </Card>
         </div>
         <aside className="space-y-6">
+          <FollowUpCard user={user} base="/teacher" />
+          <RecentQuizzesCard user={user} base="/teacher" />
           <Card>
             <CardHeader title="Yaqin muddatlar" icon={<CalendarClock />} />
             <CardBody className="pt-2">

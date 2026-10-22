@@ -31,7 +31,7 @@ test("admin builds homework from the template, links the book and attaches a boa
   await page.getByLabel("Kitob").first().selectOption({ label: BOOK });
   await page.locator('input[type=file][multiple]').first().setInputFiles(fx("board.png"));
   await expect(page.getByText("board.png")).toBeVisible();
-  await page.getByRole("checkbox", { name: /7-A/ }).check();
+  await page.getByRole("checkbox", { name: /Intermediate/ }).check();
   await page.getByRole("button", { name: "E’lon qilish" }).last().click();
   await expect(page).toHaveURL(/\/admin\/assignments\/[0-9a-f-]{36}/);
 });

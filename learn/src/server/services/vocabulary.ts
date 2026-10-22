@@ -3,7 +3,7 @@ import { and, asc, desc, eq, inArray, isNull, sql } from "drizzle-orm";
 import { z } from "zod";
 import { db, schema, type Executor } from "../db";
 import { isAdmin, isStudent, type Actor } from "../auth/rbac";
-import { forbidden, invalid, notFound } from "../errors";
+import { forbidden, invalid, isUniqueViolation, notFound } from "../errors";
 import { audit } from "./audit";
 import { manageableClassIds, studentClassIds } from "./access";
 import { assertTargetsInScope } from "./assignments";
@@ -129,7 +129,7 @@ export async function saveWord(actor: Actor, listId: string, wordId: string | nu
       await db.insert(schema.words).values({ ...v, listId, position: pos });
     }
   } catch (e) {
-    if ((e as { code?: string }).code === "23505") throw invalid(`“${v.english}” bu ro‘yxatda allaqachon bor.`);
+    if (isUniqueViolation(e)) throw invalid(`“${v.english}” bu ro‘yxatda allaqachon bor.`);
     throw e;
   }
   await db.update(schema.wordLists).set({ updatedAt: new Date() }).where(eq(schema.wordLists.id, listId));
@@ -321,7 +321,7 @@ export async function sessionCards(actor: Actor, opts: { mode: SessionMode; list
     .leftJoin(schema.vocabProgress, and(eq(schema.vocabProgress.wordId, schema.words.id), eq(schema.vocabProgress.studentId, actor.id)));
   const live = and(inArray(schema.words.listId, listIds), isNull(schema.words.archivedAt));
   let picked: { w: typeof schema.words.$inferSelect; p: typeof schema.vocabProgress.$inferSelect | null }[] = [];
-  if (opts.mode === "difficult") picked = await base.where(and(live, sql`(${schema.vocabProgress.difficult} or ${schema.vocabProgress.lapses} > 0)`)).orderBy(asc(schema.vocabProgress.dueAt)).limit(limit);
+  if (opts.mode === "difficult") picked = await base.where(and(live, sql`(${schema.vocabProgress.difficult} or ${schema.vocabProgress.lapses} > 0 or (${schema.vocabProgress.reps} = 0 and ${schema.vocabProgress.lastReviewedAt} is not null))`)).orderBy(asc(schema.vocabProgress.dueAt)).limit(limit);
   else if (opts.mode === "favorites") picked = await base.where(and(live, eq(schema.vocabProgress.favorite, true))).orderBy(asc(schema.vocabProgress.dueAt)).limit(limit);
   else {
     const due = opts.mode === "learn" ? [] : await base.where(and(live, sql`${schema.vocabProgress.dueAt} <= now()`)).orderBy(asc(schema.vocabProgress.dueAt)).limit(limit);

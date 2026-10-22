@@ -19,7 +19,7 @@ const PERMS: [string, string][] = [
 
 type U = { id: string; role: string; status: string; username: string; displayName: string; email: string; studentCode: string; permissions: string[] };
 
-export function UserEditor({ user, classes, subjects, memberIds, teaching }: { user: U; classes: { id: string; name: string }[]; subjects: { id: string; name: string }[]; memberIds: string[]; teaching: { id: string; className: string; subjectName: string | null }[] }) {
+export function UserEditor({ user, classes, memberIds, teaching }: { user: U; classes: { id: string; name: string }[]; memberIds: string[]; teaching: { id: string; className: string; subjectName: string | null }[] }) {
   const [f, setF] = useState(user);
   const [members, setMembers] = useState(memberIds);
   const [assign, setAssign] = useState({ classId: classes[0]?.id ?? "" });

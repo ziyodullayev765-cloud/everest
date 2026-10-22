@@ -318,7 +318,7 @@ function MatchBoard({ cards, backHref }: { cards: SessionCard[]; backHref: strin
     return out;
   }, [cards]);
   const [round, setRound] = useState(0);
-  const set = rounds[round] ?? [];
+  const set = useMemo(() => rounds[round] ?? [], [rounds, round]);
   const right = useMemo(() => [...set].sort(() => Math.random() - 0.5), [set]);
   const [left, setLeft] = useState<string | null>(null);
   const [matched, setMatched] = useState<string[]>([]);

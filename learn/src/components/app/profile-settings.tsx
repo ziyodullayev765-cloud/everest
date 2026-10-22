@@ -10,7 +10,7 @@ import { Avatar } from "@/components/ui/avatar";
 import { toast } from "@/components/ui/toast";
 import { uploadFile } from "./uploader";
 
-type Initial = { displayName: string; avatarFileId: string | null; weeklyTaskGoal: number; dailyXpGoal: number; gamificationEnabled: boolean; notificationPrefs: Record<string, boolean> };
+type Initial = { displayName: string; avatarFileId: string | null; weeklyTaskGoal: number; dailyXpGoal: number; dailyGoal: number; gamificationEnabled: boolean; notificationPrefs: Record<string, boolean> };
 
 export function ProfileSettings({ isStudent, canEditName, canEditAvatar, gamificationAvailable, initial, prefTypes }: { isStudent: boolean; canEditName: boolean; canEditAvatar: boolean; gamificationAvailable: boolean; initial: Initial; prefTypes: [string, string][] }) {
   const [v, setV] = useState(initial);
@@ -97,6 +97,9 @@ export function ProfileSettings({ isStudent, canEditName, canEditAvatar, gamific
           <CardHeader title="O‘quv maqsadlari" icon={<Target />} />
           <CardBody className="space-y-4 pt-4">
             <div className="grid gap-4 sm:grid-cols-2">
+              <Field label="Kunlik maqsad (mashg‘ulotlar)" htmlFor="dg" hint="Vazifa, quiz yoki 10 ta so‘z takrorlash = 1 mashg‘ulot. 1–20">
+                <Input id="dg" type="number" inputMode="numeric" min={1} max={20} value={v.dailyGoal} onChange={(e) => setV({ ...v, dailyGoal: Number(e.target.value) })} />
+              </Field>
               <Field label="Haftasiga bajariladigan ishlar" htmlFor="wg" hint="1–100">
                 <Input id="wg" type="number" inputMode="numeric" min={1} max={100} value={v.weeklyTaskGoal} onChange={(e) => setV({ ...v, weeklyTaskGoal: Number(e.target.value) })} />
               </Field>
@@ -109,7 +112,7 @@ export function ProfileSettings({ isStudent, canEditName, canEditAvatar, gamific
             {gamificationAvailable ? (
               <Switch checked={v.gamificationEnabled} onChange={(x) => setV({ ...v, gamificationEnabled: x })} label="XP, darajalar va nishonlarni ko‘rsatish" description="O‘chirsangiz ham baholaringizga ta’sir qilmaydi." />
             ) : null}
-            <Button variant="secondary" loading={pending} onClick={() => save({ weeklyTaskGoal: v.weeklyTaskGoal, dailyXpGoal: v.dailyXpGoal, gamificationEnabled: v.gamificationEnabled })}>
+            <Button variant="secondary" loading={pending} onClick={() => save({ dailyGoal: v.dailyGoal, weeklyTaskGoal: v.weeklyTaskGoal, dailyXpGoal: v.dailyXpGoal, gamificationEnabled: v.gamificationEnabled })}>
               Maqsadlarni saqlash
             </Button>
           </CardBody>

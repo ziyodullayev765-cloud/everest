@@ -17,13 +17,14 @@ export async function makeUser(role: Role, extra: { permissions?: string[]; name
   return { id: u.id, role: u.role, permissions: u.permissions, displayName: u.displayName, username };
 }
 
-export async function makeSubject(name = "Matematika") {
-  const [s] = await db.insert(schema.subjects).values({ name, code: `S${++n}${Date.now().toString(36).slice(-4)}`.toUpperCase() }).returning();
+/** One of the fixed English categories seeded by the migration. */
+export async function makeSubject(code = "GRAMMAR") {
+  const [s] = await db.select().from(schema.subjects).where(sql`${schema.subjects.code} = ${code}`);
   return s;
 }
 
-export async function makeClass(name = "7-A") {
-  const [c] = await db.insert(schema.classes).values({ name: `${name}-${++n}`, academicYear: "2026-2027" }).returning();
+export async function makeClass(name = "Intermediate") {
+  const [c] = await db.insert(schema.classes).values({ name: `${name}-${++n}`, level: "B1" }).returning();
   return c;
 }
 
@@ -31,15 +32,15 @@ export async function enroll(classId: string, studentId: string) {
   await db.insert(schema.classStudents).values({ classId, studentId });
 }
 
-export async function teach(classId: string, teacherId: string, subjectId: string | null = null) {
-  await db.insert(schema.classTeachers).values({ classId, teacherId, subjectId });
+export async function teach(classId: string, teacherId: string) {
+  await db.insert(schema.classTeachers).values({ classId, teacherId });
 }
 
 /** A world with one class, a teacher of that class, a student in it and a student elsewhere. */
 export async function world() {
   const subject = await makeSubject();
   const cls = await makeClass();
-  const other = await makeClass("8-B");
+  const other = await makeClass("Elementary");
   const admin = await makeUser("admin");
   const teacher = await makeUser("teacher", { permissions: ["assignments.create"] });
   const outsiderTeacher = await makeUser("teacher", { permissions: ["assignments.create"] });
@@ -47,15 +48,15 @@ export async function world() {
   const otherStudent = await makeUser("student", { name: "Boshqa O‘quvchi" });
   await enroll(cls.id, student.id);
   await enroll(other.id, otherStudent.id);
-  await teach(cls.id, teacher.id, subject.id);
-  await teach(other.id, outsiderTeacher.id, subject.id);
+  await teach(cls.id, teacher.id);
+  await teach(other.id, outsiderTeacher.id);
   return { subject, cls, other, admin, teacher, outsiderTeacher, student, otherStudent };
 }
 
 export const baseAssignment = (subjectId: string, classIds: string[], over: Record<string, unknown> = {}) => ({
-  title: "Kasrlar ustida amallar",
+  title: "Present Perfect: writing",
   description: "Uy vazifasi",
-  instructions: "1–10 misollarni yeching",
+  instructions: "Write 5 sentences using the Present Perfect.",
   type: "written",
   subjectId,
   publishMode: "now",

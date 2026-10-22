@@ -49,7 +49,7 @@ export default async function VocabularyPage() {
             <h2 className="text-[18px] font-semibold">Bugungi mashg‘ulot</h2>
             <p className="mt-1 text-[14px] text-muted">
               {sessionSize
-                ? `${t.due} ta takrorlash${newToday ? ` va ${newToday} ta yangi so‘z` : ""}.`
+                ? [t.due ? `${t.due} ta takrorlash` : "", newToday ? `${newToday} ta yangi so‘z` : ""].filter(Boolean).join(" va ") + "."
                 : t.reviewedToday
                   ? "Bugungi takrorlashlar bajarildi. Ertaga yangi so‘zlar ochiladi."
                   : "Hozircha takrorlash vaqti kelgan so‘z yo‘q."}

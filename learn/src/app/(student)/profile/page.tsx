@@ -1,9 +1,18 @@
 import type { Metadata } from "next";
 import { pageUser } from "@/server/auth/guards";
 import { ProfileView } from "@/components/app/profile-view";
+import { MoreLinks } from "@/components/student/more-links";
 
 export const metadata: Metadata = { title: "Profil" };
 
 export default async function Page() {
-  return <ProfileView user={await pageUser("student")} />;
+  const user = await pageUser("student");
+  return (
+    <>
+      <div className="mx-auto max-w-4xl">
+        <MoreLinks />
+      </div>
+      <ProfileView user={user} />
+    </>
+  );
 }

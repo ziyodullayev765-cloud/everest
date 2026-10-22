@@ -4,7 +4,7 @@ import { randomBytes } from "node:crypto";
 import { z } from "zod";
 import { db, schema } from "../db";
 import { isAdmin, isStudent, type Actor } from "../auth/rbac";
-import { AppError, forbidden, invalid, notFound } from "../errors";
+import { AppError, forbidden, invalid, isUniqueViolation, notFound } from "../errors";
 import { audit } from "./audit";
 import { manageableClassIds, studentClassIds } from "./access";
 import { notify } from "./notifications";
@@ -78,7 +78,7 @@ export async function setJoinCode(actor: Actor, id: string, enabled: boolean) {
       await audit(actor.id, enabled ? "class.join_code" : "class.join_code_off", "class", id);
       return code;
     } catch (e) {
-      if ((e as { code?: string }).code !== "23505") throw e;
+      if (!isUniqueViolation(e)) throw e;
     }
   }
   throw new AppError("conflict", "Kod yaratilmadi, qayta urinib ko‘ring.");

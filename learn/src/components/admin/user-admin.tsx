@@ -1,7 +1,6 @@
 import type { SessionUser } from "@/server/auth/session";
 import { getUserForAdmin, studentRecord } from "@/server/services/users";
 import { listClasses } from "@/server/services/classes";
-import { subjectsList } from "@/server/services/assignments";
 import { canManageRole } from "@/server/auth/rbac";
 import { orNotFound } from "@/server/auth/guards";
 import { formatDate, formatDateTime } from "@/lib/dates";
@@ -18,7 +17,7 @@ import { UserEditor } from "./user-editor";
 export async function UserAdminPage({ user, id, back }: { user: SessionUser; id: string; back: { href: string; label: string } }) {
   const d = await orNotFound(getUserForAdmin(user, id));
   const u = d.user;
-  const [classes, subjects, record] = await Promise.all([listClasses(user), subjectsList(), u.role === "student" ? studentRecord(user, id) : Promise.resolve(null)]);
+  const [classes, record] = await Promise.all([listClasses(user), u.role === "student" ? studentRecord(user, id) : Promise.resolve(null)]);
   const editable = canManageRole(user, u.role) && u.id !== user.id;
   return (
     <div className="mx-auto max-w-5xl">
@@ -61,7 +60,6 @@ export async function UserAdminPage({ user, id, back }: { user: SessionUser; id:
             <UserEditor
               user={{ id: u.id, role: u.role, status: u.status, username: u.username, displayName: u.displayName, email: u.email ?? "", studentCode: u.studentCode ?? "", permissions: u.permissions }}
               classes={classes.map((c) => ({ id: c.id, name: c.name }))}
-              subjects={subjects.map((s) => ({ id: s.id, name: s.name }))}
               memberIds={d.classes.map((c) => c.id)}
               teaching={d.teaching.map((x) => ({ id: x.id, className: x.className, subjectName: x.subjectName }))}
             />

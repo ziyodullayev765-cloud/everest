@@ -6,7 +6,7 @@ import { canManageRole, isAdmin, PERMISSIONS, type Actor } from "../auth/rbac";
 import { dummyHash, generateTempPassword, hashPassword, passwordProblem, verifyPassword } from "../auth/password";
 import { createSession, destroyAllSessions } from "../auth/session";
 import { keyedHash, randomToken, sha256 } from "../crypto";
-import { AppError, forbidden, invalid, notFound } from "../errors";
+import { AppError, forbidden, invalid, isUniqueViolation, notFound } from "../errors";
 import { parseCsv } from "@/lib/utils";
 import type { Role } from "../db/schema";
 import { audit, clientIp } from "./audit";
@@ -126,9 +126,10 @@ export const userInput = z.object({
 });
 
 function uniqueViolation(e: unknown, fallback: string) {
-  const msg = String((e as { message?: string })?.message ?? "");
-  const code = (e as { code?: string })?.code;
-  if (code === "23505" || msg.includes("duplicate key")) {
+  // drizzle wraps the driver error; the constraint name lives on the cause.
+  const cause = (e as { cause?: { message?: string; constraint_name?: string } })?.cause;
+  const msg = `${cause?.constraint_name ?? ""} ${cause?.message ?? (e as { message?: string })?.message ?? ""}`;
+  if (isUniqueViolation(e) || msg.includes("duplicate key")) {
     if (msg.includes("username")) return invalid("Bu login band.", { username: "Bu login band." });
     if (msg.includes("email")) return invalid("Bu e-pochta band.", { email: "Bu e-pochta band." });
     if (msg.includes("student_code")) return invalid("Bu o‘quvchi ID band.", { studentCode: "Bu o‘quvchi ID band." });
@@ -362,6 +363,7 @@ const profileInput = z.object({
   notificationPrefs: z.record(z.string(), z.boolean()).optional(),
   weeklyTaskGoal: z.coerce.number().int().min(1).max(100).optional(),
   dailyXpGoal: z.coerce.number().int().min(5).max(1000).optional(),
+  dailyGoal: z.coerce.number().int().min(1).max(20).optional(),
   gamificationEnabled: z.boolean().optional(),
 });
 
@@ -391,6 +393,7 @@ export async function ownProfile(userId: string) {
       notificationPrefs: schema.users.notificationPrefs,
       weeklyTaskGoal: schema.users.weeklyTaskGoal,
       dailyXpGoal: schema.users.dailyXpGoal,
+      dailyGoal: schema.users.dailyGoal,
       gamificationEnabled: schema.users.gamificationEnabled,
       createdAt: schema.users.createdAt,
     })

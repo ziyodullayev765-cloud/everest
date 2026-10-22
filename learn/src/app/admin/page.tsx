@@ -11,11 +11,12 @@ import { Progress, Ring } from "@/components/ui/feedback";
 import { LinkButton } from "@/components/ui/button";
 import { ActivityChart } from "@/components/admin/charts";
 import { auditLabel } from "@/components/admin/audit-labels";
+import { FollowUpCard, RecentQuizzesCard } from "@/components/staff/follow-ups";
 
 export const metadata: Metadata = { title: "Umumiy ko‘rinish" };
 
 export default async function AdminHome() {
-  await pageUser("admin", "super_admin");
+  const user = await pageUser("admin", "super_admin");
   const o = await adminOverview();
   const c = o.counts;
   return (
@@ -57,6 +58,8 @@ export default async function AdminHome() {
           </Card>
         </div>
         <aside className="space-y-6">
+          <FollowUpCard user={user} base="/admin" />
+          <RecentQuizzesCard user={user} base="/admin" />
           <Card>
             <CardHeader title="Umumiy bajarilish" description="E’lon qilingan vazifalar bo‘yicha" />
             <CardBody className="flex items-center gap-5">

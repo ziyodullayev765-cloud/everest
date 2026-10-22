@@ -1,8 +1,10 @@
-# Everest Ta’lim — learning platform (PWA)
+# Everest — English course app (PWA)
 
-A mobile-first learning platform for **students, teachers and administrators**: assignments, a full quiz engine,
-grading with an auditable gradebook, weekly analytics, optional gamification, notifications and an installable PWA.
-The interface is in **Uzbek (Latin)**; the i18n layer is ready for English and Russian.
+A mobile-first app for **an English language course**: homework, an English quiz engine, vocabulary with spaced
+repetition, grammar / reading / listening practice, teacher grading and personal progress — installable on phones.
+It is not a school system: there are no school subjects; work is organised by **English categories** (Grammar,
+Vocabulary, Translation EN↔UZ, Reading, Listening, Writing, …) and **course groups** with configurable levels.
+The interface is in **Uzbek (Latin)**; learning content is English with Uzbek explanations.
 
 This app lives in `learn/` and is independent of the portfolio site at the repository root (separate
 `package.json`, database and deployment).
@@ -31,36 +33,31 @@ This app lives in `learn/` and is independent of the portfolio site at the repos
 
 ## What’s included
 
-### Students (bottom tabs on phones: Bosh sahifa · Vazifalar · Quizlar · Natijalar · Profil)
+### Students (bottom tabs on phones: Bosh sahifa · Vazifalar · Lug‘at · Quizlar · Profil)
 
-| Route                                  | Purpose                                                                                                                                                                           |
-| -------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `/`                                    | Greeting, date, motivation, today summary; 6 stat cards (completed, pending, average grade, quiz accuracy, weekly goal %, streak); filterable assignments; 7-day activity chart; deadlines; achievements |
-| `/assignments`, `/assignments/[id]`    | All work with subject/status/deadline filters; details with instructions, attachments, links, rubric, grade, feedback                                                             |
-| `/assignments/[id]/submit`             | Written answer and/or files, autosaved draft, confirmation dialog, timestamped confirmation                                                                                       |
-| `/quizzes`, `/quizzes/[id]`            | Quiz list + attempt history; overview with rules, attempts left, start/resume                                                                                                     |
-| `/quizzes/[id]/attempt/[attemptId]`    | One question at a time, progress, optional overview grid, server-synced countdown, autosave with retry, confirm-before-submit, auto-submit on expiry                             |
-| `/quizzes/[id]/results/[attemptId]`    | Score, %, pass/fail, correct/incorrect, per-question review and explanations — **only as the quiz’s review settings allow**                                                       |
-| `/grades`                              | Grades by subject, provisional vs final, feedback indicator, grading scale                                                                                                        |
-| `/results` (Natijalar)                 | 7d/30d/3m/1y filters; this week vs last week; average by subject; completed vs assigned; quiz accuracy; trend; punctuality; strong subjects / needs practice; goals            |
-| `/achievements`                        | XP, level, streaks, personal bests, badge gallery, transparent XP rules                                                                                                           |
-| `/classes`, `/classes/[id]`            | Classes, teachers, announcements, class challenges (aggregate only); join by code                                                                                                 |
-| `/profile`, `/notifications`           | Profile (fields editable per admin policy), goals, notification preferences, theme, password                                                                                     |
+| Route | Purpose |
+| --- | --- |
+| `/` | Greeting, date, motivation, streak; homework completion, quiz average, words learned, streak, weekly goal (all from stored records); today’s learning (words due, unfinished work, new/due tasks); 7-day chart (tasks, quizzes, word reviews); daily goal without penalties |
+| `/assignments`, `/assignments/[id]`, `/assignments/[id]/submit` | Homework lists (Barron’s, BBC tapescript…), written work, files; reading text with a glossary from the student’s own word lists; listening audio with optional play limit and transcript per the teacher’s setting |
+| `/quizzes/…` | One question at a time, timer, autosave, confirm-before-submit. Types: single/multi choice, true/false, fill in blanks, short answer, **translation EN↔UZ, grammar correction, arrange words, irregular verbs**, matching, essay, image/audio prompts. Results show score, review per settings, time taken and earlier attempts |
+| `/vocabulary` | Daily session (due reviews + limited new words), flashcards, EN→UZ choice, UZ→EN spelling, matching; favourite / difficult words; pronunciation audio (or the browser’s voice, labelled); SM-2-style scheduling — a word is “mastered” only after repeated spaced successes |
+| `/grammar`, `/reading`, `/listening` | Practice by level and topic; grammar topic mastery from real attempts |
+| `/results` (Natijalarim) | Completion, quiz average, official grades vs practice scores per area, vocabulary progress, recent grades, missed deadlines, this week vs last week, daily activity |
+| `/tutor` | Optional AI tutor (only when `ANTHROPIC_API_KEY` is set): explains grammar/mistakes in Uzbek, writing feedback, extra practice; daily limit; answers marked AI-generated; no access to grades |
+| `/grades`, `/library`, `/classes`, `/notifications`, `/profile` | Grades, books (PDF reader, audio), groups, notifications, goals and settings |
 
 ### Teachers (`/teacher`)
 
-Dashboard (pending reviews, recent submissions, completion per assignment, deadlines) · submission queue with
-filters · grading screen (written work with rubric, late penalty, feedback, return for revision, version history;
-quizzes with per-question review and manual grading) · assignment & quiz builder · question bank · gradebook with
-CSV export · class pages with announcements and class challenges · student records (own subjects only).
+Dashboard (pending reviews, students needing follow-up, recent quizzes, completion, deadlines) · submission queue
+· grading (rubric, feedback, return for revision, history) · assignment & quiz builder (categories, level, topic,
+reading text, listening audio + transcript, question CSV import, preview) · question bank · **vocabulary lists**
+(CSV import with duplicate detection, assignment to groups/students, review activity) · gradebook + CSV export ·
+groups and student records — only for the teacher’s own groups.
 
 ### Administrators (`/admin`)
 
-Overview (students, teachers, classes, published, pending, activity, completion, recent actions) · student
-management (create, edit, deactivate/reactivate, classes, one-time reset links, **CSV import**) · staff management
-(roles, permissions, class/subject assignments, activity) · classes (create, edit, archive, join codes, enrolment,
-teachers) · subjects · all teacher tools across every class · platform settings (branding, grading scale, XP rules,
-languages, assignment defaults, profile policy, notification templates) · audit log.
+Everything teachers have, for all groups, plus students (create, CSV import, deactivate, groups), teachers, groups
+(level, description, join code, enrolment, teachers), library, settings and audit log.
 
 ### Other pages
 
@@ -224,6 +221,9 @@ npm run dev                         # http://localhost:3100
 | `MAX_UPLOAD_BYTES`   |          | Default 4 MB (Vercel caps function bodies at ~4.5 MB).                                                            |
 | `DATABASE_POOL_MAX`  |          | Default 5 connections per instance.                                                                              |
 | `DATABASE_PREPARE`   |          | `true` only for direct (non-pgbouncer) connections.                                                              |
+| `BLOB_READ_WRITE_TOKEN` |       | Vercel Blob (private) for large files — book PDFs, audio. Without it files go to Postgres (4 MB limit).          |
+| `ANTHROPIC_API_KEY`  |          | Enables the optional AI tutor (server-side only). Without it the tutor is shown as unavailable.                 |
+| `TUTOR_DAILY_LIMIT`  |          | AI questions per student per 24 h (default 20).                                                                  |
 
 Nothing secret is exposed to the browser: there are **no** `NEXT_PUBLIC_*` variables.
 
@@ -379,8 +379,11 @@ Stated plainly so nothing is mistaken for working when it isn’t:
   Neither is configured or claimed.
 - **English and Russian:** the i18n architecture, dictionaries and settings switch exist, but only navigation is
   translated so far, and most page copy is still inline Uzbek. Enable a language only after translating it.
-- **File storage is in PostgreSQL** (4 MB per file by default). Fine for a school; for large volumes, move
-  `services/files.ts` to S3/R2 (needs credentials).
+- **AI tutor** is optional and only works after `ANTHROPIC_API_KEY` is configured; it never changes grades.
+- **Listening play limits** are counted in the student’s browser — they guide practice but are not a hard security
+  control.
+- **Pronunciation**: uploaded audio where the teacher added it; otherwise the browser’s built-in voice (labelled),
+  which depends on the device.
 - **Scheduled publication** happens lazily (within ~30 s of any student opening the app) and through `/api/cron`;
   publication notifications for scheduled items are sent at that point, not at the exact minute if nobody is online
   and no cron is configured.
