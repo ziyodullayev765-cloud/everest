@@ -83,29 +83,29 @@ export default async function StudentHome() {
               )}
             </p>
           </div>
-          <div className="grid shrink-0 grid-cols-3 gap-2 sm:flex [&>*]:min-w-0 [&>*]:whitespace-nowrap">
-            <div className="flex items-center gap-2 rounded-3xl border-2 border-border bg-surface px-3 py-2.5 shadow-soft">
+          <div className="grid shrink-0 grid-cols-3 gap-2 sm:flex [&>*]:min-w-0">
+            <div className="flex items-center gap-1.5 rounded-3xl border-2 border-border bg-surface px-2.5 py-2 shadow-soft">
               <Flame className={cn("size-5 shrink-0", d.stats.streak ? "text-warning" : "text-muted")} aria-hidden />
               <div className="leading-tight">
-                <div className="text-[17px] font-bold tabular">{d.stats.streak}</div>
-                <div className="truncate text-[11.5px] text-muted">{tr("kun ketma-ket")}</div>
+                <div className="text-[15px] leading-tight font-bold whitespace-nowrap tabular">{tr("{0} kun", d.stats.streak)}</div>
+                <div className="text-[11px] leading-tight whitespace-nowrap text-muted">{tr("seriya")}</div>
               </div>
             </div>
             {gamify ? (
-              <Link href="/achievements" className="flex items-center gap-2 rounded-3xl border-2 border-border bg-surface px-3 py-2.5 shadow-soft hover:border-border-strong">
+              <Link href="/achievements" className="flex items-center gap-1.5 rounded-3xl border-2 border-border bg-surface px-2.5 py-2 shadow-soft hover:border-border-strong">
                 <Zap className="size-5 shrink-0 text-primary" aria-hidden />
                 <div className="leading-tight">
-                  <div className="text-[17px] font-bold tabular">{tr("{0}-daraja", d.game.level.level)}</div>
-                  <div className="text-[11.5px] text-muted tabular">{tr("{0} XP", fmtNumber(d.game.xp))}</div>
+                  <div className="text-[15px] leading-tight font-bold whitespace-nowrap tabular">{tr("{0}-daraja", d.game.level.level)}</div>
+                  <div className="text-[11px] leading-tight text-muted tabular">{tr("{0} XP", fmtNumber(d.game.xp))}</div>
                 </div>
               </Link>
             ) : null}
             {gamify && best ? (
-              <Link href={`/leaderboard?g=${best.classId}`} className="flex items-center gap-2 rounded-3xl border-2 border-border bg-surface px-3 py-2.5 shadow-soft hover:border-border-strong">
+              <Link href={`/leaderboard?g=${best.classId}`} className="flex items-center gap-1.5 rounded-3xl border-2 border-border bg-surface px-2.5 py-2 shadow-soft hover:border-border-strong">
                 <Trophy className="size-5 shrink-0 text-[#f5b50b]" aria-hidden />
                 <div className="leading-tight">
-                  <div className="text-[17px] font-bold tabular">{tr("{0}-o‘rin", best.place)}</div>
-                  <div className="truncate text-[11.5px] text-muted">{tr("{0} kishidan", best.of)}</div>
+                  <div className="text-[15px] leading-tight font-bold whitespace-nowrap tabular">{tr("{0}-o‘rin", best.place)}</div>
+                  <div className="text-[11px] leading-tight text-muted">{tr("{0} kishidan", best.of)}</div>
                 </div>
               </Link>
             ) : null}
@@ -153,7 +153,7 @@ export default async function StudentHome() {
                 .filter((a) => !d.unfinished.includes(a))
                 .slice(0, 4)
                 .map((a) => (
-                  <TodayRow key={a.id} href={hrefFor(a)} icon={<ListTodo />} tone={a.dueAt && remaining(a.dueAt).hours < 24 ? "danger" : "primary"} title={a.title} meta={`${t.assignmentType[a.type]} · ${a.dueAt ? `muddat ${formatDateTime(a.dueAt)}` : tr("muddatsiz")}`} />
+                  <TodayRow key={a.id} href={hrefFor(a)} icon={<ListTodo />} tone={a.dueAt && remaining(a.dueAt).hours < 24 ? "danger" : "primary"} title={a.title} meta={`${t.assignmentType[a.type]} · ${a.dueAt ? tr("muddat {0}", formatDateTime(a.dueAt)) : tr("muddatsiz")}`} />
                 ))}
               {!d.stats.vocabDue && !d.unfinished.length && !d.focus.length ? (
                 <p className="px-2 py-6 text-center text-[13.5px] text-muted">{tr("Hozircha bajariladigan ish yo‘q. Lug‘at yoki grammatika bo‘limida mashq qilishingiz mumkin.")}</p>

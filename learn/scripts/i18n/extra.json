@@ -72,7 +72,7 @@
  "kech": "late",
  "kechikkan": "late",
  "keyingi: {0}": "next: {0}",
- "kun ketma-ket": "days in a row",
+ "kun ketma-ket": "day streak",
  "muddatsiz": "no deadline",
  "natija": "result",
  "tanlanmagan": "not chosen",
@@ -80,7 +80,7 @@
  "va": "and",
  "{0} ta so‘z qo‘shildi{1}": "{0} words added{1}",
  "{0} {1} da topshirilgan{2}": "{0} submitted {1}{2}",
- "{0}-daraja": "Level {0}",
+ "{0}-daraja": "Lvl {0}",
  "{0}-qator: {1}": "Line {0}: {1}",
  "{0}-savol": "Question {0}",
  "eng yaxshisi: {0} kun": "best: {0} days",
@@ -139,7 +139,7 @@
  "Shu hafta: {0}. Har dushanba 1–3-o‘rin egalari medal oladi.": "This week: {0}. Every Monday places 1–3 get a medal.",
  "Siz {0}-o‘rindasiz": "You’re in place {0}",
  "{0} o‘quvchidan · {1} ball": "of {0} students · {1} points",
- "{0}-o‘rin": "Place {0}",
+ "{0}-o‘rin": "#{0}",
  "Bu hafta hali hech kim ball to‘plamagan. Birinchi bo‘ling!": "Nobody has scored this week yet. Be the first!",
  "siz": "you",
  "O‘tgan hafta g‘oliblari": "Last week’s winners",
@@ -147,5 +147,8 @@
  "{0}: {1}-o‘rin": "{0}: place {1}",
  "Medallar": "Medals",
  "{0} dan": "of {0}",
- "{0} kishidan": "of {0}"
+ "{0} kishidan": "of {0}",
+ "muddat {0}": "due {0}",
+ "Yangilanmoqda": "Refreshing…",
+ "seriya": "streak"
 }

@@ -43,8 +43,8 @@ export async function AssignmentListPage({ user, base, sp }: { user: SessionUser
       <FilterBar
         fields={[
           { name: "q", type: "search", placeholder: tr("Sarlavha bo‘yicha qidirish") },
-          { name: "status", label: tr("Holat"), options: [["", tr("Faol (arxivsiz)")], ["draft", "Qoralama"], ["scheduled", "Rejalashtirilgan"], ["published", tr("E’lon qilingan")], ["archived", "Arxiv"]] },
-          { name: "type", label: tr("Turi"), options: [["", tr("Barcha turlar")], ["work", "Vazifalar"], ["quiz", "Quizlar"]] },
+          { name: "status", label: tr("Holat"), options: [["", tr("Faol (arxivsiz)")], ["draft", tr("Qoralama")], ["scheduled", tr("Rejalashtirilgan")], ["published", tr("E’lon qilingan")], ["archived", tr("Arxiv")]] },
+          { name: "type", label: tr("Turi"), options: [["", tr("Barcha turlar")], ["work", tr("Vazifalar")], ["quiz", tr("Quizlar")]] },
           { name: "subject", label: tr("Kategoriya"), options: [["", tr("Barcha kategoriyalar")], ...subjects.map((s) => [s.id, s.name] as [string, string])] },
         ]}
       />
@@ -240,7 +240,7 @@ export async function EditAssignmentPage({ user, base, id, tab }: { user: Sessio
       {quiz ? (
         <nav className="mb-5 inline-flex rounded-xl border border-border bg-surface-2 p-1" aria-label={tr("Bo‘limlar")}>
           {[
-            ["details", "Sozlamalar"],
+            ["details", tr("Sozlamalar")],
             ["questions", tr("Savollar ({0})", e.questions.length)],
           ].map(([k, l]) => (
             <Link key={k} href={`${base}/assignments/${a.id}${k === "questions" ? "?tab=questions" : ""}`} className={cn("rounded-lg px-4 py-1.5 text-[13.5px] font-semibold text-muted", current === k && "bg-surface text-text shadow-soft")} aria-current={current === k ? "page" : undefined}>

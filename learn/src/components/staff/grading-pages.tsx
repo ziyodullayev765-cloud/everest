@@ -41,7 +41,7 @@ export async function SubmissionsPage({ user, base, sp }: { user: SessionUser; b
       <FilterBar
         fields={[
           { name: "q", type: "search", placeholder: tr("O‘quvchi yoki vazifa") },
-          { name: "status", label: tr("Holat"), options: [["pending", tr("Tekshirilishi kerak")], ["graded", tr("Yakuniy baholangan")], ["returned", "Qaytarilgan"], ["all", "Barchasi"]] },
+          { name: "status", label: tr("Holat"), options: [["pending", tr("Tekshirilishi kerak")], ["graded", tr("Yakuniy baholangan")], ["returned", tr("Qaytarilgan")], ["all", tr("Barchasi")]] },
           { name: "class", label: tr("Guruh"), options: [["", tr("Barcha guruhlar")], ...classes.map((c) => [c.id, c.name] as [string, string])] },
           { name: "subject", label: tr("Kategoriya"), options: [["", tr("Barcha kategoriyalar")], ...subjects.map((s) => [s.id, s.name] as [string, string])] },
         ]}

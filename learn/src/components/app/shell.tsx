@@ -1,5 +1,6 @@
 "use client";
 import Link from "next/link";
+import { PullToRefresh } from "./pull-to-refresh";
 import { clearSavedFiles } from "@/lib/offline";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -216,6 +217,7 @@ export function AppShell({ appName, logoFileId, areaLabel, sections, tabs, user,
         </div>
       </div>
 
+      <PullToRefresh />
       <main id="main" className={cn("mx-auto w-full max-w-[1180px] px-4 pt-5 sm:px-6 lg:px-10 lg:pt-9", tabs ? "pb-nav" : "pb-10")}>
         {children}
       </main>

@@ -28,7 +28,7 @@ export async function WordListsPage({ user, base, sp }: { user: SessionUser; bas
       <FilterBar
         fields={[
           { name: "q", type: "search", placeholder: tr("Ro‘yxat nomi") },
-          { name: "status", label: tr("Holat"), options: [["", "Faol"], ["draft", "Qoralama"], ["published", tr("E’lon qilingan")], ["archived", "Arxiv"]] },
+          { name: "status", label: tr("Holat"), options: [["", tr("Faol")], ["draft", tr("Qoralama")], ["published", tr("E’lon qilingan")], ["archived", tr("Arxiv")]] },
         ]}
       />
       {rows.length ? (
@@ -70,8 +70,8 @@ export async function WordListDetailPage({ user, base, id, tab }: { user: Sessio
   const current = tab === "assign" || tab === "activity" ? tab : "words";
   const tabs = [
     ["words", tr("So‘zlar ({0})", d.words.length)],
-    ["assign", "Biriktirish"],
-    ["activity", "Faollik"],
+    ["assign", tr("Biriktirish")],
+    ["activity", tr("Faollik")],
   ] as const;
   return (
     <div className="mx-auto max-w-5xl">

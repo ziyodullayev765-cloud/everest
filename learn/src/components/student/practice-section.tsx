@@ -75,7 +75,7 @@ export async function PracticeSection({ studentId, area, level }: { studentId: s
       <PageHeader title={m.title} description={m.description} />
       {levels.length > 1 ? (
         <nav className="scrollbar-none -mx-4 mb-5 flex gap-2 overflow-x-auto px-4 sm:mx-0 sm:px-0" aria-label={tr("Darajalar")}>
-          {[["", "Barchasi"], ...levels.map((l) => [l, l])].map(([k, l]) => (
+          {[["", tr("Barchasi")], ...levels.map((l) => [l, l])].map(([k, l]) => (
             <Link key={k} href={k ? `${base}?level=${encodeURIComponent(k)}` : base} className={cn("shrink-0 rounded-full border px-3.5 py-1.5 text-[13px] font-semibold", (level ?? "") === k ? "border-primary bg-primary-soft text-primary-soft-fg" : "border-border bg-surface text-text-2 hover:bg-surface-2")}>
               {l}
             </Link>

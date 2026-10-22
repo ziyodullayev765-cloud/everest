@@ -259,3 +259,9 @@ select,
     transition-duration: 0.01ms !important;
   }
 }
+
+/* The app's own pull-to-refresh replaces the browser's, so it feels the same on every phone. */
+html,
+body {
+  overscroll-behavior-y: none;
+}

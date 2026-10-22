@@ -33,7 +33,7 @@ export function BookCover({ coverFileId, title, className }: { coverFileId: stri
 
 export async function LibraryGrid({ user, base, sp, manage }: { user: SessionUser; base: string; sp: { category?: string; q?: string }; manage?: boolean }) {
   const books = await listBooks(user, { all: manage, category: sp.category, q: sp.q });
-  const cats = [["", "Barchasi"], ...BOOK_CATEGORIES.map((c) => [c, t.bookCategory[c]])];
+  const cats = [["", tr("Barchasi")], ...BOOK_CATEGORIES.map((c) => [c, t.bookCategory[c]])];
   return (
     <>
       <PageHeader title={tr("Kutubxona")} description={tr("Kitoblar, PDF fayllar va audio yozuvlar.")} actions={manage ? <LinkButton href={`${base}/library/new`}>{tr("Kitob qo‘shish")}</LinkButton> : null} />

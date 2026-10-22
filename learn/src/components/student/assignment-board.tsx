@@ -51,9 +51,9 @@ export function AssignmentBoard({ rows, initialView = "active", emptyTitle = tr(
         <div className="inline-flex w-full rounded-xl border border-border bg-surface-2 p-1 sm:w-auto" role="tablist">
           {(
             [
-              ["active", "Faol"],
-              ["done", "Bajarilgan"],
-              ["all", "Barchasi"],
+              ["active", tr("Faol")],
+              ["done", tr("Bajarilgan")],
+              ["all", tr("Barchasi")],
             ] as const
           ).map(([k, label]) => (
             <button

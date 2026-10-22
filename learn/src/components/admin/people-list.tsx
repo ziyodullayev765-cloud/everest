@@ -29,7 +29,7 @@ export async function PeopleList({ user, kind, sp }: { user: SessionUser; kind: 
       <FilterBar
         fields={[
           { name: "q", type: "search", placeholder: kind === "student" ? tr("Ism, login yoki ID") : tr("Ism yoki login") },
-          { name: "status", label: tr("Holat"), options: [["active", "Faol"], ["deactivated", tr("Faol emas")]] },
+          { name: "status", label: tr("Holat"), options: [["active", tr("Faol")], ["deactivated", tr("Faol emas")]] },
           ...(kind === "student" ? [{ name: "class", label: tr("Guruh"), options: [["", tr("Barcha guruhlar")], ...classes.map((c) => [c.id, c.name] as [string, string])] as [string, string][] }] : []),
         ]}
       />
