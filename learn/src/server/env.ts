@@ -6,9 +6,15 @@ function required(name: string): string {
   return v;
 }
 
+export const newDatabaseOn = () => process.env.USE_NEW_DATABASE === "1";
+
 export const env = {
+  /**
+   * USE_NEW_DATABASE=1 switches to the database attached with the NEW_ prefix (the Frankfurt copy,
+   * filled by scripts/copy-db.mjs during the build). Removing the flag goes back to DATABASE_URL.
+   */
   get databaseUrl() {
-    return required("DATABASE_URL");
+    return newDatabaseOn() ? required("NEW_DATABASE_URL") : required("DATABASE_URL");
   },
   get appSecret() {
     const s = required("APP_SECRET");
