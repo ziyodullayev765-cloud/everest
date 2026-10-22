@@ -14,7 +14,7 @@ export default async function StudentLayout({ children }: { children: React.Reac
   const tabs = [
     { href: "/", label: t.nav.home, icon: "home", exact: true },
     { href: "/assignments", label: t.nav.homework, icon: "assignments" },
-    { href: "/vocabulary", label: t.nav.vocabulary, icon: "vocabulary" },
+    { href: "/vocabulary", label: "So‘zlar", icon: "words" },
     { href: "/quizzes", label: t.nav.quizzes, icon: "quizzes" },
     { href: "/profile", label: t.nav.profile, icon: "profile" },
   ];

@@ -65,6 +65,7 @@ const ICONS: Record<string, LucideIcon> = {
   audit: ScrollText,
   review: ClipboardCheck,
   vocabulary: BookA,
+  words: BookOpen,
   grammar: PenLine,
   reading: BookOpenText,
   listening: Headphones,
@@ -218,18 +219,40 @@ export function AppShell({ appName, logoFileId, areaLabel, sections, tabs, user,
 
       {/* Bottom tab bar (students, phones) */}
       {tabs ? (
-        <nav className="fixed inset-x-0 bottom-0 z-40 border-t-2 border-border bg-surface/95 pb-safe backdrop-blur-xl lg:hidden" aria-label="Asosiy">
-          <ul className="mx-auto grid h-[64px] max-w-lg grid-cols-5">
-            {tabs.map((t) => {
+        <nav className="fixed inset-x-3 bottom-[calc(env(safe-area-inset-bottom)+10px)] z-40 lg:hidden" aria-label="Asosiy">
+          <ul className="mx-auto grid h-[68px] max-w-md grid-cols-5 rounded-[28px] border border-border/60 bg-surface shadow-[0_8px_30px_rgba(16,40,28,0.12)]">
+            {tabs.map((t, i) => {
               const Icon = ICONS[t.icon] ?? Home;
               const active = isActive(path, t);
+              // The middle tab (vocabulary) is the raised, round "main action" button.
+              if (i === 2 && tabs.length === 5)
+                return (
+                  <li key={t.href} className="relative">
+                    <Link href={t.href} aria-current={active ? "page" : undefined} className="flex h-full flex-col items-center justify-end pb-2 text-[11.5px] font-bold">
+                      <span
+                        className={cn(
+                          "absolute -top-7 left-1/2 grid size-[60px] -translate-x-1/2 place-items-center rounded-full bg-gradient-to-b from-[#2fbf6c] to-primary text-white ring-[7px] ring-primary-soft shadow-[0_6px_16px_rgba(30,165,90,0.35)] transition-transform active:scale-95",
+                          active && "ring-primary/25",
+                        )}
+                      >
+                        <Icon className="size-[26px]" strokeWidth={2.4} fill="currentColor" fillOpacity={0.25} aria-hidden />
+                      </span>
+                      <span className={cn(active ? "font-extrabold text-primary" : "text-muted")}>{t.label}</span>
+                    </Link>
+                  </li>
+                );
               return (
                 <li key={t.href}>
-                  <Link href={t.href} aria-current={active ? "page" : undefined} className="relative flex h-full flex-col items-center justify-center gap-1 text-[11px] font-semibold">
-                    <span className={cn("grid h-9 w-14 place-items-center rounded-2xl border-2 transition-colors duration-200", active ? "border-primary/40 bg-primary-soft text-primary" : "border-transparent text-muted")}>
-                      <Icon className="size-[22px]" strokeWidth={active ? 2.4 : 2} aria-hidden />
-                    </span>
+                  <Link href={t.href} aria-current={active ? "page" : undefined} className="relative flex h-full flex-col items-center justify-center gap-0.5 text-[11.5px] font-bold">
+                    <Icon
+                      className={cn("size-[24px] transition-colors duration-200", active ? "text-primary" : "text-muted")}
+                      strokeWidth={active ? 2.5 : 2}
+                      fill={active ? "currentColor" : "none"}
+                      fillOpacity={active ? 0.2 : 0}
+                      aria-hidden
+                    />
                     <span className={cn("transition-colors", active ? "font-extrabold text-primary" : "text-muted")}>{t.label}</span>
+                    <span aria-hidden className={cn("h-1 rounded-full bg-primary transition-all duration-200", active ? "w-5 opacity-100" : "w-0 opacity-0")} />
                   </Link>
                 </li>
               );

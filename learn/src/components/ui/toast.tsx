@@ -28,7 +28,7 @@ export function Toaster() {
     return () => void listeners.delete(on);
   }, []);
   return (
-    <div className="pointer-events-none fixed inset-x-0 bottom-[calc(88px+env(safe-area-inset-bottom))] z-[70] flex flex-col items-center gap-2 px-4 lg:bottom-6" aria-live="polite">
+    <div className="pointer-events-none fixed inset-x-0 bottom-[calc(112px+env(safe-area-inset-bottom))] z-[70] flex flex-col items-center gap-2 px-4 lg:bottom-6" aria-live="polite">
       {items.map((t) => {
         const Icon = t.tone === "success" ? CheckCircle2 : t.tone === "error" ? XCircle : Info;
         return (

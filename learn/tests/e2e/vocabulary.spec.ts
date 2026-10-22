@@ -44,7 +44,11 @@ test("student studies the new words with flashcards and typing", async ({ page }
   await login(page, "t.rahimov");
   await page.goto("/teacher/vocabulary");
   await page.getByText(LIST).click();
-  await page.getByRole("link", { name: "Faollik" }).click();
+  // A click that lands mid-hydration can be swallowed by the client router; retry until it navigates.
+  await expect(async () => {
+    await page.getByRole("link", { name: "Faollik" }).click();
+    await expect(page).toHaveURL(/tab=activity/, { timeout: 3000 });
+  }).toPass({ timeout: 20_000 });
   await expect(page.getByRole("row", { name: /Jasur Toshmatov/ })).toContainText("100%");
 });
 
