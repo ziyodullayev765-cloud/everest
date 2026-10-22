@@ -1,6 +1,6 @@
 import { afterAll, describe, expect, it } from "vitest";
 import { closeDb } from "@/server/db";
-import { saveAssignment, getForStudent, listForStudent } from "@/server/services/assignments";
+import { saveAssignment, saveQuestions, setAssignmentStatus, getForStudent, listForStudent } from "@/server/services/assignments";
 import { saveDraft, submitWork } from "@/server/services/submissions";
 import { gradingContext, gradeSubmission } from "@/server/services/grades";
 import { getBook, listBooks, saveBook, setBookStatus } from "@/server/services/library";
@@ -107,6 +107,21 @@ describe("files", () => {
     expect(sniff(Buffer.concat([Buffer.from("RIFF"), Buffer.alloc(4), Buffer.from("WAVE")]), "a.wav")?.mime).toBe("audio/wav");
     expect(sniff(Buffer.from("OggS\x00"), "a.ogg")?.mime).toBe("audio/ogg");
     expect(sniff(Buffer.from("<html>"), "a.mp3")).toBeNull();
+  });
+
+  it("students can play homework and question audio; others can't", async () => {
+    const w = await world();
+    const mp3 = () => new File([Buffer.concat([Buffer.from("ID3"), Buffer.alloc(300, 7)])], "clip.mp3", { type: "audio/mpeg" });
+    const listening = await storeFile(w.teacher, mp3());
+    const qAudio = await storeFile(w.teacher, mp3());
+    const { id } = await saveAssignment(w.teacher, null, baseAssignment(w.subject.id, [w.cls.id], { type: "practice", publishMode: "draft", audioFileId: listening.id }));
+    await saveQuestions(w.teacher, id, [{ type: "short_answer", prompt: "What did you hear?", points: 1, audioFileId: qAudio.id, accepted: [["hello"]] }]);
+    await expect(authorizeFileRead(w.student, listening.id)).rejects.toThrow(); // draft: not yet
+    await setAssignmentStatus(w.teacher, id, "publish");
+    await expect(authorizeFileRead(w.student, listening.id)).resolves.toBeTruthy();
+    await expect(authorizeFileRead(w.student, qAudio.id)).resolves.toBeTruthy();
+    await expect(authorizeFileRead(w.otherStudent, listening.id)).rejects.toThrow();
+    await expect(authorizeFileRead(w.otherStudent, qAudio.id)).rejects.toThrow();
   });
 
   it("serves byte ranges so audio can seek", async () => {

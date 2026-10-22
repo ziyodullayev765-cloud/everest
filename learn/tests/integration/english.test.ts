@@ -22,6 +22,7 @@ import {
   vocabOverview,
 } from "@/server/services/vocabulary";
 import { askTutor, tutorEnabled } from "@/server/services/tutor";
+import { authorizeFileRead, storeFile } from "@/server/services/files";
 import { localDay } from "@/lib/dates";
 import { addDays } from "@/lib/gamification";
 import { baseAssignment, makeSubject, world } from "./fixtures";
@@ -54,6 +55,16 @@ describe("vocabulary lists and spaced repetition", () => {
     await setWordListTargets(w.teacher, listId, { classIds: [w.cls.id], studentIds: [] });
     return { w, listId };
   }
+
+  it("word pictures and pronunciation are playable by the students the list is published to", async () => {
+    const { w, listId } = await setup();
+    const audio = await storeFile(w.teacher, new File([Buffer.concat([Buffer.from("ID3"), Buffer.alloc(300, 7)])], "journey.mp3", { type: "audio/mpeg" }));
+    await saveWord(w.teacher, listId, null, { english: "ticket", uzbek: "chipta", audioFileId: audio.id });
+    await expect(authorizeFileRead(w.student, audio.id)).rejects.toThrow(); // not published yet
+    await setWordListStatus(w.teacher, listId, "published");
+    await expect(authorizeFileRead(w.student, audio.id)).resolves.toBeTruthy();
+    await expect(authorizeFileRead(w.otherStudent, audio.id)).rejects.toThrow();
+  });
 
   it("is invisible until published, and only to the targeted group", async () => {
     const { w, listId } = await setup();

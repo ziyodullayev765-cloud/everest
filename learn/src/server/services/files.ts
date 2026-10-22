@@ -109,7 +109,9 @@ export async function authorizeFileRead(actor: Actor | null, fileId: string) {
 
   const attached = await db.execute<{ assignment_id: string }>(sql`
     select assignment_id from assignment_attachments where file_id = ${fileId}
-    union select assignment_id from questions where image_file_id = ${fileId} and assignment_id is not null`);
+    union select id from assignments where audio_file_id = ${fileId}
+    union select assignment_id from questions where assignment_id is not null
+      and (image_file_id = ${fileId} or config->>'audioFileId' = ${fileId}::text)`);
   for (const r of attached) {
     if (isStaff(actor) && (await canManageAssignment(actor, r.assignment_id))) return f;
     if (actor.role === "student") {
@@ -121,6 +123,15 @@ export async function authorizeFileRead(actor: Actor | null, fileId: string) {
       }
     }
   }
+  // Vocabulary: a word's picture / pronunciation, for staff and for students the list is published to.
+  const word = await db.execute<{ n: number }>(sql`
+    select count(*)::int as n from words w join word_lists l on l.id = w.list_id
+    where w.archived_at is null and (w.audio_file_id = ${fileId} or w.image_file_id = ${fileId})
+      and (${isStaff(actor)} or (l.status = 'published' and exists (
+        select 1 from word_list_targets t where t.list_id = l.id and (t.student_id = ${actor.id}
+          or t.class_id in (select class_id from class_students where student_id = ${actor.id})))))`);
+  if ((word[0]?.n ?? 0) > 0) return f;
+
   if (isStaff(actor)) {
     const subs = await db
       .select({ studentId: schema.submissions.studentId, assignmentId: schema.submissions.assignmentId })
