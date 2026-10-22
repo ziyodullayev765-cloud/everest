@@ -1,7 +1,7 @@
 "use client";
 import { useMemo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { Archive, Download, FileUp, ImagePlus, Music, Pencil, Plus, RotateCcw, Save, Search, Send, Trash2, Users, X } from "lucide-react";
+import { Archive, FileUp, ListPlus, ImagePlus, Music, Pencil, Plus, RotateCcw, Save, Search, Send, Trash2, Users, X } from "lucide-react";
 import { importWordsAction, removeWordAction, saveWordAction, saveWordListAction, wordListStatusAction, wordListTargetsAction } from "@/app/actions/vocab";
 import { Button } from "@/components/ui/button";
 import { Card, CardBody, CardHeader } from "@/components/ui/card";
@@ -12,7 +12,7 @@ import { Badge } from "@/components/ui/badge";
 import { toast } from "@/components/ui/toast";
 import { uploadFile } from "@/components/app/uploader";
 import { LEVELS } from "@/lib/course";
-import { parseWordCsv, WORD_CSV_HEADER } from "@/lib/word-csv";
+import { parseWordList } from "@/lib/word-csv";
 
 type Word = { id: string; english: string; uzbek: string; example: string; exampleUz: string; phonetic: string; partOfSpeech: string; difficulty: number; audioFileId: string | null; imageFileId: string | null };
 type ListMeta = { id: string; title: string; description: string; level: string; topic: string; status: string };
@@ -186,8 +186,9 @@ function WordForm({ initial, onSave, onCancel, pending }: { initial: typeof empt
 export function WordListEditor({ list, words, canEdit }: { list: ListMeta; words: Word[]; canEdit: boolean }) {
   const [meta, setMeta] = useState({ title: list.title, description: list.description, level: list.level, topic: list.topic });
   const [editing, setEditing] = useState<string | null>(null);
-  const [adding, setAdding] = useState(words.length === 0);
-  const [csvOpen, setCsvOpen] = useState(false);
+  const [adding, setAdding] = useState(false);
+  const [autoBulk] = useState(words.length === 0 && canEdit);
+  const [csvOpen, setCsvOpen] = useState(autoBulk);
   const [q, setQ] = useState("");
   const [formKey, setFormKey] = useState(0);
   const { pending, run } = useRun();
@@ -237,11 +238,11 @@ export function WordListEditor({ list, words, canEdit }: { list: ListMeta; words
           action={
             canEdit ? (
               <div className="flex flex-wrap gap-2">
-                <Button size="sm" variant="secondary" onClick={() => setCsvOpen(true)}>
-                  <FileUp /> CSV import
+                <Button size="sm" onClick={() => setCsvOpen(true)}>
+                  <ListPlus /> Ko‘plab qo‘shish
                 </Button>
-                <Button size="sm" onClick={() => setAdding(true)}>
-                  <Plus /> So‘z
+                <Button size="sm" variant="secondary" onClick={() => setAdding(true)}>
+                  <Plus /> Bitta so‘z
                 </Button>
               </div>
             ) : null
@@ -304,37 +305,39 @@ export function WordListEditor({ list, words, canEdit }: { list: ListMeta; words
         </ul>
       </Card>
 
-      <WordCsvDialog open={csvOpen} onClose={() => setCsvOpen(false)} listId={list.id} existing={words.map((w) => w.english)} />
+      <WordBulkDialog open={csvOpen} onClose={() => setCsvOpen(false)} listId={list.id} existing={words.map((w) => w.english)} />
     </div>
   );
 }
 
-function WordCsvDialog({ open, onClose, listId, existing }: { open: boolean; onClose: () => void; listId: string; existing: string[] }) {
+const EXAMPLE = `journey - sayohat, safar
+luggage — yuk | Don't forget your luggage.
+souvenir: esdalik sovg‘a
+abroad /əˈbrɔːd/ - chet elda`;
+
+/** Bulk entry: paste a list (any common separator), copy from Excel/Sheets, or pick a CSV/TXT file. */
+function WordBulkDialog({ open, onClose, listId, existing }: { open: boolean; onClose: () => void; listId: string; existing: string[] }) {
   const [text, setText] = useState("");
+  const [swap, setSwap] = useState(false);
   const { pending, run } = useRun();
-  const preview = text.trim() ? parseWordCsv(text, existing) : null;
-  const template = () => {
-    const sample = `${WORD_CSV_HEADER}\njourney,"sayohat, safar",It was a long journey.,Bu uzoq sayohat edi.,/ˈdʒɜːni/,noun,2\nbook,kitob,I am reading a book.,,/bʊk/,noun,1\n`;
-    const url = URL.createObjectURL(new Blob(["﻿" + sample], { type: "text/csv;charset=utf-8" }));
-    Object.assign(document.createElement("a"), { href: url, download: "lugat-namuna.csv" }).click();
-    URL.revokeObjectURL(url);
-  };
+  const preview = useMemo(() => (text.trim() ? parseWordList(text, existing, swap) : null), [text, existing, swap]);
   return (
     <Dialog
       open={open}
       onClose={onClose}
-      title="So‘zlarni CSV’dan import qilish"
-      description="Ustunlar: english, uzbek, example, example_uz, phonetic, part_of_speech, difficulty (1–3). Takroriy so‘zlar o‘tkazib yuboriladi."
+      title="So‘zlarni ko‘plab qo‘shish"
+      description="Har qatorga bitta so‘z yozing yoki ro‘yxatni nusxalab qo‘ying. Takroriy so‘zlar o‘tkazib yuboriladi."
+      className="max-w-2xl"
       footer={
         <>
           <Button variant="secondary" onClick={onClose}>
             Bekor qilish
           </Button>
           <Button
-            disabled={!preview || !!preview.errors.length || !preview.rows.length}
+            disabled={!preview || !preview.rows.length}
             loading={pending}
             onClick={() =>
-              run(() => importWordsAction(listId, text), undefined, (r) => {
+              run(() => importWordsAction(listId, preview && preview.errors.length ? toLines(preview.rows) : text, preview && preview.errors.length ? false : swap), undefined, (r) => {
                 if (r.errors.length) return toast.error(`${r.errors[0].line}-qator: ${r.errors[0].message}`);
                 toast.success(`${r.added} ta so‘z qo‘shildi${r.duplicates.length ? `, ${r.duplicates.length} ta takroriy o‘tkazib yuborildi` : ""}`);
                 setText("");
@@ -342,21 +345,19 @@ function WordCsvDialog({ open, onClose, listId, existing }: { open: boolean; onC
               })
             }
           >
-            Import{preview?.rows.length ? ` (${preview.rows.length})` : ""}
+            {preview?.rows.length ? `${preview.rows.length} ta so‘zni qo‘shish` : "Qo‘shish"}
           </Button>
         </>
       }
     >
       <div className="space-y-3">
-        <div className="flex flex-wrap gap-2">
-          <Button variant="secondary" size="sm" onClick={template}>
-            <Download /> Namuna CSV
-          </Button>
+        <Textarea rows={8} value={text} onChange={(e) => setText(e.target.value)} placeholder={EXAMPLE} aria-label="So‘zlar ro‘yxati" className="font-mono text-[13px]" spellCheck={false} autoFocus />
+        <div className="flex flex-wrap items-center gap-2">
           <label className="inline-flex h-8 cursor-pointer items-center gap-1.5 rounded-lg border border-border bg-surface px-3 text-[13px] font-medium hover:bg-surface-2">
-            <FileUp className="size-4" aria-hidden /> Fayl tanlash
+            <FileUp className="size-4" aria-hidden /> Fayldan (CSV / TXT)
             <input
               type="file"
-              accept=".csv,text/csv,text/plain"
+              accept=".csv,.txt,text/csv,text/plain"
               hidden
               onChange={async (e) => {
                 const f = e.target.files?.[0];
@@ -365,28 +366,61 @@ function WordCsvDialog({ open, onClose, listId, existing }: { open: boolean; onC
               }}
             />
           </label>
+          <Checkbox checked={swap} onChange={setSwap} label="Qatorlar o‘zbekcha so‘z bilan boshlanadi" />
         </div>
-        <Textarea rows={7} value={text} onChange={(e) => setText(e.target.value)} placeholder={`${WORD_CSV_HEADER}\nbook,kitob,I read a book.`} aria-label="CSV matni" className="font-mono text-[12.5px]" spellCheck={false} />
+        <p className="text-[12px] leading-relaxed text-muted">
+          Ajratuvchi: <code>-</code> <code>—</code> <code>:</code> <code>=</code> yoki Excel ustunlari. Misol qo‘shish uchun <code>|</code> qo‘ying. <code>(n)</code>, <code>(v)</code> va <code>/transkripsiya/</code> avtomatik ajratiladi.
+        </p>
         {preview ? (
-          preview.errors.length ? (
-            <Alert tone="danger" title={`${preview.errors.length} ta xato`}>
-              <ul className="max-h-36 space-y-0.5 overflow-y-auto text-[12.5px]">
-                {preview.errors.slice(0, 50).map((e, i) => (
-                  <li key={i}>
-                    {e.line}-qator: {e.message}
-                  </li>
-                ))}
-              </ul>
-            </Alert>
-          ) : (
-            <Alert tone="success">
-              {preview.rows.length} ta yangi so‘z.{preview.duplicates.length ? ` ${preview.duplicates.length} ta takroriy (${preview.duplicates.slice(0, 5).join(", ")}${preview.duplicates.length > 5 ? "…" : ""}) o‘tkazib yuboriladi.` : ""}
-            </Alert>
-          )
+          <>
+            {preview.errors.length ? (
+              <Alert tone="warning" title={`${preview.errors.length} ta qator tushunilmadi — ular qo‘shilmaydi`}>
+                <ul className="max-h-28 space-y-0.5 overflow-y-auto text-[12.5px]">
+                  {preview.errors.slice(0, 30).map((e, i) => (
+                    <li key={i}>
+                      {e.line}-qator: {e.message}
+                    </li>
+                  ))}
+                </ul>
+              </Alert>
+            ) : null}
+            {preview.duplicates.length ? <p className="text-[12.5px] text-muted">Takroriy (o‘tkazib yuboriladi): {preview.duplicates.slice(0, 8).join(", ")}{preview.duplicates.length > 8 ? "…" : ""}</p> : null}
+            {preview.rows.length ? (
+              <div className="max-h-60 overflow-y-auto rounded-xl border border-border">
+                <table className="w-full text-[13px]">
+                  <thead className="sticky top-0 bg-surface-2 text-left text-[11.5px] text-muted">
+                    <tr>
+                      <th className="px-3 py-2 font-medium">English</th>
+                      <th className="px-3 py-2 font-medium">O‘zbekcha</th>
+                      <th className="hidden px-3 py-2 font-medium sm:table-cell">Misol</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-border">
+                    {preview.rows.slice(0, 200).map((r, i) => (
+                      <tr key={i}>
+                        <td className="px-3 py-1.5 font-medium">
+                          {r.english} {r.phonetic ? <span className="font-normal text-muted">{r.phonetic}</span> : null}
+                        </td>
+                        <td className="px-3 py-1.5">{r.uzbek}</td>
+                        <td className="hidden max-w-56 truncate px-3 py-1.5 text-muted sm:table-cell">{r.example}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            ) : null}
+          </>
         ) : null}
       </div>
     </Dialog>
   );
+}
+
+/** Re-serialise only the understood rows (tab-separated) so problem lines are skipped, not blocking. */
+function toLines(rows: { english: string; uzbek: string; example: string; exampleUz: string; phonetic: string; partOfSpeech: string }[]) {
+  const c = (v: string) => v.replace(/[\t\r\n]+/g, " ");
+  const head = (r: (typeof rows)[number]) => [r.english, r.partOfSpeech ? `(${r.partOfSpeech})` : "", r.phonetic].filter(Boolean).join(" ");
+  return rows.map((r) => [c(head(r)), c(r.uzbek), c(r.example), c(r.exampleUz)].join("\t")).join("\n");
 }
 
 export function WordListTargets({ listId, published, classes, students, initialClassIds, initialStudentIds }: { listId: string; published: boolean; classes: { id: string; name: string; students: number }[]; students: { id: string; displayName: string; className: string }[]; initialClassIds: string[]; initialStudentIds: string[] }) {

@@ -11,7 +11,7 @@ import { assertOwnFiles } from "./files";
 import { notify } from "./notifications";
 import { enforce } from "./rate-limit";
 import { gradeFor, matchesAnswer, schedule, type SrsGrade } from "@/lib/srs";
-import { parseWordCsv, wordInput, type WordImportResult, type WordInput } from "@/lib/word-csv";
+import { parseWordList, wordInput, type WordImportResult, type WordInput } from "@/lib/word-csv";
 export type { WordImportResult } from "@/lib/word-csv";
 
 const TZ = "Asia/Tashkent";
@@ -144,11 +144,12 @@ export async function removeWord(actor: Actor, listId: string, wordId: string) {
   await audit(actor.id, "vocab.word_remove", "word_list", listId, { wordId, archived: used > 0 });
 }
 
-export async function importWords(actor: Actor, listId: string, text: string): Promise<WordImportResult> {
+export async function importWords(actor: Actor, listId: string, text: string, swap = false): Promise<WordImportResult> {
   await loadList(actor, listId, true);
   await enforce(`vocab-import:${actor.id}`, 30, 3600);
   const existing = await db.select({ e: schema.words.english }).from(schema.words).where(and(eq(schema.words.listId, listId), isNull(schema.words.archivedAt)));
-  const { rows, duplicates, errors } = parseWordCsv(text, existing.map((x) => x.e));
+  if (text.length > 300_000) throw invalid("Matn juda katta.");
+  const { rows, duplicates, errors } = parseWordList(text, existing.map((x) => x.e), swap);
   if (errors.length) return { added: 0, duplicates, errors };
   if (rows.length) {
     await db.transaction(async (tx) => {

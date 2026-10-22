@@ -54,3 +54,65 @@ export function parseWordCsv(text: string, existing: string[] = []): { rows: Wor
   return { rows, duplicates, errors };
 }
 
+
+const POS = /\s*\((n|v|adj|adv|prep|pron|conj|phr\.?\s*v|phrasal verb|noun|verb|adjective|adverb)\.?\)\s*/i;
+const PHONETIC = /\s*([/[][^/\]]{1,40}[/\]])\s*/;
+/** First separator between the English word and its translation: tab, " - ", "—", "–", "=", ":". */
+const SEP = /\t|\s+[-–—=]\s+|\s*[–—=]\s*|\s*:\s+/;
+
+/**
+ * Quick entry: one word per line in whatever form a teacher has it —
+ *   journey - sayohat        journey — sayohat, safar      1. journey (n) /ˈdʒɜːni/ : sayohat
+ *   journey<TAB>sayohat<TAB>It was a long journey.        (copied from Excel / Google Sheets)
+ *   journey - sayohat | It was a long journey. | Bu uzoq sayohat edi.
+ * A CSV with an "english,uzbek,…" header is read as CSV. `swap` reads lines as "uzbek - english".
+ */
+export function parseWordList(text: string, existing: string[] = [], swap = false): { rows: WordInput[]; duplicates: string[]; errors: { line: number; message: string }[] } {
+  const clean = text.replace(/^﻿/, "");
+  const first = clean.split(/\r?\n/).find((l) => l.trim()) ?? "";
+  if (/(^|[,;\t])\s*english\s*([,;\t]|$)/i.test(first)) return parseWordCsv(clean, existing);
+
+  const rows: WordInput[] = [];
+  const duplicates: string[] = [];
+  const errors: { line: number; message: string }[] = [];
+  const seen = new Set(existing.map((e) => e.trim().toLowerCase()));
+  const lines = clean.split(/\r?\n/);
+  if (lines.filter((l) => l.trim()).length > 1000) errors.push({ line: 1, message: "Bir martada ko‘pi bilan 1000 ta so‘z." });
+  lines.slice(0, 2000).forEach((raw, i) => {
+    const line = i + 1;
+    const l = raw.replace(/^\s*(\d+\s*[.)]|[-•*–])\s*/, "").trim();
+    if (!l) return;
+    let cells: string[];
+    if (l.includes("\t")) cells = l.split("\t").map((c) => c.trim());
+    else {
+      const m = l.match(SEP);
+      if (!m || m.index === undefined || m.index === 0) return errors.push({ line, message: `Ajratuvchi topilmadi: “${l.slice(0, 40)}” (masalan: journey - sayohat)` });
+      const left = l.slice(0, m.index);
+      const right = l.slice(m.index + m[0].length).split(/\s+\|\s+|\|/);
+      cells = [left, ...right].map((c) => c.trim());
+    }
+    const [first = "", second = "", example = "", exampleUz = ""] = cells;
+    let english = swap ? second : first;
+    const uzbek = swap ? first : second;
+    let partOfSpeech = "";
+    let phonetic = "";
+    const pos = english.match(POS);
+    if (pos) {
+      partOfSpeech = pos[1].toLowerCase().replace(/\.$/, "");
+      english = english.replace(POS, " ").trim();
+    }
+    const ph = english.match(PHONETIC);
+    if (ph) {
+      phonetic = ph[1];
+      english = english.replace(PHONETIC, " ").trim();
+    }
+    const parsed = wordInput.safeParse({ english, uzbek, example, exampleUz, phonetic, partOfSpeech });
+    if (!parsed.success) return errors.push({ line, message: parsed.error.issues[0]?.message ?? "Noto‘g‘ri qator" });
+    const k = parsed.data.english.toLowerCase();
+    if (seen.has(k)) return duplicates.push(parsed.data.english);
+    seen.add(k);
+    rows.push(parsed.data);
+  });
+  if (!rows.length && !errors.length && !duplicates.length) errors.push({ line: 1, message: "Matn bo‘sh." });
+  return { rows, duplicates, errors };
+}

@@ -45,9 +45,9 @@ export async function removeWordAction(listId: string, wordId: string) {
     refresh();
   });
 }
-export async function importWordsAction(listId: string, text: string) {
+export async function importWordsAction(listId: string, text: string, swap = false) {
   return run(async () => {
-    const r = await importWords(await staff(), listId, text);
+    const r = await importWords(await staff(), listId, text, !!swap);
     if (r.added) refresh();
     return r;
   });

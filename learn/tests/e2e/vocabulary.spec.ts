@@ -11,11 +11,11 @@ test("teacher builds a word list from CSV, publishes it and assigns a group", as
   await page.getByRole("dialog").getByLabel("Nomi").fill(LIST);
   await page.getByRole("dialog").getByRole("button", { name: "Yaratish" }).click();
   await expect(page).toHaveURL(/\/teacher\/vocabulary\/[0-9a-f-]{36}$/);
-  await page.getByRole("button", { name: "CSV import" }).click();
-  await page.getByLabel("CSV matni").fill("english,uzbek,example\napple,olma,I eat an apple.\nbread,non,\nwater,suv,\napple,olma,\n");
-  await expect(page.getByText("3 ta yangi so‘z.")).toBeVisible();
-  await expect(page.getByText(/1 ta takroriy/)).toBeVisible();
-  await page.getByRole("button", { name: /^Import/ }).click();
+  // An empty list opens the bulk-entry window straight away.
+  await page.getByLabel("So‘zlar ro‘yxati").fill("1. apple - olma | I eat an apple.\nbread — non\nwater: suv\napple - olma\n");
+  await expect(page.getByRole("cell", { name: "bread" })).toBeVisible();
+  await expect(page.getByText(/Takroriy \(o‘tkazib yuboriladi\): apple/)).toBeVisible();
+  await page.getByRole("button", { name: "3 ta so‘zni qo‘shish" }).click();
   await expect(page.getByText("So‘zlar (3)").first()).toBeVisible();
   await page.getByRole("button", { name: "E’lon qilish" }).click();
   await expect(page.getByText("E’lon qilingan").first()).toBeVisible();
