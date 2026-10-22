@@ -292,6 +292,19 @@ behind HTTPS. Set `x-forwarded-for` correctly at the proxy so rate limiting sees
 
 ---
 
+## Hosting region
+
+Production runs in **Frankfurt**: functions in `fra1`, Postgres (Neon) in `eu-central-1`, close to Uzbekistan.
+The database is attached with the `NEW_` prefix and selected with `USE_NEW_DATABASE=1`; the earlier US database
+(`DATABASE_URL`) is kept untouched as a backup. `/api/health` reports both regions and the database round-trip.
+
+To move again: attach the new database with a prefix, set `MAINTENANCE=1` and redeploy (every page answers 503,
+so nothing is written), then set `USE_NEW_DATABASE=1`, `MAINTENANCE=0`, the function region, and redeploy — the
+build migrates the new database and runs `scripts/copy-db.mjs`, which copies every table and checks row counts
+before committing (it skips a target that already has users).
+
+---
+
 ## PWA, installation & offline
 
 - **Manifest** (`/manifest.webmanifest`): name/short name from settings, `display: standalone`, `start_url`,
