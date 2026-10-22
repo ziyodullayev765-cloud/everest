@@ -172,7 +172,7 @@ export default async function StudentHome() {
 
         <aside className="space-y-6">
           <Card>
-            <CardHeader title="Kunlik maqsad" description="Vazifa, quiz yoki 10 ta so‘z takrorlash = 1 mashg‘ulot" action={<LinkButton href="/profile#goals" variant="ghost" size="sm">O‘zgartirish</LinkButton>} />
+            <CardHeader title="Kunlik maqsad" description="Vazifa, quiz yoki 10 ta so‘z takrorlash = 1 mashg‘ulot" action={<LinkButton href="/profile/settings#goals" variant="ghost" size="sm">O‘zgartirish</LinkButton>} />
             <CardBody className="flex items-center gap-4">
               <Ring value={Math.min(100, (100 * d.stats.todayUnits) / d.stats.dailyGoal)} size={84} stroke={8}>
                 <span className="text-[17px] font-bold tabular">

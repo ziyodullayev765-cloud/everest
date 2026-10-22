@@ -173,7 +173,7 @@ export default async function ResultsPage({ searchParams }: { searchParams: Prom
               </CardBody>
             </Card>
             <Card id="goals">
-              <CardHeader title="Shaxsiy maqsadlar" action={<LinkButton href="/profile#goals" variant="ghost" size="sm">Sozlash</LinkButton>} />
+              <CardHeader title="Shaxsiy maqsadlar" action={<LinkButton href="/profile/settings#goals" variant="ghost" size="sm">Sozlash</LinkButton>} />
               <CardBody className="space-y-4 pt-3 text-[13.5px]">
                 <Goal label="Haftalik vazifalar" value={thisWeek.tasks + thisWeek.quizzes} target={profile.weeklyTaskGoal} />
                 <p className="text-[12.5px] text-muted">Maqsadni profilingizda o‘zgartirishingiz mumkin.</p>
