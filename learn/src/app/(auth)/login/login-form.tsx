@@ -1,5 +1,6 @@
 "use client";
-import { useActionState, useState } from "react";
+import { useActionState, useEffect, useState } from "react";
+import { clearSavedFiles } from "@/lib/offline";
 import { Eye, EyeOff } from "lucide-react";
 import { loginAction } from "@/app/actions/auth";
 import { Button } from "@/components/ui/button";
@@ -7,6 +8,8 @@ import { Field, Input } from "@/components/ui/form";
 import { Alert } from "@/components/ui/feedback";
 
 export function LoginForm({ next }: { next: string }) {
+  // Books saved offline belong to the previous account on this device.
+  useEffect(clearSavedFiles, []);
   const [state, action, pending] = useActionState(loginAction, null);
   const [show, setShow] = useState(false);
   return (

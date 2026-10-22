@@ -32,3 +32,14 @@ test("service worker never caches private pages or API responses", async ({ requ
   expect(sw).toContain("never stored");
   expect(sw).not.toMatch(/cache\.put\([^)]*api/);
 });
+
+test("installing downloads the app's own files in the background", async ({ page, request }) => {
+  const sw = await (await request.get("/sw.js")).text();
+  const assets = JSON.parse(/const ASSETS = (\[.*?\]);/.exec(sw)![1]) as string[];
+  expect(assets.length).toBeGreaterThan(20);
+  expect(assets.some((a) => a.endsWith(".woff2"))).toBe(true);
+  await page.goto("/install");
+  await expect(page.getByText("Ilova fayllari telefonga yuklangan")).toBeVisible({ timeout: 60_000 });
+  const cached = await page.evaluate(async () => (await (await caches.open("everest-static")).keys()).length);
+  expect(cached).toBeGreaterThanOrEqual(assets.length);
+});

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowLeft, Info, KeyRound, Lock, LogOut, Moon, Shield } from "lucide-react";
+import { ArrowLeft, Info, KeyRound, Lock, Moon, Shield } from "lucide-react";
 import type { SessionUser } from "@/server/auth/session";
 import { ownProfile } from "@/server/services/users";
 import { getSettings } from "@/server/services/settings";
@@ -10,7 +10,8 @@ import { LinkButton } from "@/components/ui/button";
 import { ThemeSwitcher } from "./theme";
 import { ProfileSettings } from "./profile-settings";
 import { SoundToggle } from "./sound-toggle";
-import { logoutAction } from "@/app/actions/auth";
+import { LogoutButton } from "./logout-button";
+import { OfflineStatus } from "./offline-status";
 
 export async function ProfileSettingsView({ user, backHref }: { user: SessionUser; backHref: string }) {
   const [p, settings] = await Promise.all([ownProfile(user.id), getSettings()]);
@@ -66,20 +67,14 @@ export async function ProfileSettingsView({ user, backHref }: { user: SessionUse
         <CardHeader title="Ilova haqida" icon={<Info />} />
         <CardBody className="pt-3 text-[13px] text-text-2">
           {settings.branding.appName} — ingliz tili kursi uchun o‘quv ilovasi. Til: O‘zbek.
+          <OfflineStatus />
           <div className="mt-3">
             <LinkButton href="/install" variant="secondary" size="sm">Ilovani o‘rnatish</LinkButton>
           </div>
         </CardBody>
       </Card>
 
-      <form action={logoutAction}>
-        <button type="submit" className="flex w-full items-center gap-3 rounded-3xl border-2 border-border bg-surface px-4 py-3.5 text-left text-[14.5px] font-bold text-danger hover:bg-danger/5">
-          <span className="grid size-9 place-items-center rounded-xl bg-danger/10">
-            <LogOut className="size-[18px]" aria-hidden />
-          </span>
-          Chiqish
-        </button>
-      </form>
+      <LogoutButton />
     </div>
   );
 }

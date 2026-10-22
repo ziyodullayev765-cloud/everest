@@ -14,6 +14,7 @@ import { LinkButton } from "@/components/ui/button";
 import { RichText } from "@/components/ui/rich-text";
 import { AudioPlayer } from "@/components/app/media";
 import { PdfOpenButton } from "@/components/app/pdf-reader";
+import { SaveOffline } from "./save-offline";
 
 export function BookCover({ coverFileId, title, className }: { coverFileId: string | null; title: string; className?: string }) {
   return coverFileId ? (
@@ -94,6 +95,7 @@ export async function BookView({ user, base, id, manage }: { user: SessionUser; 
           ) : (
             <p className="text-[13.5px] text-muted">Bu kitobning PDF fayli yuklanmagan.</p>
           )}
+          {!manage ? <SaveOffline files={[...(pdf ? [{ id: pdf.id, size: pdf.size }] : []), ...audio.map((a) => ({ id: a.fileId, size: a.size }))]} /> : null}
           {audio.length ? (
             <Card>
               <CardHeader title="Audio" icon={<Headphones />} description={`${audio.length} ta trek`} />

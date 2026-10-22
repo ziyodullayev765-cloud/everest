@@ -54,6 +54,17 @@ test("student sees the list, the board photo and the book; ticks items and submi
   await page.goBack(); // the back gesture closes the reader, not the page
   await expect(reader).toHaveCount(0);
   await expect(page.getByRole("heading", { name: BOOK })).toBeVisible();
+  // Save the book on the device; the worker then serves it (with byte ranges) without the network.
+  await page.getByRole("button", { name: /Offline saqlash/ }).click();
+  await expect(page.getByText("Telefonda saqlangan")).toBeVisible();
+  const src = await page.locator("audio").first().getAttribute("src");
+  await page.context().setOffline(true);
+  const r = await page.evaluate(async (u) => {
+    const res = await fetch(u!, { headers: { Range: "bytes=0-9" } });
+    return { status: res.status, len: (await res.arrayBuffer()).byteLength };
+  }, src);
+  await page.context().setOffline(false);
+  expect(r).toEqual({ status: 206, len: 10 });
   await page.goBack();
   await page.getByRole("link", { name: /Bajarishni boshlash/ }).click();
   await page.getByLabel("Barron's Reading — bajarildi").check();

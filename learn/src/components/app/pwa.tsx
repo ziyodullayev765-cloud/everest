@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState, useSyncExternalStore } from "react";
 import { RefreshCw, WifiOff } from "lucide-react";
+import { startWarm } from "@/lib/offline";
 
 /** Registers /sw.js (production only) and offers a reload when a new version is waiting. */
 export function ServiceWorkerRegistrar() {
@@ -21,6 +22,7 @@ export function ServiceWorkerRegistrar() {
           if (nw.state === "installed" && navigator.serviceWorker.controller) setWaiting(nw);
         });
       });
+      startWarm();
       const t = setInterval(() => reg.update().catch(() => {}), 60 * 60 * 1000);
       return () => clearInterval(t);
     });

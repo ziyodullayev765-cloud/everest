@@ -1,5 +1,6 @@
 "use client";
 import Link from "next/link";
+import { clearSavedFiles } from "@/lib/offline";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import {
@@ -151,7 +152,7 @@ export function AppShell({ appName, logoFileId, areaLabel, sections, tabs, user,
               <div className="truncate text-[12px] text-muted">{user.roleLabel}</div>
             </div>
           </Link>
-          <form action={logout}>
+          <form action={logout} onSubmit={clearSavedFiles}>
             <button className="grid size-9 place-items-center rounded-lg text-muted hover:bg-surface-2 hover:text-danger" aria-label="Chiqish" title="Chiqish">
               <LogOut className="size-4" />
             </button>

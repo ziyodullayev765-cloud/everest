@@ -46,6 +46,11 @@ This app lives in `learn/` and is independent of the portfolio site at the repos
 | `/tutor` | Optional AI tutor (only when `ANTHROPIC_API_KEY` is set): explains grammar/mistakes in Uzbek, writing feedback, extra practice; daily limit; answers marked AI-generated; no access to grades |
 | `/grades`, `/library`, `/classes`, `/notifications`, `/profile` | Grades, books (PDF reader, audio), groups, notifications, goals and settings |
 
+**Achievements** (`/achievements`, `/achievements/[code]`): 25 medals in five categories (O‘qish, Quiz, So‘zlar,
+Grammatika, Faollik). Rules are computed from real records — distinct assignments, words and days — so redoing one
+task can’t unlock more; each medal’s XP is granted once. Locked medals show progress (e.g. 6/10); an unlock shows a
+one-time celebration. Admins create, edit and switch rules off and see who earned each medal.
+
 ### Teachers (`/teacher`)
 
 Dashboard (pending reviews, students needing follow-up, recent quizzes, completion, deadlines) · submission queue
@@ -135,7 +140,7 @@ rubric, links) · `assignment_targets` (class **xor** student) · `assignment_at
 `question_options` · `quiz_attempts` (order, timer, scores; one open attempt per student via partial unique index) ·
 `quiz_responses` · `submissions` · `submission_versions` (immutable) · `submission_files` · `grades` (one per
 student × assignment, provisional/final, scale label, late penalty) · `grade_history` · `feedback` ·
-`xp_transactions` (unique source key) · `user_achievements` · `class_challenges` · `notifications` (dedupe key) ·
+`xp_transactions` (unique source key) · `achievements` (rules, seeded from `src/lib/achievements.ts`, editable at `/admin/achievements`) · `user_achievements` (earned + seen) · `class_challenges` · `notifications` (dedupe key) ·
 `announcements` · `settings` · `audit_logs`.
 
 **Integrity guarantees enforced by the database (`drizzle/0001_integrity_guards.sql`):**
@@ -293,11 +298,17 @@ behind HTTPS. Set `x-forwarded-for` correctly at the proxy so rate limiting sees
   scope, theme/background colours, `lang: uz`, 192/512 icons, 192/512 **maskable** icons, shortcuts.
 - **Apple:** `apple-touch-icon` (180 px, opaque), `apple-mobile-web-app-capable`, `viewport-fit=cover` and
   safe-area padding for notches and the home indicator.
-- **Service worker** (`/sw.js`, generated per build so each deploy rotates the cache, served `no-store`):
-  precaches `/offline` and icons; cache-first for hashed `/_next/static` and `/icons`; **network-only for pages,
-  RSC payloads, `/api` and files — they are never stored**, so a shared device cannot show one user’s data to the
-  next; navigations that fail offline show `/offline`. Old caches are deleted on activate; a “Yangi versiya tayyor”
-  banner lets the user reload into the new version.
+- **Service worker** (`/sw.js`, generated per build, served `no-store`): precaches `/offline` and icons on
+  install, then **downloads every file of the current build in the background** (scripts, styles, fonts, the PDF
+  engine — the list is read from `.next/static` at build time), so the installed app opens and switches screens
+  without waiting on the network. Hashed build files are immutable, so that cache survives deploys: an update only
+  fetches what changed and prunes files that are gone. Progress shows on `/install` and in Sozlamalar.
+  **Pages, RSC payloads and `/api` are never stored by the worker**, so a shared device cannot show one user’s data
+  to the next; navigations that fail offline show `/offline`. A “Yangi versiya tayyor” banner reloads into a new version.
+- **Books on the device (opt-in):** on a library book, “Offline saqlash” downloads its PDF and audio into the
+  `everest-files` cache (written by the page, not the worker). The worker serves saved files with byte ranges, so
+  the PDF reader and audio seeking work without internet. Saved books are deleted on logout and when the login page
+  opens; the student can also remove them from the book page.
 - **Offline UX:** a banner appears when the connection drops; the submission editor and quiz player show offline
   status, keep unsaved answers in memory and retry saves when the connection returns. **Submitting work, taking
   quizzes and loading grades require a connection** — there is no offline sync, by design.
@@ -306,7 +317,7 @@ behind HTTPS. Set `x-forwarded-for` correctly at the proxy so rate limiting sees
   in-app browsers). iOS shows the Safari steps: Share → **Add to Home Screen** → Add. The app then opens in standalone
   mode. Behaviour differs between browsers and versions; the guide says so.
 
-Tested here: manifest validity, icon delivery, service-worker registration and offline fallback (Playwright,
+Tested here: manifest validity, icon delivery, service-worker registration, offline fallback, background download of the build and offline playback of a saved book (Playwright,
 Chromium, mobile + desktop viewports). **Not tested here:** installation on physical iPhones/Android devices (needs
 real devices on an HTTPS deployment).
 
