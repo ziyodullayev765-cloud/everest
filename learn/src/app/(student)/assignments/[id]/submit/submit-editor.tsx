@@ -105,16 +105,16 @@ export function SubmitEditor(p: Props) {
           <div className="mb-4 grid size-16 place-items-center rounded-full bg-success-soft text-success">
             <CheckCircle2 className="size-8" aria-hidden />
           </div>
-          <h2 className="text-[20px] font-semibold tracking-[-0.01em]">Ishingiz topshirildi</h2>
+          <h2 className="text-[20px] font-bold tracking-[-0.01em]">Ishingiz topshirildi</h2>
           <p className="mt-1.5 text-[14px] text-muted">
             {formatDateTime(done.submittedAt)} da qabul qilindi{done.version > 1 ? ` (${done.version}-topshiriq)` : ""}.{done.isLate ? " Muddatdan kechikib topshirildi." : ""}
           </p>
           <p className="mt-1 text-[13px] text-muted">O‘qituvchi tekshirgach, baho va izohlar shu vazifa sahifasida ko‘rinadi.</p>
           <div className="mt-6 flex flex-wrap justify-center gap-2">
-            <Link href={`/assignments/${p.assignmentId}`} className="inline-flex h-10 items-center rounded-xl border border-border bg-surface px-4 text-sm font-medium hover:bg-surface-2">
+            <Link href={`/assignments/${p.assignmentId}`} className="inline-flex h-10 items-center rounded-xl border border-border bg-surface px-4 text-sm font-semibold hover:bg-surface-2">
               Vazifani ko‘rish
             </Link>
-            <Link href="/" className="inline-flex h-10 items-center rounded-xl bg-primary px-4 text-sm font-medium text-primary-fg hover:bg-primary-hover">
+            <Link href="/" className="inline-flex h-10 items-center rounded-xl bg-primary px-4 text-sm font-semibold text-primary-fg hover:bg-primary-hover">
               Bosh sahifa
             </Link>
           </div>
@@ -133,8 +133,8 @@ export function SubmitEditor(p: Props) {
       {error ? <Alert tone="danger">{error}</Alert> : null}
 
       {p.instructions ? (
-        <details className="rounded-2xl border border-border bg-surface px-5 py-3.5 shadow-soft">
-          <summary className="cursor-pointer text-[14px] font-medium">Ko‘rsatmalarni ko‘rish</summary>
+        <details className="rounded-3xl border-2 border-border bg-surface px-5 py-3.5 shadow-soft">
+          <summary className="cursor-pointer text-[14px] font-semibold">Ko‘rsatmalarni ko‘rish</summary>
           <RichText text={p.instructions} className="mt-3 text-[14px] text-text-2" />
         </details>
       ) : null}
@@ -143,7 +143,7 @@ export function SubmitEditor(p: Props) {
         <Card>
           <CardBody className="space-y-3">
             <div className="flex items-center justify-between">
-              <h2 className="text-[15px] font-semibold">Topshiriqlar</h2>
+              <h2 className="text-[15px] font-bold">Topshiriqlar</h2>
               <span className="text-[13px] text-muted tabular">
                 {doneCount} / {p.items.length} bajarildi
               </span>
@@ -164,14 +164,14 @@ export function SubmitEditor(p: Props) {
                       <Icon className="size-4" aria-hidden />
                     </span>
                     <span className="min-w-0 flex-1">
-                      <span className="block text-[12px] font-medium text-muted">
+                      <span className="block text-[12px] font-semibold text-muted">
                         {n + 1}. {t.homeworkKind[it.kind]}
                       </span>
-                      <span className="block text-[14.5px] font-semibold">{it.title}</span>
+                      <span className="block text-[14.5px] font-bold">{it.title}</span>
                       <span className="flex flex-wrap gap-x-3 text-[12.5px] text-muted">
                         {it.range ? <span>{it.range}</span> : null}
                         {book ? (
-                          <a href={`/library/${book.id}`} target="_blank" rel="noopener" className="font-medium text-primary hover:underline" onClick={(e) => e.stopPropagation()}>
+                          <a href={`/library/${book.id}`} target="_blank" rel="noopener" className="font-semibold text-primary hover:underline" onClick={(e) => e.stopPropagation()}>
                             {book.title}
                           </a>
                         ) : null}
@@ -224,7 +224,7 @@ export function SubmitEditor(p: Props) {
         </CardBody>
       </Card>
 
-      <div className="sticky bottom-[calc(76px+env(safe-area-inset-bottom))] z-10 flex items-center justify-between gap-3 rounded-2xl border border-border bg-surface/95 p-3 shadow-pop backdrop-blur lg:bottom-4">
+      <div className="sticky bottom-[calc(76px+env(safe-area-inset-bottom))] z-10 flex items-center justify-between gap-3 rounded-3xl border-2 border-border bg-surface/95 p-3 shadow-pop backdrop-blur lg:bottom-4">
         <div className="flex min-w-0 items-center gap-2 pl-1 text-[12.5px] text-muted" aria-live="polite">
           {!online ? (
             <>

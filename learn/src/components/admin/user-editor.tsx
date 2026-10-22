@@ -88,7 +88,7 @@ export function UserEditor({ user, classes, memberIds, teaching }: { user: U; cl
             <ul className="space-y-2">
               {teaching.map((x) => (
                 <li key={x.id} className="flex items-center justify-between rounded-xl border border-border px-3 py-2 text-[13.5px]">
-                  <span className="font-medium">{x.className}</span>
+                  <span className="font-semibold">{x.className}</span>
                   <Button variant="ghost" size="icon" aria-label="Ajratish" onClick={() => run(() => unassignTeacherAction(x.id), "Ajratildi")}>
                     <X />
                   </Button>

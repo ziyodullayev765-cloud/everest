@@ -11,6 +11,7 @@ import { assertOwnFiles } from "./files";
 import { notify } from "./notifications";
 import { enforce } from "./rate-limit";
 import { gradeFor, matchesAnswer, schedule, type SrsGrade } from "@/lib/srs";
+import { GAME_ROUND, gameScore } from "@/lib/game";
 import { parseWordList, wordInput, type WordImportResult, type WordInput } from "@/lib/word-csv";
 export type { WordImportResult } from "@/lib/word-csv";
 
@@ -442,4 +443,90 @@ export async function setVocabGoal(actor: Actor, newWordsPerDay: number) {
   requireStudentActor(actor);
   const n = z.coerce.number().int().min(0).max(50).parse(newWordsPerDay);
   await db.update(schema.users).set({ newWordsPerDay: n, updatedAt: new Date() }).where(eq(schema.users.id, actor.id));
+}
+
+// ─── Game ────────────────────────────────────────────────────────────────────
+
+export type GameCard = { id: string; prompt: string; answer: string; options: string[]; direction: "en_uz" | "uz_en"; audioFileId: string | null; english: string };
+
+/** A round of random words from the student's lists, each with three wrong options. */
+export async function gameCards(actor: Actor, listId?: string | null): Promise<GameCard[]> {
+  requireStudentActor(actor);
+  const all = await studentListIds(actor.id);
+  const ids = listId ? all.filter((x) => x === listId) : all;
+  if (!ids.length) return [];
+  const pool = await db
+    .select({ id: schema.words.id, english: schema.words.english, uzbek: schema.words.uzbek, audioFileId: schema.words.audioFileId })
+    .from(schema.words)
+    .where(and(inArray(schema.words.listId, ids), isNull(schema.words.archivedAt)))
+    .orderBy(sql`random()`)
+    .limit(200);
+  if (pool.length < 2) return [];
+  const pick = (exclude: string, key: "english" | "uzbek") =>
+    [...new Set(pool.filter((p) => p.id !== exclude && p[key].toLowerCase() !== pool.find((x) => x.id === exclude)![key].toLowerCase()).map((p) => p[key]))]
+      .sort(() => Math.random() - 0.5)
+      .slice(0, 3);
+  return pool.slice(0, GAME_ROUND).map((w, i) => {
+    const dir = i % 2 ? "uz_en" : "en_uz";
+    const answer = dir === "en_uz" ? w.uzbek : w.english;
+    const options = [answer, ...pick(w.id, dir === "en_uz" ? "uzbek" : "english")].sort(() => Math.random() - 0.5);
+    return { id: w.id, prompt: dir === "en_uz" ? w.english : w.uzbek, answer, options, direction: dir, audioFileId: w.audioFileId, english: w.english };
+  });
+}
+
+const gameInput = z.object({
+  listId: z.string().uuid().nullable().default(null),
+  answers: z.array(z.object({ wordId: z.string().uuid(), correct: z.boolean(), ms: z.number().int().min(0).max(600_000) })).min(1).max(50),
+});
+
+/**
+ * Stores a finished round. The score is recomputed here. Each answer is also a review: a miss always
+ * reschedules the word (it needs practice); a hit only moves the schedule when the word was due or new,
+ * so playing for fun never skips spaced repetition.
+ */
+export async function finishGame(actor: Actor, input: unknown) {
+  requireStudentActor(actor);
+  const v = gameInput.parse(input);
+  await enforce(`vocab-game:${actor.id}`, 120, 3600);
+  const visible = await studentListIds(actor.id);
+  const wordIds = [...new Set(v.answers.map((a) => a.wordId))];
+  const words = visible.length ? await db.select({ id: schema.words.id }).from(schema.words).where(and(inArray(schema.words.id, wordIds), inArray(schema.words.listId, visible))) : [];
+  if (words.length !== wordIds.length) throw notFound("So‘z topilmadi.");
+  const { score, bestStreak, correct } = gameScore(v.answers);
+  const prevBest = await db
+    .select({ s: sql<number>`coalesce(max(${schema.vocabGames.score}), 0)::int` })
+    .from(schema.vocabGames)
+    .where(and(eq(schema.vocabGames.studentId, actor.id), v.listId ? eq(schema.vocabGames.listId, v.listId) : sql`true`));
+  await db.transaction(async (tx) => {
+    await tx.insert(schema.vocabGames).values({ studentId: actor.id, listId: v.listId, score, correct, total: v.answers.length, bestStreak });
+    const now = new Date();
+    for (const a of v.answers) {
+      const [prev] = await tx
+        .select()
+        .from(schema.vocabProgress)
+        .where(and(eq(schema.vocabProgress.studentId, actor.id), eq(schema.vocabProgress.wordId, a.wordId)))
+        .for("update");
+      const due = !prev || prev.dueAt <= now;
+      const grade: SrsGrade = a.correct ? 2 : 0;
+      if (!a.correct || due) {
+        const next = schedule(prev ? { ease: Number(prev.ease), intervalDays: Number(prev.intervalDays), reps: prev.reps, lapses: prev.lapses, state: prev.state as "learning" } : null, grade, now);
+        const values = { ease: next.ease, intervalDays: next.intervalDays, reps: next.reps, lapses: next.lapses, state: next.state, dueAt: next.dueAt, lastReviewedAt: now };
+        if (prev) await tx.update(schema.vocabProgress).set(values).where(and(eq(schema.vocabProgress.studentId, actor.id), eq(schema.vocabProgress.wordId, a.wordId)));
+        else await tx.insert(schema.vocabProgress).values({ studentId: actor.id, wordId: a.wordId, ...values });
+        await tx.insert(schema.vocabReviews).values({ studentId: actor.id, wordId: a.wordId, mode: "game", grade, correct: a.correct, intervalDays: next.intervalDays });
+      } else {
+        await tx.insert(schema.vocabReviews).values({ studentId: actor.id, wordId: a.wordId, mode: "game", grade, correct: true, intervalDays: Number(prev.intervalDays) });
+      }
+    }
+  });
+  return { score, correct, total: v.answers.length, bestStreak, best: Math.max(score, prevBest[0]?.s ?? 0), newBest: score > (prevBest[0]?.s ?? 0) };
+}
+
+export async function gameBest(actor: Actor, listId?: string | null) {
+  requireStudentActor(actor);
+  const [r] = await db
+    .select({ best: sql<number>`coalesce(max(${schema.vocabGames.score}), 0)::int`, games: sql<number>`count(*)::int` })
+    .from(schema.vocabGames)
+    .where(and(eq(schema.vocabGames.studentId, actor.id), listId ? eq(schema.vocabGames.listId, listId) : sql`true`));
+  return r ?? { best: 0, games: 0 };
 }

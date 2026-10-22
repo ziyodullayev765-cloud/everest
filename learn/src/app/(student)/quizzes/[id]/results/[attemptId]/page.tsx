@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Bot, CheckCircle2, Clock, EyeOff, Lightbulb, MinusCircle, XCircle } from "lucide-react";
 import { orNotFound, pageUser } from "@/server/auth/guards";
 import { tutorEnabled } from "@/server/services/tutor";
+import { Celebrate } from "@/components/app/celebrate";
 import { attemptResult } from "@/server/services/quiz";
 import { formatDateTime } from "@/lib/dates";
 import { cn, fmtNumber } from "@/lib/utils";
@@ -26,6 +27,7 @@ export default async function ResultsPage({ params }: { params: Promise<{ id: st
   const pending = r.score == null;
   return (
     <div className="mx-auto max-w-3xl">
+      <Celebrate show={!!r.passed} />
       <PageHeader back={{ href: `/quizzes/${id}`, label: "Quiz" }} eyebrow={`${r.attempt.attemptNo}-urinish · ${formatDateTime(r.attempt.submittedAt!)}`} title={r.assignment.title} />
 
       <Card className="mb-5 overflow-hidden">
@@ -37,7 +39,7 @@ export default async function ResultsPage({ params }: { params: Promise<{ id: st
           ) : (
             <Ring value={r.percent ?? 0} size={120} stroke={10}>
               <div>
-                <div className="text-[26px] leading-none font-semibold tabular">{Math.round(r.percent ?? 0)}%</div>
+                <div className="text-[26px] leading-none font-bold tabular">{Math.round(r.percent ?? 0)}%</div>
                 <div className="mt-1 text-[11.5px] text-muted">natija</div>
               </div>
             </Ring>
@@ -45,13 +47,13 @@ export default async function ResultsPage({ params }: { params: Promise<{ id: st
           <div className="min-w-0 flex-1 text-center sm:text-left">
             {pending ? (
               <>
-                <h2 className="text-[19px] font-semibold">Javoblaringiz tekshirilmoqda</h2>
+                <h2 className="text-[19px] font-bold">Javoblaringiz tekshirilmoqda</h2>
                 <p className="mt-1 text-[14px] text-muted">Ba’zi savollarni o‘qituvchi baholaydi. Natija tayyor bo‘lganda bildirishnoma olasiz.</p>
               </>
             ) : (
               <>
                 <div className="flex flex-wrap items-center justify-center gap-2 sm:justify-start">
-                  <h2 className="text-[19px] font-semibold tabular">
+                  <h2 className="text-[19px] font-bold tabular">
                     {fmtNumber(Number(r.score), 2)} / {fmtNumber(r.maxScore, 2)} ball
                   </h2>
                   {r.passed ? <Badge tone="success">O‘tdi</Badge> : <Badge tone="warning">O‘tish bali: {r.assignment.passingPercent}%</Badge>}
@@ -81,20 +83,20 @@ export default async function ResultsPage({ params }: { params: Promise<{ id: st
       {r.durationMs != null || r.history.length > 1 ? (
         <div className="mb-5 grid gap-3 sm:grid-cols-2">
           {r.durationMs != null ? (
-            <div className="rounded-2xl border border-border bg-surface px-5 py-4 shadow-card">
+            <div className="rounded-3xl border-2 border-border bg-surface px-5 py-4 shadow-card">
               <div className="text-[12px] text-muted">Sarflangan vaqt</div>
-              <div className="mt-0.5 text-[18px] font-semibold tabular">{fmtDuration(r.durationMs)}</div>
+              <div className="mt-0.5 text-[18px] font-bold tabular">{fmtDuration(r.durationMs)}</div>
             </div>
           ) : null}
           {r.history.length > 1 ? (
-            <div className="rounded-2xl border border-border bg-surface px-5 py-4 shadow-card">
+            <div className="rounded-3xl border-2 border-border bg-surface px-5 py-4 shadow-card">
               <div className="text-[12px] text-muted">Urinishlar</div>
               <ol className="mt-1.5 flex flex-wrap gap-1.5">
                 {r.history.map((h, i) => {
                   const prev = i > 0 ? r.history[i - 1].percent : null;
                   const up = prev != null && h.percent != null ? h.percent - prev : null;
                   return (
-                    <li key={h.id} className={cn("rounded-lg px-2.5 py-1 text-[12.5px] tabular", h.id === attemptId ? "bg-primary-soft font-semibold text-primary-soft-fg" : "bg-surface-2")}>
+                    <li key={h.id} className={cn("rounded-lg px-2.5 py-1 text-[12.5px] tabular", h.id === attemptId ? "bg-primary-soft font-bold text-primary-soft-fg" : "bg-surface-2")}>
                       #{h.attemptNo}: {h.percent == null ? "—" : `${h.percent}%`}
                       {up ? <span className={up > 0 ? "text-success" : "text-danger"}> {up > 0 ? "▲" : "▼"}{Math.abs(up)}</span> : null}
                     </li>
@@ -107,8 +109,8 @@ export default async function ResultsPage({ params }: { params: Promise<{ id: st
       ) : null}
 
       {r.transcript ? (
-        <details className="mb-5 rounded-2xl border border-border bg-surface px-5 py-4 shadow-card">
-          <summary className="cursor-pointer text-[14px] font-semibold">Listening transkripti</summary>
+        <details className="mb-5 rounded-3xl border-2 border-border bg-surface px-5 py-4 shadow-card">
+          <summary className="cursor-pointer text-[14px] font-bold">Listening transkripti</summary>
           <div className="prose-text mt-3 text-[14.5px] text-text-2">{r.transcript}</div>
         </details>
       ) : null}
@@ -127,21 +129,21 @@ export default async function ResultsPage({ params }: { params: Promise<{ id: st
             const a = it.answer as Ans;
             const tone = it.isCorrect === true ? "success" : it.isCorrect === false ? (Number(it.pointsAwarded) > 0 ? "warning" : "danger") : "violet";
             return (
-              <li key={q.id} className="rounded-2xl border border-border bg-surface p-5 shadow-card">
+              <li key={q.id} className="rounded-3xl border-2 border-border bg-surface p-5 shadow-card">
                 <div className="mb-2 flex items-center justify-between gap-2 text-[12.5px]">
-                  <span className="font-medium text-muted">
+                  <span className="font-semibold text-muted">
                     {i + 1}-savol · {t.questionType[q.type]}
                   </span>
                   <Badge tone={tone} className="tabular">
                     {it.pointsAwarded == null ? "Tekshirilmoqda" : `${fmtNumber(Number(it.pointsAwarded), 2)} / ${q.points}`}
                   </Badge>
                 </div>
-                <RichText text={q.type === "fill_blank" ? q.prompt.replace(/_{3,}/g, "____") : q.prompt} className="text-[15px] font-medium" />
+                <RichText text={q.type === "fill_blank" ? q.prompt.replace(/_{3,}/g, "____") : q.prompt} className="text-[15px] font-semibold" />
                 <div className="mt-3 space-y-2">
                   <AnswerReview q={q} a={a} correct={it.correct} />
                 </div>
                 {ai && it.isCorrect === false ? (
-                  <Link href={`/tutor?kind=mistake&text=${encodeURIComponent(mistakeText(q, a))}`} className="mt-3 inline-flex items-center gap-1.5 text-[12.5px] font-medium text-violet hover:underline">
+                  <Link href={`/tutor?kind=mistake&text=${encodeURIComponent(mistakeText(q, a))}`} className="mt-3 inline-flex items-center gap-1.5 text-[12.5px] font-semibold text-violet hover:underline">
                     <Bot className="size-3.5" aria-hidden /> AI yordamchidan tushuntirish so‘rash
                   </Link>
                 ) : null}
@@ -213,7 +215,7 @@ function AnswerReview({ q, a, correct }: { q: Q; a: Ans; correct: Correct }) {
             >
               {isRight ? <CheckCircle2 className="size-4 shrink-0 text-success" aria-label="To‘g‘ri javob" /> : isChosen && correct ? <XCircle className="size-4 shrink-0 text-danger" aria-label="Noto‘g‘ri" /> : <span className="size-4 shrink-0" />}
               <RichText text={o.label} as="span" className="flex-1" />
-              {isChosen ? <span className="text-[12px] font-medium text-muted">Sizning javobingiz</span> : null}
+              {isChosen ? <span className="text-[12px] font-semibold text-muted">Sizning javobingiz</span> : null}
             </div>
           );
         })}
@@ -263,7 +265,7 @@ function AnswerReview({ q, a, correct }: { q: Q; a: Ans; correct: Correct }) {
         const ok = correct ? correct.matches[l.id] === given : null;
         return (
           <div key={l.id} className={cn("flex flex-wrap items-center gap-2 rounded-xl border px-3.5 py-2 text-[14px]", ok === true ? "border-success/30 bg-success-soft" : ok === false ? "border-danger/30 bg-danger-soft" : "border-border")}>
-            <b className="font-medium">{l.label}</b> → <span>{given ? rightLabel(given) : <i className="text-muted">tanlanmagan</i>}</span>
+            <b className="font-semibold">{l.label}</b> → <span>{given ? rightLabel(given) : <i className="text-muted">tanlanmagan</i>}</span>
             {ok === false && correct ? <span className="text-success">(to‘g‘ri: {rightLabel(correct.matches[l.id])})</span> : null}
           </div>
         );

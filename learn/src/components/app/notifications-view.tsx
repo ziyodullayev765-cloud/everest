@@ -27,7 +27,7 @@ export async function NotificationsView({ userId }: { userId: string }) {
                     <Icon className="size-[18px]" aria-hidden />
                   </span>
                   <span className="min-w-0 flex-1">
-                    <span className={cn("block text-[14px]", n.readAt ? "text-text-2" : "font-semibold text-text")}>{n.title}</span>
+                    <span className={cn("block text-[14px]", n.readAt ? "text-text-2" : "font-bold text-text")}>{n.title}</span>
                     {n.body ? <span className="mt-0.5 block text-[13px] text-muted">{n.body}</span> : null}
                     <span className="mt-1 block text-[12px] text-muted">{formatDateTime(n.createdAt)}</span>
                   </span>

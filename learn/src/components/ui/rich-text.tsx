@@ -19,7 +19,7 @@ function linkify(text: string, keyBase: string): ReactNode[] {
   while ((m = re.exec(text))) {
     if (m.index > last) out.push(text.slice(last, m.index));
     out.push(
-      <a key={`${keyBase}-${m.index}`} href={m[0]} target="_blank" rel="noopener noreferrer nofollow" className="font-medium text-primary underline decoration-primary/30 underline-offset-2 hover:decoration-primary">
+      <a key={`${keyBase}-${m.index}`} href={m[0]} target="_blank" rel="noopener noreferrer nofollow" className="font-semibold text-primary underline decoration-primary/30 underline-offset-2 hover:decoration-primary">
         {m[0]}
       </a>,
     );

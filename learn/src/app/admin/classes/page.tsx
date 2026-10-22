@@ -22,7 +22,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ a
         description="Arxivlangan guruhlarning baholari va ishlari saqlanib qoladi."
         actions={
           <>
-            <Link href={sp.archived === "1" ? "/admin/classes" : "/admin/classes?archived=1"} className="text-[13px] font-medium text-muted hover:text-text">
+            <Link href={sp.archived === "1" ? "/admin/classes" : "/admin/classes?archived=1"} className="text-[13px] font-semibold text-muted hover:text-text">
               {sp.archived === "1" ? "Arxivni yashirish" : "Arxivni ko‘rsatish"}
             </Link>
             <ClassForm />
@@ -37,7 +37,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ a
                 <Link href={`/admin/classes/${c.id}`} className="flex items-center gap-4 px-5 py-3.5 hover:bg-surface-2/60">
                   <span className="grid size-11 place-items-center rounded-xl bg-primary-soft font-bold text-primary-soft-fg">{c.name.slice(0, 3)}</span>
                   <span className="min-w-0 flex-1">
-                    <span className="block font-semibold">
+                    <span className="block font-bold">
                       {c.name} {c.archivedAt ? <Badge className="ml-1">Arxiv</Badge> : null}
                     </span>
                     <span className="block truncate text-[12.5px] text-muted">{[c.level, `${c.students} o‘quvchi`].filter(Boolean).join(" · ")}{c.teachers ? ` · ${c.teachers}` : ""}</span>

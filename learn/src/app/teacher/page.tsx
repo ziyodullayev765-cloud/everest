@@ -54,7 +54,7 @@ export default async function TeacherHome() {
                       <Link href={`/teacher/grade/${r.assignment_id}/${r.student_id}`} className="flex items-center gap-3 rounded-xl px-2 py-2.5 hover:bg-surface-2">
                         <Avatar name={r.student_name} size={34} />
                         <span className="min-w-0 flex-1">
-                          <span className="block truncate text-[13.5px] font-medium">{r.student_name}</span>
+                          <span className="block truncate text-[13.5px] font-semibold">{r.student_name}</span>
                           <span className="block truncate text-[12px] text-muted">{r.title}</span>
                         </span>
                         <span className="shrink-0 text-[12px] text-muted">{formatDateTime(r.submitted_at)}</span>
@@ -76,7 +76,7 @@ export default async function TeacherHome() {
                 o.completion.map((c) => (
                   <div key={c.id}>
                     <div className="mb-1 flex justify-between gap-3 text-[13.5px]">
-                      <Link href={`/teacher/submissions?assignment=${c.id}&status=all`} className="truncate font-medium hover:text-primary">{c.title}</Link>
+                      <Link href={`/teacher/submissions?assignment=${c.id}&status=all`} className="truncate font-semibold hover:text-primary">{c.title}</Link>
                       <span className="shrink-0 text-muted tabular">{c.done} / {c.total}</span>
                     </div>
                     <Progress value={c.total ? (c.done / c.total) * 100 : 0} label={c.title} />
@@ -99,7 +99,7 @@ export default async function TeacherHome() {
                   {o.upcoming.map((a) => (
                     <li key={a.id}>
                       <Link href={`/teacher/assignments/${a.id}`} className="block rounded-xl px-2 py-2 hover:bg-surface-2">
-                        <span className="block truncate text-[13.5px] font-medium">{a.title}</span>
+                        <span className="block truncate text-[13.5px] font-semibold">{a.title}</span>
                         <span className="text-[12px] text-muted">{formatDateTime(a.due_at)}</span>
                       </Link>
                     </li>
@@ -117,7 +117,7 @@ export default async function TeacherHome() {
                 {o.classes.map((c) => (
                   <li key={c.id}>
                     <Link href={`/teacher/classes/${c.id}`} className="flex items-center justify-between rounded-xl px-2 py-2.5 hover:bg-surface-2">
-                      <span className="font-medium">{c.name}</span>
+                      <span className="font-semibold">{c.name}</span>
                       <span className="text-[12.5px] text-muted">{c.students} o‘quvchi</span>
                     </Link>
                   </li>

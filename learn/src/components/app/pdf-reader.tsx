@@ -102,7 +102,7 @@ export function PdfReader({ file, onClose }: { file: FileRef; onClose: () => voi
           <X />
         </Button>
         <div className="min-w-0 flex-1">
-          <div className="truncate text-[13.5px] font-semibold">{file.name}</div>
+          <div className="truncate text-[13.5px] font-bold">{file.name}</div>
           <div className="text-[11.5px] text-muted tabular">{doc ? `${page} / ${doc.numPages} bet` : "Yuklanmoqda…"}</div>
         </div>
         <Button variant="ghost" size="icon" onClick={() => setZoom((z) => Math.max(1, +(z - 0.25).toFixed(2)))} disabled={zoom <= 1} aria-label="Kichiklashtirish">

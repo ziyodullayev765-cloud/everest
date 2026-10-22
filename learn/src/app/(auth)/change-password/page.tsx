@@ -10,7 +10,7 @@ export default async function ChangePasswordPage() {
   if (!u) redirect("/login");
   return (
     <div className="animate-fade-up">
-      <h1 className="text-[24px] font-semibold tracking-[-0.02em] text-text">{u.mustChangePassword ? "Yangi parol o‘rnating" : "Parolni o‘zgartirish"}</h1>
+      <h1 className="text-[24px] font-bold tracking-[-0.02em] text-text">{u.mustChangePassword ? "Yangi parol o‘rnating" : "Parolni o‘zgartirish"}</h1>
       <p className="mt-1.5 text-[14.5px] text-muted">
         {u.mustChangePassword ? "Hisobingiz vaqtinchalik parol bilan yaratilgan. Davom etish uchun o‘zingizning parolingizni o‘rnating." : "Boshqa qurilmalardagi seanslar yopiladi."}
       </p>

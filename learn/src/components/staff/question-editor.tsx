@@ -142,7 +142,7 @@ export function QuestionEditor({ assignmentId, initial, locked, status, bank, su
               <div className="mb-1 text-[12.5px] text-muted">
                 {i + 1}. {t.questionType[q.type]} · {q.points} ball
               </div>
-              <RichText text={q.prompt} className="font-medium" />
+              <RichText text={q.prompt} className="font-semibold" />
             </CardBody>
           </Card>
         ))}
@@ -198,7 +198,7 @@ export function QuestionEditor({ assignmentId, initial, locked, status, bank, su
 
       <Card>
         <CardBody>
-          <div className="mb-2 text-[13px] font-medium text-text-2">Savol qo‘shish</div>
+          <div className="mb-2 text-[13px] font-semibold text-text-2">Savol qo‘shish</div>
           <div className="flex flex-wrap gap-2">
             {QUESTION_TYPES.map((ty) => (
               <Button
@@ -217,7 +217,7 @@ export function QuestionEditor({ assignmentId, initial, locked, status, bank, su
         </CardBody>
       </Card>
 
-      <div className="sticky bottom-4 z-10 flex flex-wrap items-center justify-between gap-2 rounded-2xl border border-border bg-surface/95 p-3 shadow-pop backdrop-blur">
+      <div className="sticky bottom-4 z-10 flex flex-wrap items-center justify-between gap-2 rounded-3xl border-2 border-border bg-surface/95 p-3 shadow-pop backdrop-blur">
         <span className="pl-1 text-[12.5px] text-muted">{dirty ? "Saqlanmagan o‘zgarishlar bor" : "Barcha o‘zgarishlar saqlangan"}</span>
         <div className="flex gap-2">
           <Button variant="secondary" onClick={() => save(false)} loading={pending} disabled={!qs.length}>
@@ -286,7 +286,7 @@ export function QuestionEditor({ assignmentId, initial, locked, status, bank, su
                   className="items-start rounded-xl border border-border p-3"
                   label={
                     <span>
-                      <span className="line-clamp-2 font-medium">{b.prompt}</span>
+                      <span className="line-clamp-2 font-semibold">{b.prompt}</span>
                       <span className="text-[12px] text-muted">
                         {t.questionType[b.type as EditQuestion["type"]]} · {b.points} ball · {b.subjectName} · {b.ownerName}
                       </span>
@@ -322,7 +322,7 @@ export function QuestionCard({ q, index, count, onChange, onMove, onDelete, onDu
     <Card className="animate-fade-up">
       <div className="flex items-center justify-between gap-2 border-b border-border px-4 py-2.5 sm:px-5">
         <div className="flex items-center gap-2">
-          <span className="grid size-7 place-items-center rounded-lg bg-surface-2 text-[13px] font-semibold tabular">{index + 1}</span>
+          <span className="grid size-7 place-items-center rounded-lg bg-surface-2 text-[13px] font-bold tabular">{index + 1}</span>
           <Badge tone="primary">{t.questionType[q.type]}</Badge>
         </div>
         {onMove && onDelete && onDuplicate && onSaveToBank ? (
@@ -365,7 +365,7 @@ export function QuestionCard({ q, index, count, onChange, onMove, onDelete, onDu
               </button>
             </div>
           ) : (
-            <label className="inline-flex h-9 cursor-pointer items-center gap-2 rounded-xl border border-dashed border-border-strong px-3 text-[13px] font-medium text-text-2 hover:border-primary hover:text-primary">
+            <label className="inline-flex h-9 cursor-pointer items-center gap-2 rounded-xl border border-dashed border-border-strong px-3 text-[13px] font-semibold text-text-2 hover:border-primary hover:text-primary">
               <ImagePlus className="size-4" aria-hidden /> {uploading ? "Yuklanmoqda…" : "Rasm qo‘shish"}
               <input
                 type="file"
@@ -393,7 +393,7 @@ export function QuestionCard({ q, index, count, onChange, onMove, onDelete, onDu
               <Button variant="ghost" size="icon" onClick={() => onChange({ audioFileId: null })} aria-label="Audioni olib tashlash"><X /></Button>
             </div>
           ) : (
-            <label className="inline-flex h-9 cursor-pointer items-center gap-2 rounded-xl border border-dashed border-border-strong px-3 text-[13px] font-medium text-text-2 hover:border-primary hover:text-primary">
+            <label className="inline-flex h-9 cursor-pointer items-center gap-2 rounded-xl border border-dashed border-border-strong px-3 text-[13px] font-semibold text-text-2 hover:border-primary hover:text-primary">
               <Music className="size-4" aria-hidden /> {audioUp ? "Yuklanmoqda…" : "Audio qo‘shish"}
               <input
                 type="file"
@@ -419,7 +419,7 @@ export function QuestionCard({ q, index, count, onChange, onMove, onDelete, onDu
 
         {isChoice || q.type === "true_false" ? (
           <div className="space-y-2">
-            <div className="text-[13px] font-medium text-text-2">Variantlar {q.type === "multiple_choice" ? "(bir nechta to‘g‘ri bo‘lishi mumkin)" : "(bitta to‘g‘ri)"}</div>
+            <div className="text-[13px] font-semibold text-text-2">Variantlar {q.type === "multiple_choice" ? "(bir nechta to‘g‘ri bo‘lishi mumkin)" : "(bitta to‘g‘ri)"}</div>
             {q.options.map((o, i) => (
               <div key={i} className="flex items-center gap-2">
                 <button
@@ -465,7 +465,7 @@ export function QuestionCard({ q, index, count, onChange, onMove, onDelete, onDu
 
         {q.type === "matching" ? (
           <div className="space-y-2">
-            <div className="text-[13px] font-medium text-text-2">Juftliklar (o‘quvchiga o‘ng ustun aralashtirib ko‘rsatiladi)</div>
+            <div className="text-[13px] font-semibold text-text-2">Juftliklar (o‘quvchiga o‘ng ustun aralashtirib ko‘rsatiladi)</div>
             {q.pairs.map((pr, i) => (
               <div key={i} className="grid grid-cols-[1fr_1fr_auto] gap-2">
                 <Input value={pr.left} onChange={(e) => onChange({ pairs: q.pairs.map((x, j) => (j === i ? { ...x, left: e.target.value } : x)) })} placeholder="Chap" aria-label="Chap tomon" />
@@ -580,7 +580,7 @@ function CsvImportDialog({ open, onClose, onImport }: { open: boolean; onClose: 
       <div className="space-y-3">
         <div className="flex flex-wrap gap-2">
           <Button variant="secondary" size="sm" onClick={template}><Download /> Namuna CSV</Button>
-          <label className="inline-flex h-8 cursor-pointer items-center gap-1.5 rounded-lg border border-border bg-surface px-3 text-[13px] font-medium hover:bg-surface-2">
+          <label className="inline-flex h-8 cursor-pointer items-center gap-1.5 rounded-lg border border-border bg-surface px-3 text-[13px] font-semibold hover:bg-surface-2">
             <FileUp className="size-4" aria-hidden /> Fayl tanlash
             <input type="file" accept=".csv,text/csv" hidden onChange={async (e) => { const f = e.target.files?.[0]; e.target.value = ""; if (f) setText(await f.text()); }} />
           </label>

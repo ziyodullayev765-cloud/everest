@@ -49,14 +49,14 @@ export function HomeworkItemsList({ items, books, progress, bookHref = (id: stri
                   <Icon className="size-4" aria-hidden />
                 </span>
                 <div className="min-w-0 flex-1">
-                  <div className="text-[12px] font-medium text-muted">
+                  <div className="text-[12px] font-semibold text-muted">
                     {n + 1}. {t.homeworkKind[it.kind]}
                   </div>
-                  <div className="text-[14.5px] font-semibold">{it.title}</div>
+                  <div className="text-[14.5px] font-bold">{it.title}</div>
                   <div className="mt-0.5 flex flex-wrap gap-x-3 gap-y-1 text-[12.5px] text-muted">
                     {it.range ? <span>{it.range}</span> : null}
                     {book ? (
-                      <Link href={bookHref(book.id)} className="inline-flex items-center gap-1 font-medium text-primary hover:underline">
+                      <Link href={bookHref(book.id)} className="inline-flex items-center gap-1 font-semibold text-primary hover:underline">
                         <Library className="size-3.5" aria-hidden /> {book.title}
                       </Link>
                     ) : null}

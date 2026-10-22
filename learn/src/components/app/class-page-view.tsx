@@ -17,7 +17,7 @@ export function ClassPageView({ data, staffTools }: { data: Awaited<ReturnType<t
               <ul className="space-y-3">
                 {data.announcements.map((a) => (
                   <li key={a.id} className="rounded-xl bg-surface-2 p-4">
-                    <div className="text-[14.5px] font-semibold">{a.title}</div>
+                    <div className="text-[14.5px] font-bold">{a.title}</div>
                     <div className="mb-2 text-[12px] text-muted">
                       {a.author} · {formatDateTime(a.createdAt)}
                     </div>
@@ -38,7 +38,7 @@ export function ClassPageView({ data, staffTools }: { data: Awaited<ReturnType<t
             <ul className="space-y-2.5 text-[13.5px]">
               {data.teachers.map((t, i) => (
                 <li key={i} className="flex items-center justify-between gap-2">
-                  <span className="font-medium">{t.name}</span>
+                  <span className="font-semibold">{t.name}</span>
                   <span className="text-[12.5px] text-muted">Ustoz</span>
                 </li>
               ))}
@@ -53,7 +53,7 @@ export function ClassPageView({ data, staffTools }: { data: Awaited<ReturnType<t
               data.challenges.map((c) => (
                 <div key={c.id}>
                   <div className="mb-1 flex justify-between gap-2 text-[13.5px]">
-                    <span className="font-medium">{c.title}</span>
+                    <span className="font-semibold">{c.title}</span>
                     <span className="shrink-0 text-muted tabular">
                       {c.progress} / {c.target}
                     </span>

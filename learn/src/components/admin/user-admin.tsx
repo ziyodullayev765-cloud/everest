@@ -27,7 +27,7 @@ export async function UserAdminPage({ user, id, back }: { user: SessionUser; id:
           <Card>
             <CardBody className="flex flex-col items-center text-center">
               <Avatar name={u.displayName} fileId={u.avatarFileId} size={72} />
-              <div className="mt-3 font-semibold">{u.displayName}</div>
+              <div className="mt-3 font-bold">{u.displayName}</div>
               <div className="text-[13px] text-muted">@{u.username}</div>
               <div className="mt-2 flex flex-wrap justify-center gap-1.5">
                 <Badge tone="primary">{t.role[u.role]}</Badge>
@@ -46,7 +46,7 @@ export async function UserAdminPage({ user, id, back }: { user: SessionUser; id:
               <CardBody className="grid grid-cols-3 gap-2 pt-3 text-center">
                 {[["Vazifa", d.activity.created], ["Baho", d.activity.graded], ["Izoh", d.activity.feedback]].map(([l, v]) => (
                   <div key={String(l)} className="rounded-xl bg-surface-2 py-2.5">
-                    <div className="text-[18px] font-semibold tabular">{v}</div>
+                    <div className="text-[18px] font-bold tabular">{v}</div>
                     <div className="text-[11.5px] text-muted">{l}</div>
                   </div>
                 ))}
@@ -73,7 +73,7 @@ export async function UserAdminPage({ user, id, back }: { user: SessionUser; id:
                     {record.grades.slice(0, 8).map((g) => (
                       <li key={g.assignment_id} className="flex items-center justify-between gap-3 py-2">
                         <span className="min-w-0 truncate">{g.title} <span className="text-muted">· {g.subject}</span></span>
-                        <span className="shrink-0 font-semibold tabular">{fmtNumber(Number(g.points), 2)} / {fmtNumber(Number(g.max_points), 2)}</span>
+                        <span className="shrink-0 font-bold tabular">{fmtNumber(Number(g.points), 2)} / {fmtNumber(Number(g.max_points), 2)}</span>
                       </li>
                     ))}
                   </ul>

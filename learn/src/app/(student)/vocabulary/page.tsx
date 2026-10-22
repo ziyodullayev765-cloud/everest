@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { BookA, Brain, ChevronRight, Flame, Keyboard, Layers, ListChecks, Puzzle, Repeat, Sparkles, Star, TriangleAlert } from "lucide-react";
+import { BookA, Brain, Gamepad2, ChevronRight, Flame, Keyboard, Layers, ListChecks, Puzzle, Repeat, Sparkles, Star, TriangleAlert } from "lucide-react";
 import { pageUser } from "@/server/auth/guards";
 import { vocabOverview } from "@/server/services/vocabulary";
 import { PageHeader, StatCard } from "@/components/ui/page";
@@ -46,7 +46,7 @@ export default async function VocabularyPage() {
             <Brain className="size-7" aria-hidden />
           </div>
           <div className="min-w-0 flex-1">
-            <h2 className="text-[18px] font-semibold">Bugungi mashg‘ulot</h2>
+            <h2 className="text-[18px] font-bold">Bugungi mashg‘ulot</h2>
             <p className="mt-1 text-[14px] text-muted">
               {sessionSize
                 ? [t.due ? `${t.due} ta takrorlash` : "", newToday ? `${newToday} ta yangi so‘z` : ""].filter(Boolean).join(" va ") + "."
@@ -68,6 +68,17 @@ export default async function VocabularyPage() {
         </CardBody>
       </Card>
 
+      <Link href="/vocabulary/game" className="group mb-5 flex items-center gap-4 rounded-3xl bg-sun p-5 text-[#3d2a00] shadow-[0_5px_0_0_var(--sun-shadow)] transition active:translate-y-[3px] active:shadow-[0_2px_0_0_var(--sun-shadow)]">
+        <span className="grid size-14 shrink-0 place-items-center rounded-2xl bg-white/35">
+          <Gamepad2 className="size-8" aria-hidden />
+        </span>
+        <span className="min-w-0 flex-1">
+          <span className="block text-[19px] font-black">So‘z o‘yini</span>
+          <span className="block text-[13.5px] font-semibold opacity-80">Tezkor test: 4 ta variant, vaqt, ball va seriya bonusi</span>
+        </span>
+        <span className="rounded-2xl bg-white px-4 py-2 text-[14px] font-black text-[#3d2a00] shadow-[0_3px_0_0_rgb(0_0_0/0.12)]">O‘ynash</span>
+      </Link>
+
       <div className="mb-5 grid grid-cols-2 gap-3 lg:grid-cols-4">
         <StatCard label="Takrorlash kerak" value={t.due} icon={<Repeat />} tone="warning" hint="hozir" />
         <StatCard label="O‘rganilgan" value={t.learned} icon={<BookA />} hint={`${t.words} ta so‘zdan`} />
@@ -86,7 +97,7 @@ export default async function VocabularyPage() {
                     <Icon className="size-5" aria-hidden />
                   </span>
                   <span className="min-w-0">
-                    <span className="block text-[14px] font-semibold">{label}</span>
+                    <span className="block text-[14px] font-bold">{label}</span>
                     <span className="block text-[12.5px] text-muted">{d}</span>
                   </span>
                 </Link>
@@ -102,7 +113,7 @@ export default async function VocabularyPage() {
                   <Link href={`/vocabulary/lists/${l.id}`} className="flex items-center gap-4 px-5 py-3.5 hover:bg-surface-2/60">
                     <span className="min-w-0 flex-1">
                       <span className="flex flex-wrap items-center gap-2">
-                        <span className="font-semibold">{l.title}</span>
+                        <span className="font-bold">{l.title}</span>
                         {l.level ? <Badge>{l.level}</Badge> : null}
                         {l.due ? <Badge tone="warning">{l.due} takrorlash</Badge> : null}
                       </span>

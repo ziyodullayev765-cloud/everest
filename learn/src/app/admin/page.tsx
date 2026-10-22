@@ -45,7 +45,7 @@ export default async function AdminHome() {
                   {o.recent.map((r) => (
                     <li key={r.id} className="flex items-center justify-between gap-3 py-2.5 text-[13.5px]">
                       <span className="min-w-0">
-                        <b className="font-medium">{r.actor ?? "Tizim"}</b> <span className="text-text-2">{auditLabel(r.action)}</span>
+                        <b className="font-semibold">{r.actor ?? "Tizim"}</b> <span className="text-text-2">{auditLabel(r.action)}</span>
                       </span>
                       <span className="shrink-0 text-[12px] text-muted">{formatDateTime(r.created_at)}</span>
                     </li>
@@ -64,7 +64,7 @@ export default async function AdminHome() {
             <CardHeader title="Umumiy bajarilish" description="E’lon qilingan vazifalar bo‘yicha" />
             <CardBody className="flex items-center gap-5">
               <Ring value={o.completion.rate ?? 0} size={96} stroke={9}>
-                <span className="text-[18px] font-semibold tabular">{fmtPercent(o.completion.rate)}</span>
+                <span className="text-[18px] font-bold tabular">{fmtPercent(o.completion.rate)}</span>
               </Ring>
               <div className="text-[13.5px] text-muted">
                 <b className="text-text tabular">{o.completion.done}</b> / <span className="tabular">{o.completion.total}</span> topshiriq bajarilgan

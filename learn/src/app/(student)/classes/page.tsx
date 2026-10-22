@@ -25,7 +25,7 @@ export default async function ClassesPage() {
                   <Link href={`/classes/${c.id}`} className="flex items-center gap-4 px-5 py-4 hover:bg-surface-2">
                     <span className="grid size-11 place-items-center rounded-xl bg-primary-soft text-[14px] font-bold text-primary-soft-fg">{c.name.slice(0, 3)}</span>
                     <span className="min-w-0 flex-1">
-                      <span className="block font-semibold">{c.name}{c.archivedAt ? " (arxiv)" : ""}</span>
+                      <span className="block font-bold">{c.name}{c.archivedAt ? " (arxiv)" : ""}</span>
                       <span className="block truncate text-[13px] text-muted">{[c.level, c.teachers].filter(Boolean).join(" · ")}</span>
                     </span>
                     <ChevronRight className="size-4 text-muted" aria-hidden />

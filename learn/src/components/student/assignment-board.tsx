@@ -60,7 +60,7 @@ export function AssignmentBoard({ rows, initialView = "active", emptyTitle = "Ho
               role="tab"
               aria-selected={view === k}
               onClick={() => setView(k)}
-              className={cn("inline-flex h-8 flex-1 items-center justify-center gap-1.5 rounded-lg px-3 text-[13px] font-medium text-muted transition sm:flex-none", view === k && "bg-surface text-text shadow-soft")}
+              className={cn("inline-flex h-8 flex-1 items-center justify-center gap-1.5 rounded-lg px-3 text-[13px] font-semibold text-muted transition sm:flex-none", view === k && "bg-surface text-text shadow-soft")}
             >
               {label}
               <span className="rounded-full bg-surface-3 px-1.5 text-[11px] tabular">{counts[k]}</span>

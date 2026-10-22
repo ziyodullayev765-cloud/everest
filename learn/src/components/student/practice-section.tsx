@@ -47,14 +47,14 @@ function Row({ r }: { r: StudentAssignmentRow }) {
     <li>
       <Link href={hrefOf(r)} className="flex items-center gap-3 px-5 py-3 hover:bg-surface-2/60">
         <span className="min-w-0 flex-1">
-          <span className="block truncate text-[14.5px] font-medium">{r.title}</span>
+          <span className="block truncate text-[14.5px] font-semibold">{r.title}</span>
           <span className="mt-0.5 flex flex-wrap items-center gap-1.5 text-[12px] text-muted">
             <span>{t.assignmentType[r.type]}</span>
             {r.level ? <span>· {r.level}</span> : null}
             {r.dueAt ? <span>· muddat {formatDate(r.dueAt)}</span> : null}
           </span>
         </span>
-        {r.bestPercent != null ? <span className="text-[13px] font-semibold tabular">{r.bestPercent}%</span> : null}
+        {r.bestPercent != null ? <span className="text-[13px] font-bold tabular">{r.bestPercent}%</span> : null}
         <StatusBadge status={r.status} />
         <ChevronRight className="size-4 shrink-0 text-muted" aria-hidden />
       </Link>
@@ -75,7 +75,7 @@ export async function PracticeSection({ studentId, area, level }: { studentId: s
       {levels.length > 1 ? (
         <nav className="scrollbar-none -mx-4 mb-5 flex gap-2 overflow-x-auto px-4 sm:mx-0 sm:px-0" aria-label="Darajalar">
           {[["", "Barchasi"], ...levels.map((l) => [l, l])].map(([k, l]) => (
-            <Link key={k} href={k ? `${base}?level=${encodeURIComponent(k)}` : base} className={cn("shrink-0 rounded-full border px-3.5 py-1.5 text-[13px] font-medium", (level ?? "") === k ? "border-primary bg-primary-soft text-primary-soft-fg" : "border-border bg-surface text-text-2 hover:bg-surface-2")}>
+            <Link key={k} href={k ? `${base}?level=${encodeURIComponent(k)}` : base} className={cn("shrink-0 rounded-full border px-3.5 py-1.5 text-[13px] font-semibold", (level ?? "") === k ? "border-primary bg-primary-soft text-primary-soft-fg" : "border-border bg-surface text-text-2 hover:bg-surface-2")}>
               {l}
             </Link>
           ))}
@@ -123,7 +123,7 @@ export async function PracticeSection({ studentId, area, level }: { studentId: s
                 description={`${list.length} ta mashg‘ulot`}
                 action={
                   <span className="flex items-center gap-2">
-                    {mm != null ? <span className="text-[13px] font-semibold tabular">{mm}%</span> : null}
+                    {mm != null ? <span className="text-[13px] font-bold tabular">{mm}%</span> : null}
                     <Badge tone={ml.tone}>{ml.label}</Badge>
                   </span>
                 }

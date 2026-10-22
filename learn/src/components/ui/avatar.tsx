@@ -9,7 +9,7 @@ export function Avatar({ name, fileId, size = 36, className }: { name: string; f
     return <img src={`/api/files/${fileId}`} alt="" width={size} height={size} className={cn("shrink-0 rounded-full object-cover ring-1 ring-border", className)} style={{ width: size, height: size }} />;
   return (
     <span
-      className={cn("grid shrink-0 place-items-center rounded-full font-semibold text-white select-none", className)}
+      className={cn("grid shrink-0 place-items-center rounded-full font-bold text-white select-none", className)}
       style={{ width: size, height: size, background: color, fontSize: Math.max(11, size * 0.38) }}
       aria-hidden
     >

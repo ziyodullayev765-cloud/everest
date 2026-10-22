@@ -38,7 +38,7 @@ export function Credentials({ rows }: { rows: { username: string; displayName: s
               <tr key={r.username}>
                 <td className="px-3 py-2">{r.displayName}</td>
                 <td className="px-3 py-2 font-mono">{r.username}</td>
-                <td className="px-3 py-2 font-mono font-semibold">{r.tempPassword}</td>
+                <td className="px-3 py-2 font-mono font-bold">{r.tempPassword}</td>
               </tr>
             ))}
           </tbody>
@@ -171,7 +171,7 @@ export function PeopleToolbar({ kind, classes, canCreateAdmins }: { kind: "stude
             <input
               type="file"
               accept=".csv,text/csv"
-              className="block w-full text-[13px] file:mr-3 file:rounded-lg file:border-0 file:bg-primary-soft file:px-3 file:py-2 file:font-medium file:text-primary-soft-fg"
+              className="block w-full text-[13px] file:mr-3 file:rounded-lg file:border-0 file:bg-primary-soft file:px-3 file:py-2 file:font-semibold file:text-primary-soft-fg"
               onChange={async (e) => {
                 const file = e.target.files?.[0];
                 if (file) setCsv(await file.text());

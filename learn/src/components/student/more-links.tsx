@@ -19,7 +19,7 @@ export function MoreLinks() {
   return (
     <nav aria-label="Bo‘limlar" className="mb-6 grid grid-cols-3 gap-2 sm:grid-cols-5 lg:hidden">
       {items.map(({ href, label, icon: Icon }) => (
-        <Link key={href} href={href} className="flex flex-col items-center gap-1.5 rounded-2xl border border-border bg-surface px-2 py-3 text-center text-[12px] font-medium text-text-2 shadow-soft active:scale-[0.98]">
+        <Link key={href} href={href} className="flex flex-col items-center gap-1.5 rounded-3xl border-2 border-border bg-surface px-2 py-3 text-center text-[12px] font-semibold text-text-2 shadow-soft active:scale-[0.98]">
           <Icon className="size-5 text-primary" aria-hidden />
           {label}
         </Link>

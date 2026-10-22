@@ -32,7 +32,7 @@ export function Dialog({ open, onClose, title, description, children, footer, cl
       <div className="max-h-[85dvh] overflow-y-auto p-5 pb-[max(1.25rem,env(safe-area-inset-bottom))] sm:p-6">
         <div className="mb-4 flex items-start justify-between gap-4">
           <div>
-            <h2 className="text-[17px] font-semibold tracking-[-0.01em]">{title}</h2>
+            <h2 className="text-[17px] font-bold tracking-[-0.01em]">{title}</h2>
             {description ? <p className="mt-1 text-[13.5px] text-muted">{description}</p> : null}
           </div>
           <button type="button" onClick={onClose} className="-mt-1 -mr-1 grid size-8 shrink-0 place-items-center rounded-lg text-muted hover:bg-surface-2" aria-label="Yopish">

@@ -22,7 +22,7 @@ export default async function ResetPage({ params }: { params: Promise<{ token: s
     );
   return (
     <div className="animate-fade-up">
-      <h1 className="text-[24px] font-semibold tracking-[-0.02em] text-text">Yangi parol</h1>
+      <h1 className="text-[24px] font-bold tracking-[-0.02em] text-text">Yangi parol</h1>
       <p className="mt-1.5 text-[14.5px] text-muted">{valid.name}, hisobingiz uchun yangi parol o‘rnating.</p>
       <ResetForm token={token} />
       <p className="mt-6 text-center text-[13px]">

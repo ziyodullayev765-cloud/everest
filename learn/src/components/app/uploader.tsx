@@ -77,7 +77,7 @@ export function FileChip({ f, onRemove, href = true }: { f: UploadedFile; onRemo
         <Icon className="size-4" aria-hidden />
       </span>
       <span className="min-w-0">
-        <span className="block truncate text-[13px] font-medium text-text">{f.name}</span>
+        <span className="block truncate text-[13px] font-semibold text-text">{f.name}</span>
         <span className="block text-[11.5px] text-muted">{fmtSize(f.size)}</span>
       </span>
     </>
@@ -150,7 +150,7 @@ export function Uploader({ files, onChange, max = 10, disabled, visibility, imag
             setDrag(false);
             add(e.dataTransfer.files);
           }}
-          className={cn("flex w-full items-center justify-center gap-2 rounded-xl border border-dashed border-border-strong bg-surface-2/50 px-4 py-4 text-[13.5px] font-medium text-text-2 transition hover:border-primary hover:text-primary", drag && "border-primary bg-primary-soft text-primary")}
+          className={cn("flex w-full items-center justify-center gap-2 rounded-xl border border-dashed border-border-strong bg-surface-2/50 px-4 py-4 text-[13.5px] font-semibold text-text-2 transition hover:border-primary hover:text-primary", drag && "border-primary bg-primary-soft text-primary")}
         >
           {busy ? <Loader2 className="size-4 animate-spin" aria-hidden /> : <Paperclip className="size-4" aria-hidden />}
           {busy ? `Yuklanmoqda…${pct != null ? ` ${pct}%` : ""}` : label}

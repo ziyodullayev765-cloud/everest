@@ -45,7 +45,7 @@ export function AssignmentCard({ a, compact }: { a: StudentAssignmentRow; compac
   return (
     <Link
       href={hrefFor(a)}
-      className="group flex animate-fade-up flex-col rounded-2xl border border-border bg-surface p-4 shadow-card transition hover:-translate-y-px hover:border-border-strong hover:shadow-pop sm:p-5"
+      className="group flex animate-fade-up flex-col rounded-3xl border-2 border-border bg-surface p-4 shadow-card transition hover:-translate-y-px hover:border-border-strong hover:shadow-pop sm:p-5"
     >
       <div className="flex items-start gap-3">
         <span className="grid size-10 shrink-0 place-items-center rounded-xl" style={{ background: `color-mix(in oklab, ${a.subjectColor} 13%, transparent)`, color: a.subjectColor }}>
@@ -53,13 +53,13 @@ export function AssignmentCard({ a, compact }: { a: StudentAssignmentRow; compac
         </span>
         <div className="min-w-0 flex-1">
           <div className="flex min-w-0 items-center gap-x-1.5 text-[12.5px] text-muted [&>span]:truncate">
-            <span className="font-medium" style={{ color: a.subjectColor }}>
+            <span className="font-semibold" style={{ color: a.subjectColor }}>
               {a.subjectName}
             </span>
             <span aria-hidden>·</span>
             <span>{t.assignmentType[a.type]}</span>
           </div>
-          <h3 className="mt-0.5 line-clamp-2 text-[15px] leading-snug font-semibold text-text">{a.title}</h3>
+          <h3 className="mt-0.5 line-clamp-2 text-[15px] leading-snug font-bold text-text">{a.title}</h3>
           {!compact ? <p className="mt-0.5 truncate text-[12.5px] text-muted">{a.authorName}</p> : null}
         </div>
         <StatusBadge status={a.status} />
@@ -71,7 +71,7 @@ export function AssignmentCard({ a, compact }: { a: StudentAssignmentRow; compac
             <span className="text-muted tabular">
               {a.gradePoints != null ? (
                 <>
-                  <b className="font-semibold text-text">{fmtNumber(a.gradePoints, 2)}</b> / {fmtNumber(a.maxScore, 2)} {t.common.points}
+                  <b className="font-bold text-text">{fmtNumber(a.gradePoints, 2)}</b> / {fmtNumber(a.maxScore, 2)} {t.common.points}
                 </>
               ) : (
                 <>max {fmtNumber(a.maxScore, 2)} {t.common.points}</>
@@ -85,7 +85,7 @@ export function AssignmentCard({ a, compact }: { a: StudentAssignmentRow; compac
             </span>
           ) : null}
         </div>
-        <span className="inline-flex shrink-0 items-center gap-0.5 font-semibold text-primary">
+        <span className="inline-flex shrink-0 items-center gap-0.5 font-bold text-primary">
           {actionLabel(a)}
           <ChevronRight className="size-4 transition-transform group-hover:translate-x-0.5" aria-hidden />
         </span>

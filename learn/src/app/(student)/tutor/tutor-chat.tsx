@@ -38,7 +38,7 @@ export function TutorChat({ kinds, initialKind, initialText, remaining, limit }:
     <div className="space-y-4">
       <div className="scrollbar-none -mx-4 flex gap-2 overflow-x-auto px-4 sm:mx-0 sm:flex-wrap sm:px-0" role="tablist">
         {Object.entries(kinds).map(([k, l]) => (
-          <button key={k} role="tab" aria-selected={kind === k} onClick={() => setKind(k)} className={cn("shrink-0 rounded-full border px-3.5 py-1.5 text-[13px] font-medium", kind === k ? "border-primary bg-primary-soft text-primary-soft-fg" : "border-border bg-surface text-text-2 hover:bg-surface-2")}>
+          <button key={k} role="tab" aria-selected={kind === k} onClick={() => setKind(k)} className={cn("shrink-0 rounded-full border px-3.5 py-1.5 text-[13px] font-semibold", kind === k ? "border-primary bg-primary-soft text-primary-soft-fg" : "border-border bg-surface text-text-2 hover:bg-surface-2")}>
             {l}
           </button>
         ))}
@@ -63,7 +63,7 @@ export function TutorChat({ kinds, initialKind, initialText, remaining, limit }:
       {answer ? (
         <Card className="animate-fade-up">
           <CardBody>
-            <div className="mb-3 flex items-center gap-2 text-[12px] font-semibold text-violet">
+            <div className="mb-3 flex items-center gap-2 text-[12px] font-bold text-violet">
               <span className="grid size-7 place-items-center rounded-lg bg-violet-soft">
                 <Bot className="size-4" aria-hidden />
               </span>

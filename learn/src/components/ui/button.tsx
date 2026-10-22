@@ -6,24 +6,26 @@ import { cn } from "@/lib/utils";
 type Variant = "primary" | "secondary" | "ghost" | "danger" | "soft" | "outline";
 type Size = "sm" | "md" | "lg" | "icon";
 
+/** "Pressable" buttons: a solid bottom edge that collapses on press. */
+const press = "active:translate-y-[2px]";
 const variants: Record<Variant, string> = {
-  primary: "bg-primary text-primary-fg hover:bg-primary-hover shadow-soft",
-  secondary: "bg-surface text-text border border-border hover:bg-surface-2 hover:border-border-strong shadow-soft",
-  outline: "border border-border-strong text-text hover:bg-surface-2",
+  primary: `bg-primary text-primary-fg hover:bg-primary-hover shadow-[0_3px_0_0_var(--primary-shadow)] active:shadow-[0_1px_0_0_var(--primary-shadow)] ${press}`,
+  secondary: `bg-surface text-text border-2 border-border hover:bg-surface-2 shadow-[0_3px_0_0_var(--border)] active:shadow-[0_1px_0_0_var(--border)] ${press}`,
+  outline: "border-2 border-border-strong text-text hover:bg-surface-2",
   ghost: "text-text-2 hover:bg-surface-2 hover:text-text",
   soft: "bg-primary-soft text-primary-soft-fg hover:brightness-[0.97]",
-  danger: "bg-danger text-white hover:brightness-110 shadow-soft",
+  danger: `bg-danger text-white hover:brightness-110 shadow-[0_3px_0_0_var(--danger-shadow)] active:shadow-[0_1px_0_0_var(--danger-shadow)] ${press}`,
 };
 const sizes: Record<Size, string> = {
-  sm: "h-8 px-3 text-[13px] gap-1.5 rounded-lg",
-  md: "h-10 px-4 text-sm gap-2 rounded-xl",
-  lg: "h-12 px-5 text-[15px] gap-2 rounded-xl",
+  sm: "h-8 px-3 text-[13px] gap-1.5 rounded-xl",
+  md: "h-11 px-4 text-[14.5px] gap-2 rounded-2xl",
+  lg: "h-[52px] px-6 text-[16px] gap-2 rounded-2xl tracking-[0.01em]",
   icon: "h-10 w-10 rounded-xl",
 };
 
 export const buttonClass = (variant: Variant = "primary", size: Size = "md", className?: string) =>
   cn(
-    "inline-flex shrink-0 items-center justify-center font-medium whitespace-nowrap transition-[background,color,border,box-shadow,transform] duration-150 select-none active:scale-[0.98] disabled:pointer-events-none disabled:opacity-50 [&_svg]:size-4 [&_svg]:shrink-0",
+    "inline-flex shrink-0 items-center justify-center font-extrabold whitespace-nowrap transition-[background,color,border,box-shadow,transform] duration-100 select-none disabled:pointer-events-none disabled:opacity-50 [&_svg]:size-4 [&_svg]:shrink-0",
     variants[variant],
     sizes[size],
     className,

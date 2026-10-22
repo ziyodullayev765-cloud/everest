@@ -21,7 +21,7 @@ export function ActivityChart({ data }: { data: { day: string; n: number }[] }) 
             content={({ active, payload, label }) =>
               active && payload?.length ? (
                 <div className="rounded-xl border border-border bg-surface px-3 py-2 text-[12.5px] shadow-pop">
-                  <div className="font-semibold">{shortDate(String(label))}</div>
+                  <div className="font-bold">{shortDate(String(label))}</div>
                   <div className="text-text-2">Faollik: <b className="tabular">{payload[0].value}</b></div>
                 </div>
               ) : null

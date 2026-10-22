@@ -3,6 +3,7 @@ import { revalidatePath } from "next/cache";
 import { run } from "@/server/action";
 import { requireRole } from "@/server/auth/session";
 import {
+  finishGame,
   importWords,
   recordReview,
   removeWord,
@@ -78,5 +79,12 @@ export async function vocabGoalAction(n: number) {
   return run(async () => {
     await setVocabGoal(await student(), n);
     revalidatePath("/vocabulary", "layout");
+  });
+}
+export async function finishGameAction(input: unknown) {
+  return run(async () => {
+    const r = await finishGame(await student(), input);
+    revalidatePath("/", "layout");
+    return r;
   });
 }

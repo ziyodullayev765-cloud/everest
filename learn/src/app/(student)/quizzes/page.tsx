@@ -42,7 +42,7 @@ export default async function QuizzesPage() {
                     <li key={a.id}>
                       <Link href={href} className="flex items-center gap-3 rounded-xl px-2 py-2.5 hover:bg-surface-2">
                         <span className="min-w-0 flex-1">
-                          <span className="block truncate text-[13.5px] font-medium">{title}</span>
+                          <span className="block truncate text-[13.5px] font-semibold">{title}</span>
                           <span className="block text-[12px] text-muted">
                             {a.attemptNo}-urinish · {formatDateTime(a.submittedAt ?? a.startedAt)}
                           </span>

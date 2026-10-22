@@ -15,7 +15,7 @@ export default function InstallPage() {
             Ilovaga qaytish
           </LinkButton>
         </div>
-        <h1 className="text-[26px] font-semibold tracking-[-0.02em]">Ilovani telefoningizga o‘rnating</h1>
+        <h1 className="text-[26px] font-bold tracking-[-0.02em]">Ilovani telefoningizga o‘rnating</h1>
         <p className="mt-2 text-[14.5px] text-muted">Bosh ekrandan bir tegish bilan oching — alohida oynada, xuddi oddiy ilovadek. App Store yoki Play Market kerak emas.</p>
         <InstallGuide />
       </div>

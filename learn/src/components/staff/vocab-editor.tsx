@@ -152,7 +152,7 @@ function WordForm({ initial, onSave, onCancel, pending }: { initial: typeof empt
               </button>
             </Badge>
           ) : (
-            <label key={k} className="inline-flex h-8 cursor-pointer items-center gap-1.5 rounded-lg border border-dashed border-border-strong px-3 text-[12.5px] font-medium text-text-2 hover:border-primary hover:text-primary">
+            <label key={k} className="inline-flex h-8 cursor-pointer items-center gap-1.5 rounded-lg border border-dashed border-border-strong px-3 text-[12.5px] font-semibold text-text-2 hover:border-primary hover:text-primary">
               {k === "audio" ? <Music className="size-3.5" aria-hidden /> : <ImagePlus className="size-3.5" aria-hidden />}
               {up === k ? "Yuklanmoqda…" : k === "audio" ? "Talaffuz audiosi" : "Rasm"}
               <input
@@ -275,7 +275,7 @@ export function WordListEditor({ list, words, canEdit }: { list: ListMeta; words
               <li key={w.id} className="flex items-start gap-3 px-5 py-3">
                 <div className="min-w-0 flex-1">
                   <div className="flex flex-wrap items-baseline gap-x-2">
-                    <span className="font-semibold">{w.english}</span>
+                    <span className="font-bold">{w.english}</span>
                     {w.phonetic ? <span className="text-[12px] text-muted">{w.phonetic}</span> : null}
                     {w.audioFileId ? <Music className="size-3.5 text-violet" aria-label="audio bor" /> : null}
                   </div>
@@ -353,7 +353,7 @@ function WordBulkDialog({ open, onClose, listId, existing }: { open: boolean; on
       <div className="space-y-3">
         <Textarea rows={8} value={text} onChange={(e) => setText(e.target.value)} placeholder={EXAMPLE} aria-label="So‘zlar ro‘yxati" className="font-mono text-[13px]" spellCheck={false} autoFocus />
         <div className="flex flex-wrap items-center gap-2">
-          <label className="inline-flex h-8 cursor-pointer items-center gap-1.5 rounded-lg border border-border bg-surface px-3 text-[13px] font-medium hover:bg-surface-2">
+          <label className="inline-flex h-8 cursor-pointer items-center gap-1.5 rounded-lg border border-border bg-surface px-3 text-[13px] font-semibold hover:bg-surface-2">
             <FileUp className="size-4" aria-hidden /> Fayldan (CSV / TXT)
             <input
               type="file"
@@ -390,15 +390,15 @@ function WordBulkDialog({ open, onClose, listId, existing }: { open: boolean; on
                 <table className="w-full text-[13px]">
                   <thead className="sticky top-0 bg-surface-2 text-left text-[11.5px] text-muted">
                     <tr>
-                      <th className="px-3 py-2 font-medium">English</th>
-                      <th className="px-3 py-2 font-medium">O‘zbekcha</th>
-                      <th className="hidden px-3 py-2 font-medium sm:table-cell">Misol</th>
+                      <th className="px-3 py-2 font-semibold">English</th>
+                      <th className="px-3 py-2 font-semibold">O‘zbekcha</th>
+                      <th className="hidden px-3 py-2 font-semibold sm:table-cell">Misol</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-border">
                     {preview.rows.slice(0, 200).map((r, i) => (
                       <tr key={i}>
-                        <td className="px-3 py-1.5 font-medium">
+                        <td className="px-3 py-1.5 font-semibold">
                           {r.english} {r.phonetic ? <span className="font-normal text-muted">{r.phonetic}</span> : null}
                         </td>
                         <td className="px-3 py-1.5">{r.uzbek}</td>
@@ -435,7 +435,7 @@ export function WordListTargets({ listId, published, classes, students, initialC
       <CardHeader title="Kimlarga" icon={<Users />} description={published ? "Biriktirilganlarga bildirishnoma yuboriladi." : "Ro‘yxat e’lon qilinganda o‘quvchilarga ko‘rinadi."} />
       <CardBody className="space-y-5">
         <div>
-          <div className="mb-2 text-[13px] font-medium text-text-2">Guruhlar</div>
+          <div className="mb-2 text-[13px] font-semibold text-text-2">Guruhlar</div>
           <div className="grid gap-2 sm:grid-cols-2">
             {classes.map((c) => (
               <Checkbox key={c.id} checked={classIds.includes(c.id)} onChange={(on) => setClassIds((x) => toggle(x, c.id, on))} className="rounded-xl border border-border p-3" label={<span>{c.name} <span className="text-muted">· {c.students} o‘quvchi</span></span>} />
@@ -444,7 +444,7 @@ export function WordListTargets({ listId, published, classes, students, initialC
           </div>
         </div>
         <div>
-          <div className="mb-2 text-[13px] font-medium text-text-2">Alohida o‘quvchilar</div>
+          <div className="mb-2 text-[13px] font-semibold text-text-2">Alohida o‘quvchilar</div>
           <Input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Ism bo‘yicha qidirish" aria-label="O‘quvchi qidirish" className="mb-2" />
           <div className="grid max-h-72 gap-1.5 overflow-y-auto sm:grid-cols-2">
             {filtered.map((s) => (

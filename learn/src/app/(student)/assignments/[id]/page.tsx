@@ -43,7 +43,7 @@ export default async function AssignmentDetail({ params }: { params: Promise<{ i
         back={{ href: "/assignments", label: t.nav.assignments }}
         eyebrow={
           <span className="flex flex-wrap items-center gap-2">
-            <span className="font-medium" style={{ color: d.subject?.color }}>
+            <span className="font-semibold" style={{ color: d.subject?.color }}>
               {d.subject?.name}
             </span>
             <span aria-hidden>·</span>
@@ -67,7 +67,7 @@ export default async function AssignmentDetail({ params }: { params: Promise<{ i
                 {a.description ? <RichText text={a.description} className="text-[15px] text-text-2" /> : null}
                 {a.instructions ? (
                   <div>
-                    <h2 className="mb-2 text-[13px] font-semibold tracking-[0.04em] text-muted uppercase">Ko‘rsatmalar</h2>
+                    <h2 className="mb-2 text-[13px] font-bold tracking-[0.04em] text-muted uppercase">Ko‘rsatmalar</h2>
                     <RichText text={a.instructions} className="text-[14.5px] text-text" />
                   </div>
                 ) : null}
@@ -92,7 +92,7 @@ export default async function AssignmentDetail({ params }: { params: Promise<{ i
                 <ListeningPlayer fileId={a.audioFileId} limit={a.replayLimit} storageKey={`asg:${a.id}`} />
                 {a.transcript && (a.transcriptMode === "always" || (a.transcriptMode === "after_submit" && submitted)) ? (
                   <details className="rounded-xl bg-surface-2 px-4 py-3 text-[14px]">
-                    <summary className="cursor-pointer font-medium">Transkript</summary>
+                    <summary className="cursor-pointer font-semibold">Transkript</summary>
                     <div className="prose-text mt-2 text-text-2">{a.transcript}</div>
                   </details>
                 ) : a.transcript && a.transcriptMode === "after_submit" ? (
@@ -130,7 +130,7 @@ export default async function AssignmentDetail({ params }: { params: Promise<{ i
                       <ExternalLink className="size-4" aria-hidden />
                     </span>
                     <span className="min-w-0">
-                      <span className="block truncate text-[13px] font-medium">{l.title}</span>
+                      <span className="block truncate text-[13px] font-semibold">{l.title}</span>
                       <span className="block truncate text-[11.5px] text-muted">{new URL(l.url).host}</span>
                     </span>
                   </a>
@@ -147,7 +147,7 @@ export default async function AssignmentDetail({ params }: { params: Promise<{ i
                   {a.rubric.map((c) => (
                     <li key={c.id} className="flex items-start justify-between gap-4 py-2.5">
                       <div>
-                        <div className="text-[14px] font-medium">{c.title}</div>
+                        <div className="text-[14px] font-semibold">{c.title}</div>
                         {c.description ? <div className="text-[13px] text-muted">{c.description}</div> : null}
                       </div>
                       <div className="shrink-0 text-[13px] text-text-2 tabular">
@@ -188,7 +188,7 @@ export default async function AssignmentDetail({ params }: { params: Promise<{ i
                   <div key={f.id} className={f.kind === "revision_request" ? "rounded-xl border border-warning/25 bg-warning-soft p-4" : "rounded-xl bg-surface-2 p-4"}>
                     <div className="mb-1.5 flex items-center gap-2 text-[12.5px] text-muted">
                       {f.kind === "revision_request" ? <RotateCcw className="size-3.5 text-warning" aria-hidden /> : null}
-                      <b className="font-semibold text-text-2">{f.author}</b> · {formatDateTime(f.createdAt)}
+                      <b className="font-bold text-text-2">{f.author}</b> · {formatDateTime(f.createdAt)}
                     </div>
                     <RichText text={f.body} className="text-[14px] text-text" />
                   </div>
@@ -203,11 +203,11 @@ export default async function AssignmentDetail({ params }: { params: Promise<{ i
             <Card className="overflow-hidden">
               <div className="bg-primary-soft px-5 py-4">
                 <div className="flex items-center justify-between">
-                  <span className="text-[13px] font-medium text-primary-soft-fg">Baho</span>
+                  <span className="text-[13px] font-semibold text-primary-soft-fg">Baho</span>
                   <Badge tone={d.grade.status === "final" ? "success" : "warning"}>{t.gradeStatus[d.grade.status]}</Badge>
                 </div>
                 <div className="mt-2 flex items-baseline gap-2 tabular">
-                  <span className="text-[34px] leading-none font-semibold text-text">{fmtNumber(d.grade.points, 2)}</span>
+                  <span className="text-[34px] leading-none font-bold text-text">{fmtNumber(d.grade.points, 2)}</span>
                   <span className="text-[15px] text-muted">/ {fmtNumber(d.grade.maxPoints, 2)}</span>
                   <span className="ml-auto grid size-11 place-items-center rounded-xl bg-surface text-[20px] font-bold text-primary shadow-soft">{d.grade.scaleLabel}</span>
                 </div>
@@ -260,7 +260,7 @@ function Meta({ icon, label, value, extra }: { icon: React.ReactNode; label: str
       <span className="mt-0.5 text-muted [&_svg]:size-4">{icon}</span>
       <div className="min-w-0">
         <div className="text-[12px] text-muted">{label}</div>
-        <div className="font-medium text-text">{value}</div>
+        <div className="font-semibold text-text">{value}</div>
         {extra ? <div className="text-[12.5px]">{extra}</div> : null}
       </div>
     </div>

@@ -31,7 +31,7 @@ export function ServiceWorkerRegistrar() {
       <div className="flex items-center gap-3 rounded-xl border border-border bg-surface px-4 py-2.5 text-sm shadow-pop">
         <RefreshCw className="size-4 text-primary" aria-hidden />
         Yangi versiya tayyor
-        <button className="rounded-lg bg-primary px-3 py-1 text-[13px] font-medium text-primary-fg" onClick={() => waiting.postMessage({ type: "SKIP_WAITING" })}>
+        <button className="rounded-lg bg-primary px-3 py-1 text-[13px] font-semibold text-primary-fg" onClick={() => waiting.postMessage({ type: "SKIP_WAITING" })}>
           Yangilash
         </button>
       </div>
@@ -54,7 +54,7 @@ export function OfflineIndicator() {
   if (online) return null;
   return (
     <div className="fixed inset-x-0 top-0 z-[75] pt-safe">
-      <div className="mx-auto flex w-fit items-center gap-2 rounded-b-xl bg-text px-4 py-2 text-[13px] font-medium text-bg shadow-pop" role="status">
+      <div className="mx-auto flex w-fit items-center gap-2 rounded-b-xl bg-text px-4 py-2 text-[13px] font-semibold text-bg shadow-pop" role="status">
         <WifiOff className="size-4" aria-hidden />
         Internet aloqasi yo‘q — saqlash va topshirish aloqa tiklanganda ishlaydi
       </div>

@@ -866,7 +866,28 @@ export const vocabReviews = pgTable(
     index("vocab_reviews_student_idx").on(t.studentId, t.reviewedAt),
     index("vocab_reviews_word_idx").on(t.wordId),
     check("vocab_reviews_grade", sql`${t.grade} between 0 and 3`),
-    check("vocab_reviews_mode", sql`${t.mode} in ('flashcard','typing','choice','match','listen')`),
+    check("vocab_reviews_mode", sql`${t.mode} in ('flashcard','typing','choice','match','listen','game')`),
+  ],
+);
+
+/** Finished vocabulary game rounds (personal bests and history; never shown to other students). */
+export const vocabGames = pgTable(
+  "vocab_games",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    studentId: uuid("student_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "restrict" }),
+    listId: uuid("list_id").references(() => wordLists.id, { onDelete: "set null" }),
+    score: integer("score").notNull(),
+    correct: integer("correct").notNull(),
+    total: integer("total").notNull(),
+    bestStreak: integer("best_streak").notNull().default(0),
+    playedAt: ts("played_at").notNull().defaultNow(),
+  },
+  (t) => [
+    index("vocab_games_student_idx").on(t.studentId, t.playedAt),
+    check("vocab_games_counts", sql`${t.correct} between 0 and ${t.total} and ${t.total} between 1 and 100 and ${t.score} between 0 and 100000`),
   ],
 );
 

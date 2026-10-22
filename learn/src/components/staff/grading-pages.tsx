@@ -53,7 +53,7 @@ export async function SubmissionsPage({ user, base, sp }: { user: SessionUser; b
                 <Link href={`${base}/grade/${r.assignmentId}/${r.studentId}`} className="flex items-center gap-3 px-5 py-3.5 hover:bg-surface-2/60">
                   <Avatar name={r.studentName} size={36} />
                   <span className="min-w-0 flex-1">
-                    <span className="block truncate text-[14px] font-semibold">{r.studentName} <span className="font-normal text-muted">· {r.classNames}</span></span>
+                    <span className="block truncate text-[14px] font-bold">{r.studentName} <span className="font-normal text-muted">· {r.classNames}</span></span>
                     <span className="flex items-center gap-1.5 truncate text-[12.5px] text-muted">
                       <span className="size-2 shrink-0 rounded-full" style={{ background: r.subjectColor }} />
                       <span className="truncate">{r.title}</span>
@@ -107,7 +107,7 @@ export async function GradePage({ user, base, assignmentId, studentId }: { user:
             <CardBody className="flex items-center gap-3">
               <Avatar name={c.student.displayName} size={44} />
               <div>
-                <div className="font-semibold">{c.student.displayName}</div>
+                <div className="font-bold">{c.student.displayName}</div>
                 <div className="text-[12.5px] text-muted">@{c.student.username}{c.student.studentCode ? ` · ID ${c.student.studentCode}` : ""}</div>
               </div>
             </CardBody>
@@ -134,7 +134,7 @@ export async function GradePage({ user, base, assignmentId, studentId }: { user:
                     <CardBody className="space-y-2 pt-3">
                       {c.versions.slice(1).map((v) => (
                         <details key={v.id} className="rounded-xl border border-border px-4 py-2.5">
-                          <summary className="cursor-pointer text-[13.5px] font-medium">{v.version}-versiya · {formatDateTime(v.submittedAt)}</summary>
+                          <summary className="cursor-pointer text-[13.5px] font-semibold">{v.version}-versiya · {formatDateTime(v.submittedAt)}</summary>
                           <RichText text={v.content || "—"} className="mt-2 text-[13.5px] text-text-2" />
                         </details>
                       ))}
@@ -223,7 +223,7 @@ export async function GradePage({ user, base, assignmentId, studentId }: { user:
               <CardHeader title="Rasmiy baho" />
               <CardBody className="space-y-3 pt-3">
                 <div className="flex items-baseline gap-2 tabular">
-                  <span className="text-[28px] font-semibold">{fmtNumber(c.grade.points, 2)}</span>
+                  <span className="text-[28px] font-bold">{fmtNumber(c.grade.points, 2)}</span>
                   <span className="text-muted">/ {fmtNumber(c.grade.maxPoints, 2)} ({c.grade.scaleLabel})</span>
                 </div>
                 <Badge tone={c.grade.status === "final" ? "success" : "warning"}>{t.gradeStatus[c.grade.status]}</Badge>
@@ -238,7 +238,7 @@ export async function GradePage({ user, base, assignmentId, studentId }: { user:
                 <ol className="space-y-3 text-[13px]">
                   {c.history.map((h) => (
                     <li key={h.id} className="border-l-2 border-border pl-3">
-                      <div className="font-medium tabular">{h.oldPoints == null ? "—" : fmtNumber(h.oldPoints, 2)} → {fmtNumber(h.newPoints, 2)} · {t.gradeStatus[h.newStatus]}</div>
+                      <div className="font-semibold tabular">{h.oldPoints == null ? "—" : fmtNumber(h.oldPoints, 2)} → {fmtNumber(h.newPoints, 2)} · {t.gradeStatus[h.newStatus]}</div>
                       <div className="text-muted">{h.by} · {formatDateTime(h.changedAt)}</div>
                       {h.reason ? <div className="text-text-2">{h.reason}</div> : null}
                     </li>
@@ -280,27 +280,27 @@ export async function GradebookPage({ user, base, sp }: { user: SessionUser; bas
             <table className="w-full text-[13px]">
               <thead className="border-b border-border bg-surface-2/60 text-[12px] text-muted">
                 <tr>
-                  <th className="sticky left-0 z-10 min-w-48 bg-surface-2 px-4 py-3 text-left font-medium">O‘quvchi</th>
+                  <th className="sticky left-0 z-10 min-w-48 bg-surface-2 px-4 py-3 text-left font-semibold">O‘quvchi</th>
                   {gb.assignments.map((a) => (
-                    <th key={a.id} className="min-w-28 px-3 py-3 text-left font-medium">
+                    <th key={a.id} className="min-w-28 px-3 py-3 text-left font-semibold">
                       <Link href={`${base}/assignments/${a.id}`} className="line-clamp-2 text-text-2 hover:text-primary" title={a.title}>{a.title}</Link>
                       <div className="font-normal">{a.dueAt ? formatDate(a.dueAt) : ""} · {a.maxScore}</div>
                     </th>
                   ))}
-                  <th className="px-4 py-3 text-right font-medium">O‘rtacha</th>
+                  <th className="px-4 py-3 text-right font-semibold">O‘rtacha</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-border">
                 {gb.rows.map((r) => (
                   <tr key={r.student.id} className="hover:bg-surface-2/40">
-                    <td className="sticky left-0 z-10 bg-surface px-4 py-2.5 font-medium">
+                    <td className="sticky left-0 z-10 bg-surface px-4 py-2.5 font-semibold">
                       <Link href={`${base}/students/${r.student.id}`} className="hover:text-primary">{r.student.name}</Link>
                       {r.student.status === "deactivated" ? <span className="ml-1 text-[11px] text-muted">(faol emas)</span> : null}
                     </td>
                     {r.cells.map((cell, i) => (
                       <td key={i} className="px-3 py-2.5 tabular">
                         {cell ? (
-                          <Link href={`${base}/grade/${gb.assignments[i].id}/${r.student.id}`} className={cn("inline-flex min-w-12 items-center justify-center rounded-lg px-2 py-1 font-semibold", cell.percent >= 86 ? "bg-success-soft text-success" : cell.percent >= 56 ? "bg-surface-2 text-text" : "bg-danger-soft text-danger")}>
+                          <Link href={`${base}/grade/${gb.assignments[i].id}/${r.student.id}`} className={cn("inline-flex min-w-12 items-center justify-center rounded-lg px-2 py-1 font-bold", cell.percent >= 86 ? "bg-success-soft text-success" : cell.percent >= 56 ? "bg-surface-2 text-text" : "bg-danger-soft text-danger")}>
                             {fmtNumber(cell.points, 2)}{cell.status === "provisional" ? "*" : ""}
                           </Link>
                         ) : (
@@ -308,7 +308,7 @@ export async function GradebookPage({ user, base, sp }: { user: SessionUser; bas
                         )}
                       </td>
                     ))}
-                    <td className="px-4 py-2.5 text-right font-semibold tabular">{fmtPercent(r.average)}</td>
+                    <td className="px-4 py-2.5 text-right font-bold tabular">{fmtPercent(r.average)}</td>
                   </tr>
                 ))}
               </tbody>
@@ -344,9 +344,9 @@ export async function StudentRecordPage({ user, base, studentId }: { user: Sessi
     <div className="mx-auto max-w-4xl">
       <PageHeader back={{ href: base === "/admin" ? "/admin/students" : "/teacher/gradebook", label: base === "/admin" ? "O‘quvchilar" : "Baholar jurnali" }} title={r.user.displayName} description={`@${r.user.username}${r.user.studentCode ? ` · ID ${r.user.studentCode}` : ""} · ${r.classes.map((c) => c.name).join(", ") || "guruhsiz"}`} />
       <div className="mb-5 grid grid-cols-2 gap-3 sm:grid-cols-3">
-        <Card><CardBody><div className="text-[12px] text-muted">O‘rtacha</div><div className="text-[22px] font-semibold tabular">{fmtPercent(avg == null ? null : Math.round(avg * 10) / 10)}</div></CardBody></Card>
-        <Card><CardBody><div className="text-[12px] text-muted">Baholar</div><div className="text-[22px] font-semibold tabular">{grades.length}</div></CardBody></Card>
-        <Card><CardBody><div className="text-[12px] text-muted">Oxirgi kirish</div><div className="text-[15px] font-semibold">{r.user.lastLoginAt ? formatDateTime(r.user.lastLoginAt) : "—"}</div></CardBody></Card>
+        <Card><CardBody><div className="text-[12px] text-muted">O‘rtacha</div><div className="text-[22px] font-bold tabular">{fmtPercent(avg == null ? null : Math.round(avg * 10) / 10)}</div></CardBody></Card>
+        <Card><CardBody><div className="text-[12px] text-muted">Baholar</div><div className="text-[22px] font-bold tabular">{grades.length}</div></CardBody></Card>
+        <Card><CardBody><div className="text-[12px] text-muted">Oxirgi kirish</div><div className="text-[15px] font-bold">{r.user.lastLoginAt ? formatDateTime(r.user.lastLoginAt) : "—"}</div></CardBody></Card>
       </div>
       <Card className="overflow-hidden">
         <CardHeader title="Baholar" icon={<ClipboardCheck />} description={base === "/teacher" ? "Faqat sizning guruhlaringiz" : undefined} />
@@ -357,8 +357,8 @@ export async function StudentRecordPage({ user, base, studentId }: { user: Sessi
                 <li key={g.assignment_id}>
                   <Link href={`${base}/grade/${g.assignment_id}/${studentId}`} className="flex items-center gap-3 rounded-xl px-2 py-2.5 hover:bg-surface-2">
                     <span className="grid size-9 place-items-center rounded-lg bg-primary-soft font-bold text-primary-soft-fg">{g.scale_label}</span>
-                    <span className="min-w-0 flex-1"><span className="block truncate text-[13.5px] font-medium">{g.title}</span><span className="text-[12px] text-muted">{g.subject} · {formatDate(g.graded_at)}</span></span>
-                    <span className="text-[13.5px] font-semibold tabular">{fmtNumber(Number(g.points), 2)} / {fmtNumber(Number(g.max_points), 2)}</span>
+                    <span className="min-w-0 flex-1"><span className="block truncate text-[13.5px] font-semibold">{g.title}</span><span className="text-[12px] text-muted">{g.subject} · {formatDate(g.graded_at)}</span></span>
+                    <span className="text-[13.5px] font-bold tabular">{fmtNumber(Number(g.points), 2)} / {fmtNumber(Number(g.max_points), 2)}</span>
                     <Badge tone={g.status === "final" ? "success" : "warning"}>{t.gradeStatus[g.status]}</Badge>
                   </Link>
                 </li>

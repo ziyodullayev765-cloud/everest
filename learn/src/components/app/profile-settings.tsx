@@ -35,7 +35,7 @@ export function ProfileSettings({ isStudent, canEditName, canEditAvatar, gamific
             <Avatar name={v.displayName} fileId={v.avatarFileId} size={56} />
             {canEditAvatar ? (
               <div className="flex flex-wrap gap-2">
-                <label className="inline-flex h-9 cursor-pointer items-center rounded-xl border border-border bg-surface px-3 text-[13px] font-medium hover:bg-surface-2">
+                <label className="inline-flex h-9 cursor-pointer items-center rounded-xl border border-border bg-surface px-3 text-[13px] font-semibold hover:bg-surface-2">
                   {uploading ? "Yuklanmoqda…" : "Rasm yuklash"}
                   <input
                     type="file"

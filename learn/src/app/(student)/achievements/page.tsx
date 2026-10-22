@@ -45,12 +45,12 @@ export default async function AchievementsPage() {
             <div className="grid size-20 shrink-0 place-items-center rounded-3xl bg-primary text-primary-fg shadow-card">
               <div className="text-center leading-none">
                 <div className="text-[28px] font-bold tabular">{g.level.level}</div>
-                <div className="mt-1 text-[10.5px] font-semibold tracking-wide uppercase">daraja</div>
+                <div className="mt-1 text-[10.5px] font-bold tracking-wide uppercase">daraja</div>
               </div>
             </div>
             <div className="min-w-0 flex-1">
               <div className="flex items-baseline justify-between gap-3">
-                <span className="text-[20px] font-semibold tabular">{fmtNumber(g.xp)} XP</span>
+                <span className="text-[20px] font-bold tabular">{fmtNumber(g.xp)} XP</span>
                 <span className="text-[13px] text-muted tabular">
                   keyingi daraja: {fmtNumber(g.level.next)} XP
                 </span>
@@ -79,9 +79,9 @@ export default async function AchievementsPage() {
                     <AchievementIcon name={a.icon} tier={a.tier} size={56} locked={!at} />
                     {!at ? <Lock className="absolute -right-1 -bottom-1 size-5 rounded-full bg-surface p-1 text-muted ring-1 ring-border" aria-hidden /> : null}
                   </div>
-                  <div className={`mt-3 text-[13.5px] font-semibold ${at ? "" : "text-muted"}`}>{a.title}</div>
+                  <div className={`mt-3 text-[13.5px] font-bold ${at ? "" : "text-muted"}`}>{a.title}</div>
                   <div className="mt-0.5 text-[12px] leading-snug text-muted">{a.description}</div>
-                  <div className="mt-2 text-[11px] font-medium text-muted">{at ? formatDate(at) : TIER_LABEL[a.tier]}</div>
+                  <div className="mt-2 text-[11px] font-semibold text-muted">{at ? formatDate(at) : TIER_LABEL[a.tier]}</div>
                 </div>
               );
             })}
@@ -95,7 +95,7 @@ export default async function AchievementsPage() {
               {(Object.keys(XP_RULE_LABELS) as (keyof XpRules)[]).map((k) => (
                 <li key={k} className="flex items-center justify-between gap-4 py-2.5">
                   <span className="text-text-2">{XP_RULE_LABELS[k]}</span>
-                  <span className="shrink-0 font-semibold text-primary tabular">+{rules[k]} XP</span>
+                  <span className="shrink-0 font-bold text-primary tabular">+{rules[k]} XP</span>
                 </li>
               ))}
             </ul>

@@ -23,7 +23,7 @@ export function BookCover({ coverFileId, title, className }: { coverFileId: stri
     <div className={cn("grid aspect-[3/4] w-full place-items-center rounded-xl border border-border bg-gradient-to-br from-primary-soft to-surface-2 p-3 text-center", className)}>
       <span>
         <BookOpen className="mx-auto mb-2 size-7 text-primary" aria-hidden />
-        <span className="line-clamp-3 text-[13px] font-semibold text-text-2">{title}</span>
+        <span className="line-clamp-3 text-[13px] font-bold text-text-2">{title}</span>
       </span>
     </div>
   );
@@ -37,7 +37,7 @@ export async function LibraryGrid({ user, base, sp, manage }: { user: SessionUse
       <PageHeader title="Kutubxona" description="Kitoblar, PDF fayllar va audio yozuvlar." actions={manage ? <LinkButton href={`${base}/library/new`}>Kitob qo‘shish</LinkButton> : null} />
       <nav className="scrollbar-none -mx-4 mb-5 flex gap-2 overflow-x-auto px-4 sm:mx-0 sm:px-0" aria-label="Turkumlar">
         {cats.map(([k, l]) => (
-          <Link key={k} href={k ? `${base}/library?category=${k}` : `${base}/library`} className={cn("shrink-0 rounded-full border px-3.5 py-1.5 text-[13px] font-medium", (sp.category ?? "") === k ? "border-primary bg-primary-soft text-primary-soft-fg" : "border-border bg-surface text-text-2 hover:bg-surface-2")}>
+          <Link key={k} href={k ? `${base}/library?category=${k}` : `${base}/library`} className={cn("shrink-0 rounded-full border px-3.5 py-1.5 text-[13px] font-semibold", (sp.category ?? "") === k ? "border-primary bg-primary-soft text-primary-soft-fg" : "border-border bg-surface text-text-2 hover:bg-surface-2")}>
             {l}
           </Link>
         ))}
@@ -50,7 +50,7 @@ export async function LibraryGrid({ user, base, sp, manage }: { user: SessionUse
                 <BookCover coverFileId={b.coverFileId} title={b.title} className="transition group-hover:-translate-y-0.5 group-hover:shadow-pop" />
                 {manage && b.status !== "published" ? <Badge className="absolute top-2 left-2">{b.status === "draft" ? "Qoralama" : "Arxiv"}</Badge> : null}
               </div>
-              <div className="mt-2 line-clamp-2 text-[13.5px] leading-snug font-semibold">{b.title}</div>
+              <div className="mt-2 line-clamp-2 text-[13.5px] leading-snug font-bold">{b.title}</div>
               <div className="mt-0.5 flex flex-wrap items-center gap-x-2 text-[12px] text-muted">
                 <span>{t.bookCategory[b.category as "other"] ?? b.category}</span>
                 {b.level ? <span>· {b.level}</span> : null}

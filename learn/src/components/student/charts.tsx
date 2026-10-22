@@ -9,11 +9,11 @@ function TooltipBox({ active, payload, label, fmt }: { active?: boolean; payload
   if (!active || !payload?.length) return null;
   return (
     <div className="rounded-xl border border-border bg-surface px-3 py-2 text-[12.5px] shadow-pop">
-      <div className="mb-1 font-semibold text-text">{fmt(label ?? "")}</div>
+      <div className="mb-1 font-bold text-text">{fmt(label ?? "")}</div>
       {payload.map((p) => (
         <div key={p.name} className="flex items-center gap-2 text-text-2">
           <span className="size-2 rounded-full" style={{ background: p.color }} />
-          {p.name}: <b className="font-semibold text-text tabular">{p.value == null ? "—" : p.name.includes("%") ? `${Math.round(p.value)}%` : p.value}</b>
+          {p.name}: <b className="font-bold text-text tabular">{p.value == null ? "—" : p.name.includes("%") ? `${Math.round(p.value)}%` : p.value}</b>
         </div>
       ))}
     </div>

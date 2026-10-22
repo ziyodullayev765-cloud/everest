@@ -11,7 +11,7 @@ export function AudioPlayer({ file, title }: { file: Pick<UploadedFile, "id" | "
         <span className="grid size-8 shrink-0 place-items-center rounded-lg bg-violet-soft text-violet">
           <Music className="size-4" aria-hidden />
         </span>
-        <span className="min-w-0 flex-1 truncate font-medium">{title || file.name}</span>
+        <span className="min-w-0 flex-1 truncate font-semibold">{title || file.name}</span>
         {file.size ? <span className="shrink-0 text-[11.5px] text-muted">{fmtSize(file.size)}</span> : null}
       </div>
       <audio controls preload="metadata" src={`/api/files/${file.id}`} className="w-full" controlsList="nodownload">
@@ -85,7 +85,7 @@ export function ListeningPlayer({ fileId, limit, storageKey, title = "Listening"
         <span className="grid size-8 shrink-0 place-items-center rounded-lg bg-violet-soft text-violet">
           <Music className="size-4" aria-hidden />
         </span>
-        <span className="min-w-0 flex-1 truncate font-medium">{title}</span>
+        <span className="min-w-0 flex-1 truncate font-semibold">{title}</span>
         {limit ? <span className="shrink-0 text-[12px] text-muted tabular">Qolgan tinglash: {left}</span> : null}
       </div>
       {blocked ? (

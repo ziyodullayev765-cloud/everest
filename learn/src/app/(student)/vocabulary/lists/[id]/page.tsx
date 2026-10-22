@@ -6,7 +6,7 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { LinkButton } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/feedback";
-import { BookA, Layers, Puzzle, Sparkles } from "lucide-react";
+import { BookA, Gamepad2, Layers, Puzzle, Sparkles } from "lucide-react";
 import { formatDate } from "@/lib/dates";
 import { WordFlags } from "./word-flags";
 
@@ -40,6 +40,9 @@ export default async function ListPage({ params }: { params: Promise<{ id: strin
             <LinkButton href={`/vocabulary/session?mode=learn&list=${id}&kind=match`} variant="secondary">
               <Puzzle /> Moslash
             </LinkButton>
+            <LinkButton href={`/vocabulary/game?list=${id}`} variant="secondary">
+              <Gamepad2 /> O‘yin
+            </LinkButton>
           </>
         }
       />
@@ -54,7 +57,7 @@ export default async function ListPage({ params }: { params: Promise<{ id: strin
                 <li key={w.id} className="flex items-start gap-3 px-4 py-3.5 sm:px-5">
                   <div className="min-w-0 flex-1">
                     <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
-                      <span className="text-[15.5px] font-semibold">{w.english}</span>
+                      <span className="text-[15.5px] font-bold">{w.english}</span>
                       {w.phonetic ? <span className="text-[12.5px] text-muted">{w.phonetic}</span> : null}
                       {w.partOfSpeech ? <span className="text-[12px] text-muted italic">{w.partOfSpeech}</span> : null}
                     </div>

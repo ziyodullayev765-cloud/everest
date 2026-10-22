@@ -43,7 +43,7 @@ export async function ProfileView({ user }: { user: SessionUser }) {
           <Card>
             <CardBody className="flex flex-col items-center text-center">
               <Avatar name={p.displayName} fileId={p.avatarFileId} size={88} />
-              <h2 className="mt-3 text-[18px] font-semibold">{p.displayName}</h2>
+              <h2 className="mt-3 text-[18px] font-bold">{p.displayName}</h2>
               <p className="text-[13px] text-muted">@{p.username}</p>
               <div className="mt-2 flex flex-wrap justify-center gap-1.5">
                 <Badge tone="primary">{t.role[p.role]}</Badge>
@@ -60,7 +60,7 @@ export async function ProfileView({ user }: { user: SessionUser }) {
                   <ul className="space-y-2 text-[13.5px]">
                     {classes.map((c) => (
                       <li key={c.id}>
-                        <a href={`/classes/${c.id}`} className="font-medium hover:text-primary">
+                        <a href={`/classes/${c.id}`} className="font-semibold hover:text-primary">
                           {c.name}
                         </a>
                         {c.level ? <div className="text-[12px] text-muted">{c.level}</div> : null}
@@ -88,7 +88,7 @@ export async function ProfileView({ user }: { user: SessionUser }) {
                 ].map(([l, v]) => (
                   <div key={String(l)} className="rounded-xl bg-surface-2 px-3.5 py-3">
                     <div className="text-[12px] text-muted">{l}</div>
-                    <div className="mt-0.5 text-[18px] font-semibold tabular">{v}</div>
+                    <div className="mt-0.5 text-[18px] font-bold tabular">{v}</div>
                   </div>
                 ))}
               </CardBody>

@@ -13,6 +13,7 @@ import { useOnline } from "@/components/app/pwa";
 import { cn } from "@/lib/utils";
 import { t } from "@/lib/i18n";
 import { AudioPlayer, ListeningPlayer } from "@/components/app/media";
+import { play } from "@/lib/sfx";
 
 type Answer = { optionId?: string; optionIds?: string[]; text?: string; blanks?: string[]; matches?: Record<string, string> } | null;
 type SaveState = "idle" | "saving" | "saved" | "error";
@@ -104,6 +105,7 @@ export function QuizPlayer(p: Props) {
   );
 
   const setAnswer = (q: PublicQuestion, a: Answer) => {
+    if (!TEXT_TYPES.has(q.type)) play("tap");
     setAnswers((prev) => ({ ...prev, [q.id]: a }));
     answersRef.current = { ...answersRef.current, [q.id]: a };
     dirty.current.add(q.id);
@@ -135,8 +137,13 @@ export function QuizPlayer(p: Props) {
       if (r.ok || r.code === "closed" || r.code === "not_found") {
         submittedRef.current = true;
         dirty.current.clear();
-        router.replace(`/quizzes/${p.assignmentId}/results/${p.attemptId}`);
-        router.refresh();
+        // No router.refresh() here: it can race the navigation and leave the student on the quiz page.
+        // The results page is always rendered fresh; if client navigation stalls, fall back to a full load.
+        const target = `/quizzes/${p.assignmentId}/results/${p.attemptId}`;
+        router.replace(target);
+        setTimeout(() => {
+          if (!location.pathname.endsWith(`/results/${p.attemptId}`)) location.assign(target);
+        }, 2500);
         return;
       }
       setSubmitting(false);
@@ -175,14 +182,14 @@ export function QuizPlayer(p: Props) {
       <div className="sticky top-[calc(56px+env(safe-area-inset-top))] z-20 -mx-4 mb-5 border-b border-border/70 bg-bg/90 px-4 pt-2 pb-3 backdrop-blur-xl sm:mx-0 sm:rounded-2xl sm:border sm:px-4 lg:top-4">
         <div className="flex items-center justify-between gap-3">
           <div className="min-w-0">
-            <div className="truncate text-[13px] font-medium text-muted">{p.title}</div>
-            <div className="text-[15px] font-semibold tabular">
+            <div className="truncate text-[13px] font-semibold text-muted">{p.title}</div>
+            <div className="text-[15px] font-bold tabular">
               {index + 1}-savol <span className="font-normal text-muted">/ {total}</span>
             </div>
           </div>
           <div className="flex items-center gap-2">
             {left != null ? (
-              <span className={cn("inline-flex h-9 items-center gap-1.5 rounded-xl px-3 text-[14px] font-semibold tabular", lowTime ? "animate-pulse bg-danger-soft text-danger" : "bg-surface-2 text-text")} role="timer" aria-live={lowTime ? "assertive" : "off"} aria-label="Qolgan vaqt">
+              <span className={cn("inline-flex h-9 items-center gap-1.5 rounded-xl px-3 text-[14px] font-bold tabular", lowTime ? "animate-pulse bg-danger-soft text-danger" : "bg-surface-2 text-text")} role="timer" aria-live={lowTime ? "assertive" : "off"} aria-label="Qolgan vaqt">
                 <Timer className="size-4" aria-hidden />
                 {fmtClock(left)}
               </span>
@@ -208,7 +215,7 @@ export function QuizPlayer(p: Props) {
                   onClick={() => goTo(i)}
                   disabled={disabled}
                   className={cn(
-                    "h-9 rounded-lg text-[13px] font-semibold tabular transition disabled:opacity-40",
+                    "h-9 rounded-lg text-[13px] font-bold tabular transition disabled:opacity-40",
                     i === index ? "bg-text text-bg" : done ? "bg-primary-soft text-primary-soft-fg" : "bg-surface-2 text-muted hover:bg-surface-3",
                   )}
                   aria-label={`${i + 1}-savol${done ? ", javob berilgan" : ""}`}
@@ -225,12 +232,12 @@ export function QuizPlayer(p: Props) {
       {p.context && (p.context.passage || p.context.audioFileId) ? <QuizContext attemptId={p.attemptId} {...p.context} /> : null}
 
       {/* Question */}
-      <section key={q.id} className="animate-fade-up rounded-2xl border border-border bg-surface p-5 shadow-card sm:p-6" aria-labelledby={`q-${q.id}`}>
+      <section key={q.id} className="animate-fade-up rounded-3xl border-2 border-border bg-surface p-5 shadow-card sm:p-6" aria-labelledby={`q-${q.id}`}>
         <div className="mb-3 flex items-center justify-between gap-2 text-[12.5px] text-muted">
           <span>{t.questionType[q.type]}</span>
           <span className="tabular">{q.points} ball</span>
         </div>
-        <div id={`q-${q.id}`} className="text-[16.5px] leading-relaxed font-medium text-text">
+        <div id={`q-${q.id}`} className="text-[16.5px] leading-relaxed font-semibold text-text">
           {q.type === "fill_blank" ? <span className="text-muted">Bo‘sh joylarni to‘ldiring:</span> : <RichText text={q.prompt} />}
         </div>
         {q.imageFileId ? (
@@ -283,7 +290,7 @@ export function QuizPlayer(p: Props) {
       </div>
       {index < total - 1 ? (
         <div className="mt-6 text-center">
-          <button onClick={() => setConfirm(true)} className="text-[13px] font-medium text-muted underline-offset-4 hover:text-text hover:underline">
+          <button onClick={() => setConfirm(true)} className="text-[13px] font-semibold text-muted underline-offset-4 hover:text-text hover:underline">
             Quizni hozir yakunlash
           </button>
         </div>
@@ -308,11 +315,11 @@ export function QuizPlayer(p: Props) {
         <div className="grid grid-cols-2 gap-3">
           <div className="rounded-xl bg-success-soft px-4 py-3">
             <div className="text-[12px] text-success">Javob berilgan</div>
-            <div className="text-[22px] font-semibold tabular">{answeredCount}</div>
+            <div className="text-[22px] font-bold tabular">{answeredCount}</div>
           </div>
           <div className={cn("rounded-xl px-4 py-3", unanswered ? "bg-warning-soft" : "bg-surface-2")}>
             <div className={cn("text-[12px]", unanswered ? "text-warning" : "text-muted")}>Javobsiz</div>
-            <div className="text-[22px] font-semibold tabular">{unanswered}</div>
+            <div className="text-[22px] font-bold tabular">{unanswered}</div>
           </div>
         </div>
         {submitError ? <p className="mt-3 text-[13px] text-danger" role="alert">{submitError}</p> : null}
@@ -337,13 +344,13 @@ function OptionCard({ selected, onClick, children, kind, letter }: { selected: b
       aria-checked={selected}
       onClick={onClick}
       className={cn(
-        "flex w-full items-center gap-3 rounded-xl border px-4 py-3.5 text-left text-[15px] transition active:scale-[0.995]",
+        "flex w-full items-center gap-3 rounded-2xl border-2 border-b-4 px-4 py-3.5 text-left text-[16px] font-semibold transition active:translate-y-[2px] active:border-b-2",
         selected ? "border-primary bg-primary-soft text-text ring-1 ring-primary" : "border-border bg-surface hover:border-border-strong hover:bg-surface-2",
       )}
     >
       <span
         className={cn(
-          "grid size-7 shrink-0 place-items-center text-[12.5px] font-semibold transition",
+          "grid size-7 shrink-0 place-items-center text-[12.5px] font-bold transition",
           kind === "radio" ? "rounded-full" : "rounded-md",
           selected ? "bg-primary text-primary-fg" : "border border-border-strong text-muted",
         )}
@@ -379,7 +386,7 @@ function QuestionInput({ q, value, onChange }: { q: PublicQuestion; value: Answe
               role="radio"
               aria-checked={value?.optionId === o.id}
               onClick={() => onChange({ optionId: o.id })}
-              className={cn("h-16 rounded-xl border text-[16px] font-semibold transition", value?.optionId === o.id ? "border-primary bg-primary-soft text-primary-soft-fg ring-1 ring-primary" : "border-border bg-surface hover:bg-surface-2")}
+              className={cn("h-16 rounded-2xl border-2 border-b-4 text-[17px] font-extrabold transition active:translate-y-[2px] active:border-b-2", value?.optionId === o.id ? "border-primary bg-primary-soft text-primary-soft-fg ring-1 ring-primary" : "border-border bg-surface hover:bg-surface-2")}
             >
               {o.label}
             </button>
@@ -433,7 +440,7 @@ function QuestionInput({ q, value, onChange }: { q: PublicQuestion; value: Answe
                   aria-label={`${i + 1}-bo‘sh joy`}
                   maxLength={200}
                   autoComplete="off"
-                  className="mx-1 inline-block h-9 w-32 rounded-lg border border-border-strong bg-surface px-2.5 text-center text-base font-medium focus:border-primary focus:ring-4 focus:ring-[var(--ring)] focus:outline-none"
+                  className="mx-1 inline-block h-9 w-32 rounded-lg border border-border-strong bg-surface px-2.5 text-center text-base font-semibold focus:border-primary focus:ring-4 focus:ring-[var(--ring)] focus:outline-none"
                 />
               ) : null}
             </span>
@@ -444,7 +451,7 @@ function QuestionInput({ q, value, onChange }: { q: PublicQuestion; value: Answe
     case "translation":
       return (
         <div className="space-y-2">
-          <p className="text-[12.5px] font-medium text-muted">{q.direction === "uz_en" ? "O‘zbekchadan inglizchaga tarjima qiling" : "Inglizchadan o‘zbekchaga tarjima qiling"}</p>
+          <p className="text-[12.5px] font-semibold text-muted">{q.direction === "uz_en" ? "O‘zbekchadan inglizchaga tarjima qiling" : "Inglizchadan o‘zbekchaga tarjima qiling"}</p>
           <Textarea value={value?.text ?? ""} onChange={(e) => onChange({ text: e.target.value })} placeholder="Tarjimangiz…" rows={3} maxLength={2000} aria-label="Tarjima" spellCheck={false} />
         </div>
       );
@@ -464,13 +471,13 @@ function QuestionInput({ q, value, onChange }: { q: PublicQuestion; value: Answe
       return (
         <div className="grid gap-3 sm:grid-cols-3">
           <div className="rounded-xl bg-surface-2 px-4 py-3">
-            <div className="text-[11.5px] font-medium text-muted">V1 · Base form</div>
-            <div className="mt-1 text-[18px] font-semibold">{q.base}</div>
+            <div className="text-[11.5px] font-semibold text-muted">V1 · Base form</div>
+            <div className="mt-1 text-[18px] font-bold">{q.base}</div>
           </div>
           {["V2 · Past Simple", "V3 · Past Participle"].map((label, i) => (
             <label key={label} className="block rounded-xl border border-border px-4 py-2.5">
-              <span className="text-[11.5px] font-medium text-muted">{label}</span>
-              <input value={b[i] ?? ""} onChange={(e) => set(i, e.target.value)} maxLength={60} autoComplete="off" autoCapitalize="none" spellCheck={false} className="mt-1 block w-full bg-transparent text-[18px] font-semibold outline-none" />
+              <span className="text-[11.5px] font-semibold text-muted">{label}</span>
+              <input value={b[i] ?? ""} onChange={(e) => set(i, e.target.value)} maxLength={60} autoComplete="off" autoCapitalize="none" spellCheck={false} className="mt-1 block w-full bg-transparent text-[18px] font-bold outline-none" />
             </label>
           ))}
         </div>
@@ -482,7 +489,7 @@ function QuestionInput({ q, value, onChange }: { q: PublicQuestion; value: Answe
         <div className="space-y-2.5">
           {q.left.map((l) => (
             <div key={l.id} className="grid items-center gap-2 rounded-xl border border-border bg-surface p-3 sm:grid-cols-[1fr_1fr]">
-              <div className="text-[15px] font-medium">
+              <div className="text-[15px] font-semibold">
                 <RichText text={l.label} as="span" />
               </div>
               <Select value={m[l.id] ?? ""} onChange={(e) => onChange({ matches: { ...m, [l.id]: e.target.value } })} aria-label={`${l.label} uchun moslik`}>
@@ -527,7 +534,7 @@ function ArrangeWords({ tokens, value, onChange }: { tokens: string[]; value: st
       <div className="flex min-h-14 flex-wrap items-center gap-2 rounded-xl border border-dashed border-border-strong bg-surface-2/60 p-3" aria-label="Siz tuzgan gap">
         {picked.length ? (
           picked.map((i, k) => (
-            <button key={`${i}-${k}`} type="button" onClick={() => update(picked.filter((_, j) => j !== k))} className="rounded-lg bg-primary px-3 py-1.5 text-[15px] font-medium text-primary-fg shadow-soft active:scale-95">
+            <button key={`${i}-${k}`} type="button" onClick={() => update(picked.filter((_, j) => j !== k))} className="rounded-lg bg-primary px-3 py-1.5 text-[15px] font-semibold text-primary-fg shadow-soft active:scale-95">
               {tokens[i]}
             </button>
           ))
@@ -542,14 +549,14 @@ function ArrangeWords({ tokens, value, onChange }: { tokens: string[]; value: st
               {w}
             </span>
           ) : (
-            <button key={i} type="button" onClick={() => update([...picked, i])} className="rounded-lg border border-border-strong bg-surface px-3 py-1.5 text-[15px] font-medium hover:border-primary active:scale-95">
+            <button key={i} type="button" onClick={() => update([...picked, i])} className="rounded-lg border border-border-strong bg-surface px-3 py-1.5 text-[15px] font-semibold hover:border-primary active:scale-95">
               {w}
             </button>
           ),
         )}
       </div>
       {picked.length ? (
-        <button type="button" onClick={() => update([])} className="text-[12.5px] font-medium text-muted hover:text-text">
+        <button type="button" onClick={() => update([])} className="text-[12.5px] font-semibold text-muted hover:text-text">
           Tozalash
         </button>
       ) : null}
@@ -560,10 +567,10 @@ function ArrangeWords({ tokens, value, onChange }: { tokens: string[]; value: st
 function QuizContext({ attemptId, passage, audioFileId, replayLimit, transcript }: { attemptId: string; passage: string; audioFileId: string | null; replayLimit: number | null; transcript: string }) {
   const [open, setOpen] = useState(true);
   return (
-    <section className="mb-4 rounded-2xl border border-border bg-surface shadow-card">
-      <button type="button" onClick={() => setOpen((o) => !o)} className="flex w-full items-center justify-between gap-2 px-5 py-3 text-left text-[13.5px] font-semibold" aria-expanded={open}>
+    <section className="mb-4 rounded-3xl border-2 border-border bg-surface shadow-card">
+      <button type="button" onClick={() => setOpen((o) => !o)} className="flex w-full items-center justify-between gap-2 px-5 py-3 text-left text-[13.5px] font-bold" aria-expanded={open}>
         {passage ? "Reading matni" : "Listening"}
-        <span className="text-[12px] font-medium text-muted">{open ? "Yashirish" : "Ko‘rsatish"}</span>
+        <span className="text-[12px] font-semibold text-muted">{open ? "Yashirish" : "Ko‘rsatish"}</span>
       </button>
       {open ? (
         <div className="space-y-3 border-t border-border px-5 py-4">
@@ -571,7 +578,7 @@ function QuizContext({ attemptId, passage, audioFileId, replayLimit, transcript 
           {passage ? <div className="prose-text max-h-[45dvh] overflow-y-auto text-[15.5px] leading-[1.75] text-text">{passage}</div> : null}
           {transcript ? (
             <details className="rounded-xl bg-surface-2 px-4 py-3 text-[14px]">
-              <summary className="cursor-pointer font-medium">Transkript</summary>
+              <summary className="cursor-pointer font-semibold">Transkript</summary>
               <div className="prose-text mt-2 text-text-2">{transcript}</div>
             </details>
           ) : null}

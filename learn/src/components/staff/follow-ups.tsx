@@ -20,7 +20,7 @@ export async function FollowUpCard({ user, base }: { user: SessionUser; base: st
                 <Link href={`${base}/students/${r.id}`} className="flex items-center gap-3 rounded-xl px-2 py-2 hover:bg-surface-2">
                   <Avatar name={r.name} size={32} />
                   <span className="min-w-0 flex-1">
-                    <span className="block truncate text-[13.5px] font-medium">{r.name}</span>
+                    <span className="block truncate text-[13.5px] font-semibold">{r.name}</span>
                     <span className="block truncate text-[12px] text-warning">{r.reasons.join(" · ")}</span>
                   </span>
                 </Link>
@@ -47,12 +47,12 @@ export async function RecentQuizzesCard({ user, base }: { user: SessionUser; bas
               <li key={r.id}>
                 <Link href={`${base}/grade/${r.assignment_id}/${r.student_id}`} className="flex items-center gap-3 rounded-xl px-2 py-2 hover:bg-surface-2">
                   <span className="min-w-0 flex-1">
-                    <span className="block truncate text-[13.5px] font-medium">{r.name}</span>
+                    <span className="block truncate text-[13.5px] font-semibold">{r.name}</span>
                     <span className="block truncate text-[12px] text-muted">
                       {r.title} · {formatDateTime(r.submittedAt)}
                     </span>
                   </span>
-                  {r.percent != null ? <span className="text-[13px] font-semibold tabular">{r.percent}%</span> : <Badge tone="violet">tekshiruvda</Badge>}
+                  {r.percent != null ? <span className="text-[13px] font-bold tabular">{r.percent}%</span> : <Badge tone="violet">tekshiruvda</Badge>}
                 </Link>
               </li>
             ))}

@@ -1,77 +1,89 @@
 @import "tailwindcss";
 
 /* ─── Design tokens ──────────────────────────────────────────────────────────
-   Soft neutral surfaces, a deep "pine" green primary, restrained secondary hues.
-   Every colour in the UI comes from these variables, so light/dark stay in sync. */
+   Playful and bright: warm white surfaces, a lively green primary, saturated accents,
+   2px borders and "pressable" 3D buttons. Every colour comes from these variables. */
 :root {
-  --bg: #f5f6f3;
+  --bg: #f7f7f4;
   --surface: #ffffff;
-  --surface-2: #f0f2ee;
-  --surface-3: #e8ebe6;
-  --border: #e2e6df;
-  --border-strong: #cdd3ca;
-  --text: #121a15;
-  --text-2: #36423b;
-  --muted: #66726b;
-  --primary: #0f7a5a;
-  --primary-hover: #0b6a4d;
+  --surface-2: #f2f3ef;
+  --surface-3: #e9ebe6;
+  --border: #e3e5e0;
+  --border-strong: #cfd3cc;
+  --text: #1b2620;
+  --text-2: #3d4a43;
+  --muted: #76827b;
+  --primary: #1ea55a;
+  --primary-hover: #22b864;
+  --primary-shadow: #157e44;
   --primary-fg: #ffffff;
-  --primary-soft: #e6f2ec;
-  --primary-soft-fg: #0a5c43;
-  --ring: rgb(15 122 90 / 0.35);
-  --info: #2f64c8;
-  --info-soft: #e8effb;
-  --warning: #a8650c;
-  --warning-soft: #fbf1df;
-  --danger: #c03a33;
-  --danger-soft: #fbeae8;
-  --success: #17804a;
-  --success-soft: #e5f4ea;
-  --violet: #6a4fc1;
-  --violet-soft: #efebfa;
+  --primary-soft: #e2f6e9;
+  --primary-soft-fg: #0f6e38;
+  --ring: rgb(30 165 90 / 0.35);
+  --info: #1a96e0;
+  --info-soft: #e1f2fd;
+  --info-shadow: #1177b5;
+  --warning: #e08a00;
+  --warning-soft: #fff3d6;
+  --sun: #ffc22e;
+  --sun-shadow: #d99a00;
+  --danger: #e5484d;
+  --danger-soft: #feebec;
+  --danger-shadow: #b8343a;
+  --success: #1ea55a;
+  --success-soft: #e2f6e9;
+  --violet: #8a56e2;
+  --violet-soft: #f1e9fe;
+  --violet-shadow: #6a3cbd;
   --shadow-sm: 0 1px 2px rgb(16 24 20 / 0.05);
-  --shadow: 0 1px 2px rgb(16 24 20 / 0.04), 0 4px 14px -4px rgb(16 24 20 / 0.08);
+  --shadow: 0 1px 2px rgb(16 24 20 / 0.03), 0 3px 10px -4px rgb(16 24 20 / 0.06);
   --shadow-lg: 0 12px 40px -12px rgb(16 24 20 / 0.22);
-  --chart-1: #0f7a5a;
-  --chart-2: #2f64c8;
-  --chart-3: #c08a1e;
-  --chart-grid: #e7eae4;
+  --chart-1: #1ea55a;
+  --chart-2: #1a96e0;
+  --chart-3: #ffb020;
+  --chart-grid: #ebede8;
   color-scheme: light;
 }
 
 .dark {
-  --bg: #0b100d;
-  --surface: #121814;
-  --surface-2: #171f1a;
-  --surface-3: #1e2721;
-  --border: #232d27;
-  --border-strong: #324039;
-  --text: #e9efea;
-  --text-2: #c3cdc6;
-  --muted: #8f9c94;
-  --primary: #36b383;
-  --primary-hover: #49c493;
-  --primary-fg: #06140e;
-  --primary-soft: #14281f;
-  --primary-soft-fg: #7fd9b1;
-  --ring: rgb(54 179 131 / 0.4);
-  --info: #6e9bf0;
-  --info-soft: #172338;
-  --warning: #e2a447;
-  --warning-soft: #2b2112;
-  --danger: #f0786f;
-  --danger-soft: #331a18;
-  --success: #4cc584;
-  --success-soft: #13281b;
-  --violet: #a48df0;
-  --violet-soft: #221d36;
+  --bg: #131f24;
+  --surface: #1a2a31;
+  --surface-2: #20333b;
+  --surface-3: #283e47;
+  --border: #2c434c;
+  --border-strong: #3b5661;
+  --text: #f1f6f4;
+  --text-2: #c9d6d1;
+  --muted: #92a7a0;
+  --primary: #3ccb75;
+  --primary-hover: #4fd884;
+  --primary-shadow: #2a9b56;
+  --primary-fg: #0b2416;
+  --primary-soft: #183a2a;
+  --primary-soft-fg: #8fe8b3;
+  --ring: rgb(60 203 117 / 0.4);
+  --info: #4cb8f5;
+  --info-soft: #173548;
+  --info-shadow: #2f8fc6;
+  --warning: #ffb020;
+  --warning-soft: #3a2e12;
+  --sun: #ffc22e;
+  --sun-shadow: #c98f00;
+  --danger: #ff6b6b;
+  --danger-soft: #3d2023;
+  --danger-shadow: #c94a4a;
+  --success: #3ccb75;
+  --success-soft: #183a2a;
+  --violet: #b48cff;
+  --violet-soft: #2c2445;
+  --violet-shadow: #8a62d8;
   --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.3);
-  --shadow: 0 1px 2px rgb(0 0 0 / 0.3), 0 6px 18px -6px rgb(0 0 0 / 0.45);
+  --shadow: 0 1px 2px rgb(0 0 0 / 0.25), 0 4px 14px -6px rgb(0 0 0 / 0.4);
   --shadow-lg: 0 16px 48px -12px rgb(0 0 0 / 0.6);
-  --chart-1: #36b383;
-  --chart-2: #6e9bf0;
-  --chart-3: #e2a447;
-  --chart-grid: #222c26;
+  --chart-1: #3ccb75;
+  --chart-2: #4cb8f5;
+  --chart-3: #ffb020;
+  --chart-grid: #263b43;
   color-scheme: dark;
 }
 
@@ -87,6 +99,12 @@
   --color-muted: var(--muted);
   --color-primary: var(--primary);
   --color-primary-hover: var(--primary-hover);
+  --color-primary-shadow: var(--primary-shadow);
+  --color-sun: var(--sun);
+  --color-sun-shadow: var(--sun-shadow);
+  --color-info-shadow: var(--info-shadow);
+  --color-danger-shadow: var(--danger-shadow);
+  --color-violet-shadow: var(--violet-shadow);
   --color-primary-fg: var(--primary-fg);
   --color-primary-soft: var(--primary-soft);
   --color-primary-soft-fg: var(--primary-soft-fg);
@@ -100,7 +118,7 @@
   --color-success-soft: var(--success-soft);
   --color-violet: var(--violet);
   --color-violet-soft: var(--violet-soft);
-  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-sans: var(--font-nunito), ui-rounded, ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
   --font-mono: var(--font-geist-mono), ui-monospace, monospace;
   --shadow-card: var(--shadow);
   --shadow-soft: var(--shadow-sm);
@@ -109,6 +127,31 @@
   --radius-2xl: 1.125rem;
   --animate-fade-up: fade-up 0.32s cubic-bezier(0.2, 0.7, 0.2, 1) both;
   --animate-shimmer: shimmer 1.4s linear infinite;
+  --animate-pop: pop 0.35s cubic-bezier(0.2, 1.6, 0.4, 1) both;
+  --animate-shake: shake 0.4s ease-in-out both;
+  --animate-slide-up: slide-up 0.28s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+@keyframes pop {
+  from {
+    transform: scale(0.6);
+    opacity: 0;
+  }
+}
+@keyframes shake {
+  20%,
+  60% {
+    transform: translateX(-6px);
+  }
+  40%,
+  80% {
+    transform: translateX(6px);
+  }
+}
+@keyframes slide-up {
+  from {
+    transform: translateY(100%);
+  }
 }
 
 @keyframes fade-up {

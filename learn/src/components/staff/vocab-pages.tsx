@@ -41,7 +41,7 @@ export async function WordListsPage({ user, base, sp }: { user: SessionUser; bas
                   </span>
                   <span className="min-w-0 flex-1">
                     <span className="flex flex-wrap items-center gap-2">
-                      <span className="font-semibold">{l.title}</span>
+                      <span className="font-bold">{l.title}</span>
                       <Badge tone={STATUS[l.status]?.tone}>{STATUS[l.status]?.label}</Badge>
                       {l.level ? <Badge>{l.level}</Badge> : null}
                     </span>
@@ -82,7 +82,7 @@ export async function WordListDetailPage({ user, base, id, tab }: { user: Sessio
       />
       <nav className="mb-5 flex gap-1 rounded-xl bg-surface-2 p-1" aria-label="Bo‘limlar">
         {tabs.map(([k, l]) => (
-          <Link key={k} href={`${base}/vocabulary/${id}${k === "words" ? "" : `?tab=${k}`}`} aria-current={current === k ? "page" : undefined} className={cn("flex-1 rounded-lg px-3 py-2 text-center text-[13.5px] font-medium", current === k ? "bg-surface text-text shadow-soft" : "text-muted hover:text-text")}>
+          <Link key={k} href={`${base}/vocabulary/${id}${k === "words" ? "" : `?tab=${k}`}`} aria-current={current === k ? "page" : undefined} className={cn("flex-1 rounded-lg px-3 py-2 text-center text-[13.5px] font-semibold", current === k ? "bg-surface text-text shadow-soft" : "text-muted hover:text-text")}>
             {l}
           </Link>
         ))}
@@ -122,18 +122,18 @@ async function ActivityTab({ user, id }: { user: SessionUser; id: string }) {
           <table className="w-full min-w-[640px] text-[13.5px]">
             <thead className="bg-surface-2 text-left text-[12px] text-muted">
               <tr>
-                <th className="px-4 py-2.5 font-medium">O‘quvchi</th>
-                <th className="px-3 py-2.5 font-medium">O‘rgangan</th>
-                <th className="px-3 py-2.5 font-medium">Puxta</th>
-                <th className="px-3 py-2.5 font-medium">Takrorlash kerak</th>
-                <th className="px-3 py-2.5 font-medium">Aniqlik</th>
-                <th className="px-3 py-2.5 font-medium">Oxirgi mashq</th>
+                <th className="px-4 py-2.5 font-semibold">O‘quvchi</th>
+                <th className="px-3 py-2.5 font-semibold">O‘rgangan</th>
+                <th className="px-3 py-2.5 font-semibold">Puxta</th>
+                <th className="px-3 py-2.5 font-semibold">Takrorlash kerak</th>
+                <th className="px-3 py-2.5 font-semibold">Aniqlik</th>
+                <th className="px-3 py-2.5 font-semibold">Oxirgi mashq</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-border">
               {rows.map((r) => (
                 <tr key={r.id}>
-                  <td className="px-4 py-2.5 font-medium">{r.name}</td>
+                  <td className="px-4 py-2.5 font-semibold">{r.name}</td>
                   <td className="px-3 py-2.5 tabular">{r.learned}</td>
                   <td className="px-3 py-2.5 tabular">{r.mastered}</td>
                   <td className="px-3 py-2.5 tabular">{r.due || "—"}</td>

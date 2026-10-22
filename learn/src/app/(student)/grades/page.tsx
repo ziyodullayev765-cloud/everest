@@ -72,7 +72,7 @@ export default async function GradesPage() {
                         >
                           <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-primary-soft text-[16px] font-bold text-primary-soft-fg">{g.label}</span>
                           <span className="min-w-0 flex-1">
-                            <span className="block truncate text-[14px] font-medium">{g.title}</span>
+                            <span className="block truncate text-[14px] font-semibold">{g.title}</span>
                             <span className="flex flex-wrap items-center gap-x-2 text-[12px] text-muted">
                               {t.assignmentType[g.type as AssignmentType]} · {formatDate(g.gradedAt)}
                               {g.feedbackCount ? (
@@ -83,7 +83,7 @@ export default async function GradesPage() {
                             </span>
                           </span>
                           <span className="shrink-0 text-right">
-                            <span className="block text-[14px] font-semibold tabular">
+                            <span className="block text-[14px] font-bold tabular">
                               {fmtNumber(g.points, 2)} / {fmtNumber(g.maxPoints, 2)}
                             </span>
                             <Badge tone={g.status === "final" ? "success" : "warning"} className="mt-0.5">

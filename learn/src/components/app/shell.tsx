@@ -87,13 +87,13 @@ function NavLink({ item, path, onNavigate }: { item: NavItem; path: string; onNa
       onClick={onNavigate}
       aria-current={active ? "page" : undefined}
       className={cn(
-        "group flex h-10 items-center gap-3 rounded-xl px-3 text-[14px] font-medium transition-colors",
-        active ? "bg-primary-soft text-primary-soft-fg" : "text-text-2 hover:bg-surface-2 hover:text-text",
+        "group flex h-10 items-center gap-3 rounded-xl px-3 text-[14px] font-semibold transition-colors",
+        active ? "bg-primary-soft text-primary-soft-fg ring-2 ring-primary/30" : "text-text-2 hover:bg-surface-2 hover:text-text",
       )}
     >
       <Icon className={cn("size-[18px] shrink-0", active ? "text-primary" : "text-muted group-hover:text-text-2")} aria-hidden />
       <span className="truncate">{item.label}</span>
-      {item.badge ? <span className="ml-auto rounded-full bg-primary px-1.5 py-px text-[11px] font-semibold text-primary-fg tabular">{item.badge > 99 ? "99+" : item.badge}</span> : null}
+      {item.badge ? <span className="ml-auto rounded-full bg-primary px-1.5 py-px text-[11px] font-bold text-primary-fg tabular">{item.badge > 99 ? "99+" : item.badge}</span> : null}
     </Link>
   );
 }
@@ -125,14 +125,14 @@ export function AppShell({ appName, logoFileId, areaLabel, sections, tabs, user,
       <div className="flex h-16 items-center gap-2.5 px-5">
         <Brand logoFileId={logoFileId} size={30} />
         <div className="min-w-0 leading-tight">
-          <div className="truncate text-[15px] font-semibold tracking-[-0.01em] text-text">{appName}</div>
-          {areaLabel ? <div className="text-[11.5px] font-medium text-muted">{areaLabel}</div> : null}
+          <div className="truncate text-[15px] font-bold tracking-[-0.01em] text-text">{appName}</div>
+          {areaLabel ? <div className="text-[11.5px] font-semibold text-muted">{areaLabel}</div> : null}
         </div>
       </div>
       <nav className="flex-1 space-y-5 overflow-y-auto px-3 py-2" aria-label="Asosiy">
         {sections.map((s, i) => (
           <div key={i}>
-            {s.title ? <div className="mb-1.5 px-3 text-[11px] font-semibold tracking-[0.06em] text-muted uppercase">{s.title}</div> : null}
+            {s.title ? <div className="mb-1.5 px-3 text-[11px] font-bold tracking-[0.06em] text-muted uppercase">{s.title}</div> : null}
             <div className="space-y-0.5">
               {s.items.map((it) => (
                 <NavLink key={it.href} item={it.href === notificationsHref ? { ...it, badge: unread } : it} path={path} onNavigate={onNavigate} />
@@ -147,7 +147,7 @@ export function AppShell({ appName, logoFileId, areaLabel, sections, tabs, user,
           <Link href={profileHref} onClick={onNavigate} className="flex min-w-0 flex-1 items-center gap-3">
             <Avatar name={user.displayName} fileId={user.avatarFileId} size={34} />
             <div className="min-w-0 leading-tight">
-              <div className="truncate text-[13.5px] font-semibold text-text">{user.displayName}</div>
+              <div className="truncate text-[13.5px] font-bold text-text">{user.displayName}</div>
               <div className="truncate text-[12px] text-muted">{user.roleLabel}</div>
             </div>
           </Link>
@@ -175,7 +175,7 @@ export function AppShell({ appName, logoFileId, areaLabel, sections, tabs, user,
           ) : null}
           <Link href={tabs ? tabs[0].href : sections[0].items[0].href} className="flex min-w-0 items-center gap-2">
             <Brand logoFileId={logoFileId} size={28} />
-            <span className="truncate text-[15px] font-semibold tracking-[-0.01em]">{appName}</span>
+            <span className="truncate text-[15px] font-bold tracking-[-0.01em]">{appName}</span>
           </Link>
           <div className="ml-auto flex items-center gap-1">
             <Link href={notificationsHref} className="relative grid size-10 place-items-center rounded-xl text-text-2 hover:bg-surface-2" aria-label={`Bildirishnomalar${unread ? `, ${unread} ta yangi` : ""}`}>
@@ -217,18 +217,18 @@ export function AppShell({ appName, logoFileId, areaLabel, sections, tabs, user,
 
       {/* Bottom tab bar (students, phones) */}
       {tabs ? (
-        <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-border/80 bg-surface/90 pb-safe backdrop-blur-xl lg:hidden" aria-label="Asosiy">
+        <nav className="fixed inset-x-0 bottom-0 z-40 border-t-2 border-border bg-surface/95 pb-safe backdrop-blur-xl lg:hidden" aria-label="Asosiy">
           <ul className="mx-auto grid h-[64px] max-w-lg grid-cols-5">
             {tabs.map((t) => {
               const Icon = ICONS[t.icon] ?? Home;
               const active = isActive(path, t);
               return (
                 <li key={t.href}>
-                  <Link href={t.href} aria-current={active ? "page" : undefined} className="relative flex h-full flex-col items-center justify-center gap-1 text-[11px] font-medium">
-                    <span className={cn("grid h-8 w-14 place-items-center rounded-full transition-colors duration-200", active ? "bg-primary-soft text-primary" : "text-muted")}>
-                      <Icon className="size-[21px]" strokeWidth={active ? 2.2 : 1.9} aria-hidden />
+                  <Link href={t.href} aria-current={active ? "page" : undefined} className="relative flex h-full flex-col items-center justify-center gap-1 text-[11px] font-semibold">
+                    <span className={cn("grid h-9 w-14 place-items-center rounded-2xl border-2 transition-colors duration-200", active ? "border-primary/40 bg-primary-soft text-primary" : "border-transparent text-muted")}>
+                      <Icon className="size-[22px]" strokeWidth={active ? 2.4 : 2} aria-hidden />
                     </span>
-                    <span className={cn("transition-colors", active ? "text-text" : "text-muted")}>{t.label}</span>
+                    <span className={cn("transition-colors", active ? "font-extrabold text-primary" : "text-muted")}>{t.label}</span>
                   </Link>
                 </li>
               );

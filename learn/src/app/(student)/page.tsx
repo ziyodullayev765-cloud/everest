@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Award, BookA, CheckCircle2, Clock3, Flame, Gauge, ListTodo, PlayCircle, Target, Trophy, Zap, ChevronRight, CalendarRange } from "lucide-react";
+import { Award, BookA, BookOpenText, CheckCircle2, Gamepad2, Headphones, PenLine, Clock3, Flame, Gauge, ListTodo, PlayCircle, Target, Trophy, Zap, ChevronRight, CalendarRange } from "lucide-react";
 import { pageUser } from "@/server/auth/guards";
 import { studentDashboard } from "@/server/services/analytics";
 import { ownProfile } from "@/server/services/users";
@@ -29,6 +29,14 @@ const MOTIVATION = [
   "Small steps every day. — Har kuni kichik qadam.",
 ];
 
+const PRACTICE = [
+  { href: "/vocabulary", label: "Lug‘at", hint: "So‘zlarni takrorlash", icon: BookA, cls: "bg-info shadow-[0_5px_0_0_var(--info-shadow)] active:shadow-[0_2px_0_0_var(--info-shadow)]" },
+  { href: "/vocabulary/game", label: "O‘yin", hint: "Tezkor so‘z o‘yini", icon: Gamepad2, cls: "bg-sun !text-[#3d2a00] shadow-[0_5px_0_0_var(--sun-shadow)] active:shadow-[0_2px_0_0_var(--sun-shadow)]" },
+  { href: "/grammar", label: "Grammatika", hint: "Mavzular bo‘yicha", icon: PenLine, cls: "bg-primary shadow-[0_5px_0_0_var(--primary-shadow)] active:shadow-[0_2px_0_0_var(--primary-shadow)]" },
+  { href: "/reading", label: "Reading", hint: "Matn va savollar", icon: BookOpenText, cls: "bg-violet shadow-[0_5px_0_0_var(--violet-shadow)] active:shadow-[0_2px_0_0_var(--violet-shadow)]" },
+  { href: "/listening", label: "Listening", hint: "Tinglab tushunish", icon: Headphones, cls: "bg-danger shadow-[0_5px_0_0_var(--danger-shadow)] active:shadow-[0_2px_0_0_var(--danger-shadow)]" },
+];
+
 function greeting() {
   const h = Number(new Intl.DateTimeFormat("en-GB", { hour: "numeric", hourCycle: "h23", timeZone: "Asia/Tashkent" }).format(new Date()));
   return h < 11 ? t.greeting.morning : h < 18 ? t.greeting.day : t.greeting.evening;
@@ -47,12 +55,12 @@ export default async function StudentHome() {
   return (
     <div className="space-y-6">
       {/* Welcome */}
-      <section className="relative animate-fade-up overflow-hidden rounded-3xl border border-border bg-surface p-5 shadow-card sm:p-7">
+      <section className="relative animate-fade-up overflow-hidden rounded-3xl border-2 border-border bg-surface p-5 shadow-card sm:p-7">
         <div className="pointer-events-none absolute inset-0 [background:radial-gradient(70%_120%_at_100%_0%,var(--primary-soft),transparent_60%)]" aria-hidden />
         <div className="relative flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
           <div className="min-w-0">
-            <p className="text-[13px] font-medium text-muted first-letter:uppercase">{formatLongToday()}</p>
-            <h1 className="mt-1 text-[24px] leading-tight font-semibold tracking-[-0.025em] text-text sm:text-[28px]">
+            <p className="text-[13px] font-semibold text-muted first-letter:uppercase">{formatLongToday()}</p>
+            <h1 className="mt-1 text-[24px] leading-tight font-bold tracking-[-0.025em] text-text sm:text-[28px]">
               {greeting()}, {firstName}!
             </h1>
             <p className="mt-1.5 text-[14px] text-muted">{MOTIVATION[dayIdx]}</p>
@@ -73,24 +81,39 @@ export default async function StudentHome() {
             </p>
           </div>
           <div className="flex shrink-0 gap-2">
-            <div className="flex items-center gap-2.5 rounded-2xl border border-border bg-surface px-3.5 py-2.5 shadow-soft">
+            <div className="flex items-center gap-2.5 rounded-3xl border-2 border-border bg-surface px-3.5 py-2.5 shadow-soft">
               <Flame className={cn("size-5", d.stats.streak ? "text-warning" : "text-muted")} aria-hidden />
               <div className="leading-tight">
-                <div className="text-[17px] font-semibold tabular">{d.stats.streak}</div>
+                <div className="text-[17px] font-bold tabular">{d.stats.streak}</div>
                 <div className="text-[11.5px] text-muted">kun ketma-ket</div>
               </div>
             </div>
             {gamify ? (
-              <Link href="/achievements" className="flex items-center gap-2.5 rounded-2xl border border-border bg-surface px-3.5 py-2.5 shadow-soft hover:border-border-strong">
+              <Link href="/achievements" className="flex items-center gap-2.5 rounded-3xl border-2 border-border bg-surface px-3.5 py-2.5 shadow-soft hover:border-border-strong">
                 <Zap className="size-5 text-primary" aria-hidden />
                 <div className="leading-tight">
-                  <div className="text-[17px] font-semibold tabular">{d.game.level.level}-daraja</div>
+                  <div className="text-[17px] font-bold tabular">{d.game.level.level}-daraja</div>
                   <div className="text-[11.5px] text-muted tabular">{fmtNumber(d.game.xp)} XP</div>
                 </div>
               </Link>
             ) : null}
           </div>
         </div>
+      </section>
+
+      {/* Practice tiles */}
+      <section aria-label="Mashq qilish" className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
+        {PRACTICE.map(({ href, label, hint, icon: Icon, cls }) => (
+          <Link key={href} href={href} className={cn("group flex flex-col gap-3 rounded-3xl p-4 text-white max-sm:last:col-span-2 transition active:translate-y-[3px]", cls)}>
+            <span className="grid size-11 place-items-center rounded-2xl bg-white/25 transition group-hover:scale-105">
+              <Icon className="size-6" aria-hidden />
+            </span>
+            <span>
+              <span className="block text-[16px] leading-tight font-black">{label}</span>
+              <span className="block text-[12.5px] font-semibold opacity-85">{href === "/vocabulary" && d.stats.vocabDue ? `${d.stats.vocabDue} ta so‘z kutmoqda` : hint}</span>
+            </span>
+          </Link>
+        ))}
       </section>
 
       {/* Stats */}
@@ -152,7 +175,7 @@ export default async function StudentHome() {
             <CardHeader title="Kunlik maqsad" description="Vazifa, quiz yoki 10 ta so‘z takrorlash = 1 mashg‘ulot" action={<LinkButton href="/profile#goals" variant="ghost" size="sm">O‘zgartirish</LinkButton>} />
             <CardBody className="flex items-center gap-4">
               <Ring value={Math.min(100, (100 * d.stats.todayUnits) / d.stats.dailyGoal)} size={84} stroke={8}>
-                <span className="text-[17px] font-semibold tabular">
+                <span className="text-[17px] font-bold tabular">
                   {Math.min(d.stats.todayUnits, d.stats.dailyGoal)}/{d.stats.dailyGoal}
                 </span>
               </Ring>
@@ -182,12 +205,12 @@ export default async function StudentHome() {
                         <Link href={hrefFor(a)} className="flex items-center gap-3 rounded-xl px-2 py-2.5 hover:bg-surface-2">
                           <span className={cn("h-9 w-1 shrink-0 rounded-full", level === "danger" ? "bg-danger" : level === "warning" ? "bg-warning" : "bg-primary/50")} aria-hidden />
                           <span className="min-w-0 flex-1">
-                            <span className="block truncate text-[13.5px] font-medium text-text">{a.title}</span>
+                            <span className="block truncate text-[13.5px] font-semibold text-text">{a.title}</span>
                             <span className="block text-[12px] text-muted">
                               {a.subjectName} · {formatDateTime(a.dueAt!)}
                             </span>
                           </span>
-                          <span className={cn("shrink-0 text-[12px] font-medium", level === "danger" ? "text-danger" : level === "warning" ? "text-warning" : "text-muted")} suppressHydrationWarning>
+                          <span className={cn("shrink-0 text-[12px] font-semibold", level === "danger" ? "text-danger" : level === "warning" ? "text-warning" : "text-muted")} suppressHydrationWarning>
                             {r.text.replace(" qoldi", "")}
                           </span>
                         </Link>
@@ -219,7 +242,7 @@ export default async function StudentHome() {
                     {d.game.earned.slice(0, 6).map((e) => {
                       const def = ACHIEVEMENTS.find((a) => a.code === e.code);
                       return def ? (
-                        <span key={e.code} className="inline-flex items-center gap-1.5 rounded-full border border-border bg-surface-2 py-1 pr-3 pl-1 text-[12.5px] font-medium text-text-2" title={def.description}>
+                        <span key={e.code} className="inline-flex items-center gap-1.5 rounded-full border border-border bg-surface-2 py-1 pr-3 pl-1 text-[12.5px] font-semibold text-text-2" title={def.description}>
                           <AchievementIcon name={def.icon} tier={def.tier} size={24} />
                           {def.title}
                         </span>
@@ -257,10 +280,10 @@ function TodayRow({ href, icon, tone, title, meta, cta }: { href: string; icon: 
         {icon}
       </span>
       <span className="min-w-0 flex-1">
-        <span className="block truncate text-[14px] font-medium text-text">{title}</span>
+        <span className="block truncate text-[14px] font-semibold text-text">{title}</span>
         <span className="block truncate text-[12px] text-muted">{meta}</span>
       </span>
-      {cta ? <span className="shrink-0 text-[12.5px] font-semibold text-primary">{cta}</span> : <ChevronRight className="size-4 shrink-0 text-muted" aria-hidden />}
+      {cta ? <span className="shrink-0 text-[12.5px] font-bold text-primary">{cta}</span> : <ChevronRight className="size-4 shrink-0 text-muted" aria-hidden />}
     </Link>
   );
 }

@@ -152,7 +152,7 @@ export function AssignmentBuilder(p: Props) {
             <Input id="title" value={v.title} onChange={(e) => set("title", e.target.value)} maxLength={200} placeholder="Masalan: Present Perfect — mashqlar" />
           </Field>
           <div>
-            <div className="mb-2 text-[13px] font-medium text-text-2">Turi</div>
+            <div className="mb-2 text-[13px] font-semibold text-text-2">Turi</div>
             <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
               {TYPES.map(({ k, icon: Icon, d }) => (
                 <button
@@ -164,7 +164,7 @@ export function AssignmentBuilder(p: Props) {
                   aria-pressed={v.type === k}
                 >
                   <Icon className={cn("size-4", v.type === k ? "text-primary" : "text-muted")} aria-hidden />
-                  <span className="text-[13px] font-semibold">{t.assignmentType[k]}</span>
+                  <span className="text-[13px] font-bold">{t.assignmentType[k]}</span>
                   <span className="text-[11.5px] text-muted">{d}</span>
                 </button>
               ))}
@@ -219,7 +219,7 @@ export function AssignmentBuilder(p: Props) {
               return (
                 <div key={it.id} className="space-y-2 rounded-xl border border-border p-3">
                   <div className="flex items-center gap-2">
-                    <span className="grid size-7 shrink-0 place-items-center rounded-lg bg-surface-2 text-[12.5px] font-semibold tabular">{i + 1}</span>
+                    <span className="grid size-7 shrink-0 place-items-center rounded-lg bg-surface-2 text-[12.5px] font-bold tabular">{i + 1}</span>
                     <Select value={it.kind} onChange={(e) => upd({ kind: e.target.value as HomeworkKind })} aria-label="Turi" className="h-9">
                       {KINDS.map((k) => (
                         <option key={k} value={k}>
@@ -336,7 +336,7 @@ export function AssignmentBuilder(p: Props) {
               <label key={c.id} className={cn("flex cursor-pointer items-center justify-between gap-2 rounded-xl border px-3 py-2.5 text-[14px]", v.classIds.includes(c.id) ? "border-primary bg-primary-soft" : "border-border hover:bg-surface-2")}>
                 <span className="flex items-center gap-2.5">
                   <input type="checkbox" className="size-4 accent-[var(--primary)]" checked={v.classIds.includes(c.id)} onChange={(e) => set("classIds", e.target.checked ? [...v.classIds, c.id] : v.classIds.filter((x) => x !== c.id))} />
-                  <span className="font-medium">{c.name}</span>
+                  <span className="font-semibold">{c.name}</span>
                 </span>
                 <span className="text-[12px] text-muted">{c.students} o‘q.</span>
               </label>
@@ -344,7 +344,7 @@ export function AssignmentBuilder(p: Props) {
             {!p.classes.length ? <p className="text-[13px] text-muted">Sizga biriktirilgan guruh yo‘q.</p> : null}
           </div>
           <details className="rounded-xl border border-border px-4 py-3" open={v.studentIds.length > 0}>
-            <summary className="cursor-pointer text-[13.5px] font-medium">Alohida o‘quvchilar ({v.studentIds.length})</summary>
+            <summary className="cursor-pointer text-[13.5px] font-semibold">Alohida o‘quvchilar ({v.studentIds.length})</summary>
             <div className="mt-3 space-y-2">
               <div className="relative">
                 <Search className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted" aria-hidden />
@@ -479,7 +479,7 @@ export function AssignmentBuilder(p: Props) {
                 ] as const
               ).map(([k, l, d]) => (
                 <button key={k} type="button" onClick={() => set("publishMode", k)} className={cn("rounded-xl border p-3 text-left", v.publishMode === k ? "border-primary bg-primary-soft ring-1 ring-primary" : "border-border hover:bg-surface-2")} aria-pressed={v.publishMode === k}>
-                  <div className="text-[13.5px] font-semibold">{l}</div>
+                  <div className="text-[13.5px] font-bold">{l}</div>
                   <div className="text-[12px] text-muted">{d}</div>
                 </button>
               ))}
@@ -494,7 +494,7 @@ export function AssignmentBuilder(p: Props) {
         </Card>
       ) : null}
 
-      <div className="sticky bottom-4 z-10 flex flex-wrap justify-end gap-2 rounded-2xl border border-border bg-surface/95 p-3 shadow-pop backdrop-blur">
+      <div className="sticky bottom-4 z-10 flex flex-wrap justify-end gap-2 rounded-3xl border-2 border-border bg-surface/95 p-3 shadow-pop backdrop-blur">
         {!live ? (
           <Button variant="secondary" onClick={() => submit("draft")} loading={pending}>
             <Save /> Qoralama

@@ -23,7 +23,7 @@ export default async function Page() {
                 <Link href={`/teacher/classes/${c.id}`} className="flex items-center gap-4 px-5 py-4 hover:bg-surface-2">
                   <span className="grid size-11 place-items-center rounded-xl bg-primary-soft font-bold text-primary-soft-fg">{c.name.slice(0, 3)}</span>
                   <span className="min-w-0 flex-1">
-                    <span className="block font-semibold">{c.name}</span>
+                    <span className="block font-bold">{c.name}</span>
                     <span className="text-[13px] text-muted">{[c.level, `${c.students} o‘quvchi`].filter(Boolean).join(" · ")}</span>
                   </span>
                   <ChevronRight className="size-4 text-muted" aria-hidden />

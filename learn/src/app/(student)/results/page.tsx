@@ -40,7 +40,7 @@ export default async function ResultsPage({ searchParams }: { searchParams: Prom
         actions={
           <nav className="inline-flex rounded-xl border border-border bg-surface-2 p-1" aria-label="Davr">
             {RANGES.map((x) => (
-              <Link key={x.k} href={`/results?r=${x.k}`} aria-current={String(days) === x.k ? "true" : undefined} className={cn("rounded-lg px-3 py-1.5 text-[13px] font-medium text-muted", String(days) === x.k && "bg-surface text-text shadow-soft")}>
+              <Link key={x.k} href={`/results?r=${x.k}`} aria-current={String(days) === x.k ? "true" : undefined} className={cn("rounded-lg px-3 py-1.5 text-[13px] font-semibold text-muted", String(days) === x.k && "bg-surface text-text shadow-soft")}>
                 {x.label}
               </Link>
             ))}
@@ -83,7 +83,7 @@ export default async function ResultsPage({ searchParams }: { searchParams: Prom
                     {r.areas.map((a) => (
                       <li key={a.key}>
                         <div className="mb-1 flex flex-wrap justify-between gap-x-3 text-[13.5px]">
-                          <span className="font-medium">{a.label}</span>
+                          <span className="font-semibold">{a.label}</span>
                           <span className="text-muted tabular">
                             {a.official != null ? `baho ${Math.round(a.official)}%` : "baho yo‘q"}
                             {a.practice != null ? ` · mashq ${Math.round(a.practice)}%` : ""}
@@ -123,7 +123,7 @@ export default async function ResultsPage({ searchParams }: { searchParams: Prom
                     {r.recentGrades.map((g) => (
                       <li key={g.id} className="flex items-center justify-between gap-3 py-2 text-[13.5px]">
                         <span className="min-w-0 truncate">{g.title}</span>
-                        <span className="shrink-0 font-semibold tabular">{Math.round(g.percent)}%{g.status !== "final" ? <span className="ml-1 text-[11px] font-normal text-muted">dastlabki</span> : null}</span>
+                        <span className="shrink-0 font-bold tabular">{Math.round(g.percent)}%{g.status !== "final" ? <span className="ml-1 text-[11px] font-normal text-muted">dastlabki</span> : null}</span>
                       </li>
                     ))}
                   </ul>
@@ -202,8 +202,8 @@ function Compare({ label, now, prev, pct }: { label: string; now: number | null;
     <div className="rounded-xl bg-surface-2 px-4 py-3">
       <div className="text-[12px] text-muted">{label}</div>
       <div className="mt-1 flex items-baseline gap-2">
-        <span className="text-[22px] font-semibold tabular">{now == null ? "—" : pct ? `${Math.round(now)}%` : now}</span>
-        <span className={cn("inline-flex items-center text-[12px] font-medium tabular", delta == null || delta === 0 ? "text-muted" : delta > 0 ? "text-success" : "text-text-2")}>
+        <span className="text-[22px] font-bold tabular">{now == null ? "—" : pct ? `${Math.round(now)}%` : now}</span>
+        <span className={cn("inline-flex items-center text-[12px] font-semibold tabular", delta == null || delta === 0 ? "text-muted" : delta > 0 ? "text-success" : "text-text-2")}>
           <Icon className="size-3.5" aria-hidden />
           {delta == null ? "" : pct ? `${Math.abs(Math.round(delta))}%` : Math.abs(delta)}
         </span>
@@ -224,11 +224,11 @@ function AreaList({ items, tone }: { items: { key: string; label: string; offici
           <li key={s.key}>
             <div className="mb-1 flex justify-between text-[13.5px]">
               {AREA_HREF[s.key] ? (
-                <Link href={AREA_HREF[s.key]} className="font-medium hover:text-primary">
+                <Link href={AREA_HREF[s.key]} className="font-semibold hover:text-primary">
                   {s.label}
                 </Link>
               ) : (
-                <span className="font-medium">{s.label}</span>
+                <span className="font-semibold">{s.label}</span>
               )}
               <span className="text-muted tabular">{Math.round(v)}%</span>
             </div>
@@ -244,7 +244,7 @@ function Mini({ label, value }: { label: string; value: number | string }) {
   return (
     <div className="rounded-xl bg-surface-2 px-3 py-2.5">
       <div className="text-[11.5px] text-muted">{label}</div>
-      <div className="text-[18px] font-semibold tabular">{value}</div>
+      <div className="text-[18px] font-bold tabular">{value}</div>
     </div>
   );
 }
@@ -253,7 +253,7 @@ function Goal({ label, value, target }: { label: string; value: number; target: 
   return (
     <div>
       <div className="mb-1 flex justify-between">
-        <span className="font-medium">{label}</span>
+        <span className="font-semibold">{label}</span>
         <span className="text-muted tabular">
           {value} / {target}
         </span>

@@ -53,11 +53,11 @@ export async function AssignmentListPage({ user, base, sp }: { user: SessionUser
             <table className="w-full min-w-[760px] text-left text-[13.5px]">
               <thead className="border-b border-border bg-surface-2/60 text-[12px] text-muted">
                 <tr>
-                  <th className="px-5 py-3 font-medium">Vazifa</th>
-                  <th className="px-3 py-3 font-medium">Holat</th>
-                  <th className="px-3 py-3 font-medium">Muddat</th>
-                  <th className="px-3 py-3 font-medium">Topshirgan</th>
-                  <th className="px-3 py-3 font-medium">Tekshirish</th>
+                  <th className="px-5 py-3 font-semibold">Vazifa</th>
+                  <th className="px-3 py-3 font-semibold">Holat</th>
+                  <th className="px-3 py-3 font-semibold">Muddat</th>
+                  <th className="px-3 py-3 font-semibold">Topshirgan</th>
+                  <th className="px-3 py-3 font-semibold">Tekshirish</th>
                   <th className="px-5 py-3" />
                 </tr>
               </thead>
@@ -65,7 +65,7 @@ export async function AssignmentListPage({ user, base, sp }: { user: SessionUser
                 {rows.map((a) => (
                   <tr key={a.id} className="hover:bg-surface-2/50">
                     <td className="px-5 py-3">
-                      <Link href={`${base}/assignments/${a.id}`} className="font-semibold hover:text-primary">
+                      <Link href={`${base}/assignments/${a.id}`} className="font-bold hover:text-primary">
                         {a.title}
                       </Link>
                       <div className="mt-0.5 flex items-center gap-1.5 text-[12px] text-muted">
@@ -242,7 +242,7 @@ export async function EditAssignmentPage({ user, base, id, tab }: { user: Sessio
             ["details", "Sozlamalar"],
             ["questions", `Savollar (${e.questions.length})`],
           ].map(([k, l]) => (
-            <Link key={k} href={`${base}/assignments/${a.id}${k === "questions" ? "?tab=questions" : ""}`} className={cn("rounded-lg px-4 py-1.5 text-[13.5px] font-medium text-muted", current === k && "bg-surface text-text shadow-soft")} aria-current={current === k ? "page" : undefined}>
+            <Link key={k} href={`${base}/assignments/${a.id}${k === "questions" ? "?tab=questions" : ""}`} className={cn("rounded-lg px-4 py-1.5 text-[13.5px] font-semibold text-muted", current === k && "bg-surface text-text shadow-soft")} aria-current={current === k ? "page" : undefined}>
               {l}
             </Link>
           ))}
@@ -281,7 +281,7 @@ export async function PreviewAssignmentPage({ user, base, id }: { user: SessionU
           <Card key={q.id}>
             <CardHeader title={`${i + 1}-savol`} description={`${t.questionType[q.type]} · ${Number(q.points)} ball`} />
             <CardBody className="space-y-2 pt-3">
-              <RichText text={q.prompt} className="font-medium" />
+              <RichText text={q.prompt} className="font-semibold" />
               {/* eslint-disable-next-line @next/next/no-img-element */}
               {q.imageFileId ? <img src={`/api/files/${q.imageFileId}`} alt="" className="max-h-60 rounded-xl border border-border" /> : null}
               {q.options.map((o) => (

@@ -32,7 +32,7 @@ export default async function SubmitPage({ params }: { params: Promise<{ id: str
             <div className="mb-4 grid size-16 place-items-center rounded-full bg-success-soft text-success">
               <CheckCircle2 className="size-8" aria-hidden />
             </div>
-            <h2 className="text-[20px] font-semibold tracking-[-0.01em]">Ishingiz topshirildi</h2>
+            <h2 className="text-[20px] font-bold tracking-[-0.01em]">Ishingiz topshirildi</h2>
             <p className="mt-1.5 text-[14px] text-muted">
               {formatDateTime(d.submission.submittedAt!)} da qabul qilindi{d.submission.version > 1 ? ` (${d.submission.version}-topshiriq)` : ""}.{d.submission.isLate ? " Muddatdan kechikib topshirildi." : ""}
             </p>

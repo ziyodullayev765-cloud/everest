@@ -26,7 +26,7 @@ export async function StaffClassPage({ user, base, id, back }: { user: SessionUs
                     <li key={s.id}>
                       <Link href={`${base}/students/${s.id}`} className="flex items-center gap-2.5 rounded-xl px-2 py-2 hover:bg-surface-2">
                         <Avatar name={s.displayName} size={30} />
-                        <span className="truncate text-[13.5px] font-medium">{s.displayName}</span>
+                        <span className="truncate text-[13.5px] font-semibold">{s.displayName}</span>
                         {s.status === "deactivated" ? <span className="text-[11px] text-muted">(faol emas)</span> : null}
                       </Link>
                     </li>

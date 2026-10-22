@@ -40,7 +40,7 @@ export async function PeopleList({ user, kind, sp }: { user: SessionUser; kind: 
                 <Link href={`${base}/${u.id}`} className="flex items-center gap-3 px-5 py-3 hover:bg-surface-2/60">
                   <Avatar name={u.displayName} size={36} />
                   <span className="min-w-0 flex-1">
-                    <span className="block truncate text-[14px] font-semibold">
+                    <span className="block truncate text-[14px] font-bold">
                       {u.displayName} {u.status === "deactivated" ? <Badge className="ml-1">Faol emas</Badge> : null}
                     </span>
                     <span className="block truncate text-[12.5px] text-muted">

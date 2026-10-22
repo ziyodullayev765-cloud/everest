@@ -5,6 +5,8 @@ import { saveAssignment, saveQuestions, setAssignmentStatus, subjectsList } from
 import { attemptResult, attemptView, saveAnswer, startAttempt, submitAttempt } from "@/server/services/quiz";
 import { studentDashboard, studentResults } from "@/server/services/analytics";
 import {
+  finishGame,
+  gameCards,
   getWordList,
   glossaryFor,
   importWords,
@@ -170,5 +172,36 @@ describe("AI tutor", () => {
     expect(tutorEnabled()).toBe(!!process.env.ANTHROPIC_API_KEY);
     if (!process.env.ANTHROPIC_API_KEY) expect((await err(askTutor(w.student, { kind: "grammar", text: "Present Perfect?" }))).code).toBe("unavailable");
     expect((await err(askTutor(w.teacher, { kind: "grammar", text: "x" }))).code).toBe("forbidden");
+  });
+});
+
+describe("vocabulary game", () => {
+  it("scores on the server, keeps personal bests and never skips spaced repetition", async () => {
+    const w = await world();
+    const listId = await saveWordList(w.teacher, null, { title: "Game" });
+    await importWords(w.teacher, listId, "book - kitob\npen - ruchka\ncat - mushuk\ndog - it");
+    await setWordListStatus(w.teacher, listId, "published");
+    await setWordListTargets(w.teacher, listId, { classIds: [w.cls.id], studentIds: [] });
+    const cards = await gameCards(w.student, listId);
+    expect(cards).toHaveLength(4);
+    for (const c of cards) {
+      expect(c.options).toContain(c.answer);
+      expect(new Set(c.options).size).toBe(c.options.length);
+    }
+    expect(await gameCards(w.otherStudent, listId)).toEqual([]);
+
+    const [a, b, c] = cards;
+    const r = await finishGame(w.student, { listId, answers: [{ wordId: a.id, correct: true, ms: 0 }, { wordId: b.id, correct: true, ms: 12000 }, { wordId: c.id, correct: false, ms: 3000 }] });
+    // 1000 (instant) + 500 (slow) + 100 streak bonus = 1600
+    expect(r).toMatchObject({ score: 1600, correct: 2, total: 3, bestStreak: 2, newBest: true });
+    const again = await finishGame(w.student, { listId, answers: [{ wordId: a.id, correct: true, ms: 6000 }] });
+    expect(again).toMatchObject({ score: 750, best: 1600, newBest: false });
+    // The second hit on `a` was not due, so its schedule didn't move; the miss on `c` needs practice.
+    const prog = await db.execute<{ word_id: string; reps: number }>(sql`select word_id, reps from vocab_progress where student_id = ${w.student.id}`);
+    expect(prog.find((p) => p.word_id === a.id)?.reps).toBe(1);
+    expect(prog.find((p) => p.word_id === c.id)?.reps).toBe(0);
+    const n = await db.execute<{ n: number }>(sql`select count(*)::int as n from vocab_reviews where student_id = ${w.student.id} and mode = 'game'`);
+    expect(n[0].n).toBe(4);
+    expect((await err(finishGame(w.otherStudent, { listId, answers: [{ wordId: a.id, correct: true, ms: 1 }] }))).code).toBe("not_found");
   });
 });

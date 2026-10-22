@@ -80,7 +80,7 @@ export function ClassManager({ cls, students, teachers, allStudents, allTeachers
           {cls.joinCode ? (
             <>
               <span className="text-[13px] text-muted">Qo‘shilish kodi:</span>
-              <code className="rounded-lg bg-surface-2 px-3 py-1.5 text-[15px] font-semibold tracking-[0.2em]">{cls.joinCode}</code>
+              <code className="rounded-lg bg-surface-2 px-3 py-1.5 text-[15px] font-bold tracking-[0.2em]">{cls.joinCode}</code>
               <Button variant="ghost" size="sm" loading={pending} onClick={() => run(() => joinCodeAction(cls.id, true), "Yangi kod yaratildi")}><RotateCcw /> Yangilash</Button>
               <Button variant="ghost" size="sm" loading={pending} onClick={() => run(() => joinCodeAction(cls.id, false), "Kod o‘chirildi")}><X /> O‘chirish</Button>
             </>
@@ -100,7 +100,7 @@ export function ClassManager({ cls, students, teachers, allStudents, allTeachers
           <ul className="space-y-2">
             {teachers.map((x) => (
               <li key={x.id} className="flex items-center justify-between rounded-xl border border-border px-3 py-2 text-[13.5px]">
-                <span className="font-medium">{x.displayName}</span>
+                <span className="font-semibold">{x.displayName}</span>
                 <Button variant="ghost" size="icon" aria-label="Ajratish" onClick={() => run(() => unassignTeacherAction(x.id), "Ajratildi")}><X /></Button>
               </li>
             ))}
@@ -120,7 +120,7 @@ export function ClassManager({ cls, students, teachers, allStudents, allTeachers
           <ul className="divide-y divide-border">
             {students.map((s) => (
               <li key={s.id} className="flex items-center justify-between gap-2 py-2 text-[13.5px]">
-                <a href={`/admin/students/${s.id}`} className="min-w-0 truncate font-medium hover:text-primary">{s.displayName} <span className="font-normal text-muted">@{s.username}</span></a>
+                <a href={`/admin/students/${s.id}`} className="min-w-0 truncate font-semibold hover:text-primary">{s.displayName} <span className="font-normal text-muted">@{s.username}</span></a>
                 <Button variant="ghost" size="sm" onClick={() => run(() => enrollAction(cls.id, [s.id], false), "Guruhdan chiqarildi")}><UserMinus /> Chiqarish</Button>
               </li>
             ))}

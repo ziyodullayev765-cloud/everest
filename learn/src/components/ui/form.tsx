@@ -38,7 +38,7 @@ export function Field({ label, htmlFor, hint, error, children, className, requir
   }
   return (
     <div className={cn("space-y-1.5", className)}>
-      <label htmlFor={id} className="block text-[13px] font-medium text-text-2">
+      <label htmlFor={id} className="block text-[13px] font-semibold text-text-2">
         {label}
         {required ? <span className="text-danger"> *</span> : null}
       </label>
@@ -58,7 +58,7 @@ export function Switch({ checked, onChange, label, description, name, disabled }
   return (
     <label className={cn("flex cursor-pointer items-start justify-between gap-4 py-1", disabled && "cursor-not-allowed opacity-60")}>
       <span className="min-w-0">
-        <span className="block text-sm font-medium text-text">{label}</span>
+        <span className="block text-sm font-semibold text-text">{label}</span>
         {description ? <span className="mt-0.5 block text-[12.5px] text-muted">{description}</span> : null}
       </span>
       <span className="relative mt-0.5 inline-flex shrink-0">

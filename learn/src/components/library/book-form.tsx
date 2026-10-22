@@ -68,7 +68,6 @@ export function BookForm({ id, base, initial }: { id: string | null; base: strin
       if (!r.ok) return setError(r.error);
       toast.success("Kitob saqlandi");
       router.push(`${base}/library/${r.data}`);
-      router.refresh();
     });
 
   return (
@@ -85,7 +84,7 @@ export function BookForm({ id, base, initial }: { id: string | null; base: strin
         <CardHeader title="Kitob haqida" />
         <CardBody className="grid gap-5 sm:grid-cols-[160px_1fr]">
           <div>
-            <div className="mb-1.5 text-[13px] font-medium text-text-2">Muqova</div>
+            <div className="mb-1.5 text-[13px] font-semibold text-text-2">Muqova</div>
             <label className="group relative block cursor-pointer">
               {v.cover ? (
                 // eslint-disable-next-line @next/next/no-img-element
@@ -159,7 +158,7 @@ export function BookForm({ id, base, initial }: { id: string | null; base: strin
         <CardBody>
           {v.pdf ? (
             <div className="flex items-center justify-between gap-3 rounded-xl border border-border p-3">
-              <a href={`/api/files/${v.pdf.id}`} target="_blank" rel="noopener" className="min-w-0 truncate text-[14px] font-medium hover:text-primary">
+              <a href={`/api/files/${v.pdf.id}`} target="_blank" rel="noopener" className="min-w-0 truncate text-[14px] font-semibold hover:text-primary">
                 {v.pdf.name} <span className="font-normal text-muted">· {fmtSize(v.pdf.size)}</span>
               </a>
               <Button variant="ghost" size="sm" onClick={() => set("pdf", null)}>
@@ -167,7 +166,7 @@ export function BookForm({ id, base, initial }: { id: string | null; base: strin
               </Button>
             </div>
           ) : (
-            <label className="flex cursor-pointer items-center justify-center gap-2 rounded-xl border border-dashed border-border-strong bg-surface-2/50 px-4 py-5 text-[13.5px] font-medium text-text-2 hover:border-primary hover:text-primary">
+            <label className="flex cursor-pointer items-center justify-center gap-2 rounded-xl border border-dashed border-border-strong bg-surface-2/50 px-4 py-5 text-[13.5px] font-semibold text-text-2 hover:border-primary hover:text-primary">
               <Upload className="size-4" aria-hidden /> PDF yuklash
               <input
                 type="file"
@@ -194,7 +193,7 @@ export function BookForm({ id, base, initial }: { id: string | null; base: strin
         <CardBody className="space-y-2">
           {v.audio.map((a, i) => (
             <div key={a.file.id} className="flex items-center gap-2 rounded-xl border border-border p-2">
-              <span className="grid size-7 shrink-0 place-items-center rounded-lg bg-surface-2 text-[12px] font-semibold tabular">{i + 1}</span>
+              <span className="grid size-7 shrink-0 place-items-center rounded-lg bg-surface-2 text-[12px] font-bold tabular">{i + 1}</span>
               <Input value={a.title} onChange={(e) => set("audio", v.audio.map((x, j) => (j === i ? { ...x, title: e.target.value } : x)))} aria-label="Trek nomi" className="h-9" />
               <span className="hidden shrink-0 text-[11.5px] text-muted sm:inline">{fmtSize(a.file.size)}</span>
               <Button variant="ghost" size="icon" className="size-8" disabled={i === 0} onClick={() => { const n = [...v.audio]; [n[i - 1], n[i]] = [n[i], n[i - 1]]; set("audio", n); }} aria-label="Yuqoriga"><ArrowUp /></Button>
@@ -202,7 +201,7 @@ export function BookForm({ id, base, initial }: { id: string | null; base: strin
               <Button variant="ghost" size="icon" className="size-8 hover:text-danger" onClick={() => set("audio", v.audio.filter((_, j) => j !== i))} aria-label="O‘chirish"><Trash2 /></Button>
             </div>
           ))}
-          <label className="flex cursor-pointer items-center justify-center gap-2 rounded-xl border border-dashed border-border-strong bg-surface-2/50 px-4 py-4 text-[13.5px] font-medium text-text-2 hover:border-primary hover:text-primary">
+          <label className="flex cursor-pointer items-center justify-center gap-2 rounded-xl border border-dashed border-border-strong bg-surface-2/50 px-4 py-4 text-[13.5px] font-semibold text-text-2 hover:border-primary hover:text-primary">
             <Upload className="size-4" aria-hidden /> Audio qo‘shish (MP3, M4A, WAV, OGG)
             <input
               type="file"
@@ -225,7 +224,7 @@ export function BookForm({ id, base, initial }: { id: string | null; base: strin
         </CardBody>
       </Card>
 
-      <div className="sticky bottom-4 z-10 flex justify-end rounded-2xl border border-border bg-surface/95 p-3 shadow-pop backdrop-blur">
+      <div className="sticky bottom-4 z-10 flex justify-end rounded-3xl border-2 border-border bg-surface/95 p-3 shadow-pop backdrop-blur">
         <Button onClick={save} loading={pending} disabled={!!up.state || v.title.trim().length < 2}>
           <Save /> Saqlash
         </Button>

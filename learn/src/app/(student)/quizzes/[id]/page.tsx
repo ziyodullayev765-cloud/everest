@@ -43,7 +43,7 @@ export default async function QuizOverviewPage({ params }: { params: Promise<{ i
         back={{ href: "/quizzes", label: t.nav.quizzes }}
         eyebrow={
           <span className="flex items-center gap-2">
-            <span className="font-medium" style={{ color: o.subject?.color }}>
+            <span className="font-semibold" style={{ color: o.subject?.color }}>
               {o.subject?.name}
             </span>
             <span aria-hidden>·</span> {t.assignmentType[a.type]}
@@ -62,13 +62,13 @@ export default async function QuizOverviewPage({ params }: { params: Promise<{ i
                     <Icon className="size-3.5" aria-hidden />
                     {label}
                   </div>
-                  <div className="mt-1 text-[14.5px] font-semibold tabular">{value}</div>
+                  <div className="mt-1 text-[14.5px] font-bold tabular">{value}</div>
                 </div>
               ))}
             </div>
             {a.instructions ? (
               <div className="rounded-xl border border-border p-4">
-                <div className="mb-1.5 flex items-center gap-1.5 text-[13px] font-semibold">
+                <div className="mb-1.5 flex items-center gap-1.5 text-[13px] font-bold">
                   <HelpCircle className="size-4 text-primary" aria-hidden /> Ko‘rsatmalar
                 </div>
                 <RichText text={a.instructions} className="text-[14px] text-text-2" />
@@ -119,14 +119,14 @@ export default async function QuizOverviewPage({ params }: { params: Promise<{ i
                   return (
                     <li key={at.id}>
                       <Link href={href} className="flex items-center gap-3 rounded-xl px-2 py-3 hover:bg-surface-2">
-                        <span className="grid size-9 place-items-center rounded-lg bg-surface-2 text-[13px] font-semibold tabular">{at.attemptNo}</span>
+                        <span className="grid size-9 place-items-center rounded-lg bg-surface-2 text-[13px] font-bold tabular">{at.attemptNo}</span>
                         <span className="min-w-0 flex-1 text-[13px] text-muted">{formatDateTime(at.submittedAt ?? at.startedAt)}{at.isLate ? " · kechikkan" : ""}</span>
                         {at.status === "in_progress" ? (
                           <Badge tone="warning">Jarayonda</Badge>
                         ) : pct == null ? (
                           <Badge tone="violet">Tekshirilmoqda</Badge>
                         ) : (
-                          <span className="text-[14px] font-semibold tabular">
+                          <span className="text-[14px] font-bold tabular">
                             {fmtNumber(Number(at.score), 2)} / {fmtNumber(Number(at.maxScore), 2)} <span className="font-normal text-muted">({Math.round(pct)}%)</span>
                           </span>
                         )}

@@ -47,3 +47,17 @@ test("student studies the new words with flashcards and typing", async ({ page }
   await page.getByRole("link", { name: "Faollik" }).click();
   await expect(page.getByRole("row", { name: /Jasur Toshmatov/ })).toContainText("100%");
 });
+
+test("student plays the word game to the end", async ({ page }) => {
+  await login(page, "nigora.aliyeva");
+  await page.goto("/vocabulary/game");
+  await page.getByRole("button", { name: "Boshlash" }).click();
+  for (let i = 0; i < 12; i++) {
+    const tile = page.locator("button.min-h-24:enabled").first();
+    if (!(await tile.isVisible().catch(() => false))) break;
+    await tile.click();
+    await page.waitForTimeout(1500);
+  }
+  await expect(page.getByRole("button", { name: /Yana o‘ynash/ })).toBeVisible({ timeout: 15000 });
+  await expect(page.getByText("Ball", { exact: true })).toBeVisible();
+});

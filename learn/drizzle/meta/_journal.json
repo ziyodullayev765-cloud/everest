@@ -29,6 +29,13 @@
       "when": 1792662930533,
       "tag": "0003_english_course",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1792672096828,
+      "tag": "0004_vocab_game",
+      "breakpoints": true
     }
   ]
 }

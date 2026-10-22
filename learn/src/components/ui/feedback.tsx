@@ -13,7 +13,7 @@ export function EmptyState({ icon, title, description, action, className }: { ic
         <span className="absolute inset-0 rounded-2xl ring-8 ring-primary-soft/40" aria-hidden />
         {icon}
       </div>
-      <h3 className="text-[15px] font-semibold text-text">{title}</h3>
+      <h3 className="text-[15px] font-bold text-text">{title}</h3>
       {description ? <p className="mt-1 max-w-sm text-[13.5px] leading-relaxed text-muted">{description}</p> : null}
       {action ? <div className="mt-5">{action}</div> : null}
     </div>
@@ -34,7 +34,7 @@ export function Alert({ tone = "info", title, children, className }: { tone?: ke
     <div className={cn("flex gap-3 rounded-xl border px-4 py-3 text-[13.5px]", t.cls, className)} role={tone === "danger" ? "alert" : "status"}>
       <Icon className="mt-0.5 size-4 shrink-0" aria-hidden />
       <div className="min-w-0 text-text-2">
-        {title ? <p className="font-semibold text-text">{title}</p> : null}
+        {title ? <p className="font-bold text-text">{title}</p> : null}
         {children}
       </div>
     </div>

@@ -49,7 +49,7 @@ export function SettingsForm({ initial }: { initial: PlatformSettings }) {
               <div className="flex items-center gap-3">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 {s.branding.logoFileId ? <img src={`/api/files/${s.branding.logoFileId}`} alt="" className="size-10 rounded-xl border border-border object-cover" /> : null}
-                <label className="inline-flex h-10 cursor-pointer items-center rounded-xl border border-border px-3 text-[13px] font-medium hover:bg-surface-2">
+                <label className="inline-flex h-10 cursor-pointer items-center rounded-xl border border-border px-3 text-[13px] font-semibold hover:bg-surface-2">
                   Yuklash
                   <input type="file" hidden accept="image/png,image/webp,image/jpeg" onChange={async (e) => { const f = e.target.files?.[0]; e.target.value = ""; if (!f) return; try { patch("branding", { logoFileId: (await uploadFile(f, { imagesOnly: true, visibility: "public" })).id }); } catch (err) { toast.error((err as Error).message); } }} />
                 </label>
@@ -157,7 +157,7 @@ export function SettingsForm({ initial }: { initial: PlatformSettings }) {
         </CardBody>
       </Card>
 
-      <div className="sticky bottom-4 z-10 flex justify-end rounded-2xl border border-border bg-surface/95 p-3 shadow-pop backdrop-blur">
+      <div className="sticky bottom-4 z-10 flex justify-end rounded-3xl border-2 border-border bg-surface/95 p-3 shadow-pop backdrop-blur">
         <Button onClick={save} loading={pending}><Save /> Saqlash</Button>
       </div>
     </div>

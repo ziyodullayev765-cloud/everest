@@ -63,7 +63,7 @@ export function GradeForm({ assignmentId, studentId, maxScore, rubric, isLate, l
             {rubric.map((c) => (
               <div key={c.id} className="flex items-center justify-between gap-3">
                 <div className="min-w-0 text-[13.5px]">
-                  <div className="font-medium">{c.title}</div>
+                  <div className="font-semibold">{c.title}</div>
                   {c.description ? <div className="text-[12px] text-muted">{c.description}</div> : null}
                 </div>
                 <div className="flex shrink-0 items-center gap-1.5 text-[13px] text-muted">
@@ -75,7 +75,7 @@ export function GradeForm({ assignmentId, studentId, maxScore, rubric, isLate, l
         ) : (
           <Field label="Ball" htmlFor="pts">
             <div className="flex items-center gap-2">
-              <Input id="pts" type="number" inputMode="decimal" min={0} max={maxScore} step="0.5" value={points} onChange={(e) => setPoints(e.target.value)} className="text-[18px] font-semibold" disabled={locked} />
+              <Input id="pts" type="number" inputMode="decimal" min={0} max={maxScore} step="0.5" value={points} onChange={(e) => setPoints(e.target.value)} className="text-[18px] font-bold" disabled={locked} />
               <span className="shrink-0 text-muted">/ {maxScore}</span>
             </div>
           </Field>
@@ -174,7 +174,7 @@ export function QuizGradeForm({ attemptId, items }: { attemptId: string; items: 
               </span>
             )}
           </div>
-          <RichText text={i.prompt} className="text-[13.5px] font-medium" />
+          <RichText text={i.prompt} className="text-[13.5px] font-semibold" />
           <div className="mt-1.5 rounded-lg bg-surface-2 px-3 py-2 text-[13.5px]">
             <span className="text-muted">Javob: </span>
             <span className="prose-text">{i.answerText}</span>

@@ -50,7 +50,7 @@ export function ThemeSwitcher({ className }: { className?: string }) {
           role="radio"
           aria-checked={mode === m}
           onClick={() => choose(m)}
-          className={cn("inline-flex h-8 items-center gap-1.5 rounded-lg px-2.5 text-[13px] font-medium text-muted transition", mode === m && "bg-surface text-text shadow-soft")}
+          className={cn("inline-flex h-8 items-center gap-1.5 rounded-lg px-2.5 text-[13px] font-semibold text-muted transition", mode === m && "bg-surface text-text shadow-soft")}
         >
           <Icon className="size-3.5" aria-hidden />
           {label}

@@ -38,7 +38,7 @@ export function BankManager({ subjects, defaultSubject, items, canDeleteAll }: {
                     <Badge tone="primary">{t.questionType[q.type as "essay"]}</Badge>
                     {q.subjectName} · {q.points} ball · {q.ownerName}
                   </div>
-                  <RichText text={q.prompt} className="text-[14px] font-medium" />
+                  <RichText text={q.prompt} className="text-[14px] font-semibold" />
                   {q.options.length ? (
                     <div className="mt-2 flex flex-wrap gap-1.5">
                       {q.options.map((o, i) => (

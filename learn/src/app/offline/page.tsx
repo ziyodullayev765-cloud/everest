@@ -17,7 +17,7 @@ export default function OfflinePage() {
         <div className="mx-auto mb-4 grid size-14 place-items-center rounded-2xl bg-warning-soft text-warning">
           <WifiOff className="size-6" aria-hidden />
         </div>
-        <h1 className="text-[22px] font-semibold tracking-[-0.02em]">Internet aloqasi yo‘q</h1>
+        <h1 className="text-[22px] font-bold tracking-[-0.02em]">Internet aloqasi yo‘q</h1>
         <p className="mt-2 text-[14.5px] leading-relaxed text-muted">Bu sahifani ochish uchun internet kerak. Vazifalar, baholar va quizlar xavfsizlik uchun qurilmada saqlanmaydi.</p>
         <RetryButton />
       </div>

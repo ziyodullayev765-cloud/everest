@@ -16,7 +16,7 @@ const TABS: { k: Platform; label: string; icon: typeof Smartphone }[] = [
 function Step({ n, children, icon }: { n: number; children: React.ReactNode; icon?: React.ReactNode }) {
   return (
     <li className="flex gap-4">
-      <span className="grid size-8 shrink-0 place-items-center rounded-full bg-primary text-[14px] font-semibold text-primary-fg">{n}</span>
+      <span className="grid size-8 shrink-0 place-items-center rounded-full bg-primary text-[14px] font-bold text-primary-fg">{n}</span>
       <div className="flex min-w-0 flex-1 items-center justify-between gap-3 pt-1 text-[14.5px]">
         <span>{children}</span>
         {icon ? <span className="grid size-9 shrink-0 place-items-center rounded-xl border border-border bg-surface-2 text-text-2">{icon}</span> : null}
@@ -48,7 +48,7 @@ export function InstallGuide() {
         <Card className="border-primary/30">
           <CardBody className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <div className="font-semibold">Brauzeringiz o‘rnatishni taklif qilmoqda</div>
+              <div className="font-bold">Brauzeringiz o‘rnatishni taklif qilmoqda</div>
               <div className="text-[13.5px] text-muted">Bir tugma bilan o‘rnating.</div>
             </div>
             <Button size="lg" onClick={() => install.prompt()}>
@@ -60,7 +60,7 @@ export function InstallGuide() {
 
       <div className="inline-flex w-full rounded-xl border border-border bg-surface-2 p-1" role="tablist">
         {TABS.map(({ k, label, icon: Icon }) => (
-          <button key={k} role="tab" aria-selected={tab === k} onClick={() => setTab(k)} className={cn("inline-flex h-9 flex-1 items-center justify-center gap-1.5 rounded-lg text-[13px] font-medium text-muted", tab === k && "bg-surface text-text shadow-soft")}>
+          <button key={k} role="tab" aria-selected={tab === k} onClick={() => setTab(k)} className={cn("inline-flex h-9 flex-1 items-center justify-center gap-1.5 rounded-lg text-[13px] font-semibold text-muted", tab === k && "bg-surface text-text shadow-soft")}>
             <Icon className="size-4" aria-hidden /> {label}
           </button>
         ))}

@@ -72,7 +72,11 @@ test("teacher grades it and the student sees the final grade with feedback", asy
 test("student takes a quiz and sees the automatic score", async ({ page }) => {
   await login(page, "madina.usmonova");
   await page.goto("/quizzes");
-  await page.getByText("Practice: Past Simple").click();
+  // A click that lands mid-hydration can be swallowed by the client router; retry until it navigates.
+  await expect(async () => {
+    await page.getByText("Practice: Past Simple").click();
+    await expect(page).toHaveURL(/\/quizzes\/[0-9a-f-]{36}$/, { timeout: 3000 });
+  }).toPass({ timeout: 20_000 });
   await page.getByRole("button", { name: "Quizni boshlash" }).click();
   await expect(page).toHaveURL(/\/attempt\//);
   // Q1/Q2 order is fixed (no shuffling for this practice set).

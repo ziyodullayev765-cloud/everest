@@ -16,7 +16,7 @@ export default async function AuthLayout({ children }: { children: React.ReactNo
           <Logo name={s.branding.appName} />
         </div>
         <div className="relative max-w-md">
-          <h1 className="text-[34px] leading-[1.1] font-semibold tracking-[-0.03em] text-text">O‘qish — tartibli, qiziqarli va natijali.</h1>
+          <h1 className="text-[34px] leading-[1.1] font-bold tracking-[-0.03em] text-text">O‘qish — tartibli, qiziqarli va natijali.</h1>
           <p className="mt-4 text-[15px] leading-relaxed text-muted">Vazifalar, quizlar, baholar va shaxsiy natijalaringiz — barchasi bir joyda, telefoningizda ham.</p>
           <ul className="mt-8 space-y-4">
             {[
@@ -29,7 +29,7 @@ export default async function AuthLayout({ children }: { children: React.ReactNo
                   <Icon className="size-4" aria-hidden />
                 </span>
                 <span>
-                  <span className="block text-sm font-semibold text-text">{t}</span>
+                  <span className="block text-sm font-bold text-text">{t}</span>
                   <span className="block text-[13px] text-muted">{d}</span>
                 </span>
               </li>
