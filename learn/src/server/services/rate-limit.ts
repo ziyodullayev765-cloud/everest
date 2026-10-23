@@ -24,6 +24,13 @@ export async function enforce(key: string, limit: number, windowSeconds: number)
   }
 }
 
+/** Throws when `key` already reached `limit` in its window, without counting this call (pair with `hit` on failure). */
+export async function guard(key: string, limit: number, windowSeconds: number) {
+  const rows = await db.execute<{ count: number }>(sql`
+    select count from rate_limits where key = ${key} and window_start >= now() - make_interval(secs => ${windowSeconds})`);
+  if (Number(rows[0]?.count ?? 0) >= limit) throw new AppError("rate_limited", tr("Juda ko‘p urinish. Birozdan so‘ng qayta urinib ko‘ring."));
+}
+
 export async function reset(key: string) {
   await db.execute(sql`delete from rate_limits where key = ${key}`);
 }

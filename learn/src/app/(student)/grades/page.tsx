@@ -4,6 +4,8 @@ import { ChevronRight, MessageSquareText, Star } from "lucide-react";
 import { pageUser } from "@/server/auth/guards";
 import { studentGrades } from "@/server/services/grades";
 import { getSettings } from "@/server/services/settings";
+import { studentMarks } from "@/server/services/marks";
+import { LessonMarks } from "@/components/student/lesson-marks";
 import { isQuizType } from "@/lib/assignment-kinds";
 import { formatDate } from "@/lib/dates";
 import { round2 } from "@/lib/grading";
@@ -20,7 +22,7 @@ export const metadata: Metadata = { get title() { return tr("Baholar"); } };
 
 export default async function GradesPage() {
   const user = await pageUser("student");
-  const [grades, settings] = await Promise.all([studentGrades(user.id), getSettings()]);
+  const [grades, settings, marks] = await Promise.all([studentGrades(user.id), getSettings(), studentMarks(user.id)]);
   const finals = grades.filter((g) => g.status === "final");
   const avg = grades.length ? round2(grades.reduce((s, g) => s + g.percent, 0) / grades.length) : null;
   const bySubject = [...grades.reduce((m, g) => m.set(g.subjectName, [...(m.get(g.subjectName) ?? []), g]), new Map<string, typeof grades>()).entries()];
@@ -28,8 +30,9 @@ export default async function GradesPage() {
   return (
     <>
       <PageHeader title={tr("Baholar")} description={tr("Barcha baholaringiz, o‘qituvchi izohlari va baholash holati.")} />
+      {marks.length ? <div className="mb-6"><LessonMarks marks={marks} /></div> : null}
       {grades.length === 0 ? (
-        <Card>
+        marks.length ? null : <Card>
           <EmptyState icon={<Star />} title={tr("Hali baho yo‘q")} description={tr("Topshirgan ishlaringiz baholangach, ular shu yerda ko‘rinadi.")} />
         </Card>
       ) : (

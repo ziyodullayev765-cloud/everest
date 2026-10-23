@@ -706,6 +706,31 @@ export const weeklyMedals = pgTable(
   ],
 );
 
+/** Lesson marks (3 = not done, 4 = good, 5 = excellent) per skill, one per student, skill and day in a group. */
+export const lessonMarks = pgTable(
+  "lesson_marks",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    classId: uuid("class_id")
+      .notNull()
+      .references(() => classes.id, { onDelete: "restrict" }),
+    studentId: uuid("student_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "restrict" }),
+    area: text("area").notNull(),
+    lessonDate: date("lesson_date").notNull(),
+    mark: integer("mark").notNull(),
+    comment: text("comment").notNull().default(""),
+    givenBy: uuid("given_by").references(() => users.id, { onDelete: "set null" }),
+    updatedAt: ts("updated_at").notNull().defaultNow(),
+  },
+  (t) => [
+    uniqueIndex("lesson_marks_key").on(t.classId, t.studentId, t.area, t.lessonDate),
+    index("lesson_marks_student_idx").on(t.studentId, t.lessonDate),
+    check("lesson_marks_mark", sql`${t.mark} between 3 and 5`),
+  ],
+);
+
 /** Achievement rules (seeded from src/lib/achievements.ts, editable by admins). */
 export const achievements = pgTable(
   "achievements",

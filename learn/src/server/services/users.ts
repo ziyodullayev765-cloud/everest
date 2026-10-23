@@ -11,7 +11,7 @@ import { AppError, forbidden, invalid, isUniqueViolation, notFound } from "../er
 import { parseCsv } from "@/lib/utils";
 import type { Role } from "../db/schema";
 import { audit, clientIp } from "./audit";
-import { enforce, reset as resetLimit } from "./rate-limit";
+import { enforce, guard, hit, reset as resetLimit } from "./rate-limit";
 import { canViewStudent, manageableClassIds } from "./access";
 import { assertOwnFiles } from "./files";
 import { getSettings } from "./settings";
@@ -24,18 +24,25 @@ const GENERIC_LOGIN_ERROR = "Login yoki parol noto‘g‘ri.";
 export async function login(usernameRaw: string, password: string) {
   const username = usernameRaw.trim().toLowerCase().slice(0, 60);
   const ip = await clientIp();
-  await enforce(`login-ip:${keyedHash(ip)}`, 30, 15 * 60);
-  await enforce(`login-user:${keyedHash(username)}`, 8, 15 * 60);
-  if (!username || !password || password.length > 200) throw new AppError("invalid", GENERIC_LOGIN_ERROR);
+  // Only failed attempts count: a whole class signing in from one school network must not lock everyone out.
+  const ipKey = `login-ip:${keyedHash(ip)}`, userKey = `login-user:${keyedHash(username)}`;
+  await guard(ipKey, 30, 15 * 60);
+  await guard(userKey, 8, 15 * 60);
+  const fail = async () => {
+    await hit(ipKey, 15 * 60);
+    await hit(userKey, 15 * 60);
+    return new AppError("invalid", GENERIC_LOGIN_ERROR);
+  };
+  if (!username || !password || password.length > 200) throw await fail();
   const rows = await db.select().from(schema.users).where(sql`lower(${schema.users.username}) = ${username}`).limit(1);
   const user = rows[0];
   // Hash even when the user doesn't exist so response time doesn't reveal valid usernames.
   const ok = await verifyPassword(password, user?.passwordHash ?? (await dummyHash()));
   if (!user || !ok || user.status !== "active") {
     await audit(user?.id ?? null, "auth.login_failed", "user", user?.id ?? null, { username: user ? undefined : "unknown" });
-    throw new AppError("invalid", GENERIC_LOGIN_ERROR);
+    throw await fail();
   }
-  await resetLimit(`login-user:${keyedHash(username)}`);
+  await resetLimit(userKey);
   await createSession(user.id);
   // A language picked on this device (e.g. on the login page) wins and is saved; otherwise the account's follows it here.
   const device = await deviceLocale();

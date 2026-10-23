@@ -50,6 +50,13 @@
       "when": 1792691953675,
       "tag": "0006_weekly_medals",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1792746472130,
+      "tag": "0007_lesson_marks",
+      "breakpoints": true
     }
   ]
 }

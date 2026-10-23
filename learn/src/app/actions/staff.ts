@@ -7,6 +7,7 @@ import { addFeedback, finalizeGrade, gradeSubmission, returnForRevision } from "
 import { gradeAttemptManually } from "@/server/services/quiz";
 import { addToBank, copyFromBank, deleteFromBank } from "@/server/services/bank";
 import { createChallenge, postAnnouncement } from "@/server/services/classes";
+import { setMark } from "@/server/services/marks";
 
 const staff = () => requireRole("teacher", "admin", "super_admin");
 const refresh = () => revalidatePath("/", "layout");
@@ -109,5 +110,12 @@ export async function challengeAction(classId: string, input: unknown) {
   return run(async () => {
     await createChallenge(await staff(), classId, input);
     refresh();
+  });
+}
+
+export async function setMarkAction(input: unknown) {
+  return run(async () => {
+    await setMark(await staff(), input);
+    revalidatePath("/grades");
   });
 }

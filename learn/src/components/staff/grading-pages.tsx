@@ -8,6 +8,8 @@ import { listClasses } from "@/server/services/classes";
 import { subjectsList } from "@/server/services/assignments";
 import { listBank } from "@/server/services/bank";
 import { studentRecord } from "@/server/services/users";
+import { studentMarks } from "@/server/services/marks";
+import { LessonMarks } from "@/components/student/lesson-marks";
 import { orNotFound } from "@/server/auth/guards";
 import { isQuizType } from "@/lib/assignment-kinds";
 import { formatDate, formatDateTime } from "@/lib/dates";
@@ -339,6 +341,7 @@ export async function BankPage({ user, sp }: { user: SessionUser; sp: { subject?
 
 export async function StudentRecordPage({ user, base, studentId }: { user: SessionUser; base: string; studentId: string }) {
   const r = await orNotFound(studentRecord(user, studentId));
+  const marks = await studentMarks(studentId);
   const grades = r.grades;
   const avg = grades.length ? grades.reduce((s, g) => s + Number(g.percent), 0) / grades.length : null;
   return (
@@ -349,6 +352,7 @@ export async function StudentRecordPage({ user, base, studentId }: { user: Sessi
         <Card><CardBody><div className="text-[12px] text-muted">{tr("Baholar")}</div><div className="text-[22px] font-bold tabular">{grades.length}</div></CardBody></Card>
         <Card><CardBody><div className="text-[12px] text-muted">{tr("Oxirgi kirish")}</div><div className="text-[15px] font-bold">{r.user.lastLoginAt ? formatDateTime(r.user.lastLoginAt) : "—"}</div></CardBody></Card>
       </div>
+      {marks.length ? <div className="mb-5"><LessonMarks marks={marks} /></div> : null}
       <Card className="overflow-hidden">
         <CardHeader title={tr("Baholar")} icon={<ClipboardCheck />} description={base === "/teacher" ? tr("Faqat sizning guruhlaringiz") : undefined} />
         <CardBody className="pt-3">
