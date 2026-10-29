@@ -37,6 +37,7 @@ export async function listClasses(actor: Actor, includeArchived = false) {
       archivedAt: schema.classes.archivedAt,
       students: sql<number>`(select count(*)::int from class_students cs join users u on u.id = cs.student_id where cs.class_id = classes.id and u.status = 'active')`,
       teachers: sql<string>`coalesce((select string_agg(distinct u.display_name, ', ') from class_teachers ct join users u on u.id = ct.teacher_id where ct.class_id = classes.id), '')`,
+      wordLists: sql<number>`(select count(*)::int from word_list_targets t join word_lists l on l.id = t.list_id where t.class_id = classes.id and l.status = 'published')`,
     })
     .from(schema.classes)
     .where(and(includeArchived ? sql`true` : isNull(schema.classes.archivedAt), scope === "all" ? sql`true` : inArray(schema.classes.id, scope)))
@@ -155,6 +156,7 @@ export async function studentClasses(studentId: string) {
       level: schema.classes.level,
       archivedAt: schema.classes.archivedAt,
       teachers: sql<string>`coalesce((select string_agg(distinct u.display_name, ', ') from class_teachers ct join users u on u.id = ct.teacher_id where ct.class_id = classes.id), '')`,
+      wordLists: sql<number>`(select count(*)::int from word_list_targets t join word_lists l on l.id = t.list_id where t.class_id = classes.id and l.status = 'published')`,
     })
     .from(schema.classes)
     .where(inArray(schema.classes.id, ids))

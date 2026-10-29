@@ -57,6 +57,13 @@
       "when": 1792746472130,
       "tag": "0007_lesson_marks",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1793299357945,
+      "tag": "0008_vocab_import",
+      "breakpoints": true
     }
   ]
 }

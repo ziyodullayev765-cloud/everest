@@ -5,7 +5,7 @@ import { db, schema, type Executor } from "../db";
 import { isAdmin, isStudent, type Actor } from "../auth/rbac";
 import { forbidden, invalid, isUniqueViolation, notFound } from "../errors";
 import { audit } from "./audit";
-import { manageableClassIds, studentClassIds } from "./access";
+import { manageableClassIds } from "./access";
 import { assertTargetsInScope } from "./assignments";
 import { assertOwnFiles } from "./files";
 import { notify } from "./notifications";
@@ -34,39 +34,116 @@ const listInput = z.object({
 
 
 /** Teachers edit their own lists; admins edit all. Everyone on staff may view and assign published lists. */
-async function loadList(actor: Actor, id: string, forEdit: boolean, ex: Executor = db) {
+export async function loadList(actor: Actor, id: string, forEdit: boolean, ex: Executor = db, lock = false) {
   requireStaff(actor);
-  const [l] = await ex.select().from(schema.wordLists).where(eq(schema.wordLists.id, id));
+  const q = ex.select().from(schema.wordLists).where(eq(schema.wordLists.id, id));
+  const [l] = lock ? await q.for("update") : await q;
   if (!l) throw notFound(tr("Ro‘yxat topilmadi."));
   if (forEdit && !isAdmin(actor) && l.createdBy !== actor.id) throw forbidden(tr("Bu ro‘yxatni faqat muallif yoki administrator tahrirlaydi."));
   if (!forEdit && !isAdmin(actor) && l.createdBy !== actor.id && l.status !== "published") throw notFound(tr("Ro‘yxat topilmadi."));
   return l;
 }
 
-export async function listWordLists(actor: Actor, f: { q?: string; status?: string } = {}) {
+export type WordListFilter = { q?: string; status?: string; classId?: string; unassigned?: boolean; page?: number };
+export const LISTS_PER_PAGE = 50;
+
+/** Sets visible to the actor with words/assignment counts and the groups (in the actor's scope) using each. */
+export async function listWordLists(actor: Actor, f: WordListFilter = {}) {
   requireStaff(actor);
+  const scope = await manageableClassIds(actor);
+  const inScope = scope === "all" ? sql`true` : scope.length ? sql`t.class_id in ${scope}` : sql`false`;
   const conds = [
     isAdmin(actor) ? sql`true` : sql`(${schema.wordLists.createdBy} = ${actor.id} or ${schema.wordLists.status} = 'published')`,
     f.status ? eq(schema.wordLists.status, f.status) : sql`${schema.wordLists.status} <> 'archived'`,
-    f.q ? sql`${schema.wordLists.title} ilike ${"%" + f.q + "%"}` : sql`true`,
+    f.q ? sql`(${schema.wordLists.title} ilike ${"%" + f.q + "%"} or ${schema.wordLists.topic} ilike ${"%" + f.q + "%"} or ${schema.wordLists.level} ilike ${"%" + f.q + "%"})` : sql`true`,
+    f.classId ? sql`exists (select 1 from word_list_targets t where t.list_id = word_lists.id and t.class_id = ${f.classId})` : sql`true`,
+    f.unassigned ? sql`not exists (select 1 from word_list_targets t where t.list_id = word_lists.id)` : sql`true`,
   ];
-  return db
-    .select({
-      id: schema.wordLists.id,
-      title: schema.wordLists.title,
-      level: schema.wordLists.level,
-      topic: schema.wordLists.topic,
-      status: schema.wordLists.status,
-      createdBy: schema.wordLists.createdBy,
-      authorName: schema.users.displayName,
-      updatedAt: schema.wordLists.updatedAt,
-      words: sql<number>`(select count(*)::int from words w where w.list_id = word_lists.id and w.archived_at is null)`,
-      targets: sql<number>`(select count(*)::int from word_list_targets t where t.list_id = word_lists.id)`,
-    })
-    .from(schema.wordLists)
-    .innerJoin(schema.users, eq(schema.users.id, schema.wordLists.createdBy))
-    .where(and(...conds))
-    .orderBy(desc(schema.wordLists.updatedAt));
+  const where = and(...conds);
+  const page = Math.max(1, Math.floor(f.page ?? 1));
+  const [rows, [{ total }]] = await Promise.all([
+    db
+      .select({
+        id: schema.wordLists.id,
+        title: schema.wordLists.title,
+        level: schema.wordLists.level,
+        topic: schema.wordLists.topic,
+        status: schema.wordLists.status,
+        createdBy: schema.wordLists.createdBy,
+        authorName: schema.users.displayName,
+        updatedAt: schema.wordLists.updatedAt,
+        words: sql<number>`(select count(*)::int from words w where w.list_id = word_lists.id and w.archived_at is null)`,
+        targets: sql<number>`(select count(*)::int from word_list_targets t where t.list_id = word_lists.id)`,
+        groups: sql<{ id: string; name: string }[]>`coalesce((select json_agg(json_build_object('id', c.id, 'name', c.name) order by c.name) from word_list_targets t join classes c on c.id = t.class_id where t.list_id = word_lists.id and ${inScope}), '[]'::json)`,
+        students: sql<number>`(select count(*)::int from word_list_targets t where t.list_id = word_lists.id and t.student_id is not null)`,
+      })
+      .from(schema.wordLists)
+      .innerJoin(schema.users, eq(schema.users.id, schema.wordLists.createdBy))
+      .where(where)
+      .orderBy(desc(schema.wordLists.updatedAt))
+      .limit(LISTS_PER_PAGE)
+      .offset((page - 1) * LISTS_PER_PAGE),
+    db.select({ total: sql<number>`count(*)::int` }).from(schema.wordLists).where(where),
+  ]);
+  return Object.assign(rows, { total, page });
+}
+
+const bulkInput = z.object({
+  ids: z.array(z.string().uuid()).min(1).max(200),
+  op: z.enum(["publish", "draft", "archive", "assign", "unassign"]),
+  classIds: z.array(z.string().uuid()).max(100).default([]),
+});
+
+/** One action on many sets. Each set is checked on its own; failures are reported, not hidden. */
+export async function bulkWordLists(actor: Actor, input: unknown) {
+  requireStaff(actor);
+  const v = bulkInput.parse(input);
+  const classIds = [...new Set(v.classIds)];
+  if ((v.op === "assign" || v.op === "unassign") && !classIds.length) throw invalid(tr("Guruhlarni tanlang."));
+  if (classIds.length) await assertTargetsInScope(actor, classIds, [], db);
+  const failed: { title: string; error: string }[] = [];
+  let done = 0;
+  for (const id of [...new Set(v.ids)]) {
+    let title = id;
+    try {
+      if (v.op === "publish" || v.op === "draft" || v.op === "archive") {
+        title = (await loadList(actor, id, true)).title;
+        await setWordListStatus(actor, id, v.op === "publish" ? "published" : v.op === "draft" ? "draft" : "archived");
+      } else {
+        const l = await loadList(actor, id, false);
+        title = l.title;
+        if (v.op === "assign") {
+          await db.insert(schema.wordListTargets).values(classIds.map((classId) => ({ listId: id, classId }))).onConflictDoNothing();
+          if (l.status === "published") await notifyTargets(id, l.title);
+        } else await db.delete(schema.wordListTargets).where(and(eq(schema.wordListTargets.listId, id), inArray(schema.wordListTargets.classId, classIds)));
+        await audit(actor.id, v.op === "assign" ? "vocab.assign" : "vocab.unassign", "word_list", id, { classes: classIds.length, bulk: true });
+      }
+      done++;
+    } catch (e) {
+      failed.push({ title, error: e instanceof Error ? e.message : String(e) });
+    }
+  }
+  return { done, failed };
+}
+
+/** Data checks for admins: same word with different translations across sets, sets nobody can see. */
+export async function vocabQuality(actor: Actor) {
+  requireStaff(actor);
+  const [conflicts, unassigned, noExample] = await Promise.all([
+    db.execute<{ english: string; translations: string[]; lists: { id: string; title: string }[] }>(sql`
+      select lower(w.english) as english, array_agg(distinct w.uzbek) as translations,
+        json_agg(distinct jsonb_build_object('id', l.id, 'title', l.title)) as lists
+      from words w join word_lists l on l.id = w.list_id
+      where w.archived_at is null and l.status <> 'archived'
+      group by lower(w.english) having count(distinct lower(w.uzbek)) > 1
+      order by count(*) desc, 1 limit 50`),
+    db.execute<{ id: string; title: string; status: string }>(sql`
+      select l.id, l.title, l.status from word_lists l
+      where l.status = 'published' and not exists (select 1 from word_list_targets t where t.list_id = l.id)
+      order by l.updated_at desc limit 50`),
+    db.execute<{ n: number }>(sql`select count(*)::int as n from words w join word_lists l on l.id = w.list_id where w.archived_at is null and l.status <> 'archived' and w.example = ''`),
+  ]);
+  return { conflicts: [...conflicts], unassigned: [...unassigned], noExample: noExample[0]?.n ?? 0 };
 }
 
 export async function getWordList(actor: Actor, id: string) {
@@ -83,7 +160,7 @@ export async function saveWordList(actor: Actor, id: string | null, input: unkno
   const v = listInput.parse(input);
   if (id) {
     await loadList(actor, id, true);
-    await db.update(schema.wordLists).set({ ...v, updatedAt: new Date() }).where(eq(schema.wordLists.id, id));
+    await db.update(schema.wordLists).set({ ...v, updatedAt: new Date(), updatedBy: actor.id }).where(eq(schema.wordLists.id, id));
     await audit(actor.id, "vocab.list_update", "word_list", id);
     return id;
   }
@@ -124,7 +201,7 @@ export async function saveWord(actor: Actor, listId: string, wordId: string | nu
       const [cur] = await db.select().from(schema.words).where(and(eq(schema.words.id, wordId), eq(schema.words.listId, listId)));
       if (!cur) throw notFound(tr("So‘z topilmadi."));
       await assertWordFiles(actor, v, cur);
-      await db.update(schema.words).set(v).where(eq(schema.words.id, wordId));
+      await db.update(schema.words).set({ ...v, updatedAt: new Date() }).where(eq(schema.words.id, wordId));
     } else {
       await assertWordFiles(actor, v);
       const pos = (await db.select({ n: sql<number>`coalesce(max(position), -1)::int + 1` }).from(schema.words).where(eq(schema.words.listId, listId)))[0]?.n ?? 0;
@@ -134,7 +211,7 @@ export async function saveWord(actor: Actor, listId: string, wordId: string | nu
     if (isUniqueViolation(e)) throw invalid(tr("“{0}” bu ro‘yxatda allaqachon bor.", v.english));
     throw e;
   }
-  await db.update(schema.wordLists).set({ updatedAt: new Date() }).where(eq(schema.wordLists.id, listId));
+  await db.update(schema.wordLists).set({ updatedAt: new Date(), updatedBy: actor.id }).where(eq(schema.wordLists.id, listId));
 }
 
 /** Words with study history are archived (history stays), others are deleted. */
@@ -166,7 +243,8 @@ export async function importWords(actor: Actor, listId: string, text: string, sw
 
 export async function setWordListTargets(actor: Actor, listId: string, input: { classIds: string[]; studentIds: string[] }) {
   const l = await loadList(actor, listId, false);
-  const v = z.object({ classIds: z.array(z.string().uuid()).max(100), studentIds: z.array(z.string().uuid()).max(500) }).parse(input);
+  const parsed = z.object({ classIds: z.array(z.string().uuid()).max(100), studentIds: z.array(z.string().uuid()).max(500) }).parse(input);
+  const v = { classIds: [...new Set(parsed.classIds)], studentIds: [...new Set(parsed.studentIds)] };
   const before = await db.select().from(schema.wordListTargets).where(eq(schema.wordListTargets.listId, listId));
   await db.transaction(async (tx) => {
     await assertTargetsInScope(actor, v.classIds, v.studentIds, tx);
@@ -190,7 +268,7 @@ async function studentsOfList(listId: string) {
   return rows.map((r) => r.id);
 }
 
-async function notifyTargets(listId: string, title: string) {
+export async function notifyTargets(listId: string, title: string) {
   await notify(await studentsOfList(listId), { type: "vocabulary", title: `Yangi lug‘at: ${title}`, link: `/vocabulary/lists/${listId}`, dedupeKey: `vocab:${listId}` });
 }
 
@@ -224,12 +302,21 @@ const requireStudentActor = (a: Actor) => {
   if (!isStudent(a)) throw forbidden();
 };
 
-/** Published lists assigned to the student directly or through a group. */
-export async function studentListIds(studentId: string, ex: Executor = db) {
-  const classIds = await studentClassIds(studentId, ex);
+/**
+ * Published lists assigned to the student directly or through a group they belong to right now.
+ * Checked on every request, so leaving a group (or the group being archived) revokes access at once;
+ * the student's progress rows stay and come back if the access does.
+ */
+export async function studentListIds(studentId: string, ex: Executor = db, classId?: string | null) {
   const rows = await ex.execute<{ id: string }>(sql`
     select distinct l.id from word_lists l join word_list_targets t on t.list_id = l.id
-    where l.status = 'published' and (t.student_id = ${studentId} ${classIds.length ? sql`or t.class_id in ${classIds}` : sql``})`);
+    where l.status = 'published' and (
+      ${classId ? sql`false` : sql`t.student_id = ${studentId}`}
+      or t.class_id in (
+        select cs.class_id from class_students cs join classes c on c.id = cs.class_id
+        where cs.student_id = ${studentId} and c.archived_at is null ${classId ? sql`and c.id = ${classId}` : sql``}
+      )
+    )`);
   return rows.map((r) => r.id);
 }
 
@@ -240,9 +327,10 @@ async function assertWordVisible(studentId: string, wordId: string) {
   return w;
 }
 
-export async function vocabOverview(actor: Actor) {
+/** The student's vocabulary overview; with `classId`, only the sets of that group (membership checked in SQL). */
+export async function vocabOverview(actor: Actor, classId?: string | null) {
   requireStudentActor(actor);
-  const listIds = await studentListIds(actor.id);
+  const listIds = await studentListIds(actor.id, db, classId);
   const [me] = await db.select({ newPerDay: schema.users.newWordsPerDay }).from(schema.users).where(eq(schema.users.id, actor.id));
   if (!listIds.length) return { lists: [], totals: { words: 0, learned: 0, mastered: 0, due: 0, difficult: 0, favorites: 0, newAvailable: 0, reviewedToday: 0, newToday: 0, recent: 0 }, newPerDay: me?.newPerDay ?? 10 };
   const [lists, t] = await Promise.all([
@@ -530,4 +618,52 @@ export async function gameBest(actor: Actor, listId?: string | null) {
     .from(schema.vocabGames)
     .where(and(eq(schema.vocabGames.studentId, actor.id), listId ? eq(schema.vocabGames.listId, listId) : sql`true`));
   return r ?? { best: 0, games: 0 };
+}
+
+/** Sets assigned to one group with how far its current students got (group detail page). */
+export async function classVocabulary(actor: Actor, classId: string) {
+  requireStaff(actor);
+  const scope = await manageableClassIds(actor);
+  if (scope !== "all" && !scope.includes(classId)) throw forbidden();
+  const rows = await db.execute<{ id: string; title: string; status: string; level: string; words: number; students: number; started: number; learned: number }>(sql`
+    with members as (select cs.student_id from class_students cs join users u on u.id = cs.student_id where cs.class_id = ${classId} and u.status = 'active')
+    select l.id, l.title, l.status, l.level,
+      (select count(*)::int from words w where w.list_id = l.id and w.archived_at is null) as words,
+      (select count(*)::int from members) as students,
+      (select count(distinct p.student_id)::int from vocab_progress p join words w on w.id = p.word_id where w.list_id = l.id and w.archived_at is null and p.student_id in (select student_id from members)) as started,
+      (select count(*)::int from vocab_progress p join words w on w.id = p.word_id where w.list_id = l.id and w.archived_at is null and p.reps > 0 and p.student_id in (select student_id from members)) as learned
+    from word_lists l join word_list_targets t on t.list_id = l.id and t.class_id = ${classId}
+    where l.status <> 'archived' order by l.title`);
+  return rows.map((r) => ({ ...r, progress: r.words && r.students ? Math.round((100 * r.learned) / (r.words * r.students)) : 0 }));
+}
+
+/** Vocabulary numbers for the admin dashboard. */
+export async function vocabStats() {
+  const [c] = await db.execute<{ lists: number; published: number; drafts: number; archived: number; words: number; unassigned: number; imports30: number; failed30: number; wordsWeek: number }>(sql`
+    select
+      (select count(*)::int from word_lists) as lists,
+      (select count(*)::int from word_lists where status = 'published') as published,
+      (select count(*)::int from word_lists where status = 'draft') as drafts,
+      (select count(*)::int from word_lists where status = 'archived') as archived,
+      (select count(*)::int from words w join word_lists l on l.id = w.list_id where w.archived_at is null and l.status <> 'archived') as words,
+      (select count(*)::int from word_lists l where l.status = 'published' and not exists (select 1 from word_list_targets t where t.list_id = l.id)) as unassigned,
+      (select count(*)::int from import_jobs where created_at > now() - interval '30 days') as imports30,
+      (select count(*)::int from import_jobs where created_at > now() - interval '30 days' and (status = 'failed' or failed > 0)) as failed30,
+      (select count(*)::int from words where created_at > now() - interval '7 days' and archived_at is null) as "wordsWeek"`);
+  const recent = await db
+    .select({ id: schema.wordLists.id, title: schema.wordLists.title, status: schema.wordLists.status, updatedAt: schema.wordLists.updatedAt, words: sql<number>`(select count(*)::int from words w where w.list_id = word_lists.id and w.archived_at is null)` })
+    .from(schema.wordLists)
+    .where(sql`${schema.wordLists.status} <> 'archived'`)
+    .orderBy(desc(schema.wordLists.updatedAt))
+    .limit(5);
+  return { ...c, recent };
+}
+
+/** Active groups of a student that have at least one published set (for the group switch). */
+export async function studentVocabGroups(studentId: string) {
+  return db.execute<{ id: string; name: string }>(sql`
+    select c.id, c.name from class_students cs join classes c on c.id = cs.class_id
+    where cs.student_id = ${studentId} and c.archived_at is null
+      and exists (select 1 from word_list_targets t join word_lists l on l.id = t.list_id where t.class_id = c.id and l.status = 'published')
+    order by c.name`);
 }

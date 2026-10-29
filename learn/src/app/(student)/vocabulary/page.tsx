@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { BookA, Brain, Gamepad2, ChevronRight, Flame, Keyboard, Layers, ListChecks, Puzzle, Repeat, Sparkles, Star, TriangleAlert } from "lucide-react";
 import { pageUser } from "@/server/auth/guards";
-import { vocabOverview } from "@/server/services/vocabulary";
+import { studentVocabGroups, vocabOverview } from "@/server/services/vocabulary";
 import { PageHeader, StatCard } from "@/components/ui/page";
 import { Card, CardBody, CardHeader } from "@/components/ui/card";
 import { EmptyState, Progress } from "@/components/ui/feedback";
@@ -20,9 +20,12 @@ const MODES = [
   { href: "match", icon: Puzzle, get label() { return tr("Moslash"); }, get d() { return tr("So‘z va ma’nolarni juftlang"); } },
 ] as const;
 
-export default async function VocabularyPage() {
+export default async function VocabularyPage({ searchParams }: { searchParams: Promise<{ group?: string }> }) {
   const user = await pageUser("student");
-  const o = await vocabOverview(user);
+  const groups = [...(await studentVocabGroups(user.id))];
+  const sp = await searchParams;
+  const group = groups.find((g) => g.id === sp.group)?.id ?? null;
+  const o = await vocabOverview(user, group);
   const t = o.totals;
   const newToday = Math.max(0, Math.min(o.newPerDay - t.newToday, t.newAvailable));
   const sessionSize = t.due + newToday;
@@ -40,6 +43,20 @@ export default async function VocabularyPage() {
   return (
     <div className="mx-auto max-w-5xl">
       <PageHeader title={tr("Lug‘at")} description={tr("Takrorlash vaqti kelgan so‘zlar va yangi so‘zlar — oraliq takrorlash usulida.")} />
+      {groups.length > 1 ? (
+        <nav aria-label={tr("Guruh")} className="-mx-4 mb-4 flex gap-2 overflow-x-auto px-4 pb-1 sm:mx-0 sm:px-0">
+          {[{ id: null as string | null, name: tr("Barcha guruhlar") }, ...groups].map((g) => (
+            <Link
+              key={g.id ?? "all"}
+              href={g.id ? `/vocabulary?group=${g.id}` : "/vocabulary"}
+              aria-current={group === g.id ? "page" : undefined}
+              className="shrink-0 rounded-full border-2 border-border bg-surface px-4 py-1.5 text-[13.5px] font-extrabold text-text-2 aria-[current=page]:border-primary aria-[current=page]:bg-primary aria-[current=page]:text-primary-fg"
+            >
+              {g.name}
+            </Link>
+          ))}
+        </nav>
+      ) : null}
 
       <Card className="mb-5 overflow-hidden">
         <CardBody className="flex flex-col gap-5 sm:flex-row sm:items-center">

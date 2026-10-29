@@ -8,9 +8,11 @@ import { Avatar } from "@/components/ui/avatar";
 import { ClassPageView } from "@/components/app/class-page-view";
 import { ClassTools } from "./class-tools";
 import { tr } from "@/lib/i18n/tr";
+import { classVocabulary, listWordLists } from "@/server/services/vocabulary";
+import { GroupVocabCard } from "./group-vocab";
 
 export async function StaffClassPage({ user, base, id, back }: { user: SessionUser; base: string; id: string; back: string }) {
-  const [page, detail] = await Promise.all([orNotFound(classPage(user, id)), orNotFound(classDetailForAdmin(user, id))]);
+  const [page, detail, vocab, lists] = await Promise.all([orNotFound(classPage(user, id)), orNotFound(classDetailForAdmin(user, id)), classVocabulary(user, id), listWordLists(user, { page: 1 })]);
   return (
     <>
       <PageHeader back={{ href: back, label: tr("Guruhlar") }} title={page.cls.name} description={tr("{0} · {1} o‘quvchi", page.cls.academicYear, detail.students.length)} />
@@ -35,6 +37,7 @@ export async function StaffClassPage({ user, base, id, back }: { user: SessionUs
                 </ul>
               </CardBody>
             </Card>
+            <GroupVocabCard classId={id} base={base} assigned={vocab} available={lists.filter((l) => l.status === "published" && !vocab.some((v) => v.id === l.id)).map((l) => ({ id: l.id, title: l.title, status: l.status }))} />
           </>
         }
       />

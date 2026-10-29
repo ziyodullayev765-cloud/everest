@@ -1,10 +1,11 @@
 import Link from "next/link";
-import { BookA, ChevronRight, Users } from "lucide-react";
+import { AlertTriangle, BookA, History, Upload, Users } from "lucide-react";
 import type { SessionUser } from "@/server/auth/session";
-import { getWordList, listActivity, listWordLists } from "@/server/services/vocabulary";
+import { getWordList, listActivity, listWordLists, LISTS_PER_PAGE, vocabQuality } from "@/server/services/vocabulary";
+import { isAdmin } from "@/server/auth/rbac";
 import { listClasses, targetableStudents } from "@/server/services/classes";
 import { orNotFound } from "@/server/auth/guards";
-import { formatDate, formatDateTime } from "@/lib/dates";
+import { formatDateTime } from "@/lib/dates";
 import { cn } from "@/lib/utils";
 import { PageHeader } from "@/components/ui/page";
 import { Card, CardBody, CardHeader } from "@/components/ui/card";
@@ -12,6 +13,8 @@ import { Badge } from "@/components/ui/badge";
 import { EmptyState } from "@/components/ui/feedback";
 import { FilterBar } from "./filter-bar";
 import { NewWordListButton, WordListEditor, WordListTargets } from "./vocab-editor";
+import { WordListsTable } from "./vocab-bulk";
+import { LinkButton } from "@/components/ui/button";
 import { tr } from "@/lib/i18n/tr";
 
 const STATUS: Record<string, { label: string; tone: "neutral" | "success" | "warning" }> = {
@@ -20,47 +23,88 @@ const STATUS: Record<string, { label: string; tone: "neutral" | "success" | "war
   archived: { get label() { return tr("Arxiv"); }, tone: "neutral" },
 };
 
-export async function WordListsPage({ user, base, sp }: { user: SessionUser; base: string; sp: { q?: string; status?: string } }) {
-  const rows = await listWordLists(user, { q: sp.q, status: sp.status });
+export async function WordListsPage({ user, base, sp }: { user: SessionUser; base: string; sp: { q?: string; status?: string; group?: string; page?: string } }) {
+  const unassigned = sp.group === "none";
+  const classes = await listClasses(user);
+  const classId = sp.group && classes.some((c) => c.id === sp.group) ? sp.group : undefined;
+  const page = Math.max(1, Number(sp.page) || 1);
+  const [rows, quality] = await Promise.all([listWordLists(user, { q: sp.q, status: sp.status, classId, unassigned, page }), isAdmin(user) ? vocabQuality(user) : null]);
+  const pages = Math.max(1, Math.ceil(rows.total / LISTS_PER_PAGE));
+  const href = (p: number) => `${base}/vocabulary?${new URLSearchParams({ ...(sp.q ? { q: sp.q } : {}), ...(sp.status ? { status: sp.status } : {}), ...(sp.group ? { group: sp.group } : {}), page: String(p) })}`;
   return (
     <>
-      <PageHeader title={tr("Lug‘at ro‘yxatlari")} description={tr("So‘zlar ro‘yxatini yarating, CSV’dan import qiling va guruhlarga biriktiring.")} actions={<NewWordListButton base={base} />} />
+      <PageHeader
+        title={tr("Lug‘at ro‘yxatlari")}
+        description={tr("Ro‘yxat faqat biriktirilgan guruh(lar) o‘quvchilariga ko‘rinadi. Bitta ro‘yxatni bir nechta guruhga biriktirish mumkin — so‘zlar takrorlanmaydi.")}
+        actions={
+          <>
+            <LinkButton href={`${base}/vocabulary/imports`} variant="ghost"><History /> {tr("Import tarixi")}</LinkButton>
+            <LinkButton href={`${base}/vocabulary/import`} variant="secondary"><Upload /> {tr("Fayldan import")}</LinkButton>
+            <NewWordListButton base={base} />
+          </>
+        }
+      />
       <FilterBar
         fields={[
-          { name: "q", type: "search", placeholder: tr("Ro‘yxat nomi") },
+          { name: "q", type: "search", placeholder: tr("Nomi, daraja yoki mavzu") },
           { name: "status", label: tr("Holat"), options: [["", tr("Faol")], ["draft", tr("Qoralama")], ["published", tr("E’lon qilingan")], ["archived", tr("Arxiv")]] },
+          { name: "group", label: tr("Guruh"), options: [["", tr("Barcha guruhlar")], ["none", tr("Biriktirilmaganlar")], ...classes.map((c) => [c.id, c.name] as [string, string])] },
         ]}
       />
       {rows.length ? (
-        <Card className="overflow-hidden">
-          <ul className="divide-y divide-border">
-            {rows.map((l) => (
-              <li key={l.id}>
-                <Link href={`${base}/vocabulary/${l.id}`} className="flex items-center gap-4 px-5 py-3.5 hover:bg-surface-2/60">
-                  <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-info-soft text-info">
-                    <BookA className="size-5" aria-hidden />
-                  </span>
-                  <span className="min-w-0 flex-1">
-                    <span className="flex flex-wrap items-center gap-2">
-                      <span className="font-bold">{l.title}</span>
-                      <Badge tone={STATUS[l.status]?.tone}>{STATUS[l.status]?.label}</Badge>
-                      {l.level ? <Badge>{l.level}</Badge> : null}
-                    </span>
-                    <span className="block truncate text-[12.5px] text-muted">
-                      {tr("{0} ta so‘z ·", l.words)} {l.targets ? tr("{0} ta biriktirish", l.targets) : tr("biriktirilmagan")} · {l.authorName} · {formatDate(l.updatedAt)}
-                    </span>
-                  </span>
-                  <ChevronRight className="size-4 text-muted" aria-hidden />
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </Card>
+        <>
+          <WordListsTable
+            base={base}
+            classes={classes.map((c) => ({ id: c.id, name: c.name }))}
+            rows={rows.map((l) => ({ id: l.id, title: l.title, level: l.level, status: l.status, words: l.words, students: l.students, groups: l.groups, authorName: l.authorName, updatedAt: l.updatedAt, canEdit: isAdmin(user) || l.createdBy === user.id }))}
+          />
+          <div className="mt-3 flex items-center justify-between text-[13px] text-muted">
+            <span>{tr("Jami {0} ta ro‘yxat", rows.total)}</span>
+            {pages > 1 ? (
+              <span className="flex items-center gap-2">
+                {page > 1 ? <Link className="font-bold text-primary" href={href(page - 1)}>← {tr("Oldingi")}</Link> : null}
+                <span>{page} / {pages}</span>
+                {page < pages ? <Link className="font-bold text-primary" href={href(page + 1)}>{tr("Keyingi")} →</Link> : null}
+              </span>
+            ) : null}
+          </div>
+        </>
       ) : (
         <Card>
-          <EmptyState icon={<BookA />} title={tr("Ro‘yxatlar yo‘q")} description={tr("Birinchi lug‘at ro‘yxatini yarating.")} action={<NewWordListButton base={base} />} />
+          <EmptyState
+            icon={<BookA />}
+            title={sp.q || sp.status || sp.group ? tr("Mos ro‘yxat topilmadi") : tr("Ro‘yxatlar yo‘q")}
+            description={sp.q || sp.status || sp.group ? tr("Filtrni o‘zgartirib ko‘ring.") : tr("Birinchi lug‘at ro‘yxatini yarating yoki fayldan import qiling.")}
+            action={<div className="flex flex-wrap justify-center gap-2"><LinkButton href={`${base}/vocabulary/import`} variant="secondary"><Upload /> {tr("Fayldan import")}</LinkButton><NewWordListButton base={base} /></div>}
+          />
         </Card>
       )}
+      {quality && (quality.conflicts.length || quality.unassigned.length) ? (
+        <Card className="mt-6">
+          <CardHeader title={tr("Ma’lumotlar tekshiruvi")} icon={<AlertTriangle />} description={tr("Avtomatik tekshiruv: e’tibor talab qiladigan joylar")} />
+          <CardBody className="space-y-4 pt-2 text-[13.5px]">
+            {quality.unassigned.length ? (
+              <div>
+                <p className="mb-1 font-bold">{tr("E’lon qilingan, lekin hech bir guruhga biriktirilmagan ({0}):", quality.unassigned.length)}</p>
+                <p className="flex flex-wrap gap-1.5">{quality.unassigned.map((l) => <Link key={l.id} prefetch={false} href={`${base}/vocabulary/${l.id}?tab=assign`} className="rounded-md bg-warning-soft px-2 py-0.5 font-semibold text-warning hover:underline">{l.title}</Link>)}</p>
+              </div>
+            ) : null}
+            {quality.conflicts.length ? (
+              <div>
+                <p className="mb-1 font-bold">{tr("Bir xil so‘z turli ro‘yxatlarda turlicha tarjima qilingan ({0}):", quality.conflicts.length)}</p>
+                <ul className="divide-y divide-border">
+                  {quality.conflicts.slice(0, 15).map((c) => (
+                    <li key={c.english} className="py-1.5">
+                      <b>{c.english}</b> — {c.translations.join(" / ")}{" "}
+                      <span className="text-muted">({c.lists.map((l, i) => <Link key={l.id} prefetch={false} href={`${base}/vocabulary/${l.id}`} className="hover:text-primary">{i ? ", " : ""}{l.title}</Link>)})</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ) : null}
+          </CardBody>
+        </Card>
+      ) : null}
     </>
   );
 }
@@ -80,6 +124,7 @@ export async function WordListDetailPage({ user, base, id, tab }: { user: Sessio
         eyebrow={<Badge tone={STATUS[d.list.status]?.tone}>{STATUS[d.list.status]?.label}</Badge>}
         title={d.list.title}
         description={[d.list.level, d.list.topic].filter(Boolean).join(" · ") || undefined}
+        actions={d.canEdit ? <LinkButton href={`${base}/vocabulary/import?list=${id}`} variant="secondary"><Upload /> {tr("Fayldan import")}</LinkButton> : undefined}
       />
       <nav className="mb-5 flex gap-1 rounded-xl bg-surface-2 p-1" aria-label={tr("Bo‘limlar")}>
         {tabs.map(([k, l]) => (

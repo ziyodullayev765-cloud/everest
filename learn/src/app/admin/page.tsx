@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Activity, ClipboardCheck, GraduationCap, Layers, Send, Users } from "lucide-react";
+import { Activity, BookA, ClipboardCheck, FileSpreadsheet, GraduationCap, Layers, Send, Users } from "lucide-react";
 import { pageUser } from "@/server/auth/guards";
 import { adminOverview } from "@/server/services/analytics";
+import { vocabStats } from "@/server/services/vocabulary";
 import { formatDateTime } from "@/lib/dates";
 import { fmtPercent } from "@/lib/utils";
 import { PageHeader, StatCard } from "@/components/ui/page";
@@ -18,7 +19,7 @@ export const metadata: Metadata = { get title() { return tr("Umumiy ko‘rinish"
 
 export default async function AdminHome() {
   const user = await pageUser("admin", "super_admin");
-  const o = await adminOverview();
+  const [o, v] = await Promise.all([adminOverview(), vocabStats()]);
   const c = o.counts;
   return (
     <>
@@ -30,6 +31,40 @@ export default async function AdminHome() {
         <StatCard label={tr("E’lon qilingan vazifalar")} value={c.published} icon={<Send />} tone="success" />
         <StatCard label={tr("Tekshirish kutilmoqda")} value={c.pending} icon={<ClipboardCheck />} tone="violet" hint={<Link className="text-primary hover:underline" href="/admin/submissions">{tr("Ko‘rish →")}</Link>} />
       </div>
+      <Card className="mb-6">
+        <CardHeader title={tr("Lug‘at")} icon={<BookA />} action={<LinkButton href="/admin/vocabulary/import" variant="ghost" size="sm"><FileSpreadsheet /> {tr("Import")}</LinkButton>} />
+        <CardBody className="pt-2">
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
+            {[
+              [tr("Ro‘yxatlar"), v.lists, tr("{0} e’lon · {1} qoralama", v.published, v.drafts), "/admin/vocabulary"],
+              [tr("So‘zlar"), v.words, tr("+{0} shu hafta", v.wordsWeek), "/admin/vocabulary"],
+              [tr("Biriktirilmagan"), v.unassigned, tr("e’lon qilingan, guruhsiz"), "/admin/vocabulary?group=none"],
+              [tr("Arxiv"), v.archived, tr("tiklash mumkin"), "/admin/vocabulary?status=archived"],
+              [tr("Importlar (30 kun)"), v.imports30, tr("tarix"), "/admin/vocabulary/imports"],
+              [tr("Xatoli importlar"), v.failed30, tr("ko‘rib chiqing"), "/admin/vocabulary/imports"],
+            ].map(([label, n, hint, href]) => (
+              <Link key={String(label)} href={String(href)} className="rounded-2xl border-2 border-border px-3 py-2.5 hover:bg-surface-2">
+                <div className="text-[12px] font-semibold text-muted">{label}</div>
+                <div className="text-[22px] leading-tight font-black tabular">{n}</div>
+                <div className="truncate text-[11.5px] text-muted">{hint}</div>
+              </Link>
+            ))}
+          </div>
+          {v.recent.length ? (
+            <div className="mt-4">
+              <div className="mb-1 text-[12.5px] font-bold text-muted">{tr("Oxirgi o‘zgargan ro‘yxatlar")}</div>
+              <ul className="divide-y divide-border text-[13.5px]">
+                {v.recent.map((l) => (
+                  <li key={l.id} className="flex items-center justify-between gap-3 py-1.5">
+                    <Link href={`/admin/vocabulary/${l.id}`} className="truncate font-semibold hover:text-primary">{l.title}</Link>
+                    <span className="shrink-0 text-[12px] text-muted">{tr("{0} ta so‘z", l.words)} · {formatDateTime(l.updatedAt)}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ) : null}
+        </CardBody>
+      </Card>
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-[1fr_340px]">
         <div className="min-w-0 space-y-6">
           <Card>

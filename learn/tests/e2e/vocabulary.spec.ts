@@ -31,11 +31,14 @@ test("student studies the new words with flashcards and typing", async ({ page }
   await expect(page.getByRole("link", { name: new RegExp(LIST) })).toBeVisible();
   await page.getByRole("link", { name: new RegExp(LIST) }).click();
   await page.getByRole("link", { name: /Kartochkalar/ }).click();
-  for (let i = 0; i < 3; i++) {
+  // Three cards; the achievement popup can take one click, so keep answering until the session ends.
+  const done = page.getByRole("heading", { name: "Mashg‘ulot yakunlandi" });
+  for (let i = 0; i < 6 && !(await done.isVisible()); i++) {
     await page.getByRole("button", { name: "Tarjimani ko‘rsatish" }).click();
     await page.getByRole("button", { name: "Esladim", exact: true }).click();
+    await page.waitForTimeout(150);
   }
-  await expect(page.getByRole("heading", { name: "Mashg‘ulot yakunlandi" })).toBeVisible();
+  await expect(done).toBeVisible();
   await expect(page.getByText("3 ta javob · 100% to‘g‘ri")).toBeVisible();
   await page.goto("/vocabulary");
   await expect(page.getByText("O‘rganilgan").first()).toBeVisible();

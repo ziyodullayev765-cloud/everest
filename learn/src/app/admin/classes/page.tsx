@@ -8,14 +8,16 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { EmptyState } from "@/components/ui/feedback";
 import { ClassForm } from "@/components/admin/class-forms";
+import { FilterBar } from "@/components/staff/filter-bar";
 import { tr } from "@/lib/i18n/tr";
 
 export const metadata: Metadata = { get title() { return tr("Guruhlar"); } };
 
-export default async function Page({ searchParams }: { searchParams: Promise<{ archived?: string }> }) {
+export default async function Page({ searchParams }: { searchParams: Promise<{ archived?: string; q?: string }> }) {
   const user = await pageUser("admin", "super_admin");
   const sp = await searchParams;
-  const rows = await listClasses(user, sp.archived === "1");
+  const q = (sp.q ?? "").trim().toLowerCase();
+  const rows = (await listClasses(user, sp.archived === "1")).filter((c) => !q || [c.name, c.level, c.teachers].some((x) => x.toLowerCase().includes(q)));
   return (
     <>
       <PageHeader
@@ -30,6 +32,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ a
           </>
         }
       />
+      <FilterBar fields={[{ name: "q", type: "search", placeholder: tr("Guruh nomi, daraja yoki o‘qituvchi") }]} />
       {rows.length ? (
         <Card className="overflow-hidden">
           <ul className="divide-y divide-border">
@@ -41,7 +44,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ a
                     <span className="block font-bold">
                       {c.name} {c.archivedAt ? <Badge className="ml-1">{tr("Arxiv")}</Badge> : null}
                     </span>
-                    <span className="block truncate text-[12.5px] text-muted">{[c.level, tr("{0} o‘quvchi", c.students)].filter(Boolean).join(" · ")}{c.teachers ? ` · ${c.teachers}` : ""}</span>
+                    <span className="block truncate text-[12.5px] text-muted">{[c.level, tr("{0} o‘quvchi", c.students), tr("{0} ta lug‘at", c.wordLists)].filter(Boolean).join(" · ")}{c.teachers ? ` · ${c.teachers}` : ""}</span>
                   </span>
                   {c.joinCode ? <code className="hidden rounded-lg bg-surface-2 px-2 py-1 text-[12px] sm:block">{c.joinCode}</code> : null}
                   <ChevronRight className="size-4 text-muted" aria-hidden />

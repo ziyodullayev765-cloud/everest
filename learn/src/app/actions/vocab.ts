@@ -3,9 +3,11 @@ import { revalidatePath } from "next/cache";
 import { after } from "next/server";
 import { evaluateAchievements } from "@/server/services/achievements";
 import { run } from "@/server/action";
+import { afterImport, previewImport, revertImport, runImport } from "@/server/services/vocab-import";
 import { requireRole } from "@/server/auth/session";
 import {
   finishGame,
+  bulkWordLists,
   importWords,
   recordReview,
   removeWord,
@@ -92,6 +94,32 @@ export async function finishGameAction(input: unknown) {
     const r = await finishGame(u, input);
     await evaluateAchievements(u.id);
     revalidatePath("/", "layout");
+    return r;
+  });
+}
+
+export async function previewImportAction(input: unknown) {
+  return run(async () => previewImport(await staff(), input));
+}
+export async function runImportAction(input: unknown) {
+  return run(async () => {
+    const r = await runImport(await staff(), input);
+    after(() => afterImport(r).catch((e) => console.error("[import notify]", e)));
+    refresh();
+    return { jobId: r.jobId, listId: r.listId };
+  });
+}
+export async function revertImportAction(id: string) {
+  return run(async () => {
+    const r = await revertImport(await staff(), id);
+    refresh();
+    return r;
+  });
+}
+export async function bulkWordListsAction(input: unknown) {
+  return run(async () => {
+    const r = await bulkWordLists(await staff(), input);
+    refresh();
     return r;
   });
 }

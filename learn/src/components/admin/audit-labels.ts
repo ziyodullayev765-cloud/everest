@@ -45,5 +45,17 @@ const LABELS: Record<string, string> = {
   get "announcement.create"() { return tr("e’lon yubordi"); },
   get "challenge.create"() { return tr("guruh musobaqasini boshladi"); },
   get "bank.add"() { return tr("savollar bankiga savol qo‘shdi"); },
+  get "vocab.list_create"() { return tr("lug‘at ro‘yxati yaratdi"); },
+  get "vocab.list_update"() { return tr("lug‘at ro‘yxatini tahrirladi"); },
+  get "vocab.list_published"() { return tr("lug‘at ro‘yxatini e’lon qildi"); },
+  get "vocab.list_draft"() { return tr("lug‘at ro‘yxatini qoralamaga qaytardi"); },
+  get "vocab.list_archived"() { return tr("lug‘at ro‘yxatini arxivladi"); },
+  get "vocab.word_remove"() { return tr("so‘zni o‘chirdi"); },
+  get "vocab.import"() { return tr("so‘zlarni import qildi"); },
+  get "vocab.import_revert"() { return tr("importni bekor qildi"); },
+  get "vocab.assign"() { return tr("lug‘atni guruhga biriktirdi"); },
+  get "vocab.unassign"() { return tr("lug‘atni guruhdan oldi"); },
+  get "mark.set"() { return tr("dars bahosi qo‘ydi"); },
+  get "mark.clear"() { return tr("dars bahosini o‘chirdi"); },
 };
 export const auditLabel = (a: string) => LABELS[a] ?? a;

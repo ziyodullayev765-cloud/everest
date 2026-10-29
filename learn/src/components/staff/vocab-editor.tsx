@@ -15,7 +15,7 @@ import { LEVELS } from "@/lib/course";
 import { parseWordList } from "@/lib/word-csv";
 import { tr } from "@/lib/i18n/tr";
 
-type Word = { id: string; english: string; uzbek: string; example: string; exampleUz: string; phonetic: string; partOfSpeech: string; difficulty: number; audioFileId: string | null; imageFileId: string | null };
+type Word = { id: string; english: string; uzbek: string; example: string; exampleUz: string; phonetic: string; partOfSpeech: string; difficulty: number; definition: string; synonyms: string; unit: string; tags: string; audioFileId: string | null; imageFileId: string | null; updatedAt?: Date };
 type ListMeta = { id: string; title: string; description: string; level: string; topic: string; status: string };
 
 function useRun() {
@@ -88,7 +88,7 @@ export function NewWordListButton({ base }: { base: string }) {
   );
 }
 
-const emptyWord = { english: "", uzbek: "", example: "", exampleUz: "", phonetic: "", partOfSpeech: "", difficulty: 2, audioFileId: null as string | null, imageFileId: null as string | null };
+const emptyWord = { english: "", uzbek: "", example: "", exampleUz: "", phonetic: "", partOfSpeech: "", difficulty: 2, definition: "", synonyms: "", unit: "", tags: "", audioFileId: null as string | null, imageFileId: null as string | null };
 
 function WordForm({ initial, onSave, onCancel, pending }: { initial: typeof emptyWord; onSave: (w: typeof emptyWord) => void; onCancel?: () => void; pending: boolean }) {
   const [w, setW] = useState(initial);
@@ -117,7 +117,7 @@ function WordForm({ initial, onSave, onCancel, pending }: { initial: typeof empt
         <Field label={tr("Inglizcha")} required>
           <Input value={w.english} onChange={(e) => set({ english: e.target.value })} placeholder="journey" maxLength={120} autoCapitalize="none" spellCheck={false} />
         </Field>
-        <Field label={tr("O‘zbekcha")} required hint={tr("Bir nechta ma’noni vergul bilan yozing")}>
+        <Field label={tr("O‘zbekcha tarjima")} required hint={tr("Bir nechta ma’noni vergul bilan yozing")}>
           <Input value={w.uzbek} onChange={(e) => set({ uzbek: e.target.value })} placeholder={tr("sayohat, safar")} maxLength={200} />
         </Field>
         <Field label={tr("Misol (EN)")}>
@@ -142,6 +142,23 @@ function WordForm({ initial, onSave, onCancel, pending }: { initial: typeof empt
           </Select>
         </Field>
       </div>
+      <details open={!!(w.definition || w.synonyms || w.unit || w.tags)}>
+        <summary className="cursor-pointer text-[13px] font-bold text-primary">{tr("Qo‘shimcha: ta’rif, sinonimlar, unit, teglar")}</summary>
+        <div className="mt-2 grid gap-3 sm:grid-cols-2">
+          <Field label={tr("Ta’rif")} className="sm:col-span-2">
+            <Input value={w.definition} onChange={(e) => set({ definition: e.target.value })} placeholder={tr("a trip from one place to another")} maxLength={500} />
+          </Field>
+          <Field label={tr("Sinonimlar")}>
+            <Input value={w.synonyms} onChange={(e) => set({ synonyms: e.target.value })} placeholder="trip, voyage" maxLength={300} />
+          </Field>
+          <Field label={tr("Unit / dars")}>
+            <Input value={w.unit} onChange={(e) => set({ unit: e.target.value })} placeholder="Unit 3" maxLength={60} />
+          </Field>
+          <Field label={tr("Teglar")} className="sm:col-span-2">
+            <Input value={w.tags} onChange={(e) => set({ tags: e.target.value })} placeholder="travel, ielts" maxLength={200} />
+          </Field>
+        </div>
+      </details>
       <div className="flex flex-wrap items-center gap-2">
         {(["audio", "image"] as const).map((k) => {
           const id = k === "audio" ? w.audioFileId : w.imageFileId;
@@ -193,7 +210,10 @@ export function WordListEditor({ list, words, canEdit }: { list: ListMeta; words
   const [q, setQ] = useState("");
   const [formKey, setFormKey] = useState(0);
   const { pending, run } = useRun();
-  const shown = useMemo(() => words.filter((w) => !q || w.english.toLowerCase().includes(q.toLowerCase()) || w.uzbek.toLowerCase().includes(q.toLowerCase())), [words, q]);
+  const shown = useMemo(() => {
+    const k = q.trim().toLowerCase();
+    return words.filter((w) => !k || [w.english, w.uzbek, w.unit, w.tags].some((x) => x.toLowerCase().includes(k)));
+  }, [words, q]);
 
   return (
     <div className="space-y-5">
@@ -279,6 +299,7 @@ export function WordListEditor({ list, words, canEdit }: { list: ListMeta; words
                     <span className="font-bold">{w.english}</span>
                     {w.phonetic ? <span className="text-[12px] text-muted">{w.phonetic}</span> : null}
                     {w.audioFileId ? <Music className="size-3.5 text-violet" aria-label={tr("audio bor")} /> : null}
+                    {w.unit ? <Badge>{w.unit}</Badge> : null}
                   </div>
                   <div className="text-[13.5px] text-text-2">{w.uzbek}</div>
                   {w.example ? <div className="text-[12.5px] text-muted italic">{w.example}</div> : null}

@@ -9,6 +9,7 @@
  */
 import { sql } from "drizzle-orm";
 import {
+  type AnyPgColumn,
   boolean,
   check,
   customType,
@@ -834,6 +835,7 @@ export const wordLists = pgTable(
     createdBy: uuid("created_by")
       .notNull()
       .references(() => users.id, { onDelete: "restrict" }),
+    updatedBy: uuid("updated_by").references(() => users.id, { onDelete: "set null" }),
     createdAt: ts("created_at").notNull().defaultNow(),
     updatedAt: ts("updated_at").notNull().defaultNow(),
   },
@@ -857,12 +859,21 @@ export const words = pgTable(
     audioFileId: uuid("audio_file_id").references(() => files.id, { onDelete: "set null" }),
     imageFileId: uuid("image_file_id").references(() => files.id, { onDelete: "set null" }),
     difficulty: integer("difficulty").notNull().default(2),
+    definition: text("definition").notNull().default(""),
+    synonyms: text("synonyms").notNull().default(""),
+    /** Unit or lesson label inside the set (e.g. "Unit 3"). */
+    unit: text("unit").notNull().default(""),
+    tags: text("tags").notNull().default(""),
+    /** The import that created the word (for the import report and undo). */
+    importJobId: uuid("import_job_id").references((): AnyPgColumn => importJobs.id, { onDelete: "set null" }),
     /** Words with review history are archived, never deleted. */
     archivedAt: ts("archived_at"),
     createdAt: ts("created_at").notNull().defaultNow(),
+    updatedAt: ts("updated_at").notNull().defaultNow(),
   },
   (t) => [
     index("words_list_idx").on(t.listId, t.position),
+    index("words_import_idx").on(t.importJobId),
     uniqueIndex("words_list_english_key").on(t.listId, sql`lower(${t.english})`).where(sql`${t.archivedAt} is null`),
     check("words_difficulty", sql`${t.difficulty} between 1 and 3`),
   ],
@@ -884,7 +895,51 @@ export const wordListTargets = pgTable(
     index("word_list_targets_list_idx").on(t.listId),
     index("word_list_targets_class_idx").on(t.classId),
     index("word_list_targets_student_idx").on(t.studentId),
+    uniqueIndex("word_list_targets_class_key").on(t.listId, t.classId).where(sql`${t.classId} is not null`),
+    uniqueIndex("word_list_targets_student_key").on(t.listId, t.studentId).where(sql`${t.studentId} is not null`),
     check("word_list_targets_one", sql`(${t.classId} is null) <> (${t.studentId} is null)`),
+  ],
+);
+
+/** A row an import did not write: "error" = invalid data, "skipped" = duplicate kept as is. */
+export type ImportRowError = { line: number; message: string; value?: string; kind?: "error" | "skipped" };
+
+/** One vocabulary import (file or pasted text): what was asked, what happened, and how to undo it. */
+export const importJobs = pgTable(
+  "import_jobs",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    listId: uuid("list_id")
+      .notNull()
+      .references(() => wordLists.id, { onDelete: "restrict" }),
+    createdBy: uuid("created_by")
+      .notNull()
+      .references(() => users.id, { onDelete: "restrict" }),
+    fileName: text("file_name").notNull().default(""),
+    format: text("format").notNull(),
+    /** sha-256 of the parsed rows + mapping: the same file imported again is recognised. */
+    contentHash: text("content_hash").notNull(),
+    policy: text("policy").notNull(),
+    classIds: jsonb("class_ids").$type<string[]>().notNull().default([]),
+    status: text("status").notNull().default("done"),
+    total: integer("total").notNull().default(0),
+    added: integer("added").notNull().default(0),
+    updated: integer("updated").notNull().default(0),
+    skipped: integer("skipped").notNull().default(0),
+    failed: integer("failed").notNull().default(0),
+    errors: jsonb("errors").$type<ImportRowError[]>().notNull().default([]),
+    /** Previous values of words this import changed (policy "update"), for undo. */
+    previous: jsonb("previous").$type<Record<string, Record<string, unknown>>>().notNull().default({}),
+    createdAt: ts("created_at").notNull().defaultNow(),
+    revertedAt: ts("reverted_at"),
+    revertedBy: uuid("reverted_by").references(() => users.id, { onDelete: "set null" }),
+  },
+  (t) => [
+    index("import_jobs_list_idx").on(t.listId, t.createdAt),
+    index("import_jobs_created_idx").on(t.createdAt),
+    index("import_jobs_hash_idx").on(t.listId, t.contentHash),
+    check("import_jobs_status", sql`${t.status} in ('done','failed','reverted')`),
+    check("import_jobs_policy", sql`${t.policy} in ('skip','update')`),
   ],
 );
 

@@ -10,6 +10,10 @@ export const wordInput = z.object({
   phonetic: z.string().trim().max(80).default(""),
   partOfSpeech: z.string().trim().max(30).default(""),
   difficulty: z.coerce.number().int().min(1).max(3).default(2),
+  definition: z.string().trim().max(500).default(""),
+  synonyms: z.string().trim().max(300).default(""),
+  unit: z.string().trim().max(60).default(""),
+  tags: z.string().trim().max(200).default(""),
   audioFileId: z.string().uuid().nullable().default(null),
   imageFileId: z.string().uuid().nullable().default(null),
 });
