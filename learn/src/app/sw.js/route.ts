@@ -41,7 +41,7 @@ const VERSION = ${JSON.stringify(VERSION)};
 const SHELL = "everest-shell-" + VERSION;
 const STATIC = "everest-static";
 const FILES = "everest-files";
-const PRECACHE = ["/offline", "/icons/icon-192.png", "/icons/icon-512.png", "/icons/apple-touch-icon.png"];
+const PRECACHE = ["/offline", "/icons/icon-192-city.png", "/icons/icon-512-city.png", "/icons/apple-touch-icon-city.png"];
 const ASSETS = ${JSON.stringify(assets)};
 
 self.addEventListener("install", (event) => {

@@ -11,7 +11,7 @@ test("manifest is valid and icons exist", async ({ request }) => {
   expect(sizes).toEqual(expect.arrayContaining(["192x192", "512x512"]));
   expect(m.icons.some((i: { purpose?: string }) => i.purpose === "maskable")).toBe(true);
   for (const i of m.icons) expect((await request.get(i.src)).headers()["content-type"]).toContain("image/png");
-  expect((await request.get("/icons/apple-touch-icon.png")).ok()).toBe(true);
+  expect((await request.get("/icons/apple-touch-icon-city.png")).ok()).toBe(true);
 });
 
 test("service worker registers and the offline page is precached", async ({ page, context }) => {

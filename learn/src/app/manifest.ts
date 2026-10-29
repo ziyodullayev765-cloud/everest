@@ -30,15 +30,15 @@ export default async function manifest(): Promise<MetadataRoute.Manifest> {
     theme_color: "#0f7a5a",
     categories: ["education", "productivity"],
     icons: [
-      { src: "/icons/icon-192.png", sizes: "192x192", type: "image/png", purpose: "any" },
-      { src: "/icons/icon-512.png", sizes: "512x512", type: "image/png", purpose: "any" },
-      { src: "/icons/maskable-192.png", sizes: "192x192", type: "image/png", purpose: "maskable" },
-      { src: "/icons/maskable-512.png", sizes: "512x512", type: "image/png", purpose: "maskable" },
+      { src: "/icons/icon-192-city.png", sizes: "192x192", type: "image/png", purpose: "any" },
+      { src: "/icons/icon-512-city.png", sizes: "512x512", type: "image/png", purpose: "any" },
+      { src: "/icons/maskable-192-city.png", sizes: "192x192", type: "image/png", purpose: "maskable" },
+      { src: "/icons/maskable-512-city.png", sizes: "512x512", type: "image/png", purpose: "maskable" },
     ],
     shortcuts: [
-      { name: "Vazifalar", url: "/assignments", icons: [{ src: "/icons/icon-192.png", sizes: "192x192" }] },
-      { name: "Quizlar", url: "/quizzes", icons: [{ src: "/icons/icon-192.png", sizes: "192x192" }] },
-      { name: "Natijalar", url: "/results", icons: [{ src: "/icons/icon-192.png", sizes: "192x192" }] },
+      { name: "Vazifalar", url: "/assignments", icons: [{ src: "/icons/icon-192-city.png", sizes: "192x192" }] },
+      { name: "Quizlar", url: "/quizzes", icons: [{ src: "/icons/icon-192-city.png", sizes: "192x192" }] },
+      { name: "Natijalar", url: "/results", icons: [{ src: "/icons/icon-192-city.png", sizes: "192x192" }] },
     ],
   };
 }
