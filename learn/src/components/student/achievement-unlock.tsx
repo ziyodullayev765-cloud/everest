@@ -3,7 +3,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Star } from "lucide-react";
-import { markAchievementsSeenAction, unseenAchievementsAction } from "@/app/actions/student";
+import { markAchievementsSeenAction } from "@/app/actions/student";
 import { categoryOf } from "@/lib/achievements";
 import { formatDate } from "@/lib/dates";
 import { play } from "@/lib/sfx";
@@ -27,8 +27,11 @@ export function AchievementUnlock() {
     if (busy.current) return;
     busy.current = true;
     try {
-      const r = await unseenAchievementsAction();
-      if (r.ok && r.data.length) setQueue((q) => (q.length ? q : r.data));
+      const res = await fetch("/api/achievements/unseen", { cache: "no-store" });
+      const data: Unlock[] = res.ok ? await res.json() : [];
+      if (data.length) setQueue((q) => (q.length ? q : data));
+    } catch {
+      // Offline or signed out: try again on the next page.
     } finally {
       busy.current = false;
     }

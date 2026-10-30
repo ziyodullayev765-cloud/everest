@@ -29,8 +29,12 @@ test("student studies the new words with flashcards and typing", async ({ page }
   await login(page, "jasur.toshmatov");
   await page.goto("/vocabulary");
   await expect(page.getByRole("link", { name: new RegExp(LIST) })).toBeVisible();
-  await page.getByRole("link", { name: new RegExp(LIST) }).click();
+  await expect(async () => {
+    await page.getByRole("link", { name: new RegExp(LIST) }).click();
+    await expect(page).toHaveURL(/\/vocabulary\/lists\//, { timeout: 3000 });
+  }).toPass({ timeout: 20_000 });
   await page.getByRole("link", { name: /Kartochkalar/ }).click();
+  await expect(page).toHaveURL(/list=/);
   // Three cards; the achievement popup can take one click, so keep answering until the session ends.
   const done = page.getByRole("heading", { name: "Mashg‘ulot yakunlandi" });
   for (let i = 0; i < 6 && !(await done.isVisible()); i++) {

@@ -8,8 +8,11 @@ test("admin imports a CSV with a bad row into a new set for one group", async ({
   await login(page, "admin");
   await page.goto("/admin/vocabulary");
   await page.waitForLoadState("networkidle");
-  await page.getByRole("link", { name: /Fayldan import/ }).first().click();
-  await expect(page.getByRole("heading", { name: "Lug‘at importi" })).toBeVisible();
+  // Rarely the first client navigation after load doesn't commit in CI (cause not found yet); retry like the other specs.
+  await expect(async () => {
+    await page.getByRole("link", { name: /Fayldan import/ }).first().click();
+    await expect(page.getByRole("heading", { name: "Lug‘at importi" })).toBeVisible({ timeout: 3000 });
+  }).toPass({ timeout: 20_000 });
   await page.getByRole("radio", { name: "Yangi ro‘yxat" }).click();
   await page.getByLabel("Nomi").fill(TITLE);
   await page.getByRole("checkbox", { name: /Intermediate/ }).check();

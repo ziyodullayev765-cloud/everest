@@ -4,6 +4,8 @@ import { Activity, BookA, ClipboardCheck, FileSpreadsheet, GraduationCap, Layers
 import { pageUser } from "@/server/auth/guards";
 import { adminOverview } from "@/server/services/analytics";
 import { vocabStats } from "@/server/services/vocabulary";
+import { systemStatus } from "@/server/services/system";
+import { SystemCard } from "@/components/admin/system-status";
 import { formatDateTime } from "@/lib/dates";
 import { fmtPercent } from "@/lib/utils";
 import { PageHeader, StatCard } from "@/components/ui/page";
@@ -19,7 +21,7 @@ export const metadata: Metadata = { get title() { return tr("Umumiy ko‘rinish"
 
 export default async function AdminHome() {
   const user = await pageUser("admin", "super_admin");
-  const [o, v] = await Promise.all([adminOverview(), vocabStats()]);
+  const [o, v, sys] = await Promise.all([adminOverview(), vocabStats(), systemStatus(user)]);
   const c = o.counts;
   return (
     <>
@@ -31,6 +33,7 @@ export default async function AdminHome() {
         <StatCard label={tr("E’lon qilingan vazifalar")} value={c.published} icon={<Send />} tone="success" />
         <StatCard label={tr("Tekshirish kutilmoqda")} value={c.pending} icon={<ClipboardCheck />} tone="violet" hint={<Link className="text-primary hover:underline" href="/admin/submissions">{tr("Ko‘rish →")}</Link>} />
       </div>
+      <SystemCard s={sys} />
       <Card className="mb-6">
         <CardHeader title={tr("Lug‘at")} icon={<BookA />} action={<LinkButton href="/admin/vocabulary/import" variant="ghost" size="sm"><FileSpreadsheet /> {tr("Import")}</LinkButton>} />
         <CardBody className="pt-2">

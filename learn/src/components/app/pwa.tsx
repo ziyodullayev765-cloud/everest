@@ -4,17 +4,22 @@ import { RefreshCw, WifiOff } from "lucide-react";
 import { startWarm } from "@/lib/offline";
 import { tr } from "@/lib/i18n/tr";
 
+let updateRequested = false;
+let reloading = false;
+
 /** Registers /sw.js (production only) and offers a reload when a new version is waiting. */
 export function ServiceWorkerRegistrar() {
   const [waiting, setWaiting] = useState<ServiceWorker | null>(null);
   useEffect(() => {
     if (!("serviceWorker" in navigator) || process.env.NODE_ENV !== "production") return;
-    let reloading = false;
-    navigator.serviceWorker.addEventListener("controllerchange", () => {
-      if (reloading) return;
+    // Reload only after the user pressed "Update" (the new worker then takes over). On the very first visit the
+    // worker also takes control, and reloading then would throw away whatever the user just tapped.
+    const onChange = () => {
+      if (!updateRequested || reloading) return;
       reloading = true;
       location.reload();
-    });
+    };
+    navigator.serviceWorker.addEventListener("controllerchange", onChange);
     navigator.serviceWorker.register("/sw.js", { scope: "/" }).then((reg) => {
       if (reg.waiting && navigator.serviceWorker.controller) setWaiting(reg.waiting);
       reg.addEventListener("updatefound", () => {
@@ -34,7 +39,10 @@ export function ServiceWorkerRegistrar() {
       <div className="flex items-center gap-3 rounded-xl border border-border bg-surface px-4 py-2.5 text-sm shadow-pop">
         <RefreshCw className="size-4 text-primary" aria-hidden />
         {tr("Yangi versiya tayyor")}
-        <button className="rounded-lg bg-primary px-3 py-1 text-[13px] font-semibold text-primary-fg" onClick={() => waiting.postMessage({ type: "SKIP_WAITING" })}>
+        <button className="rounded-lg bg-primary px-3 py-1 text-[13px] font-semibold text-primary-fg" onClick={() => {
+            updateRequested = true;
+            waiting.postMessage({ type: "SKIP_WAITING" });
+          }}>
           {tr("Yangilash")}
         </button>
       </div>

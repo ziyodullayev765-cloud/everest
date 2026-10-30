@@ -37,6 +37,7 @@ import {
   UsersRound,
   X,
   type LucideIcon,
+  Database,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { LogoMark } from "./logo";
@@ -67,6 +68,7 @@ const ICONS: Record<string, LucideIcon> = {
   bank: Library,
   settings: Settings,
   audit: ScrollText,
+  database: Database,
   review: ClipboardCheck,
   vocabulary: BookA,
   words: BookOpen,

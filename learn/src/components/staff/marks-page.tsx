@@ -10,7 +10,7 @@ import { PageHeader } from "@/components/ui/page";
 import { Card, CardBody, CardHeader } from "@/components/ui/card";
 import { EmptyState } from "@/components/ui/feedback";
 import { FilterBar } from "./filter-bar";
-import { MarksBoard, MarksDay } from "./marks-board";
+import { MarksBoard, MarksDay, MarksTabs } from "./marks-board";
 import { tr } from "@/lib/i18n/tr";
 
 export async function MarksPage({ user, base, sp }: { user: SessionUser; base: string; sp: { class?: string; area?: string; day?: string } }) {
@@ -46,28 +46,13 @@ export async function MarksPage({ user, base, sp }: { user: SessionUser; base: s
         )}
         <MarksDay day={day} today={today} />
       </div>
-      <nav aria-label={tr("Yo‘nalishlar")} className="-mx-4 mb-4 flex gap-2 overflow-x-auto px-4 pb-1 sm:mx-0 sm:flex-wrap sm:px-0">
-        {MARK_AREAS.map((a) => (
-          <Link
-            key={a.key}
-            href={href(a.key)}
-            replace
-            scroll={false}
-            aria-current={a.key === area ? "page" : undefined}
-            className={cn(
-              "shrink-0 rounded-full border-2 px-4 py-1.5 text-[13.5px] font-extrabold transition",
-              a.key === area ? "border-primary bg-primary text-primary-fg shadow-[0_3px_0_0_var(--primary-shadow)]" : "border-border bg-surface text-text-2 hover:bg-surface-2",
-            )}
-          >
-            {a.label}
-          </Link>
-        ))}
-      </nav>
       {sheet.students.length === 0 ? (
         <Card><EmptyState icon={<Users />} title={tr("Guruhda o‘quvchi yo‘q")} description={tr("Avval guruhga o‘quvchi qo‘shing.")} /></Card>
       ) : (
         <div className="space-y-6">
-          <MarksBoard key={`${classId}:${area}:${day}`} classId={classId} day={sheet.day} area={area} rows={sheet.students} />
+          <MarksTabs tabs={MARK_AREAS.map((a) => ({ key: a.key, label: a.label, href: href(a.key) }))} current={area}>
+            <MarksBoard key={`${classId}:${area}:${day}`} classId={classId} day={sheet.day} area={area} rows={sheet.students} />
+          </MarksTabs>
           <Card className="overflow-hidden">
             <CardHeader title={tr("Oxirgi 30 kun: o‘rtacha baholar")} description={tr("Har bir yo‘nalish bo‘yicha o‘rtacha baho va baholar soni")} />
             <CardBody className="pt-2">

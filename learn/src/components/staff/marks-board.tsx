@@ -1,5 +1,5 @@
 "use client";
-import { useState, useTransition } from "react";
+import { useEffect, useState, useTransition } from "react";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { setMarkAction } from "@/app/actions/staff";
@@ -108,5 +108,54 @@ export function MarksBoard({ classId, day, area, rows }: { classId: string; day:
         })}
       </ul>
     </div>
+  );
+}
+
+/**
+ * Skill tabs + the board. While the next skill is loading the current board is dimmed and can't be
+ * tapped, so a quick tap never lands a mark on the skill being left.
+ */
+export function MarksTabs({ tabs, current, children }: { tabs: { key: string; label: string; href: string }[]; current: string; children: React.ReactNode }) {
+  const router = useRouter();
+  const [pending, start] = useTransition();
+  const [target, setTarget] = useState(current);
+  const go = (t: { key: string; href: string }) => {
+    if (t.key === current) return;
+    setTarget(t.key);
+    start(() => router.replace(t.href, { scroll: false }));
+  };
+  // If the switch hasn't finished after a few seconds, load the page normally instead of leaving the board dimmed.
+  useEffect(() => {
+    if (!pending) return;
+    const href = tabs.find((t) => t.key === target)?.href;
+    const t = setTimeout(() => href && window.location.assign(href), 6000);
+    return () => clearTimeout(t);
+  }, [pending, target, tabs]);
+  const shown = pending ? target : current;
+  return (
+    <>
+      <nav aria-label={tr("Yo‘nalishlar")} className="-mx-4 mb-4 flex gap-2 overflow-x-auto px-4 pb-1 sm:mx-0 sm:flex-wrap sm:px-0">
+        {tabs.map((a) => (
+          <a
+            key={a.key}
+            href={a.href}
+            onClick={(e) => {
+              e.preventDefault();
+              go(a);
+            }}
+            aria-current={a.key === shown ? "page" : undefined}
+            className={cn(
+              "shrink-0 rounded-full border-2 px-4 py-1.5 text-[13.5px] font-extrabold transition",
+              a.key === shown ? "border-primary bg-primary text-primary-fg shadow-[0_3px_0_0_var(--primary-shadow)]" : "border-border bg-surface text-text-2 hover:bg-surface-2",
+            )}
+          >
+            {a.label}
+          </a>
+        ))}
+      </nav>
+      <div aria-busy={pending || undefined} className={cn("transition-opacity", pending && "pointer-events-none opacity-40")}>
+        {children}
+      </div>
+    </>
   );
 }

@@ -41,6 +41,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
       title: tr("Tizim"),
       items: [
         { href: "/admin/settings", label: t.nav.settings, icon: "settings" },
+        { href: "/admin/system", label: tr("Baza holati"), icon: "database" },
         { href: "/admin/audit", label: t.nav.audit, icon: "audit" },
         { href: "/admin/notifications", label: t.nav.notifications, icon: "notifications" },
         { href: "/admin/profile", label: t.nav.profile, icon: "profile" },

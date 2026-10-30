@@ -11,6 +11,7 @@ test("teacher marks a student's Writing and the student sees it in Grades", asyn
   await expect(page.getByText(/1 \/ \d+ o‘quvchi baholandi/)).toBeVisible();
   // Reading: "not done" (3), then change it to 4.
   await page.getByRole("link", { name: "Reading", exact: true }).click();
+  await expect(page).toHaveURL(/area=reading/, { timeout: 15_000 });
   const r2 = page.getByRole("radiogroup", { name: /Ali Valiyev/ });
   await r2.getByRole("radio", { name: /3/ }).click();
   await r2.getByRole("radio", { name: /4/ }).click();
@@ -25,7 +26,7 @@ test("teacher marks a student's Writing and the student sees it in Grades", asyn
   await expect(page.getByRole("heading", { name: "Dars baholari" })).toBeVisible();
   await expect(page.getByText("Writing").first()).toBeVisible();
   await page.getByText("Barcha baholar ro‘yxati").click();
-  await expect(page.locator("li", { hasText: "Reading" }).first()).toContainText("4");
+  await expect(page.locator("details[open] li", { hasText: "Reading" }).first()).toContainText("4");
 });
 
 test("a student cannot open the marking page", async ({ page }) => {

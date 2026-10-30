@@ -2,7 +2,7 @@ import Link from "next/link";
 import { sql } from "drizzle-orm";
 import {
   BarChart3, Bell, Crown, Flame, BookOpenText, Bot, ChevronRight, ClipboardCheck, ClipboardList, Download, FileClock, GraduationCap, Headphones,
-  Library, ListChecks, NotebookTabs, PenLine, Settings, ShieldCheck, Sparkles, Star, Trophy, UserRound, UsersRound, type LucideIcon,
+  Database, Library, ListChecks, NotebookTabs, PenLine, Settings, ShieldCheck, Sparkles, Star, Trophy, UserRound, UsersRound, type LucideIcon,
 } from "lucide-react";
 import type { SessionUser } from "@/server/auth/session";
 import { ownProfile } from "@/server/services/users";
@@ -123,6 +123,7 @@ function menuFor(role: SessionUser["role"], opts: { gamification: boolean }): It
     { href: "/admin/gradebook", label: tr("Hisobotlar"), icon: BarChart3 },
     { href: "/admin/achievements", label: tr("Yutuqlar"), icon: Trophy },
     { href: "/admin/settings", label: tr("Tizim sozlamalari"), icon: ShieldCheck },
+    { href: "/admin/system", label: tr("Baza holati"), icon: Database },
     { href: "/admin/audit", label: tr("Faoliyat jurnali"), icon: FileClock },
     { href: "/admin/notifications", label: tr("Bildirishnomalar"), icon: Bell },
     { href: "/admin/profile/settings", label: tr("Sozlamalar"), icon: Settings },

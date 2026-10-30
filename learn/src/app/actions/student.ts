@@ -2,8 +2,7 @@
 import { revalidatePath } from "next/cache";
 import { run, type ActionResult } from "@/server/action";
 import { getCurrentUser, requireRole, requireUser } from "@/server/auth/session";
-import { markAchievementsSeen, unseenAchievements } from "@/server/services/achievements";
-import { getSettings } from "@/server/services/settings";
+import { markAchievementsSeen } from "@/server/services/achievements";
 import { markMaterialRead, saveDraft, submitWork } from "@/server/services/submissions";
 import { saveAnswer, startAttempt, submitAttempt } from "@/server/services/quiz";
 import { markRead } from "@/server/services/notifications";
@@ -83,15 +82,6 @@ export async function joinClassAction(code: string) {
     const c = await joinByCode(u, code);
     revalidatePath("/", "layout");
     return { name: c.name };
-  });
-}
-
-export async function unseenAchievementsAction() {
-  return run(async () => {
-    const u = await requireRole("student");
-    const settings = await getSettings();
-    if (!settings.gamification.enabled || !u.gamificationEnabled) return [];
-    return (await unseenAchievements(u.id)).map((a) => ({ ...a, earnedAt: a.earnedAt.toISOString() }));
   });
 }
 
