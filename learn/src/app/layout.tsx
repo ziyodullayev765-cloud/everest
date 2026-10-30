@@ -5,6 +5,7 @@ import "katex/dist/katex.min.css";
 import "./globals.css";
 import { themeScript } from "@/components/app/theme";
 import { NoZoom, OfflineIndicator, ServiceWorkerRegistrar } from "@/components/app/pwa";
+import { NavigationWatchdog } from "@/components/app/nav-watchdog";
 import { Toaster } from "@/components/ui/toast";
 import { requestLocale } from "@/server/locale";
 import { tr } from "@/lib/i18n/tr";
@@ -58,6 +59,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <NoZoom />
         <OfflineIndicator />
         <ServiceWorkerRegistrar />
+        <NavigationWatchdog />
         <Toaster />
       </body>
     </html>

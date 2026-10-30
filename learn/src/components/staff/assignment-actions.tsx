@@ -1,6 +1,7 @@
 "use client";
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
+import { navigate } from "@/lib/navigate";
 import { Archive, Copy, Eye, RotateCcw, Send, Undo2 } from "lucide-react";
 import { assignmentStatusAction, duplicateAssignmentAction } from "@/app/actions/staff";
 import { Button, LinkButton } from "@/components/ui/button";
@@ -36,7 +37,7 @@ export function AssignmentActions({ id, base, status, canDuplicate }: { id: stri
               const r = await duplicateAssignmentAction(id);
               if (r.ok) {
                 toast.success(tr("Nusxa yaratildi"));
-                router.push(`${base}/assignments/${r.data.id}`);
+                navigate(router, `${base}/assignments/${r.data.id}`);
               } else toast.error(r.error);
             })
           }

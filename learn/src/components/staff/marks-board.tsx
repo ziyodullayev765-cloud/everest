@@ -49,20 +49,25 @@ export function MarksDay({ day, today }: { day: string; today: string }) {
 export function MarksBoard({ classId, day, area, rows }: { classId: string; day: string; area: MarkArea; rows: Row[] }) {
   const router = useRouter();
   const [local, setLocal] = useState<Record<string, number | null>>({});
-  const [, start] = useTransition();
   const current = (r: Row) => (r.id in local ? local[r.id] : (r.marks[area] ?? null));
 
   const set = (r: Row, mark: number) => {
     const prev = current(r);
     const next = prev === mark ? null : mark;
     setLocal((l) => ({ ...l, [r.id]: next }));
-    start(async () => {
-      const res = await setMarkAction({ classId, studentId: r.id, area, day, mark: next });
-      if (!res.ok) {
+    // Not inside a transition: a pending one would hold back switching to another skill.
+    void setMarkAction({ classId, studentId: r.id, area, day, mark: next }).then(
+      (res) => {
+        if (!res.ok) {
+          setLocal((l) => ({ ...l, [r.id]: prev }));
+          toast.error(res.error);
+        } else router.refresh();
+      },
+      () => {
         setLocal((l) => ({ ...l, [r.id]: prev }));
-        toast.error(res.error);
-      } else router.refresh();
-    });
+        toast.error(tr("Internet aloqasi yo‘q. Qayta urinib ko‘ring."));
+      },
+    );
   };
 
   const given = rows.filter((r) => current(r) != null).length;

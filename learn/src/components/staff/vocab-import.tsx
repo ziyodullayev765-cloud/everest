@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
+import { navigate } from "@/lib/navigate";
 import { AlertTriangle, FileSpreadsheet, FileUp, Upload } from "lucide-react";
 import { previewImportAction, runImportAction } from "@/app/actions/vocab";
 import { Button } from "@/components/ui/button";
@@ -94,7 +95,7 @@ export function ImportWizard({ base, lists, classes, initialListId }: { base: st
         return;
       }
       toast.success(tr("Import tugadi"));
-      router.push(`${base}/vocabulary/imports/${r.data.jobId}`);
+      navigate(router, `${base}/vocabulary/imports/${r.data.jobId}`);
     });
 
   const c = preview?.counts;

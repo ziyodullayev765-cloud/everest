@@ -1,6 +1,7 @@
 "use client";
 import { useMemo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
+import { navigate } from "@/lib/navigate";
 import { Archive, FileUp, ListPlus, ImagePlus, Music, Pencil, Plus, RotateCcw, Save, Search, Send, Trash2, Users, X } from "lucide-react";
 import { importWordsAction, removeWordAction, saveWordAction, saveWordListAction, wordListStatusAction, wordListTargetsAction } from "@/app/actions/vocab";
 import { Button } from "@/components/ui/button";
@@ -70,7 +71,7 @@ export function NewWordListButton({ base }: { base: string }) {
           className="space-y-4"
           onSubmit={(e) => {
             e.preventDefault();
-            run(() => saveWordListAction(null, v), tr("Ro‘yxat yaratildi"), (d) => router.push(`${base}/vocabulary/${d.id}`));
+            run(() => saveWordListAction(null, v), tr("Ro‘yxat yaratildi"), (d) => navigate(router, `${base}/vocabulary/${d.id}`));
           }}
         >
           <MetaFields v={v} set={(p) => setV((x) => ({ ...x, ...p }))} />

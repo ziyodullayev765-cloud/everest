@@ -1,6 +1,7 @@
 "use client";
 import { useMemo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
+import { navigate } from "@/lib/navigate";
 import { ArrowDown, ArrowUp, Headphones, ListTodo, Wand2, BookOpen, Dumbbell, FileText, FileUp, Link2, ListChecks, Plus, Save, Search, Send, Timer, Trash2, Users, CalendarClock, Scale, Settings2, CheckSquare } from "lucide-react";
 import { saveAssignmentAction } from "@/app/actions/staff";
 import { Card, CardBody, CardHeader } from "@/components/ui/card";
@@ -137,7 +138,7 @@ export function AssignmentBuilder(p: Props) {
       }
       if (r.data.keptDraft) toast.info(tr("Saqlandi. Quizni e’lon qilish uchun avval savollar qo‘shing."));
       else toast.success(mode === "draft" && !live ? tr("Qoralama saqlandi") : mode === "schedule" ? tr("Rejalashtirildi") : tr("Saqlandi va e’lon qilindi"));
-      if (!p.id || isQuiz) router.push(`${p.base}/assignments/${r.data.id}${isQuiz ? "?tab=questions" : ""}`);
+      if (!p.id || isQuiz) navigate(router, `${p.base}/assignments/${r.data.id}${isQuiz ? "?tab=questions" : ""}`);
       else router.refresh();
     });
 

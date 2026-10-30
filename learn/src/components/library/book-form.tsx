@@ -1,6 +1,7 @@
 "use client";
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
+import { navigate } from "@/lib/navigate";
 import { ArrowDown, ArrowUp, FileText, ImagePlus, Loader2, Music, Save, Trash2, Upload } from "lucide-react";
 import { saveBookAction } from "@/app/actions/admin";
 import { Card, CardBody, CardHeader } from "@/components/ui/card";
@@ -68,7 +69,7 @@ export function BookForm({ id, base, initial }: { id: string | null; base: strin
       });
       if (!r.ok) return setError(r.error);
       toast.success(tr("Kitob saqlandi"));
-      router.push(`${base}/library/${r.data}`);
+      navigate(router, `${base}/library/${r.data}`);
     });
 
   return (
